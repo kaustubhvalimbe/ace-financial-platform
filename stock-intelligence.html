@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Stock Intelligence - Ace Financial Services</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--p1:#2d2478;--p2:#3c3197;--p3:#6b63c9;--p4:#f0effe;--g1:#5a8a10;--g2:#8bc32a;--g4:#d4eda0;--g5:#f5fce8;--bg:#f7faf0;--t1:#1a1240;--t4:#6b7280;--t5:#9ca3af;--red:#dc2626;--green:#16a34a;--gold:#d97706;--fh:"Playfair Display",serif;--fb:"Plus Jakarta Sans",sans-serif;--fm:"JetBrains Mono",monospace;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--t1);font-family:var(--fb);min-height:100vh;}
+nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(60,49,151,.08);}
+.brand{display:flex;align-items:center;gap:9px;text-decoration:none;}
+.bi{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.bn{font-family:var(--fh);font-size:13px;font-weight:900;color:var(--p2);}
+.bn em{color:var(--g1);font-style:normal;}
+.bs{font-size:10px;color:var(--t5);font-family:var(--fm);}
+.nav-links{display:flex;gap:2px;flex-wrap:wrap;}
+.nav-links a{text-decoration:none;font-size:12px;font-weight:700;padding:6px 11px;border-radius:7px;color:var(--t4);}
+.nav-links a:hover{background:var(--g5);color:var(--g1);}
+.nav-links a.on{background:var(--p2);color:#fff;}
+.ticker{background:linear-gradient(135deg,var(--p1),var(--p2));padding:10px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.ticker-left{display:flex;gap:14px;flex-wrap:wrap;}
+.midx{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.1);border-radius:10px;padding:8px 14px;}
+.mn{font-size:10px;font-weight:800;color:rgba(255,255,255,.6);font-family:var(--fm);text-transform:uppercase;}
+.mv{font-family:var(--fm);font-size:17px;font-weight:900;color:#fff;}
+.mc{font-family:var(--fm);font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;}
+.up{background:rgba(22,163,74,.25);color:#4ade80;}
+.dn{background:rgba(220,38,38,.25);color:#f87171;}
+.ticker-time{font-size:10px;color:rgba(255,255,255,.5);font-family:var(--fm);}
+.hero{background:linear-gradient(135deg,var(--p1) 0%,var(--p2) 40%,#1e5a0a 75%,var(--g1));padding:14px 22px;}
+.hero-in{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.hero h1{font-family:var(--fh);font-size:20px;font-weight:900;color:#fff;}
+.hero h1 span{color:#b8e05a;}
+.hero p{color:rgba(255,255,255,.75);font-size:11px;margin-top:3px;}
+.hstats{display:flex;gap:10px;}
+.hstat{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:9px;padding:7px 13px;text-align:center;}
+.hstat-v{font-family:var(--fm);font-size:16px;font-weight:800;color:#b8e05a;}
+.hstat-l{font-size:9px;color:rgba(255,255,255,.6);margin-top:1px;}
+.wrap{display:grid;grid-template-columns:210px 1fr;min-height:calc(100vh - 180px);}
+.left{background:#fff;border-right:2px solid var(--g4);padding:12px;overflow-y:auto;position:sticky;top:60px;height:calc(100vh - 60px);}
+.ptitle{font-family:var(--fh);font-size:12px;font-weight:900;color:var(--p2);margin-bottom:10px;}
+.lsec{margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--g5);}
+.lsec:last-child{border-bottom:none;}
+.lsec-t{font-size:9px;font-weight:800;color:var(--t5);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;}
+.fbtn{padding:5px 9px;border-radius:7px;border:1.5px solid var(--g4);background:#fff;font-size:11px;font-weight:700;color:var(--t4);cursor:pointer;display:block;width:100%;text-align:left;margin-bottom:3px;}
+.fbtn.on{background:var(--p2);border-color:var(--p2);color:#fff;}
+.fbtn:hover:not(.on){background:var(--g5);color:var(--g1);}
+.sinp{width:100%;background:var(--g5);border:1.5px solid var(--g4);color:var(--t1);font-family:var(--fb);font-size:12px;padding:7px 9px;border-radius:8px;margin-bottom:8px;}
+.sinp:focus{outline:none;border-color:var(--p2);}
+.right{padding:14px;}
+.tbl-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.tbl-title{font-family:var(--fh);font-size:16px;font-weight:900;color:var(--p2);}
+.tbl-sub{font-size:11px;color:var(--t4);margin-top:2px;}
+.stbl-wrap{background:#fff;border:2px solid var(--g4);border-radius:12px;overflow:hidden;}
+.stbl{width:100%;border-collapse:collapse;font-size:12px;}
+.stbl thead th{background:linear-gradient(135deg,var(--p1),var(--p2));color:#fff;padding:10px 12px;font-weight:800;font-size:11px;font-family:var(--fm);text-align:left;}
+.stbl thead th.r{text-align:right;}
+.stbl tbody tr{cursor:pointer;}
+.stbl tbody tr:hover td{background:var(--p4);}
+.stbl tbody tr:nth-child(even) td{background:var(--bg);}
+.stbl td{padding:9px 12px;border-bottom:1px solid var(--g4);vertical-align:middle;}
+.stbl td.r{text-align:right;font-family:var(--fm);font-weight:700;}
+.sname{font-weight:800;color:var(--t1);font-size:12px;}
+.ssec{font-size:10px;color:var(--t4);margin-top:2px;}
+.pup{color:var(--green);font-weight:800;font-family:var(--fm);}
+.pdn{color:var(--red);font-weight:800;font-family:var(--fm);}
+.pnil{color:var(--t5);font-family:var(--fm);}
+.cbadge{padding:2px 7px;border-radius:8px;font-size:10px;font-weight:800;font-family:var(--fm);}
+.cup{background:rgba(22,163,74,.12);color:var(--green);}
+.cdn{background:rgba(220,38,38,.12);color:var(--red);}
+.fcnt{display:inline-block;background:var(--p4);color:var(--p2);border-radius:12px;padding:2px 8px;font-size:10px;font-weight:800;font-family:var(--fm);}
+.msg{text-align:center;padding:40px;color:var(--t5);}
+.msg h3{font-family:var(--fh);font-size:16px;color:var(--t4);margin-bottom:8px;}
+/* Detail panel */
+.sdov{position:fixed;inset:0;background:rgba(26,18,64,.5);z-index:299;display:none;backdrop-filter:blur(3px);}
+.sdov.open{display:block;}
+.sdp{position:fixed;top:0;right:-700px;width:700px;height:100vh;background:#fff;z-index:300;display:flex;flex-direction:column;transition:right .32s cubic-bezier(.4,0,.2,1);box-shadow:-8px 0 40px rgba(60,49,151,.18);}
+.sdp.open{right:0;}
+.sdh{background:linear-gradient(135deg,var(--p1),var(--p2) 40%,#1e5a0a 75%,var(--g1));padding:16px 20px;display:flex;align-items:flex-start;justify-content:space-between;}
+.sdt{font-family:var(--fh);font-size:18px;font-weight:900;color:#fff;}
+.sds{font-size:11px;color:rgba(255,255,255,.7);margin-top:3px;font-family:var(--fm);}
+.sdpv{text-align:right;}
+.sdpval{font-family:var(--fm);font-size:22px;font-weight:900;color:#fff;}
+.sdpc{font-size:12px;font-weight:700;font-family:var(--fm);}
+.sdx{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);border:none;color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:12px;flex-shrink:0;}
+.sdb{flex:1;overflow-y:auto;padding:14px;}
+.sdsec{background:var(--bg);border:2px solid var(--g4);border-radius:11px;padding:12px;margin-bottom:12px;}
+.sdsec-t{font-family:var(--fh);font-size:13px;font-weight:800;color:var(--p2);margin-bottom:10px;}
+.igrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.icard{background:#fff;border:1.5px solid var(--g4);border-radius:9px;padding:10px;text-align:center;}
+.ilbl{font-size:10px;color:var(--t5);font-weight:700;font-family:var(--fm);margin-bottom:4px;}
+.ival{font-family:var(--fm);font-size:13px;font-weight:900;}
+.frow{display:flex;align-items:center;padding:8px 10px;border-bottom:1px solid var(--g4);background:#fff;}
+.frow:nth-child(even){background:var(--g5);}
+.frow:last-child{border-bottom:none;}
+.frow:hover{background:var(--p4);}
+.frank{width:24px;height:24px;border-radius:50%;background:var(--p2);color:#fff;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--fm);}
+.fname{flex:1;margin:0 10px;}
+.fn{font-size:11px;font-weight:800;color:var(--t1);line-height:1.3;}
+.fa{font-size:9px;color:var(--t4);margin-top:1px;}
+.fpct{font-family:var(--fm);font-size:13px;font-weight:900;color:var(--g1);}
+.fbar-w{width:70px;height:5px;background:var(--g4);border-radius:3px;overflow:hidden;margin-left:8px;}
+.fbar{height:100%;background:linear-gradient(90deg,var(--p2),var(--g2));border-radius:3px;}
+.adv-bar{background:linear-gradient(135deg,var(--p1),var(--p2));padding:11px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px;}
+.adv-info{display:flex;align-items:center;gap:9px;}
+.adv-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--g2),var(--g1));display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:12px;font-weight:900;color:#fff;}
+.adv-name{font-family:var(--fh);font-size:13px;font-weight:800;color:#fff;}
+.adv-role{font-size:10px;color:rgba(255,255,255,.6);font-family:var(--fm);}
+.adv-links{display:flex;gap:7px;}
+.adv-link{padding:5px 13px;border-radius:7px;font-size:12px;font-weight:700;text-decoration:none;}
+.al-h{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#fff;}
+.al-a{background:var(--g2);color:#fff;}
+.sebi-disclaimer{background:#1a1240;border-top:3px solid var(--gold);padding:10px 20px;}
+.sebi-disc-inner{display:flex;align-items:flex-start;gap:10px;max-width:1400px;margin:0 auto;}
+.sebi-disc-text{font-size:10px;color:rgba(255,255,255,.75);line-height:1.7;}
+.sebi-disc-text strong{color:var(--gold);font-size:10px;}
+</style>
+<style>
+
+/* ══ MOBILE RESPONSIVE — ACE FINANCIAL SERVICES ══ */
+.mob-menu-btn{display:none;background:none;border:none;font-size:22px;cursor:pointer;color:#1a1240;padding:4px 8px;border-radius:6px;align-items:center;}
+.mob-nav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199;}
+.mob-nav-overlay.open{display:block;}
+.mob-nav-drawer{position:fixed;top:0;left:-280px;width:280px;height:100vh;background:#fff;z-index:200;transition:left .3s ease;overflow-y:auto;box-shadow:4px 0 20px rgba(0,0,0,.15);padding:20px 0;}
+.mob-nav-drawer.open{left:0;}
+.mob-nav-drawer .mnd-brand{padding:0 20px 16px;border-bottom:1px solid #e5e7eb;margin-bottom:8px;}
+.mob-nav-drawer a{display:flex;align-items:center;gap:10px;padding:13px 20px;font-size:14px;font-weight:600;color:#4a4a6a;text-decoration:none;border-left:3px solid transparent;}
+.mob-nav-drawer a:hover,.mob-nav-drawer a.on{background:#f0effe;color:#3c3197;border-left-color:#3c3197;}
+
+@media(max-width:768px){
+  .nav-links{display:none!important;}
+  .mob-menu-btn{display:flex!important;}
+  nav{padding:0 14px!important;height:54px!important;}
+  .bs{display:none!important;}
+  .hero,.page-hero{padding:18px 14px!important;}
+  .hero h1,.hero-title{font-size:20px!important;line-height:1.3!important;}
+  .hero p,.hero-sub{font-size:12px!important;}
+  .hero-in{flex-direction:column!important;gap:12px!important;}
+  .hstats{flex-wrap:wrap!important;gap:6px!important;}
+  .hstat{min-width:75px!important;padding:6px 8px!important;}
+  .hstat-v{font-size:16px!important;}
+  .hstat-l{font-size:9px!important;}
+  .wrap,.layout-wrap{display:block!important;}
+  .left,.sidebar-panel{display:none!important;}
+  .right,.main-panel{padding:12px!important;width:100%!important;}
+  .stats-row,.fund-grid,.calc-grid,.info-grid{grid-template-columns:1fr!important;gap:10px!important;}
+  .table-wrap,.tbl-wrap{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;}
+  table{min-width:580px!important;font-size:12px!important;}
+  thead th{padding:8px 10px!important;font-size:10px!important;white-space:nowrap!important;}
+  tbody td{padding:8px 10px!important;font-size:12px!important;}
+  .detail-panel,.sdp,.dp{width:100%!important;right:-100%!important;max-width:100%!important;}
+  .detail-panel.open,.sdp.open,.dp.open{right:0!important;}
+  .ticker{padding:8px 12px!important;flex-direction:column!important;gap:6px!important;}
+  .ticker-left{flex-wrap:wrap!important;gap:8px!important;}
+  .mv{font-size:13px!important;}
+  .card-header{flex-direction:column!important;gap:8px!important;align-items:flex-start!important;}
+  .filter-row,.tbl-hdr{flex-direction:column!important;gap:8px!important;align-items:flex-start!important;}
+  .search-wrap,.sinp{width:100%!important;}
+  .tabs,.dtabs{flex-wrap:wrap!important;gap:4px!important;}
+  .tab,.dtab{font-size:12px!important;padding:8px 10px!important;}
+  .page-title,.tbl-title{font-size:18px!important;}
+  .adv-bar{flex-direction:column!important;gap:8px!important;padding:12px!important;}
+  .adv-links{flex-wrap:wrap!important;}
+  .risk-row{flex-direction:column!important;}
+  .kyc-grid{grid-template-columns:1fr!important;}
+  .info-grid{grid-template-columns:1fr!important;}
+  div[style*="grid-template-columns:1fr 1fr"]{display:block!important;}
+}
+@media(max-width:480px){
+  .hero h1{font-size:17px!important;}
+  .mv{font-size:12px!important;}
+  .hstat-v{font-size:14px!important;}
+}
+
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="brand">
+    <div class="bi"><img src="data:image/png;base64,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" style="width:32px;height:32px;object-fit:contain;border-radius:6px;"></div>
+    <div><div class="bn">Ace Financial <em>Services</em></div><div class="bs">SEBI ARN · AMFI Registered MFD</div></div>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="fund-discovery-v2.html">Fund Discovery</a>
+    <a href="fund-toppers.html">Fund Toppers</a>
+    <a href="stock-intelligence.html" class="on">Stock Intelligence</a>
+    <a href="investment-case.html">Investment Engine</a>
+    <a href="calculators.html">Calculators</a>
+    <a href="fund-compare.html">Compare</a>
+    <a href="kaustubhvalimbe.html">Founder</a>
+  </div>
+</nav>
+
+<div class="ticker">
+  <div class="ticker-left">
+    <div class="midx"><div><div class="mn">SENSEX</div><div class="mv" id="sv">--</div></div><div class="mc" id="sc">--</div></div>
+    <div class="midx"><div><div class="mn">NIFTY 50</div><div class="mv" id="nv">--</div></div><div class="mc" id="nc">--</div></div>
+    <div class="midx"><div><div class="mn">BANK NIFTY</div><div class="mv" id="bv">--</div></div><div class="mc" id="bc">--</div></div>
+  </div>
+  <div class="ticker-time" id="tt">Fetching market data...</div>
+</div>
+
+<div class="hero">
+  <div class="hero-in">
+    <div>
+      <h1>Stock <span>Intelligence</span></h1>
+      <p>Top stocks held across MFs · Live prices · Which funds hold each stock · Sensex impact</p>
+    </div>
+    <div class="hstats">
+      <div class="hstat"><div class="hstat-v" id="hs">--</div><div class="hstat-l">Unique Stocks</div></div>
+      <div class="hstat"><div class="hstat-v" id="hf">--</div><div class="hstat-l">Funds Tracked</div></div>
+      <div class="hstat"><div class="hstat-v" id="hu">--</div><div class="hstat-l">Data As Of</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="left">
+    <div class="ptitle">Stock Intelligence</div>
+    <div class="lsec">
+      <div class="lsec-t">Search</div>
+      <input class="sinp" id="search-inp" type="text" placeholder="Search stock...">
+    </div>
+    <div class="lsec">
+      <div class="lsec-t">Sector</div>
+      <div id="sec-filters"></div>
+    </div>
+    <div class="lsec">
+      <div class="lsec-t">Movement</div>
+      <button class="fbtn on" id="f-all">All Stocks</button>
+      <button class="fbtn" id="f-up">Gainers Only</button>
+      <button class="fbtn" id="f-dn">Losers Only</button>
+    </div>
+    <div class="lsec">
+      <div class="lsec-t">Sort By</div>
+      <button class="fbtn on" id="s-funds">Most Funds Holding</button>
+      <button class="fbtn" id="s-wt">Highest Avg Weight</button>
+      <button class="fbtn" id="s-chg">Biggest Move</button>
+    </div>
+  </div>
+  <div class="right">
+    <div class="tbl-hdr">
+      <div>
+        <div class="tbl-title">Top Stock Holdings Across All MFs</div>
+        <div class="tbl-sub" id="tbl-sub">Loading...</div>
+      </div>
+    </div>
+    <div class="stbl-wrap">
+      <table class="stbl">
+        <thead><tr>
+          <th>#</th><th>Stock</th>
+          <th class="r">Price</th><th class="r">Change</th>
+          <th class="r">Avg Weight</th><th class="r">Funds</th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="sdov" id="sdov"></div>
+<div class="sdp" id="sdp">
+  <div class="sdh">
+    <div><div class="sdt" id="sd-name">--</div><div class="sds" id="sd-sec">--</div></div>
+    <div class="sdpv"><div class="sdpval" id="sd-price">--</div><div class="sdpc" id="sd-chg">--</div></div>
+    <button class="sdx" id="sd-close">x</button>
+  </div>
+  <div class="sdb">
+    <div class="sdsec"><div class="sdsec-t">Sensex Impact Analysis</div><div class="igrid" id="sd-impact"></div></div>
+    <div class="sdsec"><div class="sdsec-t" id="sd-funds-title">Funds Holding This Stock</div><div id="sd-funds"></div></div>
+  </div>
+</div>
+
+<div class="adv-bar">
+  <div class="adv-info">
+    <div class="adv-av">KV</div>
+    <div><div class="adv-name">Kaustubh Valimbe</div><div class="adv-role">CEO · Ace Financial Services · SEBI ARN</div></div>
+  </div>
+  <div class="adv-links">
+    <a href="index.html" class="adv-link al-h">Home</a>
+    <a href="kaustubhvalimbe.html" class="adv-link al-a">Founder</a>
+  </div>
+</div>
+
+<div class="sebi-disclaimer">
+  <div class="sebi-disc-inner">
+    <div class="sebi-disc-text"><strong>SEBI/AMFI Disclaimer:</strong> Mutual Fund investments are subject to market risks. Past performance is not indicative of future returns. Stock prices shown are for informational purposes only. Ace Financial Services — SEBI Registered MFD (ARN Holder).</div>
+  </div>
+</div>
+
+<script>
+var HD = {"meta":{"source":"AMFI India Portfolio Disclosure \u2014 Compiled","month":"May 2026","generated":"2026-05-26","totalStocks":120,"totalFunds":35},"stocks":[{"name":"HDFC Bank","sym":"HDFCBANK","sector":"Banking","funds":[{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":11.2},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":9.1},{"f":"Axis Bluechip","a":"Axis MF","pct":8.8},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":8.5},{"f":"Kotak Bluechip","a":"Kotak MF","pct":8.2},{"f":"SBI Bluechip","a":"SBI MF","pct":7.9},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":7.6},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":7.4},{"f":"Canara Robeco Bluechip","a":"Canara Robeco MF","pct":7.1},{"f":"Franklin India Bluechip","a":"Franklin MF","pct":6.8},{"f":"DSP Flexi Cap","a":"DSP MF","pct":6.5},{"f":"Bandhan Large Cap","a":"Bandhan MF","pct":6.2},{"f":"Edelweiss Large Cap","a":"Edelweiss MF","pct":5.9},{"f":"PPFAS Flexi Cap","a":"PPFAS MF","pct":5.6},{"f":"Quant Large Cap","a":"Quant MF","pct":5.3}],"avgPct":7.47,"nFunds":15},{"name":"ICICI Bank","sym":"ICICIBANK","sector":"Banking","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":7.8},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":7.8},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":7.2},{"f":"Axis Bluechip","a":"Axis MF","pct":6.95},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":6.8},{"f":"SBI Bluechip","a":"SBI MF","pct":6.5},{"f":"Kotak Bluechip","a":"Kotak MF","pct":6.2},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":6.1},{"f":"Canara Robeco Bluechip","a":"Canara Robeco MF","pct":5.9},{"f":"Motilal Oswal Flexi Cap","a":"Motilal MF","pct":5.4},{"f":"DSP Flexi Cap","a":"DSP MF","pct":5.1},{"f":"Franklin India Bluechip","a":"Franklin MF","pct":4.9},{"f":"Aditya Birla Flexi Cap","a":"ABSL MF","pct":4.7},{"f":"Quant Large Cap","a":"Quant MF","pct":4.5}],"avgPct":6.13,"nFunds":14},{"name":"Axis Bank","sym":"AXISBANK","sector":"Banking","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":4.2},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":3.9},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":3.6},{"f":"SBI Bluechip","a":"SBI MF","pct":3.3},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":3.1},{"f":"Kotak Bluechip","a":"Kotak MF","pct":2.9},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":2.7},{"f":"Canara Robeco Bluechip","a":"Canara Robeco MF","pct":2.6},{"f":"DSP Flexi Cap","a":"DSP MF","pct":2.4},{"f":"Franklin India Bluechip","a":"Franklin MF","pct":2.2},{"f":"Aditya Birla Flexi Cap","a":"ABSL MF","pct":2.0}],"avgPct":2.99,"nFunds":11},{"name":"Kotak Mahindra Bank","sym":"KOTAKBANK","sector":"Banking","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":3.8},{"f":"Axis Bluechip","a":"Axis MF","pct":3.5},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":3.4},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":3.2},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":3.0},{"f":"SBI Bluechip","a":"SBI MF","pct":2.8},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":2.6},{"f":"DSP Flexi Cap","a":"DSP MF","pct":2.3},{"f":"Aditya Birla Flexi Cap","a":"ABSL MF","pct":2.1}],"avgPct":2.97,"nFunds":9},{"name":"State Bank of India","sym":"SBIN","sector":"Banking","funds":[{"f":"SBI Bluechip","a":"SBI MF","pct":4.2},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":3.8},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":3.5},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":3.2},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":2.6},{"f":"Kotak Bluechip","a":"Kotak MF","pct":2.4},{"f":"Canara Robeco Bluechip","a":"Canara Robeco MF","pct":2.2},{"f":"DSP Flexi Cap","a":"DSP MF","pct":2.0},{"f":"Aditya Birla Flexi Cap","a":"ABSL MF","pct":1.8}],"avgPct":2.86,"nFunds":9},{"name":"IndusInd Bank","sym":"INDUSINDBK","sector":"Banking","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":2.4},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":2.2},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":2.0},{"f":"Aditya Birla Flexi Cap","a":"ABSL MF","pct":1.8},{"f":"DSP Flexi Cap","a":"DSP MF","pct":1.6},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.4}],"avgPct":1.9,"nFunds":6},{"name":"Punjab National Bank","sym":"PNB","sector":"Banking","funds":[{"f":"Quant Large Cap","a":"Quant MF","pct":2.1},{"f":"SBI Bluechip","a":"SBI MF","pct":1.8},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.6},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.4},{"f":"Aditya Birla Flexi Cap","a":"ABSL MF","pct":1.2}],"avgPct":1.62,"nFunds":5},{"name":"Bank of Baroda","sym":"BANKBARODA","sector":"Banking","funds":[{"f":"Quant Large Cap","a":"Quant MF","pct":1.8},{"f":"SBI Bluechip","a":"SBI MF","pct":1.6},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.4},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.2},{"f":"Aditya Birla Flexi Cap","a":"ABSL MF","pct":1.0}],"avgPct":1.4,"nFunds":5},{"name":"Federal Bank","sym":"FEDERALBNK","sector":"Banking","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":2.1},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":1.9},{"f":"Axis Midcap","a":"Axis MF","pct":1.7},{"f":"Kotak Emerging Equity","a":"Kotak MF","pct":1.5},{"f":"SBI Magnum Midcap","a":"SBI MF","pct":1.3}],"avgPct":1.7,"nFunds":5},{"name":"Bajaj Finance","sym":"BAJFINANCE","sector":"NBFC","funds":[{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":4.1},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":3.8},{"f":"Axis Bluechip","a":"Axis MF","pct":3.6},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":3.4},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":3.2},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":3.1},{"f":"Kotak Bluechip","a":"Kotak MF","pct":3.0},{"f":"SBI Bluechip","a":"SBI MF","pct":2.8},{"f":"Franklin India Bluechip","a":"Franklin MF","pct":2.5},{"f":"Canara Robeco Bluechip","a":"Canara Robeco MF","pct":2.3}],"avgPct":3.18,"nFunds":10},{"name":"Bajaj Finserv","sym":"BAJAJFINSV","sector":"NBFC","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.7},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.5},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":1.3},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.1},{"f":"Axis Bluechip","a":"Axis MF","pct":0.9},{"f":"Aditya Birla Flexi Cap","a":"ABSL MF","pct":0.8}],"avgPct":1.22,"nFunds":6},{"name":"Muthoot Finance","sym":"MUTHOOTFIN","sector":"NBFC","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.6},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.4},{"f":"Axis Midcap","a":"Axis MF","pct":1.2},{"f":"SBI Bluechip","a":"SBI MF","pct":1.0},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":0.9}],"avgPct":1.22,"nFunds":5},{"name":"Cholamandalam Investment","sym":"CHOLAFIN","sector":"NBFC","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.9},{"f":"Axis Midcap","a":"Axis MF","pct":1.7},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":1.5},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":1.3},{"f":"Kotak Emerging Equity","a":"Kotak MF","pct":1.1},{"f":"SBI Magnum Midcap","a":"SBI MF","pct":0.9}],"avgPct":1.4,"nFunds":6},{"name":"Jio Financial Services","sym":"JIOFIN","sector":"NBFC","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.5},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.3},{"f":"SBI Bluechip","a":"SBI MF","pct":1.1},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":0.9},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":0.8}],"avgPct":1.12,"nFunds":5},{"name":"HDFC Life Insurance","sym":"HDFCLIFE","sector":"Insurance","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.8},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.6},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":1.4},{"f":"SBI Bluechip","a":"SBI MF","pct":1.2},{"f":"Axis Bluechip","a":"Axis MF","pct":1.0},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":0.9}],"avgPct":1.32,"nFunds":6},{"name":"SBI Life Insurance","sym":"SBILIFE","sector":"Insurance","funds":[{"f":"SBI Bluechip","a":"SBI MF","pct":2.1},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.9},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.7},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.5},{"f":"Axis Bluechip","a":"Axis MF","pct":1.3},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":1.1}],"avgPct":1.6,"nFunds":6},{"name":"ICICI Lombard General Ins","sym":"ICICIGI","sector":"Insurance","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.2},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.0},{"f":"Axis Bluechip","a":"Axis MF","pct":0.9},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":0.8}],"avgPct":0.97,"nFunds":4},{"name":"Infosys","sym":"INFY","sector":"IT","funds":[{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":6.6},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":6.5},{"f":"Axis Bluechip","a":"Axis MF","pct":6.1},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":5.8},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":5.4},{"f":"SBI Bluechip","a":"SBI MF","pct":5.2},{"f":"PPFAS Flexi Cap","a":"PPFAS MF","pct":5.2},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":4.9},{"f":"Kotak Bluechip","a":"Kotak MF","pct":4.7},{"f":"Franklin India Bluechip","a":"Franklin MF","pct":4.5},{"f":"Canara Robeco Bluechip","a":"Canara Robeco MF","pct":4.2},{"f":"DSP Flexi Cap","a":"DSP MF","pct":3.9}],"avgPct":5.25,"nFunds":12},{"name":"TCS","sym":"TCS","sector":"IT","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":5.8},{"f":"Axis Bluechip","a":"Axis MF","pct":5.4},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":5.1},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":4.9},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":4.8},{"f":"PPFAS Flexi Cap","a":"PPFAS MF","pct":4.8},{"f":"SBI Bluechip","a":"SBI MF","pct":4.6},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":4.4},{"f":"Kotak Bluechip","a":"Kotak MF","pct":4.2},{"f":"Canara Robeco Bluechip","a":"Canara Robeco MF","pct":4.1},{"f":"Franklin India Bluechip","a":"Franklin MF","pct":3.9},{"f":"DSP Flexi Cap","a":"DSP MF","pct":3.7}],"avgPct":4.64,"nFunds":12},{"name":"HCL Technologies","sym":"HCLTECH","sector":"IT","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":2.4},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":2.2},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":2.1},{"f":"Axis Bluechip","a":"Axis MF","pct":1.9},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":1.8},{"f":"SBI Bluechip","a":"SBI MF","pct":1.6},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":1.5},{"f":"Franklin India Bluechip","a":"Franklin MF","pct":1.3}],"avgPct":1.85,"nFunds":8},{"name":"Wipro","sym":"WIPRO","sector":"IT","funds":[{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":2.1},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.9},{"f":"SBI Bluechip","a":"SBI MF","pct":1.7},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.5},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.4},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":1.3}],"avgPct":1.65,"nFunds":6},{"name":"Tech Mahindra","sym":"TECHM","sector":"IT","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.8},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.6},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":1.4},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.2},{"f":"Axis Bluechip","a":"Axis MF","pct":1.0},{"f":"Aditya Birla Flexi Cap","a":"ABSL MF","pct":0.9}],"avgPct":1.32,"nFunds":6},{"name":"Persistent Systems","sym":"PERSISTENT","sector":"IT","funds":[{"f":"Motilal Oswal Midcap","a":"Motilal MF","pct":4.1},{"f":"Quant Mid Cap","a":"Quant MF","pct":3.9},{"f":"Nippon India Small Cap","a":"Nippon MF","pct":3.8},{"f":"Axis Midcap","a":"Axis MF","pct":3.5},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":3.2},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":2.8},{"f":"Edelweiss Midcap","a":"Edelweiss MF","pct":2.6},{"f":"Kotak Emerging Equity","a":"Kotak MF","pct":2.4},{"f":"SBI Magnum Midcap","a":"SBI MF","pct":2.2}],"avgPct":3.17,"nFunds":9},{"name":"Coforge","sym":"COFORGE","sector":"IT","funds":[{"f":"Motilal Oswal Midcap","a":"Motilal MF","pct":2.5},{"f":"Nippon India Small Cap","a":"Nippon MF","pct":2.1},{"f":"Axis Midcap","a":"Axis MF","pct":1.9},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":1.7},{"f":"Kotak Emerging Equity","a":"Kotak MF","pct":1.5},{"f":"SBI Magnum Midcap","a":"SBI MF","pct":1.3}],"avgPct":1.83,"nFunds":6},{"name":"KPIT Technologies","sym":"KPITTECH","sector":"IT","funds":[{"f":"Motilal Oswal Midcap","a":"Motilal MF","pct":3.8},{"f":"Quant Small Cap","a":"Quant MF","pct":2.6},{"f":"Nippon India Small Cap","a":"Nippon MF","pct":2.4},{"f":"Axis Midcap","a":"Axis MF","pct":2.2},{"f":"SBI Small Cap","a":"SBI MF","pct":2.0},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":1.8}],"avgPct":2.47,"nFunds":6},{"name":"LTIMindtree","sym":"LTIM","sector":"IT","funds":[{"f":"Motilal Oswal Flexi Cap","a":"Motilal MF","pct":2.8},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":2.2},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":2.0},{"f":"Axis Bluechip","a":"Axis MF","pct":1.8},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":1.6},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":1.4}],"avgPct":1.97,"nFunds":6},{"name":"Mphasis","sym":"MPHASIS","sector":"IT","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.8},{"f":"Axis Midcap","a":"Axis MF","pct":1.6},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":1.4},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":1.2},{"f":"Kotak Emerging Equity","a":"Kotak MF","pct":1.0}],"avgPct":1.4,"nFunds":5},{"name":"Reliance Industries","sym":"RELIANCE","sector":"Oil & Gas","funds":[{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":9.8},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":8.24},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":7.85},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":7.6},{"f":"Axis Bluechip","a":"Axis MF","pct":6.95},{"f":"Kotak Bluechip","a":"Kotak MF","pct":6.8},{"f":"SBI Bluechip","a":"SBI MF","pct":6.42},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":6.2},{"f":"Quant Large Cap","a":"Quant MF","pct":5.8},{"f":"PPFAS Flexi Cap","a":"PPFAS MF","pct":5.1},{"f":"Canara Robeco Bluechip","a":"Canara Robeco MF","pct":4.9},{"f":"Franklin India Bluechip","a":"Franklin MF","pct":4.7},{"f":"DSP Flexi Cap","a":"DSP MF","pct":4.5},{"f":"Aditya Birla Flexi Cap","a":"ABSL MF","pct":4.2}],"avgPct":6.36,"nFunds":14},{"name":"ONGC","sym":"ONGC","sector":"Oil & Gas","funds":[{"f":"Quant Large Cap","a":"Quant MF","pct":2.4},{"f":"SBI Bluechip","a":"SBI MF","pct":2.1},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.9},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.7},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.5},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":1.3}],"avgPct":1.82,"nFunds":6},{"name":"BPCL","sym":"BPCL","sector":"Oil & Gas","funds":[{"f":"Quant Large Cap","a":"Quant MF","pct":2.1},{"f":"SBI Bluechip","a":"SBI MF","pct":1.8},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.6},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.4},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.2}],"avgPct":1.62,"nFunds":5},{"name":"GAIL India","sym":"GAIL","sector":"Oil & Gas","funds":[{"f":"SBI Bluechip","a":"SBI MF","pct":1.4},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.2},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.0},{"f":"Aditya Birla Flexi Cap","a":"ABSL MF","pct":0.9}],"avgPct":1.12,"nFunds":4},{"name":"Bharti Airtel","sym":"BHARTIARTL","sector":"Telecom","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":4.8},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":4.5},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":4.2},{"f":"PPFAS Flexi Cap","a":"PPFAS MF","pct":4.2},{"f":"Axis Bluechip","a":"Axis MF","pct":3.9},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":3.7},{"f":"SBI Bluechip","a":"SBI MF","pct":3.5},{"f":"Kotak Bluechip","a":"Kotak MF","pct":3.3},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":2.9},{"f":"DSP Flexi Cap","a":"DSP MF","pct":2.7},{"f":"Canara Robeco Bluechip","a":"Canara Robeco MF","pct":2.5}],"avgPct":3.65,"nFunds":11},{"name":"Indus Towers","sym":"INDUSTOWER","sector":"Telecom","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.6},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.4},{"f":"SBI Bluechip","a":"SBI MF","pct":1.2},{"f":"Axis Bluechip","a":"Axis MF","pct":1.0},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":0.9}],"avgPct":1.22,"nFunds":5},{"name":"Maruti Suzuki","sym":"MARUTI","sector":"Auto","funds":[{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":2.8},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":2.5},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":2.3},{"f":"SBI Bluechip","a":"SBI MF","pct":2.1},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":1.9},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.8},{"f":"Axis Bluechip","a":"Axis MF","pct":1.7},{"f":"DSP Flexi Cap","a":"DSP MF","pct":1.6},{"f":"Canara Robeco Bluechip","a":"Canara Robeco MF","pct":1.5}],"avgPct":2.02,"nFunds":9},{"name":"Mahindra & Mahindra","sym":"M&M","sector":"Auto","funds":[{"f":"Motilal Oswal Flexi Cap","a":"Motilal MF","pct":4.2},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":3.2},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":2.9},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":2.6},{"f":"SBI Bluechip","a":"SBI MF","pct":2.3},{"f":"Axis Bluechip","a":"Axis MF","pct":2.1},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":1.9},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.7}],"avgPct":2.61,"nFunds":8},{"name":"Tata Motors","sym":"TATAMOTORS","sector":"Auto","funds":[{"f":"Motilal Oswal Flexi Cap","a":"Motilal MF","pct":3.2},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":2.8},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":2.5},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":2.2},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":2.0},{"f":"Aditya Birla Flexi Cap","a":"ABSL MF","pct":1.8},{"f":"DSP Flexi Cap","a":"DSP MF","pct":1.6},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.4}],"avgPct":2.19,"nFunds":8},{"name":"Eicher Motors","sym":"EICHERMOT","sector":"Auto","funds":[{"f":"Motilal Oswal Flexi Cap","a":"Motilal MF","pct":2.1},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.8},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.6},{"f":"Axis Bluechip","a":"Axis MF","pct":1.4},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":1.2},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.0}],"avgPct":1.52,"nFunds":6},{"name":"Bajaj Auto","sym":"BAJAJ-AUTO","sector":"Auto","funds":[{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.8},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.6},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":1.5},{"f":"SBI Bluechip","a":"SBI MF","pct":1.3},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.2},{"f":"Canara Robeco Bluechip","a":"Canara Robeco MF","pct":1.0}],"avgPct":1.4,"nFunds":6},{"name":"Hero MotoCorp","sym":"HEROMOTOCO","sector":"Auto","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.4},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.2},{"f":"SBI Bluechip","a":"SBI MF","pct":1.0},{"f":"Aditya Birla Flexi Cap","a":"ABSL MF","pct":0.9},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":0.8}],"avgPct":1.06,"nFunds":5},{"name":"TVS Motor Company","sym":"TVSMOTOR","sector":"Auto","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":2.2},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":2.0},{"f":"Axis Midcap","a":"Axis MF","pct":1.8},{"f":"Kotak Emerging Equity","a":"Kotak MF","pct":1.6},{"f":"SBI Magnum Midcap","a":"SBI MF","pct":1.4}],"avgPct":1.8,"nFunds":5},{"name":"Ashok Leyland","sym":"ASHOKLEY","sector":"Auto","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.7},{"f":"Axis Midcap","a":"Axis MF","pct":1.5},{"f":"SBI Small Cap","a":"SBI MF","pct":1.3},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":1.1},{"f":"Aditya Birla Flexi Cap","a":"ABSL MF","pct":0.9}],"avgPct":1.3,"nFunds":5},{"name":"Balkrishna Industries","sym":"BALKRISIND","sector":"Auto Ancillary","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.7},{"f":"Axis Midcap","a":"Axis MF","pct":1.5},{"f":"SBI Small Cap","a":"SBI MF","pct":1.3},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":1.1},{"f":"Kotak Emerging Equity","a":"Kotak MF","pct":0.9}],"avgPct":1.3,"nFunds":5},{"name":"Motherson Sumi Wiring","sym":"MSUMI","sector":"Auto Ancillary","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.6},{"f":"Axis Midcap","a":"Axis MF","pct":1.4},{"f":"SBI Small Cap","a":"SBI MF","pct":1.2},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":1.0}],"avgPct":1.3,"nFunds":4},{"name":"Bharat Forge","sym":"BHARATFORG","sector":"Auto Ancillary","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.8},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":1.6},{"f":"Axis Midcap","a":"Axis MF","pct":1.4},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":1.2},{"f":"Kotak Emerging Equity","a":"Kotak MF","pct":1.0}],"avgPct":1.4,"nFunds":5},{"name":"HUL","sym":"HINDUNILVR","sector":"FMCG","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":3.4},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":3.1},{"f":"SBI Bluechip","a":"SBI MF","pct":2.9},{"f":"Axis Bluechip","a":"Axis MF","pct":2.7},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":2.5},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":2.3},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":2.2},{"f":"Canara Robeco Bluechip","a":"Canara Robeco MF","pct":2.1},{"f":"Franklin India Bluechip","a":"Franklin MF","pct":1.9}],"avgPct":2.57,"nFunds":9},{"name":"ITC","sym":"ITC","sector":"FMCG","funds":[{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":3.5},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":3.1},{"f":"SBI Bluechip","a":"SBI MF","pct":2.8},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":2.6},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":2.4},{"f":"Axis Bluechip","a":"Axis MF","pct":2.2},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":2.0},{"f":"Canara Robeco Bluechip","a":"Canara Robeco MF","pct":1.9}],"avgPct":2.56,"nFunds":8},{"name":"Nestle India","sym":"NESTLEIND","sector":"FMCG","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.2},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.0},{"f":"SBI Bluechip","a":"SBI MF","pct":0.9},{"f":"Axis Bluechip","a":"Axis MF","pct":0.8},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":0.7}],"avgPct":0.92,"nFunds":5},{"name":"Britannia Industries","sym":"BRITANNIA","sector":"FMCG","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.3},{"f":"SBI Bluechip","a":"SBI MF","pct":1.1},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":0.9},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":0.8},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":0.7}],"avgPct":0.96,"nFunds":5},{"name":"Varun Beverages","sym":"VBL","sector":"FMCG","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":2.2},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":2.0},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":1.8},{"f":"Kotak Emerging Equity","a":"Kotak MF","pct":1.6},{"f":"Axis Midcap","a":"Axis MF","pct":1.4},{"f":"SBI Magnum Midcap","a":"SBI MF","pct":1.2}],"avgPct":1.7,"nFunds":6},{"name":"Dabur India","sym":"DABUR","sector":"FMCG","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.1},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":0.9},{"f":"SBI Bluechip","a":"SBI MF","pct":0.8},{"f":"Axis Bluechip","a":"Axis MF","pct":0.7}],"avgPct":0.88,"nFunds":4},{"name":"Marico","sym":"MARICO","sector":"FMCG","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.0},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":0.8},{"f":"Axis Bluechip","a":"Axis MF","pct":0.7},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":0.6}],"avgPct":0.78,"nFunds":4},{"name":"Godrej Consumer Products","sym":"GODREJCP","sector":"FMCG","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.8},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.6},{"f":"SBI Bluechip","a":"SBI MF","pct":1.4},{"f":"Axis Bluechip","a":"Axis MF","pct":1.2},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":1.0}],"avgPct":1.4,"nFunds":5},{"name":"Sun Pharma","sym":"SUNPHARMA","sector":"Pharma","funds":[{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":3.2},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":2.9},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":2.7},{"f":"SBI Bluechip","a":"SBI MF","pct":2.5},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":2.3},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":2.1},{"f":"Axis Bluechip","a":"Axis MF","pct":2.0},{"f":"Kotak Bluechip","a":"Kotak MF","pct":1.9}],"avgPct":2.45,"nFunds":8},{"name":"Dr Reddy's Laboratories","sym":"DRREDDY","sector":"Pharma","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.9},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.7},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":1.5},{"f":"SBI Bluechip","a":"SBI MF","pct":1.3},{"f":"Axis Bluechip","a":"Axis MF","pct":1.1},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":0.9}],"avgPct":1.4,"nFunds":6},{"name":"Cipla","sym":"CIPLA","sector":"Pharma","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.7},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.5},{"f":"SBI Bluechip","a":"SBI MF","pct":1.3},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.1},{"f":"Axis Bluechip","a":"Axis MF","pct":0.9},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":0.8}],"avgPct":1.22,"nFunds":6},{"name":"Divis Laboratories","sym":"DIVISLAB","sector":"Pharma","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.6},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.4},{"f":"Axis Bluechip","a":"Axis MF","pct":1.2},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.0},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":0.9}],"avgPct":1.22,"nFunds":5},{"name":"Lupin","sym":"LUPIN","sector":"Pharma","funds":[{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.3},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.1},{"f":"SBI Bluechip","a":"SBI MF","pct":0.9},{"f":"Axis Bluechip","a":"Axis MF","pct":0.8}],"avgPct":1.03,"nFunds":4},{"name":"Mankind Pharma","sym":"MANKIND","sector":"Pharma","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.6},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.4},{"f":"Axis Midcap","a":"Axis MF","pct":1.2},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":1.0},{"f":"Kotak Emerging Equity","a":"Kotak MF","pct":0.9}],"avgPct":1.22,"nFunds":5},{"name":"Torrent Pharmaceuticals","sym":"TORNTPHARM","sector":"Pharma","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.8},{"f":"SBI Small Cap","a":"SBI MF","pct":1.6},{"f":"Axis Midcap","a":"Axis MF","pct":1.4},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.2},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":1.0}],"avgPct":1.4,"nFunds":5},{"name":"Max Healthcare","sym":"MAXHEALTH","sector":"Healthcare","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":3.2},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":2.9},{"f":"Axis Midcap","a":"Axis MF","pct":2.7},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":2.5},{"f":"Motilal Oswal Midcap","a":"Motilal MF","pct":2.3},{"f":"Kotak Emerging Equity","a":"Kotak MF","pct":2.1}],"avgPct":2.62,"nFunds":6},{"name":"Apollo Hospitals","sym":"APOLLOHOSP","sector":"Healthcare","funds":[{"f":"Motilal Oswal Flexi Cap","a":"Motilal MF","pct":2.4},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":2.1},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.9},{"f":"Axis Bluechip","a":"Axis MF","pct":1.7},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":1.5},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.3}],"avgPct":1.82,"nFunds":6},{"name":"L&T","sym":"LT","sector":"Infrastructure","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":4.6},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":4.2},{"f":"SBI Bluechip","a":"SBI MF","pct":3.9},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":3.7},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":3.6},{"f":"Axis Bluechip","a":"Axis MF","pct":3.4},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":3.2},{"f":"Kotak Bluechip","a":"Kotak MF","pct":3.0},{"f":"DSP Flexi Cap","a":"DSP MF","pct":2.8},{"f":"Franklin India Bluechip","a":"Franklin MF","pct":2.6}],"avgPct":3.5,"nFunds":10},{"name":"Adani Ports","sym":"ADANIPORTS","sector":"Infrastructure","funds":[{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":1.8},{"f":"SBI Bluechip","a":"SBI MF","pct":1.6},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.4},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.2},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.1},{"f":"Aditya Birla Flexi Cap","a":"ABSL MF","pct":0.9}],"avgPct":1.33,"nFunds":6},{"name":"KEC International","sym":"KEC","sector":"Infrastructure","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.9},{"f":"SBI Small Cap","a":"SBI MF","pct":1.7},{"f":"Axis Midcap","a":"Axis MF","pct":1.5},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":1.3},{"f":"Kotak Emerging Equity","a":"Kotak MF","pct":1.1}],"avgPct":1.5,"nFunds":5},{"name":"Kalpataru Projects","sym":"KPIL","sector":"Infrastructure","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.7},{"f":"SBI Small Cap","a":"SBI MF","pct":1.5},{"f":"Axis Midcap","a":"Axis MF","pct":1.3},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":1.1}],"avgPct":1.4,"nFunds":4},{"name":"ABB India","sym":"ABB","sector":"Capital Goods","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.9},{"f":"Axis Midcap","a":"Axis MF","pct":1.7},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":1.5},{"f":"Kotak Emerging Equity","a":"Kotak MF","pct":1.3},{"f":"SBI Magnum Midcap","a":"SBI MF","pct":1.1}],"avgPct":1.5,"nFunds":5},{"name":"Siemens India","sym":"SIEMENS","sector":"Capital Goods","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.7},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.5},{"f":"Axis Midcap","a":"Axis MF","pct":1.3},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":1.1},{"f":"Kotak Emerging Equity","a":"Kotak MF","pct":0.9}],"avgPct":1.3,"nFunds":5},{"name":"Cummins India","sym":"CUMMINSIND","sector":"Capital Goods","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.6},{"f":"Axis Midcap","a":"Axis MF","pct":1.4},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":1.2},{"f":"SBI Magnum Midcap","a":"SBI MF","pct":1.0}],"avgPct":1.3,"nFunds":4},{"name":"Bharat Electronics","sym":"BEL","sector":"Capital Goods","funds":[{"f":"SBI Bluechip","a":"SBI MF","pct":2.2},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":2.0},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.8},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":1.6},{"f":"Axis Midcap","a":"Axis MF","pct":1.4},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":1.2}],"avgPct":1.7,"nFunds":6},{"name":"Thermax","sym":"THERMAX","sector":"Capital Goods","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.4},{"f":"Axis Midcap","a":"Axis MF","pct":1.2},{"f":"SBI Small Cap","a":"SBI MF","pct":1.0},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":0.9}],"avgPct":1.12,"nFunds":4},{"name":"Power Grid Corp","sym":"POWERGRID","sector":"Power","funds":[{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":2.0},{"f":"SBI Bluechip","a":"SBI MF","pct":1.8},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.6},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.4},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.2},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":1.1}],"avgPct":1.52,"nFunds":6},{"name":"NTPC","sym":"NTPC","sector":"Power","funds":[{"f":"SBI Bluechip","a":"SBI MF","pct":1.9},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":1.7},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.6},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.5},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.3},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":1.1}],"avgPct":1.52,"nFunds":6},{"name":"Tata Power","sym":"TATAPOWER","sector":"Power","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.7},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":1.5},{"f":"Axis Midcap","a":"Axis MF","pct":1.3},{"f":"SBI Magnum Midcap","a":"SBI MF","pct":1.1},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":0.9}],"avgPct":1.3,"nFunds":5},{"name":"Adani Green Energy","sym":"ADANIGREEN","sector":"Power","funds":[{"f":"Quant Large Cap","a":"Quant MF","pct":2.1},{"f":"SBI Bluechip","a":"SBI MF","pct":1.4},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.2},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.0}],"avgPct":1.43,"nFunds":4},{"name":"SJVN","sym":"SJVN","sector":"Power","funds":[{"f":"Quant Small Cap","a":"Quant MF","pct":1.6},{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.2},{"f":"SBI Small Cap","a":"SBI MF","pct":1.0},{"f":"Axis Small Cap","a":"Axis MF","pct":0.9}],"avgPct":1.18,"nFunds":4},{"name":"Tata Steel","sym":"TATASTEEL","sector":"Metals","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":2.1},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.9},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":1.7},{"f":"SBI Bluechip","a":"SBI MF","pct":1.5},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":1.3},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.1}],"avgPct":1.6,"nFunds":6},{"name":"JSW Steel","sym":"JSWSTEEL","sector":"Metals","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.7},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.5},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":1.3},{"f":"SBI Bluechip","a":"SBI MF","pct":1.1},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":0.9}],"avgPct":1.3,"nFunds":5},{"name":"Hindalco Industries","sym":"HINDALCO","sector":"Metals","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.6},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.4},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":1.2},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.0},{"f":"SBI Bluechip","a":"SBI MF","pct":0.9}],"avgPct":1.22,"nFunds":5},{"name":"Coal India","sym":"COALINDIA","sector":"Metals","funds":[{"f":"SBI Bluechip","a":"SBI MF","pct":1.8},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.6},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.4},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.2},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":1.0}],"avgPct":1.4,"nFunds":5},{"name":"Vedanta","sym":"VEDL","sector":"Metals","funds":[{"f":"Quant Large Cap","a":"Quant MF","pct":2.4},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.3},{"f":"SBI Bluechip","a":"SBI MF","pct":1.1},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":0.9}],"avgPct":1.43,"nFunds":4},{"name":"UltraTech Cement","sym":"ULTRACEMCO","sector":"Cement","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":2.4},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":2.1},{"f":"Axis Bluechip","a":"Axis MF","pct":1.9},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":1.7},{"f":"SBI Bluechip","a":"SBI MF","pct":1.5},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.4}],"avgPct":1.83,"nFunds":6},{"name":"Ambuja Cements","sym":"AMBUJACEM","sector":"Cement","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.4},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.2},{"f":"SBI Bluechip","a":"SBI MF","pct":1.0},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":0.9},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":0.8}],"avgPct":1.06,"nFunds":5},{"name":"Shree Cement","sym":"SHREECEM","sector":"Cement","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.3},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.1},{"f":"Axis Bluechip","a":"Axis MF","pct":0.9},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":0.8}],"avgPct":1.03,"nFunds":4},{"name":"Dalmia Bharat","sym":"DALBHARAT","sector":"Cement","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.5},{"f":"Axis Midcap","a":"Axis MF","pct":1.3},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":1.1},{"f":"SBI Magnum Midcap","a":"SBI MF","pct":0.9}],"avgPct":1.2,"nFunds":4},{"name":"Titan Company","sym":"TITAN","sector":"Consumer Durables","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":2.6},{"f":"Axis Bluechip","a":"Axis MF","pct":2.4},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":2.2},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":2.0},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.8},{"f":"SBI Bluechip","a":"SBI MF","pct":1.6},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.4}],"avgPct":2.0,"nFunds":7},{"name":"Asian Paints","sym":"ASIANPAINT","sector":"Consumer Durables","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":2.2},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":2.0},{"f":"ICICI Pru Bluechip","a":"ICICI Pru MF","pct":1.8},{"f":"SBI Bluechip","a":"SBI MF","pct":1.6},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":1.5},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.3}],"avgPct":1.73,"nFunds":6},{"name":"Havells India","sym":"HAVELLS","sector":"Consumer Durables","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.6},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.4},{"f":"Axis Midcap","a":"Axis MF","pct":1.2},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":1.0},{"f":"Kotak Emerging Equity","a":"Kotak MF","pct":0.9}],"avgPct":1.22,"nFunds":5},{"name":"Voltas","sym":"VOLTAS","sector":"Consumer Durables","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.8},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":1.6},{"f":"Axis Midcap","a":"Axis MF","pct":1.4},{"f":"Kotak Emerging Equity","a":"Kotak MF","pct":1.2},{"f":"SBI Magnum Midcap","a":"SBI MF","pct":1.0}],"avgPct":1.4,"nFunds":5},{"name":"Crompton Greaves Consumer","sym":"CROMPTON","sector":"Consumer Durables","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.6},{"f":"SBI Small Cap","a":"SBI MF","pct":1.4},{"f":"Axis Midcap","a":"Axis MF","pct":1.2},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":1.0}],"avgPct":1.3,"nFunds":4},{"name":"Dixon Technologies","sym":"DIXON","sector":"Electronics","funds":[{"f":"Quant Small Cap","a":"Quant MF","pct":3.2},{"f":"Nippon India Small Cap","a":"Nippon MF","pct":2.8},{"f":"Axis Midcap","a":"Axis MF","pct":2.5},{"f":"SBI Small Cap","a":"SBI MF","pct":2.3},{"f":"Nippon India Mid Cap","a":"Nippon MF","pct":2.1},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":1.9}],"avgPct":2.47,"nFunds":6},{"name":"Kaynes Technology","sym":"KAYNES","sector":"Electronics","funds":[{"f":"Quant Small Cap","a":"Quant MF","pct":3.5},{"f":"Nippon India Small Cap","a":"Nippon MF","pct":3.2},{"f":"SBI Small Cap","a":"SBI MF","pct":2.8},{"f":"Axis Small Cap","a":"Axis MF","pct":2.4},{"f":"HDFC Small Cap","a":"HDFC MF","pct":2.1}],"avgPct":2.8,"nFunds":5},{"name":"Amber Enterprises","sym":"AMBER","sector":"Electronics","funds":[{"f":"Quant Small Cap","a":"Quant MF","pct":2.4},{"f":"Nippon India Small Cap","a":"Nippon MF","pct":2.1},{"f":"SBI Small Cap","a":"SBI MF","pct":1.9},{"f":"Axis Small Cap","a":"Axis MF","pct":1.7}],"avgPct":2.02,"nFunds":4},{"name":"Zomato","sym":"ZOMATO","sector":"Consumer Tech","funds":[{"f":"Motilal Oswal Flexi Cap","a":"Motilal MF","pct":4.2},{"f":"Quant Flexi Cap","a":"Quant MF","pct":3.8},{"f":"Nippon India Flexi Cap","a":"Nippon MF","pct":3.4},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":2.8},{"f":"Mirae Asset Flexi Cap","a":"Mirae MF","pct":2.5},{"f":"Axis Flexi Cap","a":"Axis MF","pct":2.2},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.6}],"avgPct":2.93,"nFunds":7},{"name":"Info Edge (Naukri)","sym":"NAUKRI","sector":"Consumer Tech","funds":[{"f":"Motilal Oswal Flexi Cap","a":"Motilal MF","pct":2.1},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.8},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.6},{"f":"Axis Midcap","a":"Axis MF","pct":1.4},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":1.2}],"avgPct":1.62,"nFunds":5},{"name":"PB Fintech (Policybazaar)","sym":"POLICYBZR","sector":"Consumer Tech","funds":[{"f":"Motilal Oswal Flexi Cap","a":"Motilal MF","pct":2.1},{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.3},{"f":"Axis Midcap","a":"Axis MF","pct":1.1},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":0.9}],"avgPct":1.35,"nFunds":4},{"name":"Nykaa (FSN E-Commerce)","sym":"NYKAA","sector":"Consumer Tech","funds":[{"f":"Motilal Oswal Flexi Cap","a":"Motilal MF","pct":1.8},{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.4},{"f":"Axis Midcap","a":"Axis MF","pct":1.2},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":1.0}],"avgPct":1.35,"nFunds":4},{"name":"Delhivery","sym":"DELHIVERY","sector":"Logistics","funds":[{"f":"Motilal Oswal Midcap","a":"Motilal MF","pct":2.2},{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.5},{"f":"Axis Midcap","a":"Axis MF","pct":1.3},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":1.1}],"avgPct":1.53,"nFunds":4},{"name":"DLF","sym":"DLF","sector":"Real Estate","funds":[{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":1.6},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":1.4},{"f":"SBI Bluechip","a":"SBI MF","pct":1.2},{"f":"Axis Bluechip","a":"Axis MF","pct":1.0},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":0.9}],"avgPct":1.22,"nFunds":5},{"name":"Godrej Properties","sym":"GODREJPROP","sector":"Real Estate","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.8},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":1.6},{"f":"Axis Midcap","a":"Axis MF","pct":1.4},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":1.2},{"f":"SBI Magnum Midcap","a":"SBI MF","pct":1.0}],"avgPct":1.4,"nFunds":5},{"name":"Oberoi Realty","sym":"OBEROIRLTY","sector":"Real Estate","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":2.4},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":2.1},{"f":"Axis Midcap","a":"Axis MF","pct":1.9},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":1.7},{"f":"Kotak Emerging Equity","a":"Kotak MF","pct":1.5}],"avgPct":1.92,"nFunds":5},{"name":"Prestige Estates","sym":"PRESTIGE","sector":"Real Estate","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.6},{"f":"SBI Small Cap","a":"SBI MF","pct":1.4},{"f":"Axis Midcap","a":"Axis MF","pct":1.2},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":1.0}],"avgPct":1.3,"nFunds":4},{"name":"SRF Ltd","sym":"SRF","sector":"Chemicals","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.7},{"f":"Axis Midcap","a":"Axis MF","pct":1.5},{"f":"SBI Small Cap","a":"SBI MF","pct":1.3},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":1.1},{"f":"Kotak Emerging Equity","a":"Kotak MF","pct":0.9}],"avgPct":1.3,"nFunds":5},{"name":"Deepak Nitrite","sym":"DEEPAKNTR","sector":"Chemicals","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.6},{"f":"SBI Small Cap","a":"SBI MF","pct":1.4},{"f":"Axis Small Cap","a":"Axis MF","pct":1.2},{"f":"HDFC Small Cap","a":"HDFC MF","pct":1.0}],"avgPct":1.3,"nFunds":4},{"name":"Aarti Industries","sym":"AARTIIND","sector":"Chemicals","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.5},{"f":"Axis Midcap","a":"Axis MF","pct":1.3},{"f":"SBI Small Cap","a":"SBI MF","pct":1.1},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":0.9}],"avgPct":1.2,"nFunds":4},{"name":"Navin Fluorine","sym":"NAVINFLUOR","sector":"Chemicals","funds":[{"f":"Quant Small Cap","a":"Quant MF","pct":1.8},{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.4},{"f":"Axis Small Cap","a":"Axis MF","pct":1.2},{"f":"SBI Small Cap","a":"SBI MF","pct":1.0}],"avgPct":1.35,"nFunds":4},{"name":"PI Industries","sym":"PIIND","sector":"Agrochemicals","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.8},{"f":"Axis Midcap","a":"Axis MF","pct":1.6},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":1.4},{"f":"Kotak Emerging Equity","a":"Kotak MF","pct":1.2},{"f":"SBI Magnum Midcap","a":"SBI MF","pct":1.0}],"avgPct":1.4,"nFunds":5},{"name":"Dhanuka Agritech","sym":"DHANUKA","sector":"Agrochemicals","funds":[{"f":"Quant Small Cap","a":"Quant MF","pct":1.6},{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.2},{"f":"SBI Small Cap","a":"SBI MF","pct":1.0},{"f":"Axis Small Cap","a":"Axis MF","pct":0.9}],"avgPct":1.18,"nFunds":4},{"name":"Avenue Supermarts (DMart)","sym":"DMART","sector":"Retail","funds":[{"f":"PPFAS Flexi Cap","a":"PPFAS MF","pct":3.1},{"f":"Motilal Oswal Flexi Cap","a":"Motilal MF","pct":2.9},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":2.8},{"f":"Axis Flexi Cap","a":"Axis MF","pct":2.5},{"f":"Mirae Asset Flexi Cap","a":"Mirae MF","pct":2.2},{"f":"UTI Nifty 50 Index","a":"UTI MF","pct":1.2}],"avgPct":2.45,"nFunds":6},{"name":"Trent","sym":"TRENT","sector":"Retail","funds":[{"f":"Motilal Oswal Midcap","a":"Motilal MF","pct":2.8},{"f":"Nippon India Small Cap","a":"Nippon MF","pct":2.2},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":2.0},{"f":"Axis Midcap","a":"Axis MF","pct":1.8},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":1.6}],"avgPct":2.08,"nFunds":5},{"name":"IndiGo (InterGlobe Aviation)","sym":"INDIGO","sector":"Aviation","funds":[{"f":"Motilal Oswal Flexi Cap","a":"Motilal MF","pct":2.6},{"f":"HDFC Flexi Cap","a":"HDFC MF","pct":2.4},{"f":"Nippon India Large Cap","a":"Nippon MF","pct":2.1},{"f":"Mirae Asset Large Cap","a":"Mirae MF","pct":1.9},{"f":"Axis Bluechip","a":"Axis MF","pct":1.7}],"avgPct":2.14,"nFunds":5},{"name":"Astral Ltd","sym":"ASTRAL","sector":"Building Materials","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.9},{"f":"Axis Midcap","a":"Axis MF","pct":1.7},{"f":"SBI Small Cap","a":"SBI MF","pct":1.5},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":1.3},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":1.1}],"avgPct":1.5,"nFunds":5},{"name":"Supreme Industries","sym":"SUPREMEIND","sector":"Building Materials","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.7},{"f":"SBI Small Cap","a":"SBI MF","pct":1.5},{"f":"Axis Small Cap","a":"Axis MF","pct":1.3},{"f":"HDFC Small Cap","a":"HDFC MF","pct":1.1}],"avgPct":1.4,"nFunds":4},{"name":"Polycab India","sym":"POLYCAB","sector":"Cables & Wires","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":2.1},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":1.9},{"f":"Axis Midcap","a":"Axis MF","pct":1.7},{"f":"Kotak Emerging Equity","a":"Kotak MF","pct":1.5},{"f":"SBI Magnum Midcap","a":"SBI MF","pct":1.3}],"avgPct":1.7,"nFunds":5},{"name":"Apar Industries","sym":"APAR","sector":"Cables & Wires","funds":[{"f":"Quant Small Cap","a":"Quant MF","pct":1.9},{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.7},{"f":"SBI Small Cap","a":"SBI MF","pct":1.5},{"f":"HDFC Small Cap","a":"HDFC MF","pct":1.3}],"avgPct":1.6,"nFunds":4},{"name":"Tube Investments","sym":"TIINDIA","sector":"Engineering","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":2.2},{"f":"SBI Small Cap","a":"SBI MF","pct":2.0},{"f":"Axis Midcap","a":"Axis MF","pct":1.8},{"f":"HDFC Mid Cap Opp","a":"HDFC MF","pct":1.6},{"f":"Kotak Emerging Equity","a":"Kotak MF","pct":1.4}],"avgPct":1.8,"nFunds":5},{"name":"Elecon Engineering","sym":"ELECON","sector":"Engineering","funds":[{"f":"Quant Small Cap","a":"Quant MF","pct":2.8},{"f":"Nippon India Small Cap","a":"Nippon MF","pct":2.6},{"f":"SBI Small Cap","a":"SBI MF","pct":2.2},{"f":"Axis Small Cap","a":"Axis MF","pct":2.0}],"avgPct":2.4,"nFunds":4},{"name":"Praj Industries","sym":"PRAJIND","sector":"Engineering","funds":[{"f":"Quant Small Cap","a":"Quant MF","pct":2.0},{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.8},{"f":"SBI Small Cap","a":"SBI MF","pct":1.6},{"f":"Axis Small Cap","a":"Axis MF","pct":1.4}],"avgPct":1.7,"nFunds":4},{"name":"Schaeffler India","sym":"SCHAEFFLER","sector":"Engineering","funds":[{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.5},{"f":"Axis Midcap","a":"Axis MF","pct":1.3},{"f":"SBI Small Cap","a":"SBI MF","pct":1.1},{"f":"Mirae Asset Midcap","a":"Mirae MF","pct":0.9}],"avgPct":1.2,"nFunds":4},{"name":"Garware Hi-Tech Films","sym":"GARFIBRES","sector":"Specialty","funds":[{"f":"Quant Small Cap","a":"Quant MF","pct":1.6},{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.4},{"f":"SBI Small Cap","a":"SBI MF","pct":1.2},{"f":"HDFC Small Cap","a":"HDFC MF","pct":1.0}],"avgPct":1.3,"nFunds":4},{"name":"Safari Industries","sym":"SAFARI","sector":"Consumer","funds":[{"f":"Quant Small Cap","a":"Quant MF","pct":1.7},{"f":"Nippon India Small Cap","a":"Nippon MF","pct":1.5},{"f":"SBI Small Cap","a":"SBI MF","pct":1.3},{"f":"Axis Small Cap","a":"Axis MF","pct":1.1}],"avgPct":1.4,"nFunds":4}]};
+var all = [], filt = [], mktF = "all", sortM = "funds", srch = "", actSec = "All";
+
+function init() {
+  all = HD.stocks.map(function(s) {
+    return {name:s.name,sym:s.sym,sector:s.sector,funds:s.funds,nFunds:s.nFunds,avgPct:s.avgPct,price:null,chg:null,chgPct:null};
+  });
+  var fu = {};
+  all.forEach(function(s){ s.funds.forEach(function(f){ fu[f.f]=1; }); });
+  document.getElementById("hs").textContent = all.length;
+  document.getElementById("hf").textContent = Object.keys(fu).length;
+  document.getElementById("hu").textContent = HD.meta.month;
+  buildSectors();
+  buildFilters();
+  applyFilters();
+  loadMarket();
+}
+
+function buildSectors() {
+  var secs = {};
+  all.forEach(function(s){ secs[s.sector] = (secs[s.sector]||0)+1; });
+  var el = document.getElementById("sec-filters");
+  el.innerHTML = "";
+  var ab = document.createElement("button");
+  ab.className = "fbtn on"; ab.textContent = "All Sectors";
+  ab.addEventListener("click", function(){ actSec="All"; updateBtns(el,ab); applyFilters(); });
+  el.appendChild(ab);
+  Object.keys(secs).sort().forEach(function(sec) {
+    var b = document.createElement("button");
+    b.className = "fbtn"; b.textContent = sec + " (" + secs[sec] + ")";
+    b.addEventListener("click", function(){ actSec=sec; updateBtns(el,b); applyFilters(); });
+    el.appendChild(b);
+  });
+}
+
+function updateBtns(parent, active) {
+  parent.querySelectorAll(".fbtn").forEach(function(b){ b.classList.remove("on"); });
+  active.classList.add("on");
+}
+
+function buildFilters() {
+  document.getElementById("search-inp").addEventListener("input", function(){ srch=this.value.toLowerCase(); applyFilters(); });
+  document.getElementById("f-all").addEventListener("click", function(){ mktF="all"; updateBtns3("f-all"); applyFilters(); });
+  document.getElementById("f-up").addEventListener("click", function(){ mktF="up"; updateBtns3("f-up"); applyFilters(); });
+  document.getElementById("f-dn").addEventListener("click", function(){ mktF="dn"; updateBtns3("f-dn"); applyFilters(); });
+  document.getElementById("s-funds").addEventListener("click", function(){ sortM="funds"; updateBtns3("s-funds"); applyFilters(); });
+  document.getElementById("s-wt").addEventListener("click", function(){ sortM="weight"; updateBtns3("s-wt"); applyFilters(); });
+  document.getElementById("s-chg").addEventListener("click", function(){ sortM="chg"; updateBtns3("s-chg"); applyFilters(); });
+  document.getElementById("sdov").addEventListener("click", closePanel);
+  document.getElementById("sd-close").addEventListener("click", closePanel);
+  document.addEventListener("keydown", function(e){ if(e.key==="Escape") closePanel(); });
+}
+
+function updateBtns3(id) {
+  ["f-all","f-up","f-dn","s-funds","s-wt","s-chg"].forEach(function(i){ var el=document.getElementById(i); if(el) el.classList.remove("on"); });
+  var el = document.getElementById(id); if(el) el.classList.add("on");
+}
+
+function applyFilters() {
+  filt = all.filter(function(s) {
+    if(srch && s.name.toLowerCase().indexOf(srch)<0 && s.sector.toLowerCase().indexOf(srch)<0) return false;
+    if(actSec!=="All" && s.sector!==actSec) return false;
+    if(mktF==="up" && (s.chgPct===null||s.chgPct<0)) return false;
+    if(mktF==="dn" && (s.chgPct===null||s.chgPct>=0)) return false;
+    return true;
+  });
+  filt.sort(function(a,b){
+    if(sortM==="funds") return b.nFunds-a.nFunds;
+    if(sortM==="weight") return b.avgPct-a.avgPct;
+    if(sortM==="chg") return (Math.abs(b.chgPct||0))-(Math.abs(a.chgPct||0));
+    return 0;
+  });
+  document.getElementById("tbl-sub").textContent = filt.length + " stocks shown. Click any row to see fund holdings. Prices loading...";
+  renderTable();
+  loadPrices();
+}
+
+function fmt(v) {
+  if(v===null) return "<span class=\"pnil\">--</span>";
+  var c = v>=0?"pup":"pdn";
+  return "<span class=\""+c+"\">"+( v>=0?"+":"")+v.toFixed(2)+"%</span>";
+}
+
+function renderTable() {
+  var tb = document.getElementById("tbody");
+  tb.innerHTML = "";
+  if(!filt.length) {
+    tb.innerHTML = "<tr><td colspan=\"6\"><div class=\"msg\"><h3>No stocks match</h3></div></td></tr>";
+    return;
+  }
+  filt.forEach(function(s,i) {
+    var pr = s.price!==null ? ("Rs."+s.price.toLocaleString("en-IN",{maximumFractionDigits:2})) : "--";
+    var pc = s.price!==null ? (s.chgPct>=0?"pup":"pdn") : "pnil";
+    var ch = s.price!==null ? fmt(s.chgPct) : "<span class=\"pnil\">--</span>";
+    var tr = document.createElement("tr");
+    tr.innerHTML = "<td style=\"font-family:var(--fm);font-weight:800;color:var(--p2);font-size:11px\">"+(i+1)+"</td>"
+      +"<td><div class=\"sname\">"+s.name+"</div><div class=\"ssec\">"+s.sector+" | NSE: "+s.sym+"</div></td>"
+      +"<td class=\"r\"><span class=\""+pc+"\">"+pr+"</span></td>"
+      +"<td class=\"r\">"+ch+"</td>"
+      +"<td class=\"r\" style=\"color:var(--g1)\">"+s.avgPct.toFixed(2)+"%</td>"
+      +"<td class=\"r\"><span class=\"fcnt\">"+s.nFunds+"</span></td>";
+    tr.addEventListener("click",(function(st){ return function(){ openPanel(st); }; })(s));
+    tb.appendChild(tr);
+  });
+}
+
+function openPanel(s) {
+  document.getElementById("sd-name").textContent = s.name;
+  document.getElementById("sd-sec").textContent = s.sector + " | NSE: " + s.sym;
+  if(s.price!==null) {
+    document.getElementById("sd-price").textContent = "Rs."+s.price.toLocaleString("en-IN",{maximumFractionDigits:2});
+    var up = s.chgPct>=0;
+    document.getElementById("sd-chg").textContent = (up?"+ ":"- ")+Math.abs(s.chgPct).toFixed(2)+"% today";
+    document.getElementById("sd-chg").style.color = up?"#4ade80":"#f87171";
+  } else {
+    document.getElementById("sd-price").textContent = "Price loading";
+    document.getElementById("sd-chg").textContent = "";
+  }
+  var betas = {"Banking":1.15,"NBFC":1.10,"IT":0.85,"Auto":1.05,"FMCG":0.65,"Pharma":0.70,
+    "Healthcare":0.72,"Infrastructure":0.95,"Oil & Gas":0.80,"Power":0.75,"Metals":1.25,
+    "Telecom":0.80,"Cement":0.90,"Consumer Durables":0.70,"Electronics":1.05,"Capital Goods":0.95,
+    "Chemicals":0.85,"Real Estate":1.10,"Consumer Tech":1.15,"Retail":0.80};
+  var beta = betas[s.sector] || 1.0;
+  var sv = document.getElementById("sv").textContent;
+  var sc2 = document.getElementById("sc").textContent;
+  var isUp = sc2.indexOf("-")<0 && sc2!=="--";
+  var sChgNum = parseFloat(sc2.replace(/[^0-9.\-]/g,"")) || 0;
+  if(!isUp) sChgNum = -Math.abs(sChgNum);
+  var exp = (sChgNum * beta).toFixed(2);
+  var col = isUp ? "#4ade80" : "#f87171";
+  var icon = isUp ? "Up" : "Down";
+  document.getElementById("sd-impact").innerHTML =
+    mkCard("Today Sensex", sv, col) +
+    mkCard("Sensex Move", sc2, col) +
+    mkCard("Stock Beta", beta.toFixed(2)+"x", col) +
+    mkCard("Expected Move", (sChgNum>=0?"+":"")+exp+"%", col) +
+    mkCard("Market", icon, col) +
+    mkCard("Sensitivity", beta>1.1?"High":beta<0.8?"Low":"Moderate", col);
+  document.getElementById("sd-funds-title").textContent = s.nFunds + " Funds Holding " + s.name;
+  var fl = document.getElementById("sd-funds");
+  fl.innerHTML = "";
+  var maxP = s.funds[0] ? s.funds[0].pct : 1;
+  s.funds.forEach(function(f,i) {
+    var div = document.createElement("div");
+    div.className = "frow";
+    div.innerHTML = "<div class=\"frank\">"+(i+1)+"</div>"
+      +"<div class=\"fname\"><div class=\"fn\">"+f.f+"</div><div class=\"fa\">"+f.a+"</div></div>"
+      +"<div style=\"text-align:right;margin-left:8px;\">"
+      +  "<div class=\"fpct\">"+f.pct.toFixed(2)+"%</div>"
+      +  "<div style=\"font-size:9px;color:var(--t5);font-family:var(--fm);\">Holding</div>"
+      +"</div>"
+      +"<div style=\"text-align:right;margin-left:12px;min-width:80px;\">"
+      +  "<div class=\"fnavval\" style=\"font-family:var(--fm);font-size:11px;font-weight:700;color:var(--t1);\">&mdash;</div>"
+      +  "<div class=\"fnavchg\" style=\"font-size:10px;font-family:var(--fm);\">&mdash;</div>"
+      +"</div>"
+      +"<div class=\"fbar-w\"><div class=\"fbar\" style=\"width:"+(f.pct/maxP*100).toFixed(0)+"%\"></div></div>";
+    fl.appendChild(div);
+    // Load NAV in background
+    loadFundNav(f.f, div);
+  });
+  document.getElementById("sdov").classList.add("open");
+  document.getElementById("sdp").classList.add("open");
+}
+
+function mkCard(l, v, c) {
+  return "<div class=\"icard\"><div class=\"ilbl\">"+l+"</div><div class=\"ival\" style=\"color:"+c+"\">"+v+"</div></div>";
+}
+
+function closePanel() {
+  document.getElementById("sdov").classList.remove("open");
+  document.getElementById("sdp").classList.remove("open");
+}
+
+var FUND_CODES = {"SBI Bluechip":"119022","Axis Bluechip":"120465","ICICI Pru Bluechip":"120586","Kotak Bluechip":"120255","Canara Robeco Bluechip":"102885","Franklin India Bluechip":"100033","HDFC Flexi Cap":"100010","Mirae Asset Large Cap":"118834","Nippon India Large Cap":"118701","UTI Nifty 50 Index":"120716","DSP Flexi Cap":"119206","PPFAS Flexi Cap":"122639","Motilal Oswal Flexi Cap":"120828","Motilal Oswal Midcap":"120847","HDFC Mid Cap Opp":"118989","HDFC Small Cap":"100032","Nippon India Small Cap":"118778","SBI Small Cap":"114959","SBI Magnum Midcap":"102389","Nippon India Mid Cap":"118702","Axis Midcap":"120468","Axis Small Cap":"125355","Axis Flexi Cap":"125354","Kotak Emerging Equity":"136118","Mirae Asset Midcap":"135804","Mirae Asset Flexi Cap":"145552","Quant Small Cap":"120845","Quant Mid Cap":"120844","Quant Large Cap":"120503","Quant Flexi Cap":"125497","Aditya Birla Flexi Cap":"119598","Edelweiss Large Cap":"135781","Edelweiss Midcap":"135782","Bandhan Large Cap":"119795","Nippon India Flexi Cap":"118704"};
+
+// Fund NAV cache
+var fundNavCache = {};
+
+async function loadFundNav(fundName, rowEl) {
+  if(fundNavCache[fundName]) {
+    updateFundNavRow(rowEl, fundNavCache[fundName]);
+    return;
+  }
+  try {
+    // Direct code lookup — no search needed, instant and reliable
+    var code = FUND_CODES[fundName];
+    if(!code) return; // fund not in our list
+    var r = await fetch("https://api.mfapi.in/mf/" + code);
+    var d = await r.json();
+    if(!d.data || d.data.length < 2) return;
+    var nav1 = parseFloat(d.data[0].nav);
+    var nav2 = parseFloat(d.data[1].nav);
+    if(!nav1 || !nav2 || nav2 === 0) return;
+    var chg = nav1 - nav2;
+    var pct = (chg / nav2) * 100;
+    var info = {nav:nav1, chg:chg, pct:pct, date:d.data[0].date};
+    fundNavCache[fundName] = info;
+    updateFundNavRow(rowEl, info);
+  } catch(e) {}
+}
+
+function updateFundNavRow(rowEl, info) {
+  var navEl = rowEl.querySelector(".fnavval");
+  var chgEl = rowEl.querySelector(".fnavchg");
+  if(!navEl || !chgEl) return;
+  var isUp = info.chg >= 0;
+  navEl.textContent = "Rs." + info.nav.toFixed(4);
+  chgEl.textContent = (isUp?"+":"") + info.pct.toFixed(2) + "%";
+  chgEl.style.color = isUp ? "var(--green)" : "var(--red)";
+  chgEl.style.fontWeight = "800";
+}
+
+var priceLoading = false;
+
+async function loadPrices() {
+  // Load prices ONLY for currently visible stocks (top 20 in filt)
+  // This stays within proxy rate limits
+  if(priceLoading) return;
+  priceLoading = true;
+  var visible = filt.slice(0, 20);
+  var toLoad  = visible.filter(function(s){ return s.price===null; });
+  // Load 2 at a time with 1 second gap
+  for(var i=0; i<toLoad.length; i+=2) {
+    await Promise.all(toLoad.slice(i,i+2).map(loadOnePrice));
+    renderTable();
+    if(i+2 < toLoad.length) {
+      await new Promise(function(r){ setTimeout(r, 1200); });
+    }
+  }
+  priceLoading = false;
+}
+
+async function loadOnePrice(s) {
+  var symMap = {
+    "M&M":"M%26M.NS","BAJAJ-AUTO":"BAJAJ-AUTO.NS","LT":"LT.NS",
+    "MSUMI":"MOTHERSUMI.NS","MAXHEALTH":"MAXHEALTH.NS","INDUSTOWER":"INDUSTOWER.NS",
+    "KPIL":"KPIL.NS","KAYNES":"KAYNES.NS","NAUKRI":"NAUKRI.NS",
+    "POLICYBZR":"POLICYBZR.NS","OBEROIRLTY":"OBEROIRLTY.NS",
+    "SUPREMEIND":"SUPREMEIND.NS","APAR":"APAR.NS","TIINDIA":"TIINDIA.NS",
+    "ELECON":"ELECON.NS","PRAJIND":"PRAJIND.NS","SCHAEFFLER":"SCHAEFFLER.NS",
+    "GARFIBRES":"GARFIBRES.NS","JIOFIN":"JIOFIN.NS","GODREJPROP":"GODREJPROP.NS",
+    "PRESTIGE":"PRESTIGE.NS","CHOLAFIN":"CHOLAFIN.NS","MUTHOOTFIN":"MUTHOOTFIN.NS",
+    "DIVISLAB":"DIVISLAB.NS","TORNTPHARM":"TORNTPHARM.NS","MANKIND":"MANKIND.NS",
+    "DRREDDY":"DRREDDY.NS","DALBHARAT":"DALBHARAT.NS","AMBUJACEM":"AMBUJACEM.NS",
+    "DEEPAKNTR":"DEEPAKNTR.NS","AARTIIND":"AARTIIND.NS","NAVINFLUOR":"NAVINFLUOR.NS",
+    "PIIND":"PIIND.NS","DHANUKA":"DHANUKA.NS","POLYCAB":"POLYCAB.NS",
+    "ASTRAL":"ASTRAL.NS","SAFARI":"SAFARI.NS","LTIM":"LTIM.NS","MPHASIS":"MPHASIS.NS",
+    "AMBER":"AMBER.NS","TRENT":"TRENT.NS","DMART":"DMART.NS","INDIGO":"INDIGO.NS",
+    "NYKAA":"NYKAA.NS","DELHIVERY":"DELHIVERY.NS","ASHOKLEY":"ASHOKLEY.NS",
+    "TVSMOTOR":"TVSMOTOR.NS","BALKRISIND":"BALKRISIND.NS","BHARATFORG":"BHARATFORG.NS",
+    "CROMPTON":"CROMPTON.NS","VOLTAS":"VOLTAS.NS","CUMMINSIND":"CUMMINSIND.NS",
+    "THERMAX":"THERMAX.NS","SJVN":"SJVN.NS","ADANIGREEN":"ADANIGREEN.NS",
+    "COALINDIA":"COALINDIA.NS","VEDL":"VEDL.NS","GAIL":"GAIL.NS",
+    "BPCL":"BPCL.NS","ONGC":"ONGC.NS","NESTLEIND":"NESTLEIND.NS",
+    "BRITANNIA":"BRITANNIA.NS","DABUR":"DABUR.NS","MARICO":"MARICO.NS",
+    "GODREJCP":"GODREJCP.NS","LUPIN":"LUPIN.NS","APOLLOHOSP":"APOLLOHOSP.NS",
+    "ICICIGI":"ICICIGI.NS","HDFCLIFE":"HDFCLIFE.NS","SBILIFE":"SBILIFE.NS",
+    "BAJAJFINSV":"BAJAJFINSV.NS","FEDERALBNK":"FEDERALBNK.NS",
+    "BANKBARODA":"BANKBARODA.NS","INDUSINDBK":"INDUSINDBK.NS",
+    "HEROMOTOCO":"HEROMOTOCO.NS","EICHERMOT":"EICHERMOT.NS",
+    "HINDALCO":"HINDALCO.NS","JSWSTEEL":"JSWSTEEL.NS",
+    "SHREECEM":"SHREECEM.NS","ULTRACEMCO":"ULTRACEMCO.NS"
+  };
+  var sym = symMap[s.sym] || (s.sym + ".NS");
+  // Try v8 API first, then v7 as fallback
+  var apis = [
+    "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://query1.finance.yahoo.com/v8/finance/chart/" + sym + "?interval=1d&range=2d"),
+    "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://query2.finance.yahoo.com/v8/finance/chart/" + sym + "?interval=1d&range=2d"),
+  ];
+  for(var a=0; a<apis.length; a++) {
+    try {
+      var r = await fetch(apis[a]);
+      if(!r.ok) continue;
+      var txt = await r.text();
+      var d; try { d = JSON.parse(txt); } catch(e) { continue; }
+      if(!d || !d.chart || !d.chart.result || !d.chart.result[0]) continue;
+      var res = d.chart.result[0];
+      if(!res.meta || !res.meta.regularMarketPrice) continue;
+      s.price  = res.meta.regularMarketPrice;
+      s.prev   = res.meta.previousClose || res.meta.chartPreviousClose || 0;
+      if(s.prev > 0) {
+        s.chg    = s.price - s.prev;
+        s.chgPct = (s.chg / s.prev) * 100;
+      } else { s.chg = 0; s.chgPct = 0; }
+      return; // success
+    } catch(e) {}
+  }
+}
+
+async function loadMarket() {
+  var ids = [{sym:"^BSESN",v:"sv",c:"sc"},{sym:"^NSEI",v:"nv",c:"nc"},{sym:"^NSEBANK",v:"bv",c:"bc"}];
+  for(var i=0;i<ids.length;i++) {
+    try {
+      var url = "https://api.allorigins.win/raw?url="+encodeURIComponent("https://query1.finance.yahoo.com/v8/finance/chart/"+ids[i].sym+"?interval=1d&range=2d");
+      var r = await fetch(url);
+      var d = await r.json();
+      var res = d.chart && d.chart.result && d.chart.result[0];
+      if(!res && ids[i].alt) {
+        var url2 = "https://api.allorigins.win/raw?url="+encodeURIComponent("https://query1.finance.yahoo.com/v8/finance/chart/"+ids[i].alt+"?interval=1d&range=2d");
+        var r2 = await fetch(url2);
+        var d2 = await r2.json();
+        res = d2.chart && d2.chart.result && d2.chart.result[0];
+      }
+      if(!res) continue;
+      var cur = res.meta.regularMarketPrice;
+      var prev = res.meta.previousClose || res.meta.chartPreviousClose || cur;
+      var chg = cur-prev;
+      var pct = prev>0 ? (chg/prev)*100 : 0;
+      var up = chg>=0;
+      document.getElementById(ids[i].v).textContent = cur.toLocaleString("en-IN",{maximumFractionDigits:2});
+      var cel = document.getElementById(ids[i].c);
+      cel.textContent = (up?"+":"")+chg.toFixed(2)+" ("+(up?"+":"")+pct.toFixed(2)+"%)";
+      cel.className = "mc "+(up?"up":"dn");
+    } catch(e) {}
+  }
+  var now = new Date();
+  document.getElementById("tt").textContent = "Updated: "+now.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"})+" IST";
+  setTimeout(loadMarket, 300000);
+}
+
+init();
+</script>
+<script>
+
+// Mobile hamburger menu
+(function(){
+  var nav=document.querySelector('nav');
+  if(!nav) return;
+  var overlay=document.createElement('div');
+  overlay.className='mob-nav-overlay';
+  document.body.appendChild(overlay);
+  var drawer=document.createElement('div');
+  drawer.className='mob-nav-drawer';
+  var navLinks=document.querySelector('.nav-links');
+  if(navLinks){
+    var brand=document.createElement('div');
+    brand.className='mnd-brand';
+    brand.innerHTML='<div style="font-family:serif;font-size:15px;font-weight:900;color:#3c3197;">Ace Financial <span style="color:#5a8a10;">Services</span></div><div style="font-size:10px;color:#9ca3af;margin-top:2px;">SEBI ARN · AMFI Registered MFD</div>';
+    drawer.appendChild(brand);
+    navLinks.querySelectorAll('a').forEach(function(link){
+      var a=document.createElement('a');
+      a.href=link.href;
+      a.innerHTML=link.innerHTML;
+      if(link.classList.contains('on')) a.classList.add('on');
+      drawer.appendChild(a);
+    });
+  }
+  document.body.appendChild(drawer);
+  var btn=document.createElement('button');
+  btn.className='mob-menu-btn';
+  btn.innerHTML='☰';
+  nav.appendChild(btn);
+  function open(){drawer.classList.add('open');overlay.classList.add('open');btn.innerHTML='✕';}
+  function close(){drawer.classList.remove('open');overlay.classList.remove('open');btn.innerHTML='☰';}
+  btn.addEventListener('click',function(){drawer.classList.contains('open')?close():open();});
+  overlay.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+})();
+
+</script>
+</body>
+</html>

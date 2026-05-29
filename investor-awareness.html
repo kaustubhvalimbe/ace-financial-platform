@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Investor Awareness — Ace Financial Services</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --p1:#2d2478;--p2:#3c3197;--p3:#6b63c9;--p4:#f0effe;
+  --g1:#5a8a10;--g2:#8bc32a;--g4:#d4eda0;--g5:#f5fce8;
+  --bg:#f7faf0;--t1:#1a1240;--t4:#6b7280;--t5:#9ca3af;
+  --red:#dc2626;--gold:#d97706;--amber:#f59e0b;
+  --fh:"Playfair Display",serif;--fb:"Plus Jakarta Sans",sans-serif;--fm:"JetBrains Mono",monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--t1);font-family:var(--fb);min-height:100vh;}
+
+/* NAV */
+nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(60,49,151,.08);}
+.brand{display:flex;align-items:center;gap:9px;text-decoration:none;}
+.bi{width:36px;height:36px;background:linear-gradient(135deg,var(--p2),var(--g2));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;font-weight:900;}
+.bn{font-family:var(--fh);font-size:13px;font-weight:900;color:var(--p2);}
+.bn em{color:var(--g1);font-style:normal;}
+.bs{font-size:10px;color:var(--t5);font-family:var(--fm);}
+.nav-links{display:flex;gap:2px;flex-wrap:wrap;}
+.nav-links a{text-decoration:none;font-size:12px;font-weight:700;padding:6px 11px;border-radius:7px;color:var(--t4);}
+.nav-links a:hover{background:var(--g5);color:var(--g1);}
+.nav-links a.on{background:var(--p2);color:#fff;}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--p1) 0%,var(--p2) 35%,#1e5a0a 70%,var(--g1));padding:40px 22px;text-align:center;position:relative;overflow:hidden;}
+.hero::after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);background-size:24px 24px;pointer-events:none;}
+.hero-in{position:relative;z-index:1;max-width:800px;margin:0 auto;}
+.hero h1{font-family:var(--fh);font-size:36px;font-weight:900;color:#fff;line-height:1.2;margin-bottom:12px;}
+.hero h1 span{color:#b8e05a;}
+.hero p{color:rgba(255,255,255,.8);font-size:14px;line-height:1.8;max-width:600px;margin:0 auto 20px;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:6px 16px;font-size:12px;color:rgba(255,255,255,.9);font-weight:600;}
+
+/* QUICK NAV */
+.quick-nav{background:#fff;border-bottom:2px solid var(--g4);padding:12px 20px;display:flex;gap:8px;flex-wrap:wrap;overflow-x:auto;}
+.qn-btn{padding:6px 14px;border-radius:20px;border:1.5px solid var(--g4);background:#fff;font-size:12px;font-weight:700;color:var(--t4);cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-block;}
+.qn-btn:hover{background:var(--p4);color:var(--p2);border-color:var(--p3);}
+
+/* LAYOUT */
+.container{max-width:1100px;margin:0 auto;padding:32px 20px;}
+
+/* SECTIONS */
+.section{margin-bottom:40px;scroll-margin-top:80px;}
+.section-title{font-family:var(--fh);font-size:26px;font-weight:900;color:var(--p2);margin-bottom:6px;display:flex;align-items:center;gap:10px;}
+.section-title::before{content:"";display:block;width:4px;height:26px;background:linear-gradient(var(--p2),var(--g2));border-radius:2px;flex-shrink:0;}
+.section-sub{font-size:13px;color:var(--t4);margin-bottom:20px;padding-left:14px;}
+.divider{height:1px;background:linear-gradient(90deg,var(--g4),transparent);margin:40px 0;}
+
+/* INFO CARDS */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:20px;}
+.info-card{background:#fff;border:1.5px solid var(--g4);border-radius:12px;padding:20px;transition:box-shadow .2s;}
+.info-card:hover{box-shadow:0 4px 20px rgba(60,49,151,.1);}
+.info-card.featured{border-color:var(--p3);background:var(--p4);}
+.ic-icon{font-size:28px;margin-bottom:10px;}
+.ic-title{font-family:var(--fh);font-size:16px;font-weight:700;color:var(--p2);margin-bottom:8px;}
+.ic-text{font-size:13px;color:var(--t4);line-height:1.7;}
+
+/* PROSE */
+.prose{background:#fff;border:1.5px solid var(--g4);border-radius:12px;padding:24px;margin-bottom:16px;}
+.prose h3{font-family:var(--fh);font-size:18px;font-weight:700;color:var(--p2);margin-bottom:10px;}
+.prose p{font-size:13px;color:var(--t1);line-height:1.8;margin-bottom:12px;}
+.prose p:last-child{margin-bottom:0;}
+.prose ul{font-size:13px;color:var(--t1);line-height:1.8;padding-left:20px;}
+.prose li{margin-bottom:6px;}
+.prose strong{color:var(--p2);font-weight:700;}
+
+/* HIGHLIGHT BOX */
+.highlight{background:linear-gradient(135deg,var(--p4),var(--g5));border:1.5px solid var(--p3);border-radius:12px;padding:20px 24px;margin:16px 0;}
+.highlight-title{font-family:var(--fh);font-size:15px;font-weight:800;color:var(--p2);margin-bottom:8px;}
+.highlight p{font-size:13px;color:var(--p2);line-height:1.7;}
+
+/* TAX TABLE */
+.tax-table{width:100%;border-collapse:collapse;font-size:13px;border-radius:12px;overflow:hidden;border:1.5px solid var(--g4);}
+.tax-table thead th{background:linear-gradient(135deg,var(--p1),var(--p2));color:#fff;padding:12px 16px;font-weight:700;text-align:left;font-size:12px;}
+.tax-table tbody td{padding:12px 16px;border-bottom:1px solid var(--g4);vertical-align:middle;}
+.tax-table tbody tr:last-child td{border-bottom:none;}
+.tax-table tbody tr:nth-child(even) td{background:var(--bg);}
+.tax-table tbody tr:hover td{background:var(--g5);}
+.tax-badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:800;font-family:var(--fm);}
+.tb-green{background:var(--g5);color:var(--g1);}
+.tb-amber{background:#fef3c7;color:#92400e;}
+.tb-red{background:#fee2e2;color:var(--red);}
+
+/* STEP LIST */
+.steps{display:flex;flex-direction:column;gap:12px;}
+.step{display:flex;gap:14px;align-items:flex-start;}
+.step-num{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--p2),var(--g2));color:#fff;font-weight:900;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--fm);}
+.step-content{}
+.step-title{font-weight:800;font-size:14px;color:var(--t1);margin-bottom:3px;}
+.step-desc{font-size:12px;color:var(--t4);line-height:1.6;}
+
+/* RISK METER */
+.risk-row{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0;}
+.risk-chip{padding:10px 16px;border-radius:10px;font-size:12px;font-weight:700;text-align:center;flex:1;min-width:100px;}
+.r-low   {background:#dcfce7;color:#166534;}
+.r-mod   {background:#fef9c3;color:#854d0e;}
+.r-modhi {background:#fed7aa;color:#9a3412;}
+.r-high  {background:#fee2e2;color:#991b1b;}
+.r-vhigh {background:#fce7f3;color:#831843;}
+.r-label{font-size:10px;font-weight:600;opacity:.8;margin-top:3px;}
+
+/* KYC CHECKLIST */
+.kyc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;}
+.kyc-item{background:#fff;border:1.5px solid var(--g4);border-radius:10px;padding:14px;display:flex;align-items:flex-start;gap:10px;}
+.kyc-icon{font-size:20px;flex-shrink:0;}
+.kyc-title{font-weight:700;font-size:12px;color:var(--t1);margin-bottom:3px;}
+.kyc-sub{font-size:11px;color:var(--t4);line-height:1.5;}
+
+/* QUOTE */
+.quote-box{background:linear-gradient(135deg,var(--p1),var(--p2));border-radius:12px;padding:24px 28px;margin:20px 0;position:relative;}
+.quote-text{font-family:var(--fh);font-size:18px;font-weight:600;color:#fff;line-height:1.5;margin-bottom:10px;}
+.quote-author{font-size:12px;color:rgba(255,255,255,.6);font-family:var(--fm);}
+.quote-mark{font-size:60px;color:rgba(255,255,255,.1);position:absolute;top:10px;left:20px;font-family:Georgia;line-height:1;}
+
+/* AMFI CREDIT */
+.amfi-bar{background:var(--g5);border:1.5px solid var(--g4);border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--t4);margin-top:8px;}
+.amfi-bar strong{color:var(--g1);}
+
+/* FOOTER */
+.adv-bar{background:linear-gradient(135deg,var(--p1),var(--p2));padding:11px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px;}
+.adv-info{display:flex;align-items:center;gap:9px;}
+.adv-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--g2),var(--g1));display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:12px;font-weight:900;color:#fff;}
+.adv-name{font-family:var(--fh);font-size:13px;font-weight:800;color:#fff;}
+.adv-role{font-size:10px;color:rgba(255,255,255,.6);font-family:var(--fm);}
+.adv-links{display:flex;gap:7px;}
+.adv-link{padding:5px 13px;border-radius:7px;font-size:12px;font-weight:700;text-decoration:none;}
+.al-h{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#fff;}
+.al-a{background:var(--g2);color:#fff;}
+.sebi-disclaimer{background:#1a1240;border-top:3px solid var(--gold);padding:12px 20px;}
+.sebi-disc-inner{display:flex;align-items:flex-start;gap:10px;max-width:1400px;margin:0 auto;}
+.sebi-disc-text{font-size:10px;color:rgba(255,255,255,.75);line-height:1.7;}
+.sebi-disc-text strong{color:var(--gold);font-size:10px;}
+@media(max-width:768px){.hero h1{font-size:26px;}.nav-links{display:none;}}
+</style>
+<style>
+
+/* ══ MOBILE RESPONSIVE — ACE FINANCIAL SERVICES ══ */
+.mob-menu-btn{display:none;background:none;border:none;font-size:22px;cursor:pointer;color:#1a1240;padding:4px 8px;border-radius:6px;align-items:center;}
+.mob-nav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199;}
+.mob-nav-overlay.open{display:block;}
+.mob-nav-drawer{position:fixed;top:0;left:-280px;width:280px;height:100vh;background:#fff;z-index:200;transition:left .3s ease;overflow-y:auto;box-shadow:4px 0 20px rgba(0,0,0,.15);padding:20px 0;}
+.mob-nav-drawer.open{left:0;}
+.mob-nav-drawer .mnd-brand{padding:0 20px 16px;border-bottom:1px solid #e5e7eb;margin-bottom:8px;}
+.mob-nav-drawer a{display:flex;align-items:center;gap:10px;padding:13px 20px;font-size:14px;font-weight:600;color:#4a4a6a;text-decoration:none;border-left:3px solid transparent;}
+.mob-nav-drawer a:hover,.mob-nav-drawer a.on{background:#f0effe;color:#3c3197;border-left-color:#3c3197;}
+
+@media(max-width:768px){
+  .nav-links{display:none!important;}
+  .mob-menu-btn{display:flex!important;}
+  nav{padding:0 14px!important;height:54px!important;}
+  .bs{display:none!important;}
+  .hero,.page-hero{padding:18px 14px!important;}
+  .hero h1,.hero-title{font-size:20px!important;line-height:1.3!important;}
+  .hero p,.hero-sub{font-size:12px!important;}
+  .hero-in{flex-direction:column!important;gap:12px!important;}
+  .hstats{flex-wrap:wrap!important;gap:6px!important;}
+  .hstat{min-width:75px!important;padding:6px 8px!important;}
+  .hstat-v{font-size:16px!important;}
+  .hstat-l{font-size:9px!important;}
+  .wrap,.layout-wrap{display:block!important;}
+  .left,.sidebar-panel{display:none!important;}
+  .right,.main-panel{padding:12px!important;width:100%!important;}
+  .stats-row,.fund-grid,.calc-grid,.info-grid{grid-template-columns:1fr!important;gap:10px!important;}
+  .table-wrap,.tbl-wrap{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;}
+  table{min-width:580px!important;font-size:12px!important;}
+  thead th{padding:8px 10px!important;font-size:10px!important;white-space:nowrap!important;}
+  tbody td{padding:8px 10px!important;font-size:12px!important;}
+  .detail-panel,.sdp,.dp{width:100%!important;right:-100%!important;max-width:100%!important;}
+  .detail-panel.open,.sdp.open,.dp.open{right:0!important;}
+  .ticker{padding:8px 12px!important;flex-direction:column!important;gap:6px!important;}
+  .ticker-left{flex-wrap:wrap!important;gap:8px!important;}
+  .mv{font-size:13px!important;}
+  .card-header{flex-direction:column!important;gap:8px!important;align-items:flex-start!important;}
+  .filter-row,.tbl-hdr{flex-direction:column!important;gap:8px!important;align-items:flex-start!important;}
+  .search-wrap,.sinp{width:100%!important;}
+  .tabs,.dtabs{flex-wrap:wrap!important;gap:4px!important;}
+  .tab,.dtab{font-size:12px!important;padding:8px 10px!important;}
+  .page-title,.tbl-title{font-size:18px!important;}
+  .adv-bar{flex-direction:column!important;gap:8px!important;padding:12px!important;}
+  .adv-links{flex-wrap:wrap!important;}
+  .risk-row{flex-direction:column!important;}
+  .kyc-grid{grid-template-columns:1fr!important;}
+  .info-grid{grid-template-columns:1fr!important;}
+  div[style*="grid-template-columns:1fr 1fr"]{display:block!important;}
+}
+@media(max-width:480px){
+  .hero h1{font-size:17px!important;}
+  .mv{font-size:12px!important;}
+  .hstat-v{font-size:14px!important;}
+}
+
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="brand">
+    <div class="bi">A</div>
+    <div><div class="bn">Ace Financial <em>Services</em></div><div class="bs">SEBI ARN · AMFI Registered MFD</div></div>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">🏠 Home</a>
+    <a href="fund-discovery-v2.html">🔍 Fund Discovery</a>
+    <a href="fund-toppers.html">🏆 Fund Toppers</a>
+    <a href="stock-intelligence.html">📊 Stock Intelligence</a>
+    <a href="investment-case.html">⭐ Investment Engine</a>
+    <a href="calculators.html">🧮 Calculators</a>
+    <a href="fund-compare.html">⚖️ Compare</a>
+    <a href="investor-awareness.html" class="on">📚 Investor Awareness</a>
+    <a href="kaustubhvalimbe.html">👤 Founder</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-in">
+    <h1>📚 Investor <span>Awareness</span> Centre</h1>
+    <p>Complete knowledge for the informed investor. Understand Mutual Funds before you invest — because knowledge is the best protection for your hard-earned money.</p>
+    <div class="hero-badge">📋 Based on AMFI Knowledge Centre · SEBI Investor Education Guidelines</div>
+  </div>
+</div>
+
+<!-- QUICK NAVIGATION -->
+<div class="quick-nav">
+  <a href="#what-is-mf"      class="qn-btn">What is a Mutual Fund?</a>
+  <a href="#how-to-invest"   class="qn-btn">How to Invest</a>
+  <a href="#categories"      class="qn-btn">MF Categories</a>
+  <a href="#expense-ratio"   class="qn-btn">Expense Ratio</a>
+  <a href="#risks"           class="qn-btn">Risks</a>
+  <a href="#kyc"             class="qn-btn">KYC Process</a>
+  <a href="#taxation"        class="qn-btn">Taxation (LTCG/STCG)</a>
+  <a href="#redeem"          class="qn-btn">How to Redeem</a>
+  <a href="#sip-lumpsum"     class="qn-btn">SIP vs Lumpsum</a>
+  <a href="#glossary"        class="qn-btn">Key Terms Glossary</a>
+  <a href="#amc-registrar"   class="qn-btn">55 AMCs — CAMS &amp; KFintech</a>
+</div>
+
+<div class="container">
+
+  <!-- ══ WHAT IS MUTUAL FUND ══ -->
+  <div class="section" id="what-is-mf">
+    <div class="section-title">What is a Mutual Fund?</div>
+    <div class="section-sub">The foundation every investor must understand</div>
+
+    <div class="prose">
+      <p>A <strong>Mutual Fund</strong> is a professionally managed investment vehicle that pools money from multiple investors and invests it in securities like stocks, bonds, money market instruments, and other assets.</p>
+      <p>When you invest in a Mutual Fund, you become a <strong>unit holder</strong>. The fund is managed by a qualified <strong>Fund Manager</strong> employed by an <strong>Asset Management Company (AMC)</strong>.</p>
+      <p>Your investment is represented in units, and the value of each unit on any given business day is called the <strong>Net Asset Value (NAV)</strong>.</p>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card featured">
+        <div class="ic-icon">🏦</div>
+        <div class="ic-title">AMC (Asset Management Company)</div>
+        <div class="ic-text">The company that manages the Mutual Fund. Examples: HDFC AMC, SBI MF, Nippon India MF, Axis AMC. Registered with SEBI and operates under strict regulations.</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">📊</div>
+        <div class="ic-title">NAV (Net Asset Value)</div>
+        <div class="ic-text">The price of one unit of a Mutual Fund. Calculated daily as: (Total Assets - Liabilities) ÷ Total Units. Published every business day by AMFI India.</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">👨‍💼</div>
+        <div class="ic-title">Fund Manager</div>
+        <div class="ic-text">A qualified finance professional who makes investment decisions on your behalf. They research markets, select securities, and manage the portfolio according to the fund's objective.</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">🔖</div>
+        <div class="ic-title">Unit Holder</div>
+        <div class="ic-text">You, the investor. When you invest ₹10,000 in a fund with NAV ₹100, you receive 100 units. Your wealth grows as NAV increases.</div>
+      </div>
+    </div>
+
+    <div class="quote-box">
+      <div class="quote-mark">"</div>
+      <div class="quote-text">Mutual Funds Sahi Hai — Mutual Funds are the right choice for long-term wealth creation for every Indian investor.</div>
+      <div class="quote-author">— AMFI India Investor Awareness Campaign</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══ HOW TO INVEST ══ -->
+  <div class="section" id="how-to-invest">
+    <div class="section-title">How to Invest in Mutual Funds</div>
+    <div class="section-sub">Step-by-step guide for first-time investors</div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">Complete Your KYC</div>
+          <div class="step-desc">Know Your Customer (KYC) is mandatory. Submit PAN Card + Aadhar + Address Proof. One-time process, valid across all Mutual Funds in India.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Define Your Financial Goal</div>
+          <div class="step-desc">Are you investing for retirement (15-20 years), children's education (10 years), or wealth creation (5+ years)? Your goal determines which fund category suits you.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Assess Your Risk Appetite</div>
+          <div class="step-desc">Can you handle market volatility? Conservative investors prefer Debt funds. Aggressive investors can consider Equity funds. Balanced investors choose Hybrid funds.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">Choose SIP or Lumpsum</div>
+          <div class="step-desc">SIP (Systematic Investment Plan) — invest a fixed amount monthly. Lumpsum — invest a large amount at once. SIP is recommended for salaried investors as it averages market cost.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <div class="step-title">Select the Fund</div>
+          <div class="step-desc">Use Fund Discovery on this platform to find funds matching your goal, risk, and time horizon. Compare 1Y, 3Y, 5Y returns. Choose Direct Plan for lower cost.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <div class="step-title">Invest Through a Registered MFD or Direct</div>
+          <div class="step-desc">Invest through a SEBI-registered Mutual Fund Distributor (ARN holder) like Ace Financial Services, or directly through AMC website. SEBI registration ensures accountability.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">7</div>
+        <div class="step-content">
+          <div class="step-title">Monitor and Review</div>
+          <div class="step-desc">Review your portfolio every 6 months. Don't panic during market corrections — stay invested for long term. Re-balance annually if needed.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══ CATEGORIES ══ -->
+  <div class="section" id="categories">
+    <div class="section-title">Categorisation of Mutual Funds</div>
+    <div class="section-sub">SEBI has categorised all Mutual Funds for transparency and comparability</div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="ic-icon">📈</div>
+        <div class="ic-title">Equity Funds</div>
+        <div class="ic-text">Invest primarily in stocks. Sub-categories: Large Cap, Mid Cap, Small Cap, Flexi Cap, Multi Cap, ELSS (Tax Saving), Thematic, Sectoral. Suitable for 5+ year horizon. Higher risk, higher potential returns.</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">🏦</div>
+        <div class="ic-title">Debt Funds</div>
+        <div class="ic-text">Invest in bonds, government securities, corporate debt. Sub-categories: Liquid, Overnight, Short Duration, Medium Duration, Gilt, Credit Risk. Lower risk. Suitable for 1-3 year goals.</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">⚖️</div>
+        <div class="ic-title">Hybrid Funds</div>
+        <div class="ic-text">Mix of equity and debt. Sub-categories: Aggressive Hybrid (65-80% equity), Balanced Advantage (dynamic allocation), Conservative Hybrid. Moderate risk. Good for 3-5 year horizon.</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">📊</div>
+        <div class="ic-title">Index Funds & ETFs</div>
+        <div class="ic-text">Passively track an index (Nifty 50, Sensex, Nifty Next 50). Very low expense ratio. No fund manager bias. Suitable for long-term, cost-conscious investors.</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">🌐</div>
+        <div class="ic-title">Fund of Funds (FoF)</div>
+        <div class="ic-text">Invests in other Mutual Funds. International FoF gives exposure to global markets (Nasdaq, S&P 500). Domestic FoF invests in Indian funds. Adds diversification.</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">🛡️</div>
+        <div class="ic-title">ELSS (Tax Saving)</div>
+        <div class="ic-text">Equity Linked Savings Scheme. Only Mutual Fund eligible for ₹1.5 lakh deduction under Section 80C. Lock-in: 3 years (shortest among 80C instruments). Equity-oriented returns.</div>
+      </div>
+    </div>
+
+    <div class="highlight">
+      <div class="highlight-title">📌 Direct Plan vs Regular Plan — Important!</div>
+      <p><strong>Direct Plan:</strong> You invest directly with AMC. No distributor commission. Lower expense ratio = higher returns over time.<br>
+      <strong>Regular Plan:</strong> Invested through a distributor/broker. Slightly higher expense ratio as distributor earns commission.<br>
+      <strong>For the same fund, Direct Plan always gives higher returns than Regular Plan over long term.</strong></p>
+    </div>
+
+    <div class="highlight">
+      <div class="highlight-title">📌 Growth vs IDCW (Dividend) Option</div>
+      <p><strong>Growth Option:</strong> Profits are reinvested. NAV keeps growing. Best for wealth creation and tax efficiency.<br>
+      <strong>IDCW (Income Distribution cum Capital Withdrawal):</strong> Periodic payouts from the fund. Tax inefficient — payouts are taxable at your income slab rate.<br>
+      <strong>Recommendation: Choose Growth option for long-term goals.</strong></p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══ EXPENSE RATIO ══ -->
+  <div class="section" id="expense-ratio">
+    <div class="section-title">What is Expense Ratio?</div>
+    <div class="section-sub">The annual cost of running a Mutual Fund — deducted from your returns</div>
+
+    <div class="prose">
+      <h3>Definition</h3>
+      <p>The <strong>Expense Ratio</strong> is the annual fee charged by an AMC to manage your Mutual Fund. It is expressed as a percentage of the fund's average daily net assets and is deducted from the NAV itself — you don't pay it separately.</p>
+      <p>If a fund has an expense ratio of 1.5% and earns 12% gross return, your net return is approximately <strong>10.5%</strong>.</p>
+      <h3>SEBI Limits on Expense Ratio</h3>
+      <ul>
+        <li>Equity Funds — Maximum: <strong>2.25%</strong> (regular), typically 0.5-1% (direct)</li>
+        <li>Debt Funds — Maximum: <strong>2.00%</strong> (regular), typically 0.2-0.5% (direct)</li>
+        <li>Index Funds/ETFs — Typically <strong>0.05% to 0.20%</strong></li>
+      </ul>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card featured">
+        <div class="ic-icon">💡</div>
+        <div class="ic-title">Lower Expense Ratio = Better Returns</div>
+        <div class="ic-text">Over 20 years, a difference of just 0.5% in expense ratio can result in lakhs of rupees difference in your final corpus. Always compare expense ratios when choosing between similar funds.</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">📉</div>
+        <div class="ic-title">TER (Total Expense Ratio)</div>
+        <div class="ic-text">TER includes fund management fees, administrative costs, marketing, distribution commission (for regular plans), and other operational expenses. Published daily by AMFI.</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">🔍</div>
+        <div class="ic-title">Where to Find It</div>
+        <div class="ic-text">Check the fund factsheet published monthly by each AMC. Available on AMFI India website (amfiindia.com) and AMC websites. Disclosed in Scheme Information Document (SID).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══ RISKS ══ -->
+  <div class="section" id="risks">
+    <div class="section-title">Risks in Mutual Funds</div>
+    <div class="section-sub">Every investment carries risk — understanding it is your best defence</div>
+
+    <div class="prose">
+      <p><strong>Mutual Fund investments are subject to market risks.</strong> This mandatory disclaimer carries deep meaning. Here is what every investor must know about the types of risks:</p>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="ic-icon">📉</div>
+        <div class="ic-title">Market Risk</div>
+        <div class="ic-text">The risk that the overall market falls — taking your fund's value down with it. Unavoidable for equity funds. Time in market is the best remedy — stay invested through cycles.</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">🏢</div>
+        <div class="ic-title">Concentration Risk</div>
+        <div class="ic-text">When a fund is heavily invested in a few stocks or sectors. If those stocks fall, the fund falls sharply. Diversified funds reduce this risk.</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">💳</div>
+        <div class="ic-title">Credit Risk</div>
+        <div class="ic-text">Mainly in Debt Funds. Risk that the bond issuer defaults on payment. Credit Risk funds invest in lower-rated bonds for higher returns but higher default risk.</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">⏱️</div>
+        <div class="ic-title">Liquidity Risk</div>
+        <div class="ic-text">Risk that you cannot redeem your investment quickly at fair value. Liquid and Open-ended funds have high liquidity. Close-ended funds have lock-in periods.</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">📊</div>
+        <div class="ic-title">Interest Rate Risk</div>
+        <div class="ic-text">Affects Debt Funds. When interest rates rise, bond prices fall, reducing NAV. Long Duration funds are most sensitive. Short Duration funds are less affected.</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">💱</div>
+        <div class="ic-title">Currency Risk</div>
+        <div class="ic-text">Affects International Funds. If the Indian Rupee strengthens against USD, returns from US markets get reduced when converted to INR. And vice versa.</div>
+      </div>
+    </div>
+
+    <div class="prose">
+      <h3>SEBI's Risk-o-meter</h3>
+      <p>SEBI mandates all funds to display a Risk-o-meter showing the risk level. The 6 levels are:</p>
+    </div>
+    <div class="risk-row">
+      <div class="risk-chip r-low"><div>LOW</div><div class="r-label">Overnight / Liquid Funds</div></div>
+      <div class="risk-chip r-mod"><div>LOW TO MODERATE</div><div class="r-label">Short Duration / UST</div></div>
+      <div class="risk-chip r-mod" style="background:#fef3c7;color:#854d0e;"><div>MODERATE</div><div class="r-label">Hybrid / Balanced Funds</div></div>
+      <div class="risk-chip r-modhi"><div>MODERATELY HIGH</div><div class="r-label">Large Cap Equity</div></div>
+      <div class="risk-chip r-high"><div>HIGH</div><div class="r-label">Mid Cap / Multi Cap</div></div>
+      <div class="risk-chip r-vhigh"><div>VERY HIGH</div><div class="r-label">Small Cap / Sectoral</div></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══ KYC ══ -->
+  <div class="section" id="kyc">
+    <div class="section-title">KYC — Know Your Customer</div>
+    <div class="section-sub">Mandatory one-time process required for all Mutual Fund investments in India</div>
+
+    <div class="prose">
+      <p><strong>KYC is mandatory</strong> as per SEBI and PMLA (Prevention of Money Laundering Act) regulations. Once completed with a SEBI-registered entity, it is valid across all Mutual Funds, brokers, and financial products in India.</p>
+      <p>KYC is now managed through <strong>KRA (KYC Registration Agency)</strong> — CDSL Ventures Ltd (CVL), NSDL, CAMS, Karvy. Your KYC data is shared across all KRAs.</p>
+    </div>
+
+    <div class="kyc-grid">
+      <div class="kyc-item"><div class="kyc-icon">🪪</div><div><div class="kyc-title">PAN Card</div><div class="kyc-sub">Mandatory for all investments. Primary identification document. Must be valid and linked to Aadhar.</div></div></div>
+      <div class="kyc-item"><div class="kyc-icon">🏠</div><div><div class="kyc-title">Address Proof</div><div class="kyc-sub">Aadhar Card (preferred), Passport, Voter ID, or latest Electricity/Gas Bill (not older than 3 months).</div></div></div>
+      <div class="kyc-item"><div class="kyc-icon">📸</div><div><div class="kyc-title">Photograph</div><div class="kyc-sub">Recent passport-size photograph. Clear face visibility required for in-person verification.</div></div></div>
+      <div class="kyc-item"><div class="kyc-icon">🏦</div><div><div class="kyc-title">Bank Account</div><div class="kyc-sub">Cancelled cheque or bank statement. Redemptions and dividends credited only to registered bank account.</div></div></div>
+      <div class="kyc-item"><div class="kyc-icon">📱</div><div><div class="kyc-title">Mobile & Email</div><div class="kyc-sub">Registered mobile for OTP. Email for statements, confirmations, and account alerts.</div></div></div>
+      <div class="kyc-item"><div class="kyc-icon">✍️</div><div><div class="kyc-title">Signature</div><div class="kyc-sub">Wet signature for physical KYC. For e-KYC (Aadhar-based OTP), no signature needed.</div></div></div>
+    </div>
+
+    <div class="highlight">
+      <div class="highlight-title">📱 e-KYC — Complete KYC Online in Minutes</div>
+      <p>SEBI allows e-KYC using Aadhar OTP authentication. Visit any AMC website, KFintech, or CAMS portal. Complete KYC digitally with Aadhar + PAN + selfie. <strong>Investment limit of ₹50,000 per AMC per year for e-KYC investors until full KYC is done.</strong> For higher amounts, complete full KYC at an AMC branch or through your MFD.</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══ TAXATION ══ -->
+  <div class="section" id="taxation">
+    <div class="section-title">Mutual Fund Taxation — LTCG & STCG</div>
+    <div class="section-sub">Updated as per Finance Act 2024 — effective from 23 July 2024</div>
+
+    <div class="highlight">
+      <div class="highlight-title">⚠️ Important: Tax rates changed in Budget 2024</div>
+      <p>The Finance Act 2024 revised capital gains tax rates for Mutual Funds effective 23 July 2024. Ensure you check current rates before filing returns.</p>
+    </div>
+
+    <div style="overflow-x:auto;margin-bottom:20px;">
+      <table class="tax-table">
+        <thead>
+          <tr>
+            <th>Fund Type</th>
+            <th>Holding Period for LTCG</th>
+            <th>STCG Tax Rate</th>
+            <th>LTCG Tax Rate</th>
+            <th>LTCG Exemption</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Equity Funds</strong><br><small>(65%+ in Indian equity)</small></td>
+            <td>More than <strong>1 year</strong></td>
+            <td><span class="tax-badge tb-red">20%</span><br><small>(was 15% before Jul 2024)</small></td>
+            <td><span class="tax-badge tb-amber">12.5%</span><br><small>(was 10% before Jul 2024)</small></td>
+            <td>₹1.25 lakh per year<br><small>(was ₹1 lakh before Jul 2024)</small></td>
+          </tr>
+          <tr>
+            <td><strong>Debt Funds</strong><br><small>(invested after 1 Apr 2023)</small></td>
+            <td>No LTCG benefit</td>
+            <td colspan="2" style="text-align:center;"><span class="tax-badge tb-red">As per Income Tax Slab</span><br><small>All gains taxed at your slab rate regardless of holding period</small></td>
+            <td>None</td>
+          </tr>
+          <tr>
+            <td><strong>Hybrid Funds</strong><br><small>(Aggressive 65%+ equity)</small></td>
+            <td>More than <strong>1 year</strong></td>
+            <td><span class="tax-badge tb-red">20%</span></td>
+            <td><span class="tax-badge tb-amber">12.5%</span></td>
+            <td>₹1.25 lakh per year</td>
+          </tr>
+          <tr>
+            <td><strong>Hybrid Funds</strong><br><small>(Conservative, Arbitrage, <35% equity)</small></td>
+            <td>More than <strong>2 years</strong></td>
+            <td><span class="tax-badge tb-red">As per Slab</span></td>
+            <td><span class="tax-badge tb-amber">12.5%</span></td>
+            <td>₹1.25 lakh per year</td>
+          </tr>
+          <tr>
+            <td><strong>Index Funds / ETFs</strong><br><small>(tracking Indian equity)</small></td>
+            <td>More than <strong>1 year</strong></td>
+            <td><span class="tax-badge tb-red">20%</span></td>
+            <td><span class="tax-badge tb-amber">12.5%</span></td>
+            <td>₹1.25 lakh per year</td>
+          </tr>
+          <tr>
+            <td><strong>International FoF</strong><br><small>(foreign equity)</small></td>
+            <td>More than <strong>2 years</strong></td>
+            <td><span class="tax-badge tb-red">As per Slab</span></td>
+            <td><span class="tax-badge tb-amber">12.5%</span></td>
+            <td>None</td>
+          </tr>
+          <tr>
+            <td><strong>ELSS Funds</strong></td>
+            <td>3-year lock-in (auto LTCG)</td>
+            <td>N/A (lock-in)</td>
+            <td><span class="tax-badge tb-green">12.5%</span><br><small>Gains up to ₹1.25L exempt</small></td>
+            <td>₹1.25 lakh per year</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card featured">
+        <div class="ic-icon">📅</div>
+        <div class="ic-title">What is LTCG?</div>
+        <div class="ic-text"><strong>Long Term Capital Gain</strong> — profit from selling Mutual Fund units held for more than the specified period (1 year for equity funds). Taxed at 12.5% with ₹1.25 lakh annual exemption for equity funds.</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">⚡</div>
+        <div class="ic-title">What is STCG?</div>
+        <div class="ic-text"><strong>Short Term Capital Gain</strong> — profit from selling Mutual Fund units held for less than the specified period. For equity funds, STCG is taxed at <strong>20%</strong> (flat, regardless of your tax slab).</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">🛡️</div>
+        <div class="ic-title">Tax Harvesting Strategy</div>
+        <div class="ic-text">Redeem up to ₹1.25 lakh of LTCG in equity funds each financial year — it is tax-free! Reinvest immediately. This resets your cost basis and saves tax without disrupting your investment journey.</div>
+      </div>
+    </div>
+
+    <div class="prose">
+      <h3>STT (Securities Transaction Tax)</h3>
+      <p>When you redeem equity Mutual Fund units, <strong>STT of 0.001%</strong> is levied on the redemption value. This is deducted at source by the AMC automatically. Debt Fund redemptions do not attract STT.</p>
+      <h3>TDS on Mutual Fund Returns</h3>
+      <p>For <strong>Resident Indians</strong>, there is no TDS on Mutual Fund redemptions for equity funds. For <strong>NRIs</strong>, TDS is deducted at applicable rates before redemption proceeds are credited. NRIs must obtain DTAA benefit if applicable.</p>
+      <h3>Indexation Benefit</h3>
+      <p>With the Finance Act 2024 changes, <strong>indexation benefit has been removed</strong> for Debt Funds and other non-equity funds. All gains from debt funds invested after 1 April 2023 are taxed at slab rate regardless of holding period.</p>
+    </div>
+
+    <div class="amfi-bar">
+      ⚠️ <span>Tax laws change periodically. Always consult a <strong>Chartered Accountant or Tax Advisor</strong> for your specific tax situation. This information is for general awareness only. Source: <strong>AMFI India / Income Tax Act 1961 / Finance Act 2024</strong></span>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══ HOW TO REDEEM ══ -->
+  <div class="section" id="redeem">
+    <div class="section-title">How to Redeem Mutual Fund Units</div>
+    <div class="section-sub">Understanding redemption — when, how, and what to expect</div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="ic-icon">⏰</div>
+        <div class="ic-title">Cut-off Time</div>
+        <div class="ic-text"><strong>Equity Funds:</strong> Submit redemption by 3:00 PM → same-day NAV applies. After 3 PM → next business day NAV.<br><strong>Debt Funds (liquid):</strong> Cut-off is 1:30 PM for same-day NAV.</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">📅</div>
+        <div class="ic-title">Settlement Time (T+)</div>
+        <div class="ic-text"><strong>Equity Funds:</strong> T+3 business days (money in your bank in 3 days).<br><strong>Liquid Funds:</strong> T+1 business day.<br><strong>Overnight Funds:</strong> T+1 business day.</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">💰</div>
+        <div class="ic-title">Exit Load</div>
+        <div class="ic-text">Some funds charge an exit load if you redeem early. Typical equity fund exit load: <strong>1% if redeemed within 1 year</strong>. ELSS funds cannot be redeemed within 3-year lock-in. Always check before investing.</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">🔄</div>
+        <div class="ic-title">Partial vs Full Redemption</div>
+        <div class="ic-text">You can redeem a specific number of units (partial) or all units (full redemption). For SWP (Systematic Withdrawal Plan), set up automatic monthly redemptions — ideal for retirement income.</div>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">Login to your AMC / MFD Portal</div>
+          <div class="step-desc">Access through AMC website, CAMS, KFintech, or your MFD (Ace Financial Services). Use your registered folio number and credentials.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Select Fund and Enter Units / Amount</div>
+          <div class="step-desc">Choose the fund, specify number of units or amount to redeem. System shows estimated redemption value at current NAV.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Confirm and Authenticate</div>
+          <div class="step-desc">Confirm via OTP sent to your registered mobile. Review exit load, tax implications if any. Proceed only after verifying all details.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">Receive Credit in Bank Account</div>
+          <div class="step-desc">Proceeds are credited ONLY to your registered bank account (no third-party transfers allowed). You receive a redemption confirmation statement.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══ SIP VS LUMPSUM ══ -->
+  <div class="section" id="sip-lumpsum">
+    <div class="section-title">SIP vs Lumpsum — Which is Right for You?</div>
+    <div class="section-sub">Two ways to invest, each with distinct advantages</div>
+
+    <div class="info-grid">
+      <div class="info-card featured">
+        <div class="ic-icon">📅</div>
+        <div class="ic-title">SIP — Systematic Investment Plan</div>
+        <div class="ic-text">Invest a fixed amount every month (minimum ₹100-500). Rupee Cost Averaging reduces timing risk. Best for salaried investors. Builds discipline. Works best in volatile markets. Auto-debit from bank account.</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">💰</div>
+        <div class="ic-title">Lumpsum Investment</div>
+        <div class="ic-text">Invest a large amount at once. Best when markets are at low valuations. Requires timing judgment. Higher upside if market rises from entry point. Suitable for windfalls, bonus, or inheritance.</div>
+      </div>
+    </div>
+
+    <div class="prose">
+      <h3>Power of Compounding — Why Starting Early Matters</h3>
+      <p>₹5,000 SIP per month for 20 years at 12% annual return = <strong>₹49.96 lakhs</strong> (invested ₹12 lakhs, gained ₹37.96 lakhs)</p>
+      <p>₹5,000 SIP per month for 30 years at 12% annual return = <strong>₹1.76 crores</strong> (invested ₹18 lakhs, gained ₹1.58 crores)</p>
+      <p><strong>10 extra years of SIP turns ₹49.96 lakhs into ₹1.76 crores.</strong> This is the miracle of compounding — time is your greatest asset.</p>
+      <h3>STP — Systematic Transfer Plan</h3>
+      <p>Park lumpsum in a Liquid/Overnight Fund, then set up automatic weekly/monthly transfer to Equity Fund. Gets you the benefit of both lumpsum (immediate deployment) and SIP (gradual equity entry).</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══ GLOSSARY ══ -->
+  <div class="section" id="glossary">
+    <div class="section-title">Key Terms Glossary</div>
+    <div class="section-sub">Essential Mutual Fund terminology every investor should know</div>
+
+    <div class="info-grid">
+      <div class="info-card"><div class="ic-icon">📖</div><div class="ic-title">AUM (Assets Under Management)</div><div class="ic-text">Total market value of all assets managed by a Mutual Fund scheme. Larger AUM generally indicates investor confidence but very large AUM can limit small-cap fund agility.</div></div>
+      <div class="info-card"><div class="ic-icon">📖</div><div class="ic-title">Benchmark Index</div><div class="ic-text">A reference index (e.g. Nifty 50, BSE Sensex) against which fund performance is compared. A fund that consistently beats its benchmark is considered well-managed.</div></div>
+      <div class="info-card"><div class="ic-icon">📖</div><div class="ic-title">Alpha (α)</div><div class="ic-text">Excess return generated by a fund over its benchmark. Positive alpha means fund outperformed. Created by fund manager's skill. Goal of every active fund manager.</div></div>
+      <div class="info-card"><div class="ic-icon">📖</div><div class="ic-title">Beta (β)</div><div class="ic-text">Measure of fund's sensitivity to market movements. Beta of 1 = moves with market. Beta >1 = more volatile than market. Beta <1 = less volatile. Lower beta = more defensive fund.</div></div>
+      <div class="info-card"><div class="ic-icon">📖</div><div class="ic-title">Standard Deviation</div><div class="ic-text">Measures volatility of fund returns. Higher standard deviation = more volatile returns. Lower = more consistent returns. Compare funds in same category for meaningful analysis.</div></div>
+      <div class="info-card"><div class="ic-icon">📖</div><div class="ic-title">Sharpe Ratio</div><div class="ic-text">Risk-adjusted return measure. Higher Sharpe Ratio = better return per unit of risk taken. Compare funds with same category — choose fund with higher Sharpe Ratio.</div></div>
+      <div class="info-card"><div class="ic-icon">📖</div><div class="ic-title">CAGR (Compounded Annual Growth Rate)</div><div class="ic-text">The annualised return of an investment over a specified period. Best way to compare long-term fund performance. All returns on this platform are shown as CAGR.</div></div>
+      <div class="info-card"><div class="ic-icon">📖</div><div class="ic-title">XIRR (Extended Internal Rate of Return)</div><div class="ic-text">The true annualised return of SIP investments accounting for different cash flow dates. Use XIRR — not simple CAGR — to measure actual SIP portfolio returns.</div></div>
+      <div class="info-card"><div class="ic-icon">📖</div><div class="ic-title">Folio Number</div><div class="ic-text">Unique account number assigned to you by an AMC for each fund family. Multiple funds from same AMC share one folio. Needed for redemptions, statements, and KYC updates.</div></div>
+      <div class="info-card"><div class="ic-icon">📖</div><div class="ic-title">SID / SAI / KIM</div><div class="ic-text">SID = Scheme Information Document (complete fund details). SAI = Statement of Additional Information. KIM = Key Information Memorandum (summary). All mandatory SEBI documents for every fund.</div></div>
+      <div class="info-card"><div class="ic-icon">📖</div><div class="ic-title">Dividend Stripping</div><div class="ic-text">Buying fund units just before dividend/IDCW payout to claim it, then selling. SEBI and Income Tax rules restrict this. Gains within 3 months of payout are treated as short-term and taxed at slab rate.</div></div>
+      <div class="info-card"><div class="ic-icon">📖</div><div class="ic-title">Lock-in Period</div><div class="ic-text">Period during which you cannot redeem units. ELSS: 3 years. Close-ended funds: until maturity. ELSS lock-in applies per SIP instalment separately.</div></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- KAUSTUBH NOTE -->
+  <div class="quote-box" style="margin-bottom:32px;">
+    <div class="quote-mark">"</div>
+    <div class="quote-text">Every investor deserves to understand where their money goes, why it grows, and what risks they take. Knowledge is not just power — it is protection. Invest informed, stay invested, and let time do the rest.</div>
+    <div class="quote-author">— Kaustubh Valimbe · CEO, Ace Financial Services · SEBI Registered MFD · 9 Years of Investor Service</div>
+  </div>
+
+  
+  <div class="divider"></div>
+
+  <!-- ══ AMC REGISTRAR MASTER ══ -->
+  <div class="section" id="amc-registrar">
+    <div class="section-title">55 AMCs & Their Registrars</div>
+    <div class="section-sub">Every Mutual Fund in India is serviced by either CAMS or KFintech — the two SEBI-registered Registrar & Transfer Agents (RTAs). Knowing your AMC's RTA helps you access statements, update KYC, and track transactions.</div>
+
+    <div class="highlight">
+      <div class="highlight-title">📌 What is an RTA (Registrar & Transfer Agent)?</div>
+      <p>CAMS (Computer Age Management Services) and KFintech (Karvy Fintech) are SEBI-registered RTAs. They maintain investor records, process transactions, send account statements, and handle KYC on behalf of AMCs. Your Consolidated Account Statement (CAS) is generated from both RTAs combined — available at <strong>mfcentral.com</strong>.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+
+      <!-- CAMS -->
+      <div>
+        <div style="background:linear-gradient(135deg,#1e40af,#2563eb);border-radius:12px 12px 0 0;padding:14px 20px;display:flex;align-items:center;gap:12px;">
+          <div style="width:36px;height:36px;background:rgba(255,255,255,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#fff;font-family:var(--fm);">C</div>
+          <div>
+            <div style="font-family:var(--fh);font-size:16px;font-weight:800;color:#fff;">CAMS</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.7);">Computer Age Management Services · 26 AMCs</div>
+          </div>
+        </div>
+        <div style="background:#fff;border:1.5px solid #bfdbfe;border-top:none;border-radius:0 0 12px 12px;overflow:hidden;">
+          <table style="width:100%;border-collapse:collapse;font-size:12px;">
+            <thead>
+              <tr style="background:#eff6ff;">
+                <th style="padding:8px 14px;text-align:left;font-size:10px;font-weight:800;color:#1e40af;text-transform:uppercase;letter-spacing:.5px;">#</th>
+                <th style="padding:8px 14px;text-align:left;font-size:10px;font-weight:800;color:#1e40af;text-transform:uppercase;letter-spacing:.5px;">AMC Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid #eff6ff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">1</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">360 One Mutual Fund <span style="font-size:10px;color:var(--t5);">(Earlier IIFL)</span></td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;background:#f8faff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">2</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Aditya Birla Sun Life Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">3</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">AlphaGrep Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;background:#f8faff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">4</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Angel One Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">5</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">ASK Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;background:#f8faff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">6</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Bandhan Mutual Fund <span style="font-size:10px;color:var(--t5);">(Earlier IDFC)</span></td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">7</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Choice Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;background:#f8faff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">8</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">DSP BlackRock Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">9</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Franklin Templeton Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;background:#f8faff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">10</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">HDFC Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">11</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Helios Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;background:#f8faff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">12</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">HSBC Global Asset Management <span style="font-size:10px;color:var(--t5);">(Earlier L&amp;T)</span></td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">13</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">ICICI Prudential Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;background:#f8faff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">14</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">IL&amp;FS Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">15</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Jio BlackRock Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;background:#f8faff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">16</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Kotak Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">17</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Mahindra Manulife Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;background:#f8faff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">18</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Navi AMC <span style="font-size:10px;color:var(--t5);">(Earlier Essel MF)</span></td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">19</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">PPFAS Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;background:#f8faff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">20</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">SBI Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">21</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Shriram Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;background:#f8faff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">22</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">TATA Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">23</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Unifi Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;background:#f8faff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">24</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Union Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #eff6ff;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">25</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">White Oak AMC <span style="font-size:10px;color:var(--t5);">(Yes MF)</span></td></tr>
+              <tr><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">26</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Zerodha Mutual Fund</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="background:#eff6ff;border-radius:0 0 10px 10px;padding:10px 14px;font-size:11px;color:#1e40af;font-weight:700;margin-top:-1px;">
+          🌐 Statement: <a href="https://www.camsonline.com" target="_blank" style="color:#1e40af;">camsonline.com</a> &nbsp;|&nbsp; 
+          📞 1800-419-2267 &nbsp;|&nbsp;
+          🔗 <a href="https://www.mfcentral.com" target="_blank" style="color:#1e40af;">mfcentral.com</a> (Combined CAS)
+        </div>
+      </div>
+
+      <!-- KFINTECH -->
+      <div>
+        <div style="background:linear-gradient(135deg,#065f46,#059669);border-radius:12px 12px 0 0;padding:14px 20px;display:flex;align-items:center;gap:12px;">
+          <div style="width:36px;height:36px;background:rgba(255,255,255,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#fff;font-family:var(--fm);">K</div>
+          <div>
+            <div style="font-family:var(--fh);font-size:16px;font-weight:800;color:#fff;">KFintech</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.7);">Karvy Fintech · 29 AMCs</div>
+          </div>
+        </div>
+        <div style="background:#fff;border:1.5px solid #a7f3d0;border-top:none;border-radius:0 0 12px 12px;overflow:hidden;">
+          <table style="width:100%;border-collapse:collapse;font-size:12px;">
+            <thead>
+              <tr style="background:#ecfdf5;">
+                <th style="padding:8px 14px;text-align:left;font-size:10px;font-weight:800;color:#065f46;text-transform:uppercase;letter-spacing:.5px;">#</th>
+                <th style="padding:8px 14px;text-align:left;font-size:10px;font-weight:800;color:#065f46;text-transform:uppercase;letter-spacing:.5px;">AMC Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid #ecfdf5;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">1</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Abakkus Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;background:#f0fdf4;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">2</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Axis Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">3</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Bajaj Finserv Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;background:#f0fdf4;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">4</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Bank of India Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">5</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Baroda BNP Paribas Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;background:#f0fdf4;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">6</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Canara Robeco Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">7</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Capitalmind Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;background:#f0fdf4;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">8</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Edelweiss Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">9</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Groww Mutual Fund <span style="font-size:10px;color:var(--t5);">(India Bulls)</span></td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;background:#f0fdf4;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">10</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">INVESCO Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">11</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">ITI Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;background:#f0fdf4;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">12</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">JM Financial Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">13</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Lakshya Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;background:#f0fdf4;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">14</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">LIC Mutual Fund <span style="font-size:10px;color:var(--t5);">(Earlier IDBI)</span></td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">15</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Mirae Asset Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;background:#f0fdf4;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">16</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Monarch Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">17</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Motilal Oswal Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;background:#f0fdf4;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">18</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Nippon India Mutual Fund <span style="font-size:10px;color:var(--t5);">(Earlier Reliance)</span></td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">19</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">NJ Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;background:#f0fdf4;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">20</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Old Bridge Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">21</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">PGIM India Mutual Fund <span style="font-size:10px;color:var(--t5);">(Earlier DHFL)</span></td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;background:#f0fdf4;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">22</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Quant Mutual Fund <span style="font-size:10px;color:var(--t5);">(Earlier Escorts)</span></td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">23</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Quantum Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;background:#f0fdf4;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">24</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">SAMCO Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">25</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Sundaram Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;background:#f0fdf4;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">26</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Taurus Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">27</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">The Wealth Company Mutual Fund</td></tr>
+              <tr style="border-bottom:1px solid #ecfdf5;background:#f0fdf4;"><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">28</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">Trust Mutual Fund</td></tr>
+              <tr><td style="padding:8px 14px;color:var(--t5);font-family:var(--fm);font-size:11px;">29</td><td style="padding:8px 14px;font-weight:600;color:var(--t1);">UTI Mutual Fund</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="background:#ecfdf5;border-radius:0 0 10px 10px;padding:10px 14px;font-size:11px;color:#065f46;font-weight:700;margin-top:-1px;">
+          🌐 Statement: <a href="https://www.kfintech.com" target="_blank" style="color:#065f46;">kfintech.com</a> &nbsp;|&nbsp;
+          📞 1800-309-4001 &nbsp;|&nbsp;
+          🔗 <a href="https://www.mfcentral.com" target="_blank" style="color:#065f46;">mfcentral.com</a> (Combined CAS)
+        </div>
+      </div>
+
+    </div><!-- /grid -->
+
+    <div class="amfi-bar" style="margin-top:16px;">
+      💡 <span>To get your <strong>Consolidated Account Statement (CAS)</strong> covering ALL 55 AMCs in one PDF — visit <strong><a href="https://www.mfcentral.com" target="_blank" style="color:var(--g1);">mfcentral.com</a></strong> · Enter PAN + registered mobile OTP · Download instantly · Free of cost.</span>
+    </div>
+  </div>
+
+
+<div class="amfi-bar">
+    📚 <span>Content sourced from <strong>AMFI Knowledge Centre (amfiindia.com)</strong>, SEBI Investor Education portal, and Finance Act 2024. This page is for <strong>investor education and awareness only</strong> and does not constitute investment advice. For personalised advice, consult a SEBI-registered investment advisor.</span>
+  </div>
+
+</div><!-- /container -->
+
+<div class="adv-bar">
+  <div class="adv-info">
+    <div class="adv-av">KV</div>
+    <div><div class="adv-name">Kaustubh Valimbe</div><div class="adv-role">CEO · Ace Financial Services · SEBI ARN · AMFI Certified MFD</div></div>
+  </div>
+  <div class="adv-links">
+    <a href="index.html" class="adv-link al-h">🏠 Home</a>
+    <a href="kaustubhvalimbe.html" class="adv-link al-a">👤 Founder</a>
+  </div>
+</div>
+
+<div class="sebi-disclaimer">
+  <div class="sebi-disc-inner">
+    <div class="sebi-disc-text"><strong>SEBI/AMFI Mandatory Disclaimer:</strong> Mutual Fund investments are subject to market risks. Please read all scheme related documents carefully before investing. Past performance is not indicative of future returns. This page is for investor education only and does not constitute investment advice. Ace Financial Services — SEBI Registered Mutual Fund Distributor (ARN Holder). Registration does not guarantee performance of the scheme or assurance of returns to investors.</div>
+  </div>
+</div>
+
+<script>
+
+// Mobile hamburger menu
+(function(){
+  var nav=document.querySelector('nav');
+  if(!nav) return;
+  var overlay=document.createElement('div');
+  overlay.className='mob-nav-overlay';
+  document.body.appendChild(overlay);
+  var drawer=document.createElement('div');
+  drawer.className='mob-nav-drawer';
+  var navLinks=document.querySelector('.nav-links');
+  if(navLinks){
+    var brand=document.createElement('div');
+    brand.className='mnd-brand';
+    brand.innerHTML='<div style="font-family:serif;font-size:15px;font-weight:900;color:#3c3197;">Ace Financial <span style="color:#5a8a10;">Services</span></div><div style="font-size:10px;color:#9ca3af;margin-top:2px;">SEBI ARN · AMFI Registered MFD</div>';
+    drawer.appendChild(brand);
+    navLinks.querySelectorAll('a').forEach(function(link){
+      var a=document.createElement('a');
+      a.href=link.href;
+      a.innerHTML=link.innerHTML;
+      if(link.classList.contains('on')) a.classList.add('on');
+      drawer.appendChild(a);
+    });
+  }
+  document.body.appendChild(drawer);
+  var btn=document.createElement('button');
+  btn.className='mob-menu-btn';
+  btn.innerHTML='☰';
+  nav.appendChild(btn);
+  function open(){drawer.classList.add('open');overlay.classList.add('open');btn.innerHTML='✕';}
+  function close(){drawer.classList.remove('open');overlay.classList.remove('open');btn.innerHTML='☰';}
+  btn.addEventListener('click',function(){drawer.classList.contains('open')?close():open();});
+  overlay.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+})();
+
+</script>
+</body>
+</html>

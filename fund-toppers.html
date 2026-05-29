@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Fund Toppers — Ace Financial Services</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --p1:#2d2478;--p2:#3c3197;--p3:#6b63c9;--p4:#f0effe;
+  --g1:#5a8a10;--g2:#8bc32a;--g4:#d4eda0;--g5:#f5fce8;
+  --bg:#f7faf0;--t1:#1a1240;--t4:#6b7280;--t5:#9ca3af;
+  --red:#dc2626;--gold:#d97706;--orange:#ea580c;
+  --fh:"Playfair Display",serif;--fb:"Plus Jakarta Sans",sans-serif;--fm:"JetBrains Mono",monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--t1);font-family:var(--fb);min-height:100vh;}
+nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(60,49,151,.08);}
+.brand{display:flex;align-items:center;gap:9px;text-decoration:none;}
+.bi{width:36px;height:36px;background:linear-gradient(135deg,var(--p2),var(--g2));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;font-weight:900;}
+.bn{font-family:var(--fh);font-size:13px;font-weight:900;color:var(--p2);}
+.bn em{color:var(--g1);font-style:normal;}
+.bs{font-size:10px;color:var(--t5);font-family:var(--fm);}
+.nav-links{display:flex;gap:2px;}
+.nav-links a{text-decoration:none;font-size:12px;font-weight:700;padding:6px 11px;border-radius:7px;color:var(--t4);transition:all .2s;}
+.nav-links a:hover{background:var(--g5);color:var(--g1);}
+.nav-links a.on{background:var(--p2);color:#fff;}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--p1),var(--p2) 40%,#1e5a0a 75%,var(--g1));padding:18px 22px;position:relative;overflow:hidden;}
+.hero::after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);background-size:22px 22px;pointer-events:none;}
+.hero-in{position:relative;z-index:1;}
+.hero h1{font-family:var(--fh);font-size:22px;font-weight:900;color:#fff;}
+.hero h1 span{color:#b8e05a;}
+.hero p{color:rgba(255,255,255,.75);font-size:12px;margin-top:4px;line-height:1.6;max-width:700px;}
+
+/* LAYOUT */
+.wrap{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 140px);}
+
+/* LEFT PANEL */
+.left{background:#fff;border-right:2px solid var(--g4);padding:14px;overflow-y:auto;position:sticky;top:60px;height:calc(100vh - 60px);}
+.panel-title{font-family:var(--fh);font-size:13px;font-weight:900;color:var(--p2);margin-bottom:12px;}
+.sec{margin-bottom:14px;border-bottom:1px solid var(--g5);padding-bottom:12px;}
+.sec:last-child{border-bottom:none;}
+.sec-title{font-size:10px;font-weight:800;color:var(--t5);text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px;}
+.nature-btns{display:flex;flex-direction:column;gap:4px;}
+.nbtn{padding:7px 11px;border-radius:8px;border:1.5px solid var(--g4);background:#fff;font-size:12px;font-weight:700;color:var(--t4);cursor:pointer;transition:all .2s;text-align:left;}
+.nbtn:hover{border-color:var(--p3);color:var(--p2);}
+.nbtn.on{background:var(--p2);border-color:var(--p2);color:#fff;}
+.cat-group{margin-bottom:10px;}
+.cat-group-title{font-size:11px;font-weight:800;color:var(--p2);margin-bottom:5px;display:flex;align-items:center;gap:6px;}
+.sub-btns{display:flex;flex-direction:column;gap:3px;}
+.sbtn{padding:6px 10px;border-radius:7px;border:none;background:transparent;font-size:11px;font-weight:700;color:var(--t4);cursor:pointer;transition:all .2s;text-align:left;width:100%;}
+.sbtn:hover{background:var(--g5);color:var(--g1);}
+.sbtn.on{background:var(--p2);color:#fff;}
+
+/* SORT BAR */
+.sort-bar{background:#fff;border-bottom:2px solid var(--g4);padding:10px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.sort-lbl{font-size:11px;font-weight:800;color:var(--t5);text-transform:uppercase;letter-spacing:.5px;}
+.sort-btn{padding:5px 12px;border-radius:16px;border:1.5px solid var(--g4);background:#fff;font-size:11px;font-weight:700;color:var(--t4);cursor:pointer;transition:all .2s;}
+.sort-btn:hover{border-color:var(--p3);color:var(--p2);}
+.sort-btn.on{background:var(--p2);border-color:var(--p2);color:#fff;}
+
+/* RIGHT PANEL */
+.right{padding:16px;}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+.section-title{font-family:var(--fh);font-size:18px;font-weight:900;color:var(--p2);display:flex;align-items:center;gap:8px;}
+.section-title::before{content:"";display:block;width:4px;height:20px;background:linear-gradient(var(--p2),var(--g2));border-radius:2px;}
+.section-sub{font-size:11px;color:var(--t4);margin-top:2px;}
+.badge-plan{padding:4px 12px;border-radius:16px;font-size:11px;font-weight:700;font-family:var(--fm);}
+.bp-dir{background:var(--g5);color:var(--g1);border:1.5px solid var(--g4);}
+.bp-reg{background:var(--p4);color:var(--p2);border:1.5px solid #c4b5fd;}
+
+/* TOPPERS TABLE */
+.toppers-wrap{background:#fff;border:2px solid var(--g4);border-radius:14px;overflow:hidden;margin-bottom:20px;}
+.toppers-hdr{background:linear-gradient(135deg,var(--p4),var(--g5));padding:12px 16px;display:flex;align-items:center;justify-content:space-between;}
+.toppers-hdr-title{font-family:var(--fh);font-size:14px;font-weight:900;color:var(--p2);}
+.toppers-hdr-sub{font-size:11px;color:var(--t4);font-family:var(--fm);}
+.toppers-tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.toppers-tbl thead th{background:linear-gradient(135deg,var(--p1),var(--p2));color:#fff;padding:10px 12px;font-weight:800;font-size:11px;text-align:center;font-family:var(--fm);}
+.toppers-tbl thead th:first-child{text-align:left;min-width:30px;width:36px;}
+.toppers-tbl thead th:nth-child(2){text-align:left;min-width:200px;}
+.toppers-tbl thead th:last-child{background:linear-gradient(135deg,var(--g1),var(--g2));}
+.toppers-tbl tbody tr{transition:background .15s;}
+.toppers-tbl tbody tr:hover td{background:var(--g5);}
+.toppers-tbl tbody tr:nth-child(even) td{background:var(--bg);}
+.toppers-tbl td{padding:11px 12px;border-bottom:1px solid var(--g4);vertical-align:middle;}
+.toppers-tbl td:first-child{text-align:center;}
+.toppers-tbl td:nth-child(n+3){text-align:center;font-family:var(--fm);font-size:12px;font-weight:700;}
+.rank-badge{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff;margin:0 auto;}
+.r1{background:linear-gradient(135deg,#d97706,#f59e0b);}
+.r2{background:linear-gradient(135deg,#6b7280,#9ca3af);}
+.r3{background:linear-gradient(135deg,#b45309,#d97706);}
+.rn{background:var(--p2);}
+.fund-name{font-size:12px;font-weight:800;color:var(--t1);line-height:1.3;}
+.fund-amc{font-size:10px;color:var(--t4);margin-top:2px;}
+.ret-pos{color:var(--g1);}
+.ret-neg{color:var(--red);}
+.ret-nil{color:var(--t5);}
+.si-cell{background:linear-gradient(135deg,var(--p4),var(--g5))!important;color:var(--p2)!important;font-weight:900!important;}
+.loading-msg{text-align:center;padding:32px;color:var(--t5);}
+.empty-msg{text-align:center;padding:40px;}
+.empty-msg h3{font-family:var(--fh);font-size:16px;color:var(--t4);}
+
+/* INSIGHT BOX */
+.insight-box{background:linear-gradient(135deg,var(--p4),var(--g5));border:1.5px solid #c4b5fd;border-radius:12px;padding:14px 18px;margin-bottom:16px;}
+.insight-box p{font-size:12px;color:var(--p2);line-height:1.7;}
+.insight-box strong{color:var(--p2);}
+
+/* FOOTER */
+.adv-bar{background:linear-gradient(135deg,var(--p1),var(--p2));padding:11px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px;border-top:3px solid var(--g4);}
+.adv-info{display:flex;align-items:center;gap:9px;}
+.adv-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--g2),var(--g1));display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:12px;font-weight:900;color:#fff;}
+.adv-name{font-family:var(--fh);font-size:13px;font-weight:800;color:#fff;}
+.adv-role{font-size:10px;color:rgba(255,255,255,.6);font-family:var(--fm);}
+.adv-links{display:flex;gap:7px;}
+.adv-link{padding:5px 13px;border-radius:7px;font-size:12px;font-weight:700;text-decoration:none;}
+.al-h{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#fff;}
+.al-a{background:var(--g2);color:#fff;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--g5);}
+::-webkit-scrollbar-thumb{background:var(--g4);border-radius:3px;}
+@media(max-width:900px){.wrap{grid-template-columns:1fr;}.left{position:static;height:auto;}}
+
+
+
+
+
+
+
+
+/* Detail Panel Base Rules */
+
+
+
+
+
+
+/* ═══ DETAIL PANEL CSS (from Fund Discovery) ═══ */
+.overlay.open{display:block;}
+.detail-panel{
+  position:fixed;top:0;right:-680px;width:680px;height:100vh;
+  background:#fff;z-index:300;
+  display:flex;flex-direction:column;
+  transition:right .32s cubic-bezier(.4,0,.2,1);
+  box-shadow:-8px 0 40px rgba(60,49,151,.18);
+}
+.detail-panel.open{right:0;}
+.dp-header{
+  background:linear-gradient(135deg,var(--p1),var(--p2) 40%,#1e5a0a 80%,var(--g1));
+  padding:18px 22px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+  flex-shrink:0;
+}
+.dp-title{font-family:var(--fh);font-size:17px;font-weight:900;color:#fff;line-height:1.3;flex:1;}
+.dp-amc{font-size:11px;color:rgba(255,255,255,.7);margin-top:4px;font-family:var(--fm);}
+.dp-close{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+.dp-close:hover{background:rgba(255,255,255,.35);}
+.dp-body{flex:1;overflow-y:auto;padding:0;}
+.dtabs{display:flex;border-bottom:2px solid var(--g4);background:#fff;padding:0 16px;overflow-x:auto;}
+.dtab{padding:12px 16px;font-size:12px;font-weight:800;color:var(--t4);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s;}
+.dtab:hover{color:var(--p2);}
+.dtab.on{color:var(--p2);border-bottom-color:var(--p2);}
+.dtab-content{display:none;padding:18px;}
+.dtab-content.on{display:block;}
+.ds{background:var(--bg);border:2px solid var(--g4);border-radius:11px;padding:0;margin-bottom:14px;overflow:hidden;}
+.ds-title{font-family:var(--fh);font-size:13px;font-weight:800;color:var(--p2);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+.ds-title::before{content:"";display:block;width:3px;height:15px;background:linear-gradient(var(--p2),var(--g2));border-radius:2px;}
+.info-row:last-child{border-bottom:none;}
+.ret-card{background:#fff;border:1.5px solid var(--g4);border-radius:9px;padding:12px;text-align:center;}
+.rc-lbl{font-size:10px;color:var(--t5);font-family:var(--fm);font-weight:700;}
+.rc-val{font-family:var(--fm);font-size:18px;font-weight:800;margin-top:5px;}
+.rc-sub{font-size:10px;color:var(--t5);margin-top:3px;}
+.risk-card{background:#fff;border:1.5px solid var(--g4);border-radius:9px;padding:12px;text-align:center;}
+.ret-cell{background:#fff;border-radius:7px;padding:8px 5px;text-align:center;border:1px solid var(--g4);}
+.ret-lbl{font-size:9px;color:var(--t5);font-family:var(--fm);font-weight:700;}
+.ret-val{font-family:var(--fm);font-size:12px;font-weight:800;margin-top:3px;}
+.rv-pos{color:var(--g1);}
+.rv-neg{color:var(--red);}
+.rv-nil{color:var(--t5);}
+.hw-bar{height:4px;background:var(--g2);border-radius:2px;margin-top:4px;}
+.chart-wrap canvas{display:block;}
+.cpb{padding:4px 10px;border-radius:20px;border:1.5px solid var(--g4);background:#fff;font-size:11px;font-weight:700;color:var(--t4);cursor:pointer;transition:all .2s;}
+.cpb:hover{border-color:var(--p3);}
+.cpb.on{background:var(--p2);border-color:var(--p2);color:#fff;}
+.rating-title{font-size:13px;font-weight:800;color:var(--t1);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.stars{display:flex;gap:3px;}
+.star{font-size:20px;}
+.star.on{color:var(--gold);}
+.star.off{color:var(--g4);}
+.rating-desc{font-size:12px;color:var(--t4);line-height:1.6;margin-top:8px;}
+.rating-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+/* removed bad override */
+.ret-grid{grid-template-columns:1fr 1fr;}
+.risk-grid{grid-template-columns:1fr 1fr;}
+.overlay{position:fixed;inset:0;background:rgba(26,18,64,.45);z-index:299;display:none;backdrop-filter:blur(3px);}
+
+/* Tab content CSS */
+.ik{color:var(--t4);font-weight:700;font-size:12px;padding-right:20px;min-width:160px;}
+.iv{color:var(--t1);font-weight:700;font-size:12px;font-family:var(--fm);text-align:right;}
+.ret-row{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:6px;}
+.rk-lbl{font-size:10px;color:var(--t5);font-family:var(--fm);font-weight:700;}
+.rk-val{font-family:var(--fm);font-size:16px;font-weight:800;margin-top:4px;color:var(--t1);}
+.rk-desc{font-size:10px;color:var(--t4);margin-top:3px;}
+.holdings-table{width:100%;border-collapse:collapse;font-size:12px;}
+.holdings-table th{font-size:10px;font-weight:800;color:var(--t4);text-transform:uppercase;padding:8px 10px;border-bottom:2px solid var(--g4);background:var(--g5);text-align:left;}
+.holdings-table td{padding:9px 10px;border-bottom:1px solid var(--g5);}
+.holdings-table tr:hover td{background:var(--g5);}
+.sector-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--g5);}
+.sector-nm{font-size:12px;font-weight:700;color:var(--t1);flex:1;}
+.sector-pct{font-family:var(--fm);font-size:12px;font-weight:800;color:var(--p2);width:42px;text-align:right;}
+.sector-bar{flex:2;height:6px;background:var(--g4);border-radius:3px;overflow:hidden;}
+.sector-fill{height:100%;background:linear-gradient(90deg,var(--p2),var(--g2));border-radius:3px;}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-bottom:1px solid var(--g4);background:#fff;}
+.info-row:nth-child(even){background:var(--g5);}
+.info-row:last-child{border-bottom:none;}
+.info-row:hover{background:var(--p4);}
+
+/* SEBI/AMFI Disclaimer */
+.sebi-disclaimer{background:#1a1240;border-top:3px solid var(--gold,#d97706);padding:12px 20px;position:relative;}
+.sebi-disc-inner{display:flex;align-items:flex-start;gap:10px;max-width:1400px;margin:0 auto;}
+.sebi-disc-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+.sebi-disc-text{font-size:10px;color:rgba(255,255,255,.75);line-height:1.7;font-family:var(--fb,"Plus Jakarta Sans",sans-serif);}
+.sebi-disc-text strong{color:var(--gold,#d97706);font-size:10px;}
+@media print{
+  .sebi-disclaimer{background:#fff!important;border:2px solid #000!important;padding:10px!important;}
+  .sebi-disc-text{color:#000!important;font-size:9px!important;}
+  .sebi-disc-text strong{color:#000!important;}
+}
+</style>
+<style>
+
+/* ══ MOBILE RESPONSIVE — ACE FINANCIAL SERVICES ══ */
+.mob-menu-btn{display:none;background:none;border:none;font-size:22px;cursor:pointer;color:#1a1240;padding:4px 8px;border-radius:6px;align-items:center;}
+.mob-nav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199;}
+.mob-nav-overlay.open{display:block;}
+.mob-nav-drawer{position:fixed;top:0;left:-280px;width:280px;height:100vh;background:#fff;z-index:200;transition:left .3s ease;overflow-y:auto;box-shadow:4px 0 20px rgba(0,0,0,.15);padding:20px 0;}
+.mob-nav-drawer.open{left:0;}
+.mob-nav-drawer .mnd-brand{padding:0 20px 16px;border-bottom:1px solid #e5e7eb;margin-bottom:8px;}
+.mob-nav-drawer a{display:flex;align-items:center;gap:10px;padding:13px 20px;font-size:14px;font-weight:600;color:#4a4a6a;text-decoration:none;border-left:3px solid transparent;}
+.mob-nav-drawer a:hover,.mob-nav-drawer a.on{background:#f0effe;color:#3c3197;border-left-color:#3c3197;}
+
+@media(max-width:768px){
+  .nav-links{display:none!important;}
+  .mob-menu-btn{display:flex!important;}
+  nav{padding:0 14px!important;height:54px!important;}
+  .bs{display:none!important;}
+  .hero,.page-hero{padding:18px 14px!important;}
+  .hero h1,.hero-title{font-size:20px!important;line-height:1.3!important;}
+  .hero p,.hero-sub{font-size:12px!important;}
+  .hero-in{flex-direction:column!important;gap:12px!important;}
+  .hstats{flex-wrap:wrap!important;gap:6px!important;}
+  .hstat{min-width:75px!important;padding:6px 8px!important;}
+  .hstat-v{font-size:16px!important;}
+  .hstat-l{font-size:9px!important;}
+  .wrap,.layout-wrap{display:block!important;}
+  .left,.sidebar-panel{display:none!important;}
+  .right,.main-panel{padding:12px!important;width:100%!important;}
+  .stats-row,.fund-grid,.calc-grid,.info-grid{grid-template-columns:1fr!important;gap:10px!important;}
+  .table-wrap,.tbl-wrap{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;}
+  table{min-width:580px!important;font-size:12px!important;}
+  thead th{padding:8px 10px!important;font-size:10px!important;white-space:nowrap!important;}
+  tbody td{padding:8px 10px!important;font-size:12px!important;}
+  .detail-panel,.sdp,.dp{width:100%!important;right:-100%!important;max-width:100%!important;}
+  .detail-panel.open,.sdp.open,.dp.open{right:0!important;}
+  .ticker{padding:8px 12px!important;flex-direction:column!important;gap:6px!important;}
+  .ticker-left{flex-wrap:wrap!important;gap:8px!important;}
+  .mv{font-size:13px!important;}
+  .card-header{flex-direction:column!important;gap:8px!important;align-items:flex-start!important;}
+  .filter-row,.tbl-hdr{flex-direction:column!important;gap:8px!important;align-items:flex-start!important;}
+  .search-wrap,.sinp{width:100%!important;}
+  .tabs,.dtabs{flex-wrap:wrap!important;gap:4px!important;}
+  .tab,.dtab{font-size:12px!important;padding:8px 10px!important;}
+  .page-title,.tbl-title{font-size:18px!important;}
+  .adv-bar{flex-direction:column!important;gap:8px!important;padding:12px!important;}
+  .adv-links{flex-wrap:wrap!important;}
+  .risk-row{flex-direction:column!important;}
+  .kyc-grid{grid-template-columns:1fr!important;}
+  .info-grid{grid-template-columns:1fr!important;}
+  div[style*="grid-template-columns:1fr 1fr"]{display:block!important;}
+}
+@media(max-width:480px){
+  .hero h1{font-size:17px!important;}
+  .mv{font-size:12px!important;}
+  .hstat-v{font-size:14px!important;}
+}
+
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="brand">
+    <div class="bi"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAACPCAIAAADP4HHWAAAKMWlDQ1BJQ0MgUHJvZmlsZQAAeJydlndUU9kWh8+9N71QkhCKlNBraFICSA29SJEuKjEJEErAkAAiNkRUcERRkaYIMijggKNDkbEiioUBUbHrBBlE1HFwFBuWSWStGd+8ee/Nm98f935rn73P3Wfvfda6AJD8gwXCTFgJgAyhWBTh58WIjYtnYAcBDPAAA2wA4HCzs0IW+EYCmQJ82IxsmRP4F726DiD5+yrTP4zBAP+flLlZIjEAUJiM5/L42VwZF8k4PVecJbdPyZi2NE3OMErOIlmCMlaTc/IsW3z2mWUPOfMyhDwZy3PO4mXw5Nwn4405Er6MkWAZF+cI+LkyviZjg3RJhkDGb+SxGXxONgAoktwu5nNTZGwtY5IoMoIt43kA4EjJX/DSL1jMzxPLD8XOzFouEiSniBkmXFOGjZMTi+HPz03ni8XMMA43jSPiMdiZGVkc4XIAZs/8WRR5bRmyIjvYODk4MG0tbb4o1H9d/JuS93aWXoR/7hlEH/jD9ld+mQ0AsKZltdn6h21pFQBd6wFQu/2HzWAvAIqyvnUOfXEeunxeUsTiLGcrq9zcXEsBn2spL+jv+p8Of0NffM9Svt3v5WF485M4knQxQ143bmZ6pkTEyM7icPkM5p+H+B8H/nUeFhH8JL6IL5RFRMumTCBMlrVbyBOIBZlChkD4n5r4D8P+pNm5lona+BHQllgCpSEaQH4eACgqESAJe2Qr0O99C8ZHA/nNi9GZmJ37z4L+fVe4TP7IFiR/jmNHRDK4ElHO7Jr8WgI0IABFQAPqQBvoAxPABLbAEbgAD+ADAkEoiARxYDHgghSQAUQgFxSAtaAYlIKtYCeoBnWgETSDNnAYdIFj4DQ4By6By2AE3AFSMA6egCnwCsxAEISFyBAVUod0IEPIHLKFWJAb5AMFQxFQHJQIJUNCSAIVQOugUqgcqobqoWboW+godBq6AA1Dt6BRaBL6FXoHIzAJpsFasBFsBbNgTzgIjoQXwcnwMjgfLoK3wJVwA3wQ7oRPw5fgEVgKP4GnEYAQETqiizARFsJGQpF4JAkRIauQEqQCaUDakB6kH7mKSJGnyFsUBkVFMVBMlAvKHxWF4qKWoVahNqOqUQdQnag+1FXUKGoK9RFNRmuizdHO6AB0LDoZnYsuRlegm9Ad6LPoEfQ4+hUGg6FjjDGOGH9MHCYVswKzGbMb0445hRnGjGGmsVisOtYc64oNxXKwYmwxtgp7EHsSewU7jn2DI+J0cLY4X1w8TogrxFXgWnAncFdwE7gZvBLeEO+MD8Xz8MvxZfhGfA9+CD+OnyEoE4wJroRIQiphLaGS0EY4S7hLeEEkEvWITsRwooC4hlhJPEQ8TxwlviVRSGYkNimBJCFtIe0nnSLdIr0gk8lGZA9yPFlM3kJuJp8h3ye/UaAqWCoEKPAUVivUKHQqXFF4pohXNFT0VFysmK9YoXhEcUjxqRJeyUiJrcRRWqVUo3RU6YbStDJV2UY5VDlDebNyi/IF5UcULMWI4kPhUYoo+yhnKGNUhKpPZVO51HXURupZ6jgNQzOmBdBSaaW0b2iDtCkVioqdSrRKnkqNynEVKR2hG9ED6On0Mvph+nX6O1UtVU9Vvuom1TbVK6qv1eaoeajx1UrU2tVG1N6pM9R91NPUt6l3qd/TQGmYaYRr5Grs0Tir8XQObY7LHO6ckjmH59zWhDXNNCM0V2ju0xzQnNbS1vLTytKq0jqj9VSbru2hnaq9Q/uE9qQOVcdNR6CzQ+ekzmOGCsOTkc6oZPQxpnQ1df11Jbr1uoO6M3rGelF6hXrtevf0Cfos/ST9Hfq9+lMGOgYhBgUGrQa3DfGGLMMUw12G/YavjYyNYow2GHUZPTJWMw4wzjduNb5rQjZxN1lm0mByzRRjyjJNM91tetkMNrM3SzGrMRsyh80dzAXmu82HLdAWThZCiwaLG0wS05OZw2xljlrSLYMtCy27LJ9ZGVjFW22z6rf6aG1vnW7daH3HhmITaFNo02Pzq62ZLde2xvbaXPJc37mr53bPfW5nbse322N3055qH2K/wb7X/oODo4PIoc1h0tHAMdGx1vEGi8YKY21mnXdCO3k5rXY65vTW2cFZ7HzY+RcXpkuaS4vLo3nG8/jzGueNueq5clzrXaVuDLdEt71uUnddd457g/sDD30PnkeTx4SnqWeq50HPZ17WXiKvDq/XbGf2SvYpb8Tbz7vEe9CH4hPlU+1z31fPN9m31XfKz95vhd8pf7R/kP82/xsBWgHcgOaAqUDHwJWBfUGkoAVB1UEPgs2CRcE9IXBIYMj2kLvzDecL53eFgtCA0O2h98KMw5aFfR+OCQ8Lrwl/GGETURDRv4C6YMmClgWvIr0iyyLvRJlESaJ6oxWjE6Kbo1/HeMeUx0hjrWJXxl6K04gTxHXHY+Oj45vipxf6LNy5cDzBPqE44foi40V5iy4s1licvvj4EsUlnCVHEtGJMYktie85oZwGzvTSgKW1S6e4bO4u7hOeB28Hb5Lvyi/nTyS5JpUnPUp2Td6ePJninlKR8lTAFlQLnqf6p9alvk4LTduf9ik9Jr09A5eRmHFUSBGmCfsytTPzMoezzLOKs6TLnJftXDYlChI1ZUPZi7K7xTTZz9SAxESyXjKa45ZTk/MmNzr3SJ5ynjBvYLnZ8k3LJ/J9879egVrBXdFboFuwtmB0pefK+lXQqqWrelfrry5aPb7Gb82BtYS1aWt/KLQuLC98uS5mXU+RVtGaorH1futbixWKRcU3NrhsqNuI2ijYOLhp7qaqTR9LeCUXS61LK0rfb+ZuvviVzVeVX33akrRlsMyhbM9WzFbh1uvb3LcdKFcuzy8f2x6yvXMHY0fJjpc7l+y8UGFXUbeLsEuyS1oZXNldZVC1tep9dUr1SI1XTXutZu2m2te7ebuv7PHY01anVVda926vYO/Ner/6zgajhop9mH05+x42Rjf2f836urlJo6m06cN+4X7pgYgDfc2Ozc0tmi1lrXCrpHXyYMLBy994f9Pdxmyrb6e3lx4ChySHHn+b+O31w0GHe4+wjrR9Z/hdbQe1o6QT6lzeOdWV0iXtjusePhp4tLfHpafje8vv9x/TPVZzXOV42QnCiaITn07mn5w+lXXq6enk02O9S3rvnIk9c60vvG/wbNDZ8+d8z53p9+w/ed71/LELzheOXmRd7LrkcKlzwH6g4wf7HzoGHQY7hxyHui87Xe4Znjd84or7ldNXva+euxZw7dLI/JHh61HXb95IuCG9ybv56Fb6ree3c27P3FlzF3235J7SvYr7mvcbfjT9sV3qID0+6j068GDBgztj3LEnP2X/9H686CH5YcWEzkTzI9tHxyZ9Jy8/Xvh4/EnWk5mnxT8r/1z7zOTZd794/DIwFTs1/lz0/NOvm1+ov9j/0u5l73TY9P1XGa9mXpe8UX9z4C3rbf+7mHcTM7nvse8rP5h+6PkY9PHup4xPn34D94Tz+6TMXDkAAFaaSURBVHja7b13vF1llTe+1nqevU+9Pb0nkAAhEEIICQQpIiBNQVE6gojjOPob9R2dd3Qc33EcHUfHGcs4IygIokiv0qWXhIRUEkIgvSc3t562937WWr8/9jk3NyGB3JKG5/mcD9zcz7nn7P3s57v6+i4UETjQCxUAEECZWaEv10OATtUikLEIfwELNf6/qgqrAoC1FmDHvbe25jZubNm4vmPThuZNmzq3butsbenMdUih4KLQhWHknANFBM/6kEhCOp3I1qQGDEwPHlo3YmTT2NGNI0c3Dhlaa61f+Uhl5xSYKIkggA5gp2/sv3tzoBYABCQ+HpX/7njHe/5zt7/v+rn7B+7y3/JtvudNdX3Ie78BABDBgVpQAmIE2s31HRwgRAABAtjdJfZuiYYI/h6eygdmKSiLACKSsfGvglK4auXmN5dsXLZ0w6p3Wjdt6mhty5WKkTCpAhpERCJCRCJFRMD4oJCqqrIICFsRxxIQobXpmjozZHj6sMOHTJ40YtKxIw6bMNjzvPirHDsEj8jbB2ciAvUBFDEC8A/5xwQRAAFYVT1IQQgKiJAvRHff9VxUskS9haIKkoQhDxve8LGLT9ztDX9w8CcqqsaaWBpv3brt9bkrZ7/y9uL5Wzesy+fzEQB4nvE8S5aICFEACcQqCICAyu52hxAQyCEgIIIqgzinUSRRKMiYqdFRY2unHH/4zA8dPuWEUbU12VgLMwsRIfbjgXDAvlIYlqBQiIjKmqn3elABEFArKmxvtOZefsee36MQ7yIqOWXwk4lMhlDtwQhCYTbWPv7Y61+84bZMsgkk1N6ZN4pILILWD/5431eOOno4M/ce0gfdiq2y8iMzxgBAe0dx9stL/vzEW/PmrN+6rVMVE37K863xBFRVRQFEUSvnl8rWPgLQ7g6UAGjFHolPvUUUJEFUQcOsYRCFQeQRjRzdcPJpY8865+ipJxwe/7FzQgSI1B8GiLJT6+FTjy78zrcfrKmrFZbefeiejNH9owERAFWNDTva5FNXTf3K185jx2R2OpP2oDhdBCJ6312vNdQOyNYkRRJ9+TBjqK298+Ybn/7RTz8DIKikyADmg6D9VFTAWAsAq1ZufuSB1596csmaNduA06lktra2HlBFnIJjhwAIYAEUgXGHh4OVH/akCLDbOwGQFUCFABBACCCVtJm0p0KbN+V+/9s59/5xwTHHDD//oklnnnNUfV0dgESRs2QQUbH3UERFRAbwIqdtrSFowCyH6FNDQDTY2spBwe123w88CEXEGJo3d9X8OZuTqVQUBfHR6fUHMksmnXnumeXz5q4+/oTRzBGhd8ijT1VErPWA4M2l6/5426znnl7W2lZIppO12UYFUAlZdsYPaGUbqQcHZo8yXbtMfhYAEM+3iWStCC9YsPr12Ztv/tWsj18y8aJPnjhoUD2AcMRk+0HwIaJnrbUGEQ9ZECoasB6YPezHwaEJgR6457Ww5CVTxNwPxgwiRGHi5puenTL1OgUFRcBD2D8URjJira5as+W3N7301J8W53OQzdTU1ydZhVkAJI6v7GfBwMwAmE7VYyba1tz68/94/p4/vv6JT0+5/KpT6uqyIqyKRNgPEkj10PbwFVRhT3dwgP0lVTVkNqzf/sKzb2aynjD3yyWJSLYm8cqLK15+6S1rEizukNWAwCzGYhjATb98+ZrLfn3PnQsBk7X1GTUlp0VVjm1w0ANlb6vTKBJnfFvXWNveCv/9k5euvuQX99/9KgAZQ8y8s1D9YMere+eNHUAdreg4AoQH73u9uaVgPCoH7vpnMUjitl8/wyxIh5Alg5UAiagoYGStmT37nWuu+MVPf/J0VPQa69OIylICRVD/XZbnAQAhoSO1yL44tR7WN9Zt3szf+ebDf/XZXy19Y621VkFEtNutVdfBoglVQayhjvbCY39akE42CPfnp7PYdA2+9urG555easgIH1oCGJmVDInQz//ryb+5/ra3l7U01DcaIyxOFUC9Pcfk97849SroUlVldp5v6uob5r7a+rlrbrzxvx8VVmOIJQBQUFtF3UEDQiURR+Q989Qba1a1JRIJLYfg++3WBJRM5re3vBBFDAiHiE8hAOCcWms3bGj56+tu/9XPXvYTmXS6htmpKigdfEad7s5djDK1CNLw85+8+NefvXH1ii3WJFgKgFxF3cEDQiSyzvGD98zzTFKxBMDd4uN9//iIOZGu0YXzNjz52JKyc3KwOyQKIMzO88zc11Zdf9WvXpu1pmFAjYITCQFdN3v1EFhOIjBRQ+PAua9t+dyVNz792CJrslIOsej71YVVQbjvT1ukDolee+2dhQs3pTK+MPbvIyEFAwICnpf83W+eL5VCYxCVQQ/OBx8nddE5ttZ77JHXv3TDrdububY+4ZxDxUp6/VCyqEk9UHVcytZmcgXv7776x1/+9+OGLKJIOVRW9Q8PJAjjmkW5/67XnbNIvG+uREUgnfaXLtn4pwcXEBlmBDw4HzwDOBHneYk//m7WN//PA2g0kfDYaSXPfigqDa34t2w8yqaH/PdPnv/m398ZBmiMLyKAXA2WHjAQqqi15p13Nr38/Kps1mfeh06OiCaS2d/99uVcroSGVOWgPK0cRWyt9/tbX/rBPz+RzmYIMwdFWW8/3Z9CUSHf2DjgoXsXf+VLv+voLBgTSmQqLm4VhAfgzCkAPHj30s6OkvEDkH3Y7qCqyZR95+3N9931OhGJHGwqBUFBGHw/8cfbZv37vz6crUsooGj4ATpmCJpQUOZSY2Pt8y+88zdf+E3bdmM8FI2qINy/IFQE5DhB39zS+cTji9KZtHBczrIPscHKqVTDH//wXEtrnogqYVI5OGwhcY6t9R97ZO4P//XxbE0DgIAqwgdPRSAAOecG1GcXzmn+8hdvbmnLG0PM0V+4c7h/nzQxqBVRQHj80Xkb17f7flIFAfZt2FoFk+lo3erS3XfMIkKRSpXJQXDQmdnz7ZxZK/75Ww8l0xYQVPGDGDnsknfkIqxvSC5csOarX7qls8MZQwrRX7JzuJ9PIYMCkYYBP3LvIj+RUHX7J+nMEqVT9ffcMWvrljYiEnEHssikm79qrbdu7bZvfuMP7BqM3UOXXz8qIwQiNIbe+0W0T+ulybmwvnbQvNnb//7rNwchAtoPdvPnwQNCBbUsjghfef6tZUub0xkQjfaHyEdVziSS4eaN+TtufZWIVBWQD6yyUVVEKJWif/z7P27bgolMiblfd7tsAZZb6Y0xiOQiLOSj9vZ8a2tnW2u+vS3f3lZob4t/yLe1Ftpa8+3t+UIhdA4QjTH9UIG964VhCOo5B/UN6Wf/vOlfv3eXOtpHEZpY6BBB5YUH4hV/tSLtXtDY/Qp4VTKRQuqee2YB2EpfKe57DCKAsmimJvvAffMuuXz6sBENoA7AHBgcKiKIsBrP/Oe/P/z6a1sam+oiF2K/NT2SgAGMiISQOOBSKXCsyaRtHJAYOmzgsBH1gwbXNNXX1tbWJJKGjKhCqSi5zmJzc9uGzR0bNrRu3tjR0twZheB7iWTKkGFR6tLT1Pt0q1aoK5g5bGpquv3m16ZPHX3BRSc7x8b0MxTDQJ1ziAqgglhuzn9vahjc63/u3Z+QGmtdqTMqlQR29wH7E4QiyoaSS95YN2fW2kwmKbw/PR9VRc8z25s7b7/lxb//p48LGzRyYFwvcuzQeOapx9648w+v1Dc0Oef6LxKDgJE1obpMIVdwLjdoQN2JJw2bOmP0MceOHj12YENDLb7/o+LtzbmVKza+PmfTnFlvv/Xm5o5Wl0imE0mrEKoygNf7y5M0YIimCEptretv+MKpHzpjMnNojNfvB27MuLqaGl9VAEUPULoVFY3hXEc0YkSjgsC7DP39Wk2rKgB4/11zinmqa1Te71WELJzN1jz84KJPXzV9zNghIo5o/3cAIbMQ2a1b2n/0/Ud9r65/U5dEAOrl2wNj26dMHXbuBZNnnjJ+2IimHUdTmUVVAXdqs8RKKZkQCaEdOKhu4KC66Scdpf/faW8v2/zMU8sef2zRqhWbPJNJp7MMUe+9OIwM+VGkQVj6u69fcO0Np0G5zaJfBR1RsVD86t+fdfLMCQqCB9L36PpqVnBEuybk7H5EIBrjb97U/NxTb2VrEgcmE61gPGlrC35706v//IOL9QA8mFj5GyL66Y+f3LS5s74hy0769oHUZeMS2Xy+gCinnznhsqtPPPGkcbGJy8yqDhEQCRENxQxECEBdZS2Vz7EaZ2+k3ElLRiccOXTCkcOvvv7kZ55acOftry1esDWRTCWSXtzU28OrVWOhlEcvmf/BDy/+6EePC6MOS1mkfeGbqLCoQuTEWEI9MDliBQIgQEZAUP/d/eX7D4QiYq15+KEFW7a11zUMED4w0UknXFNT88Sjiz599fFHTxzBDET7pycIARwgi/OtNc8+9+afHl5cV59i15eDIYACagCUSJlNR1vu+BMG/tWXzzz5lKPiPWdhIiQigMTOtJq6s5g23S5UAQARY8NJwTCDKmfSqQs/ftK5505/5KFZN9/4yurVzdmaBkAFcQA+KABFoLs3+QTigkGxxmvvDIYMdT/80eemTB3pXODZzD6MDighAiEQEBwgggzcESeD3TI87KfoqCoYQ4VC6U8PvZ5MNIiGvW5p6fNOIhksFvTWXz8LYAB4X2cpd5xDIBUfiYul4Jc/fcxQCkD79u0EagEDY12xGAIUv/KN0399+xdPPuUoZmEWRDSmK9uggF3tC/p+xwa7/4MIjCERcByQ5YsuOfm2u75w9bWnhUExCAqGUgAM6EC8PQGJgEmNR5n2luLRxzT++tbPTZk6xAViKLEH3rcP3qI9b87+UoOI+OzTi1Yub0sm0wJOe4tA5r6llBRZuKam5tkn31n4+hpjLEsEuB8iNAKKwkxk77tz9puLWzKZpDD2rVhEAdhQsr3NjRnX+Kvffub6vzrDeo4jFwfH+1miIxiygOBcWF+f+vo3z/3FTVeOHFnX3tFibJdpj3sIB4tB09a6+axzx9108w2jRg50TkxCDtZ6+v2Nzv2ikRFF+MF751uTUcyBer3gRIkRmEr51jN9kJ0EIEjsQu/mmx4HBUQLsB/K+VEVjNXWlo4/3PJaOp0ULYL6ffMIxJhEW0vptI8M//XvPnvs5LFhFKAYY/ZRtEkBDIJnjC9CzpVmnDT+5tu/cPYFh7W1dpKm0ATvagrFOFaEajvam6+5/qQf/+zqbMZnx8b4B2tb2QcNhAjAzGIMvv76qnmvb0pnPREl3YVMeS9OMBCYoFTQ//dvF5w0c1Q+10FkFIz2EDwxtw0LZ2qTLz+/7rVX3zJkdZ+TXyAgswiid/dds9auyyWSnggAup6DHwEZkAGQrG5vb7340mP/82fXN9QlnGPP+oqk+5BarmzNIoIxSee4sTH145989otfPKez0OpAkATUlo38+DkbCh2HpY5/+PZ5X/+Hi0BZRMnEfrip9vXuBxAqACExAN5/9+thANjLWm01RvPt3vSZQ0477ciLL5lsTALVAJZ6zurbdQGqmrr5xmdFGcDfxzXEqmKtxbb2/AN3L0xlTCVH2tPolAIQqAFgQ35bC192xQnf/f4FiOIi0y3TvZ8Ipo0hYYzC6K+/eto/fe+cqEDskkQMVARURbY2Ckv5hLU//OkVl33mVCcFQEDqohiuNhPuF3NUBQx5a9Y0v/jMO5lMqrdc5ooKBHjVddNUddqM8dNmjM3l8tgHs0tE0tnk7Fc3PP/MG2SQ93HWkhkQ8bFH3li/upRImt76teXabmMSbR1bP/7Jif/0/z7BLKjG+AemJwgJjPWcCz95ycx/+4/zRNqdM6g1IAnj2c52Gjo486vfXnHGWcc4FxpMYpXoaf9rwrg69OH7X2trLVlPeyf7iDCfi6ZMHXzyzInMzhp75XUnAoUo2T5EF1GxhJS45VdzIhfhPs7aG4Nh5B6+d4GfEJW+bDsbA53tPGPm2G//y8XCTsWijSOTcIBwyEReEIRnnzv1X3/yKdY2YfR8aG3JT55ac9OtX5g4abRzzhg/ruapKsD9CkJVJOO1dxQfe+SNVJZEehqMjgU/I4JGcsllU4yxoMQSzTzlqGnTRxdyub5UGwpTpgYWLFjzxONLDBlhKBMu9HfAQESJcO5rK5e9uSmRTrH2XusSYVByw0YkvvfDy5M+qZKxCEoHlrMLUX3PRiGf9ZHJ//z9C0th59btbRdeMOF/bvqrIcNTzjljbMX2pqofuF9BKKKE9PTjC9et7kz4ae1xz4QAIKJfLMhhR2ZPP/NoVUfGqKAhuOazpwCGoH0ZXIGq4HuJ2255JggiJFWxALAPaPkUAJ54dA476WOPkCoJ67e+e/7gQbVRFEc4AIAOKM8/AhAgWkthEJ53wfT/72sfvvr64/7tPy9PpoAZKwiEQ5Cu6tAHoSF0Th68d57npVQojun1FISEthQULrx4SiqTYHGIasiKRCefcsT0GaPyuTz1XhmqsEmlk0sXbf3TgwvKfYYA/Zs2FFFjTGtzYdZLq5OppIjrNWW9sdTRnrvs6uNmzjzKuU5LB5l/hWB9K+Ku+9wZ3/yHT6sCiEfo7ZcMUBWEuzf2BAnnvLpqycKN6QyJclxg1VMZG7nioKH+Ry84QRUQDSAjCoghomuvPx0pgL601QCJhqlk5vabXy3kimQYNO5t67dDE/fpzp719paNzvfjGZ292XYiCIpu7OF1N3zxwyJiMI1UOtjOEyohkmggLKCARgCrJuiBAaGCoqAAwD13zWM1lYKpnn6dJYOFfPHMj0wcPKSWmQkNKCkAGmLm6TPHn3zyEbnOdkOo6vUcNwggKpBM+m+/03z/PXMJ4+kx/RWkEVAFCgHgxRfekjgYpIQ9CyZhbB4TSlAqfv6vz6iry4gIoNFdE/075lJg3LejiIqoGr9ibzcmUdzxijvstPICVWRFUeyVHMJ4Oq2H1NW3UCX5PUCaUFSt8d5avuGVlxenM+nexv9FnEmn/Isunh67/92nWKoCIl73+VOs8VUNUKm34EERTaXMH343u72taIzrx9YiVTDG7+gsLpy/KpnyetuwI4RUyOnk44acc94UESETyzWzcxTMKbDGs5xQGZSRHbJDccgOmdGJRiKRaLeXRALOYRi/GBwKoQAKozKUR/S4Cv/33ku3Lg+wmg88QCBUYAR44O45uU5nbC8FIZEUCqUp00YcdcxwlnCXwdfGELNMPXHcKacf0dnZQab3bRmqmkh5a1YX77pjFmJStL8CM6QKCObNpZs2bcx5fu+YVBTUIGLkwk9fPd16wOxAWZRVpdvcPlK1iBaRiMgAGSSDxqKxaC16lZdv6V0v9Cwm4pdBH4mQDJJFsogGwSB48dQX1fK0QFGR8jXElyEKogcDb88huPaJZ68Khqh5e/vTT7yZTtdJ7/PgVrT9wouPIzQRC5ndT3i+9vMnv/LSEuEkYNRr/9CxTWfprj++8rFPTh00MKPaP40vCg7AXzRvTViy6XQvc5qIXqlUHH/E4LPPmYYAnufvzvRgpyXnApGiCDsFEccaiYaioYiqimgZJyKKXUNFEQiIyBISERISoWcxQegZ9DwiIt9Q0pCPaPB9R5HqDqi+SzXGtOtdinGX6fG6h5+rIOzVmWEJPZt49KE3Nm3saGio7x0GESEounGHDT7tjEmqagzuTlWiY3fccaM/fPbRf3rwrbr6lPR2sjkqJBK6eUPpjt+/9JWvniesGKvWskPby7APEAHA4kXrjAXtrZYgkqCIJ5xWtz2Ys625g6G1FHSGYWeJO/Oaj6KC42Lkiqwhs2NxIpGDQEQARFQAOQ4O6U6nf6e9RqAYXwhIahANoSGyFpNEloyx5Cch49mk52V8k05SNuHX+H5NytakTDqZqPFtnWfSvq31TAL30MIhygCsihBP3ijHbOIXKlZa7/7CtOm+AKEaY0pB+MgDryUTGemtg0VkSqXgnPOPy2T896IAUgSQa68/7bmnl4sjIOntI3QiUSZT98Ddcz512fRhQxpVEAn7lK5QMGQ7C8VVK1p83/aazpCZ03XoBj141/y1hSBSjK/KAQBpAqnMVIFg41bcckNuF6yA0LyPCisffAUA4HKPpaoqSJuyQqiqCrGVriQqihEgoRoAQ4CGPINJz6YSXsI3NUmvKZWor6X6TGZAxhuU9huzifqUzaT8LGJyFxtDAFRZlQGcAgJ4QGSlCsI+LGa21r703MLly7bV1DSxBL05xAjOcUOT99ELJsVt4wC7T28YMsLBkUcNO++Co++5c0FdfQ33ThmiqBrPp+at7vc3v/iNb13E6owaIOlhWq9siSmAClgyG9e3NG8pWo96Vy6KCFGIA8Z11IzeHGLKT6atxplGo6CKDpW07Ns72I2m07KHsNfuWsVojPkSdxiTilQuYAIw4iEqgFNQAVJggULA+VIEqqzAosIxzR+QMYZMMmVq07apJtFYm6yrSQ6pSQ/PJgfX+ANTibqEqQU0AN3NbBWVODKECAe0FOEQBGHM6nnfXXNQs4pB7+x7IuzsLJ5zwZFjxjQ5p8bs8QghMoivqtd89tSnnnzDRUrUq3mgakEtQ6Gm1n/kvjcvvWzmqHENItqN2w93OtY7flatnHJErDhO5bCXAr+1bFWx6LJ1JEy9AqE6ZweP327SAeStQWWM3SopqzBlAAfv66313JTe+VaVhCumIzAwaFervsQEn4CARgBMbN8KIkCcGlEBl3PbOqKNGwtO1KACKRlDCZtJew1Zb3B9enAmOaIhM6w+NazOH5RJDPRsAhAI0mEAwgaAEQVRVRGAKj4nvsfF/wWCUAFQGIylRW+snPvaxnQ2LZLfWbztRTAeDGGEaozhj188peLH056/FcGgCI8ZN+hjF59w62/m1Df6zvmEAfZQgwE6ULIG21qiW2959p++92mAMv0RgoIoxNxIZcONBZTAIBiqFGMpQClsz5U2tRTWb+tYtSW/uoQrXnxxBNn63pLbiqoazw07rFXYJ0kihmpi2mKGHZ1h+yOSIVjG2w7zFWN3gCrjRDQmcFMlBASNAECBEJCAAcliWoHKSUxQUA00KpY2NhfXaLtTZQTPp0zSy2aSg2oSg0bUTt6OhaFHtXNJSu2+ltIiAkaMATIGTYBgUAhiogYlQBAEVKqU9dtDIsDTjyCMQ20MYO+/8/VikRPJgNmPO9l78jEBgl8s6FFHN544fbyIEL23jMdKSE6vuvbkxx56K18qoYm7CqQXcoQZauq8xx5ZculVG444cig7IKMKghSKGikHLZCgnDBxrqO1tGlbfu22tnea82+3FDZ0BNsj6RTKq3o1Sdvc3IjYqD1Ol8VvNsKUqik0DAnZhUBWQbGMZ9x18/f5op1N1u76smwwxNeG5WE71M3hJADQOOvYLZFhIKbM8GLLV0EVpMDtnZ2tmzsWvr31cS+Vuej/pkudifz2TMc207yxrnWL17k1VWxPuVISnDFkrLFoGY0ACimrehXeGndIaMX+AqECgAiQwc0b2p596p1MNiXiepOHREa0QdBxzgXTPN/sJSszETHL0KGNn7h08v/+4s8NjbWOTc9LVSuXYCTfkbjl18//24+vECghIEgCyBLF9+MK4fbm3Oot7cu3dLy9Nbe8I9gauIJgiMYZ8tAmE5AgTQkAOMq3ZQgtlKdu9GxLEchF2Diww2/MOwEE1UMm9417LWl0F5fVoDHGAlpFUIUAO21DrrGpfeCRNA7XapiKOjOFVmzblGnZlNy+oaZ9a03QmpQCkKLBBPgOLRIRGndIcNj0pzmqAmjMIw/M296cq2+oY5cEDHtarYaadC4cOMR+5JwTAHSXBP37+KKil1019eH757W3RcaWQ+F74/l0o0URABCl2gbvmaeWLFiw5rjjRgMAGO0sbdiWW7mh7e3NbUu3F9/KhdsiiQDQGktkvKSHmkKxIALoNJ59Y1xUShU6E0ixOdDzgh5S0VLd4CIlRQt+eWTTB70GpVJfRwQCIARJdcSgESiCh1iibL6uDhoPo8OAJPRLOdvR4rdsTG1fPaB1fW2+2ZZyFiQdFJLKRgFURZXLoePdmT8fEBCqorHSmet85OFFqVRSRCoRrZ7doSXp6Ig+et74YUPrmHnvQYgILNGAAQ2XXDHlZz96qb7RsntfWU1xnYeiIigiIqAKcdEwhrm8veV3f/r6qJPXNS/a2Dl/a255LtrmNCTykTxjkylIKwioAKAyKjCgqwBfFYBIoqIvRbBge0o0jAAM1oBToOyQPIKCEtBfTAYNHQCpEoAF4JghhWLnXK2yF7GGCgCCFJoMN9XnB43vgA9tjwIptKXaNiXb1gxYsyQRmbYd5Q0KcbmCAhAiAoFK2bjADwQIWdiz3rPPLFm5srmuro7Z9U7GqKDn8YUfn94LYU9oVeWSS0++/843mptLnvc+YVIFRWRCRfWZJYqIlUyms36MDh63adiEtoah8+6ed2fEBTBMlDY242Gq7ICqyA6fM44Tdr9iBEVCDUvGhUrYO75xVEBCyDS4v7zJYQQAilKhbyvvrsa7AhonQ8u7pOIC41QBQiRMN+ZrB+XHTWmdfJ4s139sff3wwbVThjQcPTh7WE2yqWKPCKuLKasOONtUf4EQidCxPHD3fGu8Xp8YIirmw6MnN06eOla1x4MiCIg5aqjPXHrV8T/616caGmv3xByDqHFkMQqzHJFSR6aWB00oDTtq/ZDDO2uHdXqZoqjPErCAhTSIgBhQlZ4EexA1LFl2viHX43o6JSAGJbIuUxuIKCD9RVZm4t78EssRVwQAYRcyllTRgGpne9vst1teobWY9QYOyIwfVnf8sMZjhmbGpxL15eiSxqU8gLu3Vw8REDKrtXb27LcWzm1Opb3KKNye7zdiGAXnXni6teScGNPDY4dCaEXcxZdMufeP8zdt6vB9q0pdgfVyY48aduQiARNmG3MDD2sbfnTzoMPyNU1F4+edU+dsKe8jMJI16gGyAmrMfLH3D0kBEcKSEbZgXa8On6haz7KfLv4lz9DsxSkCIAuEEil4YFJgVYEL0rGqbdaKllfMWqzxhgyqOWpk/bRh9UcNyhzue+mKISZa5nPASohV9zU3XN9AiByzmyAqANx/19wowiQZ6HHNCgMYJBeGMHRw3VlnHQMghKYLPHt/7IFQGGpray+75sQf/PMjyVS9Y4dqCRWA2HEUKhrMDMgPm7B12KTtgw7rzDR0KGHkNHSkuQxShKhEAKigpOgqlWs9H6yFwkFSVRRRgXpU9aEoiAqsmHImIdo/tDeVFD8QwO5HViqAdFXJ7OzIUqUCUREEAJC6koUHXWSnXERhACOFclm/AWutH/ej5rilbfuzb297zjN+Y2L0sLpJoxpPHNowqT41tDyjjkEgKucz0QNkVUJFLFOf0EEDQjUAKMLG0OrVm196YWm2pl6Ee/VUlDBZyOcuvPC4AYPqHJcMpnole5TIqOrHLj7uzt8t3rShLZUuRlGyFBghTjfmRo5vG31s85DDt6XqnZBGEZcCC6qIiKhoykV2igJAlfPVyx1HAHbU5d1hj08SgCpZNl1h0b47WuqVPxlVd7qiHXLTdivzxq4LQZAKw6QCImC3tMLBlgawAFphQLbd/UnVuD0SLHie9RVAVbeF72za/Nb8jQ+nE7VDshNGNxw/vOH4gTWHJWxNOXKgIaggIiCBejs25eAAIQKqiBhjHrx3bkeb1NVrJL04LgTI4jKJJJ930eSuGqheZvkQmDmbSVz+mQnf/dafFQZ6NdtHTmobM2XjsAm5dGOBUVxk8mGESgQGuwo4+l+so0hcZtW7j0UFRVKi97BGu5C0kzuDFV22oy677P6EGuflVAURNJ7ajQA7vmLX51fJTqJgxdgDVERUAEZCVQ+6hUl2voDyMd4lkt7tmvaFjad7+HmnmFzXDSc1iwbEspPcqvbnV7a8kIDGpsyIUQ2TRg84aVD9cRmvrhJcjZnFEft1wFMfzVFVcNbatu35Jx9Zmko0VGbQ9zSEQERcyBcmTR187JTRIkroVWxx7eH2C6haawHggo+d9MizjyeGvjZuSnv9wAhNLgoxKCYAGJE98BRjjbfvjCKsjAqjnh84rIhvAVAEAqSKYUzlU4Si6kQr/XsqotpVQR5/PwIhGMTyuSEkoiSib9BaYCzPjTEoXldYojwqsNxZFHNfqAgDxoNBVRRZjAIrRCIRQyDK8RXEdXZxt/FOQqGrvQMxbk4pt3qgwZ1iLbiTZlZ4V6MwdtvJXVw13YuIzu58IQrL0WywCWpSy6LhxtKadevefm39vXXJ4cPrp49umjyi6ZiGxMjyxUmlYhb7wW+0fZb0YA0+8cT8detb6+qbmJF6UZ+FjsBzrvO88063xjgnle5B3Zs/BlAEjkfPkjGAkA82vLXtpbe2vHzSZxapDRxjMVQIfSobnLE05n1OQKQWKOgFvRUAKFgER2oUAxWOlNmxYqTCqEhIiMag52ONtb4xvk/phKlN+BnPpBNeJmFrfJvyTMo3qRQlPZs0JmUpQeQbskTGoEeYRCRCRCJUg5WOXdz5pFe0lwpKpa2eBQIRpyqizBLGgxAdR6G2OwlcFESuWNIiS+hcIQyLJS5EWopcIYqKoXQ6CVgix0EkoaBTjVRZNRY0ioCEBhERLCISKgIhEihquZlG4vnnCqAoscDA+OApSJzdUKW9MxwlLjFFRQBUVQFE8K2ATalKh9vQtuWOJZsfzPoDR9ROGtd0yuiBk2tTI+JUh0pQMX392I1BIMC4aNbuFxAqEEEYhQ/dP9/z09rjyqyyGkTAMHRDhtScefYkACDqkb4IQBDRRwJRXr994bLNT65ofra91KoEnlUIPUAi1LiCSXdI3P1Rd0JGsJcF1gLACAYkmeERDYmCnx6U8gemk/WZRG3Kb0gmGtKmIWMaPD/hmaRBayiJeJCzejKzYy1FEjCHYVgqQK7k8mFYDMJiybWWorYg2h5ErTnpLAW5SPLOlQJWJ5FiQSE0Zbx5SMYDJrSqPmACMKSy1QyqHgAgRApub+RspdIVd5jiakEhbtqymAYvAwAl2f5W81NvbX06vaJxaP2kwwd+aFTTtIbU8LLbwAzE5dSX2h4Zg7aPO2o9O+vlpUsXb8tkakXC3ikWwkRnceu5F04bOLDGMZu9Q6GqKIChBBjIR82rNr64dONT69sXBtiBXp2XSpCGcdvLHpTqfgj6KxmFMvlKz0GIKigeZ847/ttjhw1H8vcYItJyDbuoQNzuUTYoFcpdBVquKIg7S3b2t7EHUndP393Nhu5KqJMDjaM4VOG2IMKEoYQfn7vUnm9enePASSEIOzqCtkLUHgTtxai9M9peCFpKUWsQthW5FHDBcaeD7aqkCmBUCXwVQx6Aj5AAjOtPd0RndPf3gXu6UY0rzsEhetZPARXyklvW+tzbzU/W2jHDG44ZN3DG6AEn1SYGAhgVEHWASj0J7PcJhEgKgA/cPRfUIHJv+V1ENPK9xPkXTe5KV7wnQlRVAEycyt+eW7V04xPLtjyxPViHiNZPJqFRIQBhBVtuINq3LaG6hweJgOx5vVROCITiKUFYVAzqkZLsmMh1M6QBEFXL+aFKjKbcWIRdhPPlrj/cNY7T23jvbn6HO+8FAoIAAsmOQGK5NEyljIkKULFbOKhsXZYjddY31reZtD+wIbubMxNxoeiKxSBXjNoLQVu+tKEQtXQWW3KutVhqL7r2QNpD7lTgeKoBEhJaRENIiLTTBMUy9Q7sXOes3azyeNa8oJYwSiWQfaoFAwXY8Ob21W9ue6zOHzayceZhA08c1TQ54w2MpYjsyDd23z/tTxDGxNJvvrnxlVfeSWZTveV2ASIsFgpHHzPsuOPGqbLZiZykq4ENtaL8CInIAsDaloWL1j+0cvtzxajNWN/3M6DlDUXwtSu+uA+VHqICgSjEve1xCzCRkqI44JDzYvNKBsVQeRDK3mNAFAAJSyVuaWsfC42ACmjKQZqKlYUo3fw36pZa6F7qhXvoSN4HOwI7Nh6BukrNKsevHG3CHTVo1A3LXTX0cVkgozFLFq7785OLh49samjMNDSk6xuS9XXpTCaTTGc9k61NDHz3NQScK0adxaC9ELTnw62d4ZbO0ubOYEu+1FyIOkqcD7gA6spxYbKWiIAIDQKVJYGiIAI4RUGNc6qEZdbWuGYjVEWCOt8QWJfX5je23PXm5gcaUmPGNc4cP/i0oQ1HW/JAQZ0oMaJRLA85eXdRTh80oSoAPXDvq/lOrG0k7eUAbEA0YaAfvWCytdRtcgjskEwa0yw4RAJjHJRWbp2zaO1969pfDFQ8k/UTWYhrOfejoVk+K2gZUgAK5FRBRFjyos5oOmlrhySPHDjsiJdtUSQOV9keKlgiwihyW7a0AIyrZAp3iZvgrqXhuNsd2G8FNzuCnHueVYrvWc5OZUiqENiVK9b/178/29BYoxpa3ySSlEyZ2rpMbV26qSEzcGD9gIHegEF1AwdlmgbUNTRks7XJbCabMNn65NBd7t+5YsAd+ag1V9rent/UWdrSUdyYDzZ3Ri1Fly9FeQcBqSNAIINkLfhGfUBGdGysaOwjBAC2MgHFxVa/gYTxUgCuLXp7zvolCzbeMSg78bCBHzp8yCkDM+PL2X/JI1gA7923bnsLQCVDW7e1PfPEsky6Rthhr8q1ESGK3KAhmTPPOUohIjK7qmxFESWjiDbk8O3Nzy9ef+fazvmMlDC1CQTV6ECUdCGCDyiAJcdFZkFBH7M1yaamzOihtUcPrpnQlB1fnxnc0ly4LfE/nTkxhrQHSe040GcBWIQ3rO2Av7hVfqaJRKJxQKK2LsEuKYqOsaNDWluLLDmM4qSMIqExmEzaZAbqalMNTemmgdnBQ+qbBqTOPnfKkKG1rEqkxiSydnA2MXhwFmBAlyiNoqhUCFo7wg1txfVthW3tha2dwYZ8sLkQtZW4IKCKhBBZIkKPIIuggDHPQsUZBwVlUM9gAyWdKGwoLF2/YtHrq+4Z0XDMhGEzxww4Je01AIBKKGoId0od9xKEImotPfbQwi0bo7omjZyPveLUJKLOjvw5500ePKjWOanMWi+PsFVVQjQWnWt7c/OL89c+sCU/X8gmTAOCqEYADqCL5qjfxTnsksGPs1sAwuKcFFU4CekB/pgB9WMH148ZWj+pKTMh7Td0/yA/5SdqUm3teWulZ7ICY4IpR0irVmz7i8Ngmb0GVDF0EDGwKAIYcpYULCJ6iA7QAzAgqEAiXCi4zs72NWs6RFTU5XL5UWMGDR/eyC6i8rFlVYfgACyAUURASniZhFfTAKNGd0UcNSqFnbnS9s5wS1thdVuwtiO3JVdo7nRb89LCLHEvFBES2diOBSClUEFArFFjDIE1obS91frMspZnG1PDxg84dcLgs4fXHx1n3+L66jhgYHt+OlXBEXmFUvDwg/P9pC8Sx4J6aswZwlAVfU/Pv+D4Lg9YQeO6PSQgshEXl2x4fuG6u7fkF6FVm0iDWtUCgKrarhKr/pbC8aeSElPcWkoiQiGrk6JFynojBtWOHdVw9LCGEwfWjEra+m7iqeLlIxFwJm2bGs3GNaDEwKYHekAtYKQKnu+tXNEcupLdacDYB14RVnSFxpyolQEeXVM2FADiio7YSTMAYIw1xmKCANAY8ryEbywAGCBSoygASOBVnDPF2PkEAJX4qaMKIhKYTKIxk2gcDOMBTomvKOJCIWrrLLS2FNa0Fte0FNa3BhtLxU1R2B5owMBAQOhZUkIASSsxUpjwk6peW7TptXW3Llj/0Ij6Y44cctbYQadk/bJiBOzxbC0FBRG0Fp5/9s2339pWW1vHLL1xOTBE9Ip5OeqYxuOnjRZRYwiAUEMAQmOdBss2PD9/9e1bCnOFsl6iFjRSicOnVvdlzJMACZyYSNV3yJEUMKSEyQ7JDB9RO2VY/fTBDWMbU0MA4uG4KhqU/b1yZQp2i115QwbVznetPW+rRwARAd/3Nqzbvn5967gxQ1iE8C+HmnpHBRyWo6a7LY6h7jxDADH9HAAQM5edT+xiJKigeIdb0VVgFxcrULcEWNncjN/hmXSdSdclh41oPDp+jxMuhG2dxS1txfUthTUt+ZVtxQ2dwbYitwgXQVHJA+N5oElIYyIlGqxpn7W69eWGVYPHDTh74rDzh9QdLhr0HIQAhCTqHrhzAWFKQXrp9KNDTIdh+9nnTbMeORc7hEzkC8A7255/feUf1nTMQQteotYoqYb7JcyAiCgkIVsOQLBQYzNja04e0XDSyIZpg+vGWVOeSt3enEcTZWt9AED0d6uc4ic/fGS96HKErPaq0NlabG8Lly7aNG7MUBUG40F17V3YCQFiZoZeBQ3iOrtunklci1dOjCoCWcTaZFNtsml4w8Sy2HVh3rW0Fze35Ne05NdsL6xpLa3PB1tLUd5FCoQGk9ZCq9s2Z/0d89ffdc6kf5w09Lwem6OiYoxZMH/dvLlr0um0sOvlYdeEc8GAwfYjZ58AIPEYEwBY3Tp3zqrfr9n+MpP6fp0Ci3JXmmnfyFrtss5FXRQFKlSTqB8+4KgxDR8a2XBiU93IyjvdihUb5s9dP3/u6ldeeeekU8Z9/4eXsxYQErtPoysAwJhxg5Gkx6xz3WwPhMTsV5df8LHjEaszxg6kZu6q7NPY0AEG4UqNMwKGaKDGDqlJDhnRcFz8N2GUy0ctrYX123MrWwqrWvPr2wtbiq49wkJem59b+suRdRN6rAkVBMDcd/fsIIBkins964UMdXREZ5511LBhdezUWNNcWDPnnTve3Pp4BHnfTxKQSpzuNBWOg/46gooKqBYAlSIwLGJCF4JEWds4puHkwwbOGN14XEP2sHLeKSotXbTh1ZeXzZ61esXytvY2RpJE0j71p+WXX7HmmMmj2bndcgDEHXtjxg5OJZLa20SqiiaSNHf2+tb2fENdSgSqSDzgMSMEUDAABlCABJQAUSEtoBhnqrXc3uqbrO9lG9Kjxg04ORbLhbC5s7ipPbduS3HtxpaFS9Y8Z3sKQUOwbm3L888sy2Qt96EDgQSsKZ37sYkAWJTORW/ftWD93R2yyfdqfEiX+75wp9xR/6g+DEFJIalGgArOOc0nkjYxom782KZTRw+aOThbDpIV8uHiRateeG7ZnFkrVq/cXir4nu/5Saxv8GNbpbOj47c3vvAf/30VEMc9bO82aABg5OimxsZUW2tkvN7YRaqQSHob1+dmvbL83HOnsEYWbRUJBzhm1D1yXs4ZdjmuZTu2krCtdLaUxwpQxhuQ8QcMqTvmCAAFCaJCzx6niFrrPfLAopatUj+A2PXSRCSDpUJ45KSB008+atmmx19dceO23AaT9Dy/QRn2aZMoqodIAmHo2knSA9JHHjZs+uGDzhhaNzGug3OhW7hg1bPPLZ71worVK8IwlEQSE8naZBJFRUSZy9HzTG3y+WfWz5n9zrTp45nl3YOIEFFEGhqyo8bWbt2yOe37vUtpxh1/jz248KMfnUJY5bk4NDzSnUTxjnZLJ6ogpICoQhglPd/25CiAMZTrDB9/ZG46Y4RtNyas9/a7tFtsXZEAxOTy0dTTBj+/6h/nvf0kJcimUyoEHGB/6r13G/TiWJgLWdN0WP05Rww7dWTjpEyiKZYwby9b/8xTy55/7q2332oOSpJI2mSGkllfVFkjJxL35lXEoSj4rMWbb3px6onj92QiCisRHD1p5KsvrUNM9E5mibhM1s5+ecPSJeuOPnoEi+5+8lh1HQKLEKWiLY2KAemJYSOs1qOnnpq/alVHXYPPTvemXwNBUYyQUyBAtYClQgKzLSdfvdYcOWfemg02NRDAgThEAfEBtF9Yk7Fbz5KiZQpdlCPxB6bHTBh8zoRhpw9Ij43TBs3bWl96bvmTjy9duGBNR5v4ST+Z8pMpFI17N2PlZXHngjBUFJZM1p/18tsvvfjmqaceFTm2VnauTSv/0ZTjR3pk+1DYg0RULAV3/H72934wslKNyV2GUHUdOlrTVPoTEICBFGBv84QIIGTUOX7g3lnGZFS4UnL+PodAqISQAE0YYmYtBGbEMRtP+MSSpjFhqSQe1qnGs+YR1AK6/oq+KBCAB0gOSuy2JyA9uu7DRw8/d+yg6Ulbpwr5QmHpGxsf/9OCl154a/OGHFEilU7WN2I80pa7paRwj2ZG3LtOt9z4zIyTxpNxIAmIyWl2yD0C4EnHjBw0ONXa4azF3oXLmTVbk33y0cVXXDN94lEj2SmZHhNhVdfBZLvu6NjYW00YE8nMeWX54vnbMpkmkVL86/dXSNyotpmAS4WEX5c/+dIlR85sZoJCsUCQVPUBg8rwo34jJEdAIBBod2GUMEMnDjn7mGHnj2icghAXC+at5y9dsvVz1/wKJJ1M1NfWeQqRcOzv9chQ5GwmM++1zc/++Y1zPnqsi8DsVMODSMAsjQPrjjp24DNPra6pTfXKLWQAIMIgD//z0yd/9svrFRjEAnFvqPX3/YotCCKqYm6vLNS9wy7HfZn33/W6RAkwhYpifW+4I4B6WKAoWyj6I6asPv+ry8Z/eGte2QVkMAGogAGo17e2xu6VXDExs2WNSkEprcNnjLrmmhN/dt6kfxzZOAU0EmEFtialopOPG3bCtMON79lUIRLHbHqzdfFoUZO87TfPhaGS4V23tDxPD2Z+aJL03h5VABQJa2qTL/553RMPL7TWsvLBqQZV1RgyxohIFWD9BUIQUSJasXLDCy+uSme9MrXvHj03FYxEfUA2BFFJyC/MvGzJmV9YlBm+Msh7pAZMoNrVMCF9c2zKs7gIENGwBmEpnzXDTjvsuitn/OK0I77WmBmvEopGABaRYmdRxPqef9U1p0oYoQKKhz2+hpiJyIhIOpt4Y8G2Jx6ZT2TZ8c5mfLlo45TTJgwYkGYXAcYppp7eY0zcIIlk9r/+44ktm9uMgV4nafvZvkJXDtGDOueIaPHCFS++sNgYE4UM6rDquPYZhCgKgPDAPYs6OgvGdunAPe0sEddaigCkUODGI3PnfW3eMWeuDp3hIG0oJBAAW8FwzCDWh5AFCAICkYMgCgp1ZvipEz5/xYxfnXzYF2qTw5lZQAA93KFsLQAagyLyoTMmTDl+SKkTLBlA18vvBxB1CT/zu1ueLRYCMrsmAxGRWYYMrZs2fXQxL0QmJgLqTbBJjJ8KNm8ufP+fHlVVwIOBmBuhLE9BhD0Pt2za/s2vPvq3X7jr4Qdm+wmrQipVu7RvIFQFY0xLa/tTj7ydySRjc/99AkC2PeIoiJLHX7DqnL+dkxm1JVd0CA7J7Y7Iq08ngNBDKLpSZwZGzDz8C5fN+N+Txn6u1g4QdiJA5Vj+bogoRdRac+nVJzgOY4LPXl8Eq0uk/TffbH/4/teIPFV5t4UGAB+9cBJSXHnoevtVyow19f4zf37rf/7rRWss80EwK0YJENiJMbajnf/ub+/csHlzOl3z7W88euMvnyVrBJ1KVRn2AYQiQohPPvL2xo1b/IR5XyZoIioW/VRT/pwvvTblk8sY2l0xW57zKX4/XnpczlYISp4OmTH22itn/GLmuOtrzCDlQDGozI6XmKj/3X9uDLG4M8465ujJgwuFDsI+XJsa1iCVyv7utpc6OwpEtAsuDJGqnjRzwuFHNJWKJcRkHzwu48TVNSRv+t/n7r1rlud57A60c4jK4qxHuY7g/3z51sXzWzI1PkOQqan5+X+8+N1v3yesZEiqOOwhCBVAQBFUiagURg/c/7qfJJU9FXCigEFkUlMohkOntpz31TeGH7syn0uApIgE1AOA3pp8AACCiGpIYrIwVIJSlDfsTR9xwRUzfvqh8X9bmxwqHClGQB6Av4PBfs/ckyqc8JOXXX1iFEZEfTGJQQUSSVq1Infv3XMRUZixG+EKIDjmVDJx4cWTgyDsS90ZAoN4qpDO+j/47p+efmKx53tRFJR5vhX31whRhPLcMnURW2M72gtf+dJvZ89aX9uQcGEKxFco1jem7vrDwr/94u/b2orGEHNUhVyPNCECAGtIhK+8vGzZ0rWpZHbPtqgaE7AzJQ2mXvzW2Z+f79VvKeUajQmBIkUuj3bog8BGAEVWEiXLzkFYOmLAKZ+eeuOHJ36rITVOWEQZiQDte9DXvUsZGlE565xjj5w4vFCI+lKGgkAinE6n/3j77JbtnWRUeSehQ2hE+cKLjh85sjYIXB+KsGPOekC0nud/6xt3PPnoG76fYBeqSsXB3teKUQEDEAKx7NTz7cYNzV+87vdzXt1SX59xziE6BAH1mF1DU/ql51b91XW/Xrtmm7U+s6uirifmKJZHhtx/5+ug3nu4c2QgLHq21n3kr9+YcuHaMIrEIZoA1PaQ3eg9VKFFQsGCK3UOSU+48JgffeK4/xxaP0HYiWiZWb3Hy4q4ZNL/1JXTgqDUR+ZcVUgk7Pq1hTt+/wqRx7CT+UWIwtzQkPnUpdMKhXZj+prfU2WiJGHdN79x+52/n+35voIwh/srg29ElTW0npk/d+UNV926ZMnG2oakKweHdxwVdlLXkF6+rOVzV986b+4Gaz1mVx30tpcgFBExlHhryfrXXl2VqbGsbg+xESjkYNDhWy/82kvDj1tVyMXUcRlAByD9UgiKiEhcDApJGXHm4V+99MSfTxh8ujpWidAoogJyt5EPPQkpoGVx51448bAJg0qlsI8NeyKSrfHuuXPups2dxoCw7W6wG/RU5JLLZowZlykVoz43B6JohJZ9b8APvvvQj3/wgDqwNsks+/yIK3GExoC1/h23vvylz/1u69Zips6LePfeqXOSzqZaWkpf+vxNjz+60FpPRKo4fF8QEsTcw4D33DOrWBAiA9qNZwAjUB/RIyoVCzjh1NXnfGlJamBnkEuTiYAKAALqA3JfWiKMICqBoUhCCQqTB593xYyfnjDuSo9qRBgIALvI57C38CZhzaazl15xfCmvxkiZtrq3ytDzqHlz8Y7bnkU0u8YtCUS0ti593efPLJYKiFYw0j6Z6KICgFBTU3Prb16/4bO/Wb58g7UeYsgSVFIlfTzsUuZxQY7DvOwYUKxn1q9t/T9/c9u/ffcxhVQirRwZ3EP9BgIIczLpi+o3/+7uW3/zorVGwYnI/vVjD7XAjAoZYzdvaXvmyeXpTJq5YmBQCGpBkui1i3YGpcz0T7x56jVvspePIkOGARA0CSiA3Ec16MhjWwpLuYHe0R877t/OP/afGpKjRUKIOUh3WI998TbVGKuqF3586tjDa4Ji3ArW+yw4C2drah68d87atVuMoW6h+fLAI2H52EUnTpsxNJ8vkPH7NhbKIiBAyAJ1jel589Zef8Vvb/6fZ0tFsSaJBCxRXxWOGlACMCrI4ojAejYouVtvfuGay3/+9JMrausb0LCwhyi4Z4GLACJsKJ1KZX78wwd++C9/IjBkVISB5C+8CHaPIGRhBHz04XlbNznf68pAE2gCTDsRumKDGPnw9W9MPn9lIRSR7uZV36UaEppI2yFIzBh9zeUzfjRh0JniSDTCmOWuH8N8CMKSrUl94rJjCoUSGewLhZSCGt+0bKfbbnkWcdcPiicCWotf+foFfqKgjrBPzZM7ygPZQTbd5Jz3X//x9Gcu+9WD980qlSJrfCJkFmbpXYZAlFlLIiGRscYrFksP3T/72sv+98c/eLKQ82vr0qyFncYNvo+lIABYXzPq9ltf/Lu//V0+x8YYF4WVkW9/oct85zvf2d1uIRktFd0P//mhYkHIYIWsnwCYSMOSzTat+8gN64YdvzZfMAYVsf/Kr5EQtRTmRqaPOf+Y/zd5xEUWk6JODSqiUULA/n1kiKigo8cOfvqJBZ25nKE+5PHAMEQJL/X28vWnnzlxQFONiHaXT4jomIcNbRR2Lz77VjabFel7ok9RLSigLSbS6W1b3DNPLHvx+eWFYmHAoHR9fQ0RESEiiMR8uWXjubuWjn+lCiLxhEOl8rJEdsPabffdM/vfv/fkvXcsamsvZGszSsoq0POQGGOYyWSWvrHx9TlvTj9pQn1DDbMjNLsGw1WIzDvLNz/9xJvJZI/7oRExCqPzLjx21JgmETmYq8l3D0IWNcY8/eSCu/6wIF3jowNFFGQE8IgLhcaaMWvO+cI7DWO3FYpMhmnXCY+9OUOkhOgQvAByynbmqOs+esy3GjIjheNeRANABPQ+HOq99q7YZTKpUrH48nOrMplEr2uPERAVjMXOjqhUyH/4rEkizqDBbsIekVT1uCmHLZr39poVuUTKVw0AGdTrrRJGQAF0oJ6KeL4kU4ltW0ovPLf8iUcXLl64qjNXSqZtptbzjBcDMn7tusq/Ly9mt2r1lj8/ueSmXz77y589+ecnV3R2uEw2ZT3LLOVZfEDY43GULGwzGW/dmvxzf15y3AmDhgweKKzdg9P9A8IoOvf8o0eMbBLmmGJUVQ7wS0BFtNxqXz4SuNtSd1UF5L+67rdzZ69LZdPIKuoBqqVSIZ8cMnHzh69fbGpDFwiZfrA/EUQBEayiuqB9YPqY0yZ+dVzj8aqiCvuHYkxVEaFle/6Ki3/V3hEYa/pYDoZIjjtu+d0XJh4zQhyToe7CQ1WJYN2q1s9e+cv2zqSXENUiaLKf4hNlBgNCiiItFiLRqKY2NWrUwPGHN449bNDwkTWDhtTV1nupVNrzDBlUgSh0pWKpo6O0eXPLhnVtK99pWfHO5jVrmzvbxZBJpsmzCVHtjwK08vkzhoKi86z88D8/PfP0CSJMlfOECizOWO+xh+f//dfuq6vPcg8ZjYgo11n4ze2fmTpt3EGo/VR2EOfuJoknrMbSvHnvLHhtWzqdZAGFJJk2o9lcLj3qhDUfuXYp+C6IimRNvzR3oyTABk5zWLKTR1x62oQbknaAc4IG9hvXLQKxlJoG1Fz4yWN/9YsX6xtquG9NCkhQytnf3PjCf/z8SqBI47kxO0G0NHJs03f+7ZIvf+E2T5oQPe23+ITGj5lBjJHaegBNOifvLN+8bPFmkUXGqOeT75tEMmEtIalCxBEEgZRKHDhhZiLyPJNM+PV1PoCyOub+ak3SrqYQY8lP+PWNqZ3HkvWPVPUT3h9vn/vCs+8wu4OEog5JS6VowoT6Sy47nblsJO8uk44KAPf/cXHkCkmsZ3EGO43U5ILCuFOXn3Z5i6MSO0LyQPslsoxopBSVsjjyzEk3HDX8fIBIOLLlQrL9t3mERlU/cdm0++6aWyg4Y7AvulBYarLZ5559a+6clSdMG7vz8FMGMIZ8x6VTTj3qa/9w9g+/+3hDXRNr//cmqRJHFlCJNJlSTAtAAhRFUQTzBadlGnmNZyv4ST8FHqAAOAEWFdawQsrQn/2BRMgMLMUf/PTySZNHOcfG9DMIPc889eSyyLk+t8v120WRsZ2tePa5gy657PQuU2tnECKLM8biunVbX3pmaSqddcqEoQfYWYAJp2/+0JWbQs2LS5BxoLYvT0WArIhBFxmbC7ePrTnlnGO+3pQeJ+wALZL2u2h8P1GgCIZZhg1puPCi427+1ez6Jt85DzBE7W0wliKJ/N/e9NzxU8fuHL2I74sMJSIXXH31Gdu3RDf+z8uNA1ISOdBE/Cz66dwoYASAqqRKZcsFY0ZJNLYrwWNAVUFVlaEIiqAxP0i/9HzuYogJYUK1WCwE3/v3S2bMONI5Nkb7veBOFbKZJCDCQRN7RQOWwmymNja+dmuOooID8B64b972VlfbZFlKRpK5Ih394XdOvmxFkSNVSzHbad/kIimJdex8KUUnjvr86ROu9bBGOMKyutgX4Ze9ceZBFS69avoD97wRBgw2Au19OkQYM1nvlZfefuWlt0459chutIg7qroMJjiSr/zd2Z3FzjtuWdTUlGUJAATAlMcM94MDZroB0u00QlC7Loa7odaWJ4vCvqhERcQEguQ63P/99gUXfHxKFLG1fQzs7fkRCMPBtBCIuVROF+FOIrlLRpGx0N5eeOLhN/1MQjQwUpMvwpFnrph56TsBFwXC/rKtLWjIEVLi3KO/fdaRX/YgqxLnAA9kKJkIhWXYsKZzPzYxlwuN1T7UvqqqJyYATd5y48uOGRHeFexBNA4JmN0/fvviK68+oaWl1ZBB8EDMvjoGe+dS9uT9PYIgEEad7cWvfuO8y685qWKF4oF97vsbibucup0wKILgPf3EG2tXt6SSznA2HxSP+MiSkz69Ni8lRtnj0IWeeqdEhag4zJ94xdSfTBp+rkikGILBg4IHIVaGV59Q3+i70AL1uuo/ZkXEVDYxd86qZ/+8lIhk19iGgiKSIKAyfOufL7z2Cye0tbWDJvvSWnXQLiJUhVxH59e/eda1N8yIooCMVDLM1YqZGBsIURQ8dN88z08apULRjZ+5ZeanNwXSFrtM8XjDXn+ZEYsIilQs5o4ecNolJ/5kSM0k5gARARKgRlEPuANNhMxu7Ogh55w7qZDL2z71NzGJBVVj/Ftvej4KHZl44F73UcQGANEoADKHX//6J776jbPyxc2hM2hQPigVlQJABpwrBKXid/7lE1d/dqZzoTGEOwabVWtHAZiFDM55dcPiRWtTtdKRS409ccNpVy0OJQD1K05kX2LoyrYoihpunzn2sxce//2UrWUWIr9ChwoHjUREVb7sqhOyWcvO9PqKsNLvm8kkFy9c98SjC4isSrSTs4cKQKAWCRCsC6PP3nDm9398ufUKxTx7fjwZM3GonzNrTTFHnk39+Oef+sSl06JIjLGIf1FW6F6AMN6Re+9+RQCL+ezQ49adce1ip5GIIvVDIyaiiTQwzvvoUf9y6oS/UTEKSEYOQlOECEWCwycMPfOcSflczvS54klUPK/21t+8WChEYHR3+k1jU8RYdK503vnH/frW68eN89q3KVFSbe4QdoAQjKGO1tzIMclf/fYzZ5x5TBSxNfsqEnMIg1AEjKF3lm+ZPWuZoYZBhy8/87rlIXEkhKR9iRDGJ4zQRK5Uw6M/ftz3J424iDlQUAQCjWnO+GA7NwBWwV1+zcmpDPSUEXg39y+aSnvLljU//ODrhD5LtCeWEARjjWUXTTx65M23/82FF49v69jqItP3JuADJM5IFVtbc2eeM+43f7hm4qQhLoqs7ccEzAcChOUpw1oEgAcfmLN9c6pueMsZ160y6Q5mQ+RQe56lVapYXIKghH4QdQxIHPGp6f8+dsB0kQjJrzQY4I7p5AfX6bHsZOLEoWecOTGfa7cGFaz2obtCNEoks3/43QuduaIps1+82/xWRVAwZDx2Uluf/NcfX/7d732iJuV3tOUNEZKUiULUB8C+cPbso6WAiiAoSmKMzeci1fzX/+Hs//zFtU0NDY5DY20lFopVTVg+bLFTbIy3vbnz8QeX1g9rP/PaN72BnVFIRA7U61WmqFsljTGloDQqO/WSE34wMDNBhBFtt9FL2kfumX2kCwEwTqJe+ZkZyaQV9gCDvtAiilAyJSuXb7/3rjlE78tOrWRImFjcJz497bY7P3P2+SM6O3NBwRqDSAFQHoD7jTqkPzEYAYg1njhsbWubfHzTTb+94TPXnyLCIlJpT8Fur+oCQgWRCNF79E9z1m9uPfv6TfVjtoYBkHF7M+9lD2eY49o3Qr9U7Bg/aOrFJ/yk1h8uEvaRx2V/LmOQWSYdO3rmqUflOktk+jisxrAG6VT9nb+b29baaYytsGbtaYcZSUmti6IRowb+6L9u+NHPLhlzuN++naMgaYxFOghJ5tHDBInX0dqZTsHX/+GsX9/2+UmTR0VREDdpVE3QPfiEqsZ4QRDec+fcU65eMeS4dYUiJdT0rS5UABTBFIPO44Z8/OPH/ihp0oIBonco7tEV186wiZJytm8z20Q5nUja9Wub7/r9bMSYPVv2bOrH5gIbY8WhCJ91zuRb//jXX/vmaY2DuK2lGAWeMbQ7hrgDoGEQNc43dLTnRTsvufzo2+6+4TOfPZ0MMweeSVaV3nuBMBJBpKeffMMOfWvquc25QslQr6r4Yv8kLmfDAMELw9bjR37qo8d+22pSVQC9Q+5JxD11U08Yc/LJEwq5nOmDGkdQAmJxmZr0XXfM2bqlnYhAZc8dsQSAgArEaBSRnON02rvu+lN/f/fffOXrpw0Z7He05guFEqJnyCKqoiiqwj6lUCoLjvhbFBGJrLHi/PbWAkvuvI+N+c1tX/in7142ckRj5ByoR+QpchVp77EsmSAKzWtLnzrhU8tKoTXqA6r0ouRVu2VdpTYM26eN/cwZE74GokKC4KEeiglZVRAEe+W1J7380nJU0wcGewBgVfA8f8uW9j/c+tJXvnG+OECiPTTyxt3vppt5TCDgRJoaa6//q4986tIZTzy2+KH7Fy1dsjYKIZlKeAkPEURYFfoc0N4TAjHuWybEmCOrUCxxWBw0pO68i4795KXTJk4cBQDMJcSENQdMMx9iIDSUWbnljeT4l9N1zIFB6u2WqQVQJFWwLug46bBrTz38yyAcj2s5dJ0BQ5aZp5009sQZ42e9sipTk5C+ZSxEOJutuf+eRZ+8/PgRI4aw7Mrs8N761BgUFtaotj71qctP+sSl0+bNWfnkn5bOenn1+vWdzJJIJHzfki2To6n2z6wKxHjEsweAjoNSKYqiUjrjTT523FnnTDjzo0cMGdoEAMwO0BF5/Umg9sEK4ry7+tqWovbZG37KtSuDfFax0Id7jf1Anx2cevi1Mw/7kkoIKAj+Ib5pBOAI7WXXnDjr1eV9b35XBWNNS0vHbTfP+tZ3LtYef5oiqQVfBEQcWTNt+oRp0ye0t+fmvb7+lRffmD9n7fp1nR2tjASe53metYawHAWHMiQruHxXPfkOBg6ELk4DVFHHLoyiKAgBo7oGmjxx1PSTR5986viJk4Zb9AHAOUZiIgLw+7k9V1AFYvPs0IcgiOy67Xb5ludJvfGNHyIBwV5XDSMqIQUuopGDTpg59nplBVIADw5lNRgLFzIqIjNPmTD1+LHz5q1LZ3wWC+B6zTYlGmVqE48+tOTSK08+7LAmkS77Y2+qAstvRWRjQFWcMADV1WXP+PCRZ3z4yKAUrXhny6IFG5YsXrty+faNG9vbcoUwZFRLhNZUKGQQgZQwvgnsasYXVWFRERZ2LCIW0PkJqK9PHzFs4BEThx87ZdSkY0eOGTuwbGELR46NUWMQwK+YrH0ub0CIs7KIobWBNRmED4JjaYgSJjIUAIBCBJAAUIwitpbiXu++fb4DYFVC9EQUuz3aQ38Js1prn3ly8de+fEdNttFhEcT2vog27rBuy3/8kiP/5QeXMzNRX+0tVVBRBbV2x3N0UbB1a/vadW3r1rRsWLt986Z8S3O+rS1XLLhiMQpDdo677FUitMb6CZtIQDrj1TdkmgbUDh2RHDFy4KjRA0eOGjB4YDbuAo41KrMgYl8GeLxvqE+F8p1hc2sLGfPBOEukqAzJZLJpYC0QE3oAisKi5aGzhHHVPnZzwrtHSfcUMdW47kVADSgAMqL5APniWDl1IiKfvfLXSxe1JWoK4jK9brxSQAAiRdaWW27/8lGThjoODPn9YjWogmqZ1dAQIu0iW9k5LhS5VAyiIIoixwIx05k1aK31E34i6aUzvmd3GSnHqsKsAISI+5xBUBGQAR2C/8GK62hloKpDKsfPkMV1s713ExTFd/V46h4gXpHyiPgB2rV4yoUalsga77FH5//fr96RrR0oEmFvC2gUCNBZMp1tpXPOG/vDn36GOSIy/We6C2AEYECNSjyYRgFdHFnZO60b05NWgjqIBIik8TxQQN73xYYV2Qes+gFCoZJqTB+vlRnjgMpdEwtUcbdTAd4bhmV1iRpPZQFQox+oiHRlrDeAqkbOXXfZ/yxf1p5MeyJ9OWECoIheGLTdeMv1U6YdJhwSev23dV2PSbVbbSCCgqrGvBW7pc9AiPN/lUQla7m+VxFjYqH9+XQ/wEU2OyhOSFEVVRHKY9D20GXzfv8sVx4rfMAQGMOvfFiZJeH7n75iRhQVCfpS/RPbJIQkLkrcctOzAALYvxGsHTMwEKgyykfLkU80iBa7OIC7v5AQzY7KXiUsy2YsV43vb+Ptg7p2pM2rLZU9CW0ZVNFzLpg0/sihhWKAfY5JCEsmm375hfWvvrqEyDpxB/25qa59Iuara68NCCQWTiUzn7ryhCAoUD8UoyOgMNDN//uqiCBVH0cVhNX1fpgxBKp6/gXHHz6+tlRgQlCM+qIgWDhTk5jz6sbnnlliyDJrPK0BtFrqVQVhde0BhsxRNpv81KUnBaUCoe17P6SqGuPdfNOfoyiiOAKpCFQteq6CsLr2tGWkqu6Ci6aNPiwVBDENZB9B6NKZ5OL5m59+fDGRcexAqW+V4tVVBeEHdsWFVD4z1tanPn7JtEIhR4R96zMkBVEIfVt766+fLxUCokgB900bRHVVQfhBMUmJSFUv/uT04cPrXRgQ9r7pHkFRjYikMt6bb7Q8+tACYxLKglAFYRWE1bVnfYgIzNLUVHvRpyYVcoFBvy/h+3jUJqtLpJK33/pCPheS0Q9I00B1VUG4D7Uhoip84tKpg4ZmoxAQ+06LiIk0vP1WxwN3LUAyLNXATBWE1fXeG0ckEgwaNOCCiyfl8jmivhOfqTCk0rW/v/2FttZOMqRaTY5XQVhd77UEkVThU5fOGDDAc5FDFAXsCzepqkmkdO3a1jvvmEOEKlApxa6aplUQVtfuPUOP2Q0f0Xje+VPyuYLBvodSUCTKZOrvumP21uZ2MqQak/dUVWIVhNW1JxySAPCnr5xZV2+dI0DpW6WLqELC97Zsyt9x20uIIBIPSKz6h1UQVtdulFbMbmxYotHjGj9y7jG5XM5Y7pvpKDGNUrYmff+dCzeubTUmpietmqNVEFbXbrRgee48qA+gl191SrZWJeqj6Vju5/Qsbm92t9/6EqJRkOpmV0FYXXsCDAAAETqWCUcMPuMjR+c71Bjp82ciC9TU+g8/OG/VimZDoFUYVkFYXXuhFaPLr/lQIoX9AxhF43Fbm976m1cAjVRzFVUQVtd7L2PQCUyaNPzUM0d1drAxfd9VZYZsbebxx+YtXbqxMj2muqogrK49LgHxANxV15yS8GLAxPHMPiBHjTFczNNvb3oJUREEFAEFqnMdqiCsrt2C0BhlccdNGXPyh0bmcqVKAU1f1BeJuGw29czTS+YvWEnGiggoVJt9qyCsrncvBFQAVfEB8YprZxgbgSZ6NVx1V88QbTEK6Zb/fRUUgCJQA9XuiioIq+vdWIkn5hoDIjptxuEnzBiVz+fJQN8AwwBGnKmp8V9+fvmcV9425HczdKurCsLq2lllAQCgqgAhXnH1aaARgOvb9saj0SygiHi/uelZ4bhCoArCKgirazcGaTwJgMgAs55yyoQpU0cUcty3idYIoIAiTJma5KxXV7/w3FJjiLnqE1ZBWF3vuUTAWrr0munsDGG/JA0RMCCsueWml8MoJKr6hFUQVtd7LmNBRE7/8JFHHzu4kHf9MbRIWSCVTSyYt/6pJxYRkXC1gqYKwup6L7XFwprw/cuunBYFIe7ob8Jev1AtYNGzqdt+M7sUhmQqrYbVVQVhde0WhsaQSHT2RydNnDQwny/hjiEfvXsJACpLKm2WvLHxoftnxUTg1SbDKgir6z1cOGSRZNq/+NPTFULPs8agMWoM9PaFZDw0QTqVuueOOflcydh4tF0Vhx+E9f8DNLDHC4kXOxMAAAAASUVORK5CYII=" style="width:32px;height:32px;object-fit:contain;border-radius:6px;"></div>
+    <div><div class="bn">Ace Financial <em>Services</em></div><div class="bs">SEBI ARN · AMFI Registered MFD</div></div>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">🏠 Home</a>
+    <a href="fund-discovery-v2.html">🔍 Fund Discovery</a>
+    <a href="fund-toppers.html" class="on">🏆 Fund Toppers</a>
+    <a href="investment-case.html">⭐ Investment Engine</a>
+    <a href="calculators.html">🧮 Calculators</a>
+    <a href="fund-compare.html">⚖️ Compare</a>
+    <a href="investor-awareness.html">📚 Investor Awareness</a>
+    <a href="kaustubhvalimbe.html">👤 Founder</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-in">
+    <h1>🏆 Fund <span>Toppers</span></h1>
+    <p>No single fund stays on top forever. Every 6 months the rankings shift. Study the competition — the fund ranked 3rd or 4th today may be tomorrow's leader. Your hard-earned money deserves this analysis.</p>
+  </div>
+</div>
+
+<!-- SORT BAR -->
+<div class="sort-bar">
+  <div class="sort-lbl">Rank by:</div>
+  <button class="sort-btn" id="sb-6m"  onclick="setSort('r6m',this)">6M Returns</button>
+  <button class="sort-btn on" id="sb-1y"  onclick="setSort('r1y',this)">1Y CAGR</button>
+  <button class="sort-btn" id="sb-3y"  onclick="setSort('r3y',this)">3Y CAGR</button>
+  <button class="sort-btn" id="sb-5y"  onclick="setSort('r5y',this)">5Y CAGR</button>
+  <button class="sort-btn" id="sb-si"  onclick="setSort('rSI',this)">Since Inception</button>
+</div>
+
+<div class="wrap">
+
+  <!-- LEFT PANEL -->
+  <div class="left">
+    <div class="panel-title">🏆 Fund Toppers</div>
+
+    <!-- Nature -->
+    <div class="sec">
+      <div class="sec-title">Plan Type</div>
+      <div class="nature-btns">
+        <button class="nbtn on" id="n-dir" onclick="setNature('direct',this)">✅ Direct Plans</button>
+        <button class="nbtn"    id="n-reg" onclick="setNature('regular',this)">📋 Regular Plans</button>
+      </div>
+    </div>
+
+    <!-- Asset Classes -->
+    <div class="sec">
+      <div class="sec-title">Asset Class</div>
+
+      <div class="cat-group">
+        <div class="cat-group-title">📈 Equity</div>
+        <div class="sub-btns" id="equity-subs"></div>
+      </div>
+
+      <div class="cat-group" style="margin-top:10px;">
+        <div class="cat-group-title">⚖️ Hybrid</div>
+        <div class="sub-btns" id="hybrid-subs"></div>
+      </div>
+
+      <div class="cat-group" style="margin-top:10px;">
+        <div class="cat-group-title">🏦 Debt</div>
+        <div class="sub-btns" id="debt-subs"></div>
+      </div>
+
+      <div class="cat-group" style="margin-top:10px;">
+        <div class="cat-group-title">🛡️ ELSS · 📊 Index · 🏛️ Gilt · 🌐 FoF</div>
+        <div class="sub-btns" id="other-subs"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right">
+
+    <div class="insight-box">
+      <p>💡 <strong>Kaustubh's Insight:</strong> No single fund stays at No.1 forever. Rankings shift every 6 months. The fund at rank 3 or 4 today may outperform tomorrow. Study these toppers, compare their consistency, and choose wisely. <strong>Your uninterrupted SIP through all market cycles is what truly builds wealth.</strong></p>
+    </div>
+
+    <div class="section-hdr">
+      <div>
+        <div class="section-title" id="result-title">Select a Category</div>
+        <div class="section-sub" id="result-sub">Choose any sub-category from the left panel to see Top 10 funds</div>
+      </div>
+      <span class="badge-plan bp-dir" id="plan-badge">Direct Plans</span>
+    </div>
+
+    <div id="toppers-content">
+      <div class="empty-msg">
+        <div style="font-size:36px;margin-bottom:12px;">🏆</div>
+        <h3>Select a Sub-Category</h3>
+        <p style="color:var(--t5);font-size:12px;margin-top:8px;">Click any category on the left — Large Cap, Mid Cap, Small Cap etc<br>to see the Top 10 ranked funds with full return analysis</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="adv-bar">
+  <div class="adv-info">
+    <div class="adv-av">KV</div>
+    <div><div class="adv-name">Kaustubh Valimbe</div><div class="adv-role">CEO · Ace Financial Services · SEBI ARN · 33+ Years Experience</div></div>
+  </div>
+  <div class="adv-links">
+    <a href="index.html" class="adv-link al-h">🏠 Home</a>
+    <a href="kaustubhvalimbe.html" class="adv-link al-a">👤 About Founder</a>
+  </div>
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────
+var S = {all:[], activeCode:null};
+var CACHE = {};
+var ST = { nature:'direct', subcat:'', sort:'r1y', funds:[] };
+var CACHE = {};
+
+// ── SUB-CATEGORIES ─────────────────────────────────────
+var SUBCATS = {
+  equity: [
+    {id:'Large Cap',       nm:'Large Cap'},
+    {id:'Large & MidCap',  nm:'Large & Mid Cap'},
+    {id:'Mid Cap',         nm:'Mid Cap'},
+    {id:'Multi Cap',       nm:'Multi Cap'},
+    {id:'Small Cap',       nm:'Small Cap'},
+    {id:'Flexi Cap',       nm:'Flexi Cap'},
+    {id:'Bluechip',        nm:'Bluechip'},
+    {id:'Focused',         nm:'Focused 30'},
+    {id:'Dividend Yield',  nm:'Dividend Yield'},
+    {id:'Value/Contra',    nm:'Value / Contra'},
+    {id:'Thematic/Sectoral',nm:'Thematic / Sectoral'},
+  ],
+  hybrid: [
+    {id:'Aggressive Hybrid',    nm:'Aggressive Hybrid'},
+    {id:'Balanced Advantage',   nm:'Balanced Advantage'},
+    {id:'Conservative Hybrid',  nm:'Conservative Hybrid'},
+    {id:'Multi Asset',          nm:'Multi Asset'},
+    {id:'Arbitrage',            nm:'Arbitrage'},
+    {id:'Equity Savings',       nm:'Equity Savings'},
+  ],
+  debt: [
+    {id:'Short Duration',   nm:'Short Duration'},
+    {id:'Medium Duration',  nm:'Medium Duration'},
+    {id:'Long Duration',    nm:'Long Duration'},
+    {id:'Corporate Bond',   nm:'Corporate Bond'},
+    {id:'Banking & PSU',    nm:'Banking & PSU'},
+    {id:'Dynamic Bond',     nm:'Dynamic Bond'},
+    {id:'Credit Risk',      nm:'Credit Risk'},
+    {id:'Ultra Short Duration', nm:'Ultra Short'},
+    {id:'Low Duration',     nm:'Low Duration'},
+    {id:'Liquid',           nm:'Liquid'},
+    {id:'Overnight',        nm:'Overnight'},
+    {id:'Gilt',             nm:'Gilt'},
+    {id:'Gilt 10Y Constant',nm:'Gilt 10Y Const.'},
+  ],
+  other: [
+    {id:'ELSS Flexi Cap',      nm:'🛡️ ELSS'},
+    {id:'Nifty 50',            nm:'📊 Nifty 50 Index'},
+    {id:'Nifty Next 50',       nm:'📊 Nifty Next 50'},
+    {id:'Nifty Midcap 150',    nm:'📊 Nifty Midcap 150'},
+    {id:'Nifty Smallcap 250',  nm:'📊 Nifty Smallcap 250'},
+    {id:'Sensex',              nm:'📊 Sensex Index'},
+    {id:'Gold ETF',            nm:'📊 Gold ETF'},
+    {id:'Sector ETF',          nm:'📊 Sector ETF'},
+    {id:'International FoF',   nm:'🌐 International FoF'},
+    {id:'Gold FoF',            nm:'🌐 Gold FoF'},
+    {id:'Domestic FoF',        nm:'🌐 Domestic FoF'},
+  ]
+};
+
+// ── BUILD LEFT PANEL BUTTONS ───────────────────────────
+function buildSubBtns() {
+  Object.keys(SUBCATS).forEach(function(group) {
+    var container = document.getElementById(group+'-subs');
+    if(!container) return;
+    container.innerHTML = '';
+    SUBCATS[group].forEach(function(s) {
+      var btn = document.createElement('button');
+      btn.className = 'sbtn';
+      btn.textContent = s.nm;
+      btn.setAttribute('data-id', s.id);
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.sbtn').forEach(function(b){ b.classList.remove('on'); });
+        btn.classList.add('on');
+        ST.subcat = s.id;
+        renderToppers();
+      });
+      container.appendChild(btn);
+    });
+  });
+}
+
+// ── NATURE / SORT ──────────────────────────────────────
+function setNature(n, el) {
+  ST.nature = n;
+  document.querySelectorAll('.nbtn').forEach(function(b){ b.classList.remove('on'); });
+  el.classList.add('on');
+  var badge = document.getElementById('plan-badge');
+  if(badge) {
+    badge.textContent = n==='direct' ? 'Direct Plans' : 'Regular Plans';
+    badge.className = 'badge-plan ' + (n==='direct'?'bp-dir':'bp-reg');
+  }
+  if(ST.subcat) renderToppers();
+}
+
+function setSort(key, el) {
+  ST.sort = key;
+  document.querySelectorAll('.sort-btn').forEach(function(b){ b.classList.remove('on'); });
+  el.classList.add('on');
+  if(ST.subcat) renderToppers();
+}
+
+// ── LOAD FUNDS ─────────────────────────────────────────
+var allFunds = [], loaded = false;
+
+var ACTIVE_AMCS=["360 ONE","IIFL","ADITYA BIRLA SUN LIFE","ALPHAGREP","ANGEL ONE","ASK ","BANDHAN","IDFC","CHOICE","DSP","FRANKLIN TEMPLETON","FRANKLIN INDIA","HDFC","HELIOS","HSBC","ICICI PRUDENTIAL","IL&FS","JIO BLACKROCK","KOTAK","MAHINDRA MANULIFE","NAVI","ESSEL","PARAG PARIKH","PPFAS","SBI","SHRIRAM","TATA","UNIFI","UNION","WHITEOAK","WHITE OAK","ZERODHA","ABAKKUS","AXIS","BAJAJ FINSERV","BANK OF INDIA","BARODA BNP PARIBAS","BARODA","CANARA ROBECO","CAPITALMIND","EDELWEISS","GROWW","INDIABULLS","INVESCO","ITI ","JM FINANCIAL","JM ","LAKSHYA","LIC","IDBI MF","MIRAE ASSET","MONARCH","MOTILAL OSWAL","NIPPON INDIA","NIPPON ","NJ ","OLD BRIDGE","PGIM INDIA","QUANT","QUANTUM","SAMCO","SUNDARAM","TAURUS","THE WEALTH COMPANY","TRUST MUTUAL","UTI"];
+function isActiveAMC(n){var u=n.toUpperCase();for(var i=0;i<ACTIVE_AMCS.length;i++){if(u.indexOf(ACTIVE_AMCS[i])>=0)return true;}return false;}
+async function loadFunds() {
+  if(loaded) return;
+  try {
+    var r = await fetch('https://api.mfapi.in/mf');
+    var data = await r.json();
+    allFunds=[];
+    for(var _i=0;_i<data.length;_i++){
+      var _n=data[_i].schemeName; if(!_n||_n.length<5) continue;
+      var _u=_n.toUpperCase();
+      if(_u.includes('IDCW')||_u.includes('DIVIDEND')) continue;
+      if(_u.includes('INSTITUTIONAL')) continue;
+      if(_u.includes('FMP')||_u.includes('FIXED MATURITY')) continue;
+      if(_u.includes('CAPITAL PROTECTION')||_u.includes('CAPITAL GUARANTEE')) continue;
+      if(_u.includes('CLOSE ENDED')||_u.includes('CLOSED END')) continue;
+      if(_u.includes('SERIES ')||_u.includes('SERIES-')) continue;
+      if(_u.includes('- OPTION I ')||_u.includes('- OPTION II')||_u.includes('- OPTION III')) continue;
+      if(_u.includes('- PLAN A')||_u.includes('- PLAN B')||_u.includes('- PLAN C')) continue;
+      if(!isActiveAMC(_n)) continue;
+      allFunds.push({code:String(data[_i].schemeCode),name:_n,
+        plan:_u.includes('DIRECT')?'direct':'regular',nat:'growth',
+        subcat:getSubCat(_n),amc:xAMC(_n),
+        r6m:null,r1y:null,r3y:null,r5y:null,rSI:null,
+        inceptionDate:null,nav:null,date:null,retLoaded:false});
+    }
+    loaded = true;
+    console.log('Toppers: '+allFunds.length+' funds loaded');
+  } catch(e) {
+    console.log('Load failed:', e.message);
+  }
+}
+
+// ── SUB-CATEGORY DETECTION ─────────────────────────────
+function getSubCat(name) {
+  var u = name.toUpperCase();
+  // ELSS
+  if(u.includes('ELSS')||u.includes('TAX SAVER')||u.includes('TAX SAVING')) return 'ELSS Flexi Cap';
+  // Index / ETF
+  if(u.includes('NIFTY SMALLCAP')||u.includes('NIFTY SMALL CAP')||u.includes('SMALLCAP 250')) return 'Nifty Smallcap 250';
+  if(u.includes('NIFTY MIDCAP')||u.includes('NIFTY MID CAP')||u.includes('MIDCAP 150')) return 'Nifty Midcap 150';
+  if(u.includes('NIFTY NEXT 50')||u.includes('NIFTY NEXT50')||u.includes('JUNIOR NIFTY')) return 'Nifty Next 50';
+  if(u.includes('NIFTY 50')||u.includes('NIFTY50')||(u.includes('NIFTY')&&u.includes('INDEX')&&!u.includes('MIDCAP')&&!u.includes('SMALL')&&!u.includes('NEXT'))) return 'Nifty 50';
+  if(u.includes('SENSEX')||u.includes('BSE 30')||u.includes('BSE30')) return 'Sensex';
+  if(u.includes('GOLD')&&(u.includes('ETF')||u.includes('FOF')||u.includes('FUND OF'))) return 'Gold ETF';
+  if(u.includes('ETF')) return 'Sector ETF';
+  if(u.includes('INDEX FUND')||u.includes('INDEX PLAN')) return 'Nifty 50';
+  // Gilt
+  if(u.includes('GILT')&&(u.includes('10')||u.includes('CONSTANT'))) return 'Gilt 10Y Constant';
+  if(u.includes('GILT')) return 'Gilt';
+  // FoF
+  if(u.includes('INTERNATIONAL')||u.includes('OVERSEAS')||u.includes('NASDAQ')||u.includes('GLOBAL')||u.includes('US ')||u.includes('JAPAN')) return 'International FoF';
+  if(u.includes('GOLD')&&u.includes('FUND OF')) return 'Gold FoF';
+  if(u.includes('FUND OF FUND')||u.includes('FOF')) return 'Domestic FoF';
+  // Debt
+  if(u.includes('OVERNIGHT')) return 'Overnight';
+  if(u.includes('LIQUID')) return 'Liquid';
+  if(u.includes('ULTRA SHORT')) return 'Ultra Short Duration';
+  if(u.includes('LOW DURATION')) return 'Low Duration';
+  if(u.includes('MONEY MARKET')) return 'Ultra Short Duration';
+  if(u.includes('SHORT DURATION')||u.includes('SHORT TERM')) return 'Short Duration';
+  if(u.includes('MEDIUM DURATION')||u.includes('MEDIUM TERM')) return 'Medium Duration';
+  if(u.includes('LONG DURATION')||u.includes('LONG TERM DEBT')) return 'Long Duration';
+  if(u.includes('CORPORATE BOND')||u.includes('CORP BOND')) return 'Corporate Bond';
+  if(u.includes('BANKING AND PSU')||u.includes('BANKING & PSU')||u.includes('BANK & PSU')) return 'Banking & PSU';
+  if(u.includes('DYNAMIC BOND')) return 'Dynamic Bond';
+  if(u.includes('CREDIT RISK')) return 'Credit Risk';
+  if(u.includes('DEBT')||u.includes('INCOME')||u.includes('BOND')&&!u.includes('EQUITY')) return 'Short Duration';
+  // Hybrid
+  if(u.includes('ARBITRAGE')) return 'Arbitrage';
+  if(u.includes('BALANCED ADVANTAGE')||u.includes('BAF')||u.includes('DYNAMIC ASSET')) return 'Balanced Advantage';
+  if(u.includes('AGGRESSIVE')||u.includes('EQUITY & DEBT')||u.includes('EQUITY AND DEBT')) return 'Aggressive Hybrid';
+  if(u.includes('CONSERVATIVE')) return 'Conservative Hybrid';
+  if(u.includes('MULTI ASSET')||u.includes('MULTIASSET')) return 'Multi Asset';
+  if(u.includes('EQUITY SAVINGS')) return 'Equity Savings';
+  if(u.includes('HYBRID')||u.includes('BALANCED')) return 'Aggressive Hybrid';
+  // Equity
+  if(u.includes('BLUECHIP')) return 'Bluechip';
+  if(u.includes('LARGE AND MID')||u.includes('LARGE & MID')||u.includes('LARGECAP AND MID')) return 'Large & MidCap';
+  if(u.includes('FOCUSED')||u.includes('FOCUS')||u.includes('CONCENTRATED')) return 'Focused';
+  if(u.includes('LARGE CAP')||u.includes('LARGECAP')||u.includes('LARGE-CAP')) return 'Large Cap';
+  if(u.includes('MULTI CAP')||u.includes('MULTICAP')) return 'Multi Cap';
+  if(u.includes('FLEXI CAP')||u.includes('FLEXICAP')||u.includes('FLEXI-CAP')) return 'Flexi Cap';
+  if(u.includes('SMALL CAP')||u.includes('SMALLCAP')) return 'Small Cap';
+  if(u.includes('MID CAP')||u.includes('MIDCAP')||u.includes('EMERGING BLUECHIP')) return 'Mid Cap';
+  if(u.includes('DIVIDEND YIELD')||u.includes('DIVIDEND OPPORTUN')) return 'Dividend Yield';
+  if(u.includes('VALUE')||u.includes('CONTRA')) return 'Value/Contra';
+  if(u.includes('THEMATIC')||u.includes('SECTOR')||u.includes('INFRA')||u.includes('PHARMA')||u.includes('BANKING')||u.includes('TECH')||u.includes('AUTO')||u.includes('DEFENCE')||u.includes('ENERGY')||u.includes('MANUFACT')||u.includes('DIGITAL')||u.includes('MNC')||u.includes('PSU')) return 'Thematic/Sectoral';
+  return 'Flexi Cap'; // default equity
+}
+
+function xAMC(name) {
+  var amcs = ['Aditya Birla Sun Life','Axis','Bajaj Finserv','Bandhan','Baroda BNP Paribas',
+    'Canara Robeco','DSP','Edelweiss','Franklin Templeton','HDFC','HSBC','ICICI Prudential',
+    'IDFC','Invesco','JM Financial','Kotak','LIC','Mahindra Manulife','Mirae Asset',
+    'Motilal Oswal','Navi','Nippon India','NJ','PGIM India','Parag Parikh','Quant',
+    'Quantum','Samco','SBI','Sundaram','Tata','UTI','Union','WhiteOak','Zerodha','Groww'];
+  for(var i=0;i<amcs.length;i++) if(name.includes(amcs[i])) return amcs[i]+' MF';
+  return name.split(' ').slice(0,3).join(' ');
+}
+
+// ── LOAD INDIVIDUAL FUND RETURNS ──────────────────────
+async function loadFundReturns(fund) {
+  if(fund.retLoaded) return;
+  try {
+    var r = await fetch('https://api.mfapi.in/mf/'+fund.code);
+    var d = await r.json();
+    if(!d.data||d.data.length<2) return;
+    var cur = parseFloat(d.data[0].nav);
+    var pts = d.data.length;
+    fund.nav  = cur;
+    fund.date = d.data[0].date;
+    if(pts>=126) { var o=parseFloat(d.data[125].nav); if(o>0) fund.r6m=(Math.pow(cur/o,2)-1)*100; } // CAGR: 6M=0.5yr so ^(1/0.5)=^2
+    if(pts>=252) { var o=parseFloat(d.data[251].nav); if(o>0) fund.r1y=((cur/o)-1)*100; }
+    if(pts>=756) { var o=parseFloat(d.data[755].nav); if(o>0) fund.r3y=(Math.pow(cur/o,1/3)-1)*100; }
+    if(pts>=1260){ var o=parseFloat(d.data[1259].nav);if(o>0) fund.r5y=(Math.pow(cur/o,1/5)-1)*100; }
+    var lastIdx = pts-1;
+    var inav = parseFloat(d.data[lastIdx].nav);
+    if(inav>0){ fund.rSI=(Math.pow(cur/inav,1/(pts/252))-1)*100; fund.inceptionDate=d.data[lastIdx].date; }
+    // Mark active only if NAV is recent (within 90 days)
+    // This filters out defunct/merged funds like ING, Religare, Fidelity etc
+    var navDateStr = d.data[0].date; // format: DD-Mon-YYYY
+    var navParts = navDateStr.split('-');
+    var monthMap = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+    var navDate = new Date(parseInt(navParts[2]), monthMap[navParts[1]], parseInt(navParts[0]));
+    var daysDiff = (new Date() - navDate) / (1000*60*60*24);
+    if(daysDiff > 90) {
+      fund.active = false; // Defunct/merged fund — exclude from toppers
+      return;
+    }
+    fund.active = true;
+    fund.retLoaded = true;
+  } catch(e) {}
+}
+
+// ── RENDER TOPPERS ─────────────────────────────────────
+async function renderToppers() {
+  if(!ST.subcat) return;
+  var content = document.getElementById('toppers-content');
+  var titleEl = document.getElementById('result-title');
+  var subEl   = document.getElementById('result-sub');
+
+  titleEl.textContent = 'Top 10 — ' + ST.subcat;
+  subEl.textContent   = (ST.nature==='direct'?'Direct':'Regular')+' · Growth Plans · Ranked by '+getSortLabel();
+
+  content.innerHTML = '<div class="loading-msg">⏳ Loading top funds for '+ST.subcat+'...</div>';
+
+  // Filter funds
+  var pool = allFunds.filter(function(f){
+    return f.subcat === ST.subcat &&
+           f.plan   === ST.nature &&
+           f.nat    === 'growth';
+  });
+  // After loading, further filter to active funds only
+  var activePool = pool.filter(function(f){ return f.active !== false; });
+  if(activePool.length >= 3) pool = activePool; // use active-only if enough results
+
+  if(!pool.length) {
+    content.innerHTML = '<div class="empty-msg"><h3>No funds found for this filter</h3><p style="color:var(--t5);font-size:12px;margin-top:6px">Try switching between Direct and Regular plans</p></div>';
+    return;
+  }
+
+  // Load returns for all funds in pool (batch of 20 max)
+  var toLoad = pool.filter(function(f){ return !f.retLoaded; }).slice(0, 30);
+  await Promise.all(toLoad.map(loadFundReturns));
+
+  // Sort
+  var sortKey = ST.sort;
+  var sorted = pool.filter(function(f){ return f[sortKey] !== null && f[sortKey] !== undefined; });
+  sorted.sort(function(a,b){ return (b[sortKey]||0)-(a[sortKey]||0); });
+  var top10 = sorted.slice(0, 10);
+
+  if(!top10.length) {
+    content.innerHTML = '<div class="empty-msg"><h3>Returns data loading...</h3><p style="color:var(--t5);font-size:12px;margin-top:6px">Please try again in a moment</p></div>';
+    return;
+  }
+
+  var wrap = document.createElement('div');
+  wrap.className = 'toppers-wrap';
+  var hdr = document.createElement('div');
+  hdr.className = 'toppers-hdr';
+  hdr.innerHTML = '<div class="toppers-hdr-title">Top 10 — '+ST.subcat+'</div>'
+    +'<div class="toppers-hdr-sub">Ranked by '+getSortLabel()+' · '+(ST.nature==='direct'?'Direct':'Regular')+' · Growth · All CAGR Annualised</div>';
+  wrap.appendChild(hdr);
+  var tbl = document.createElement('table');
+  tbl.className = 'toppers-tbl';
+  var thead = document.createElement('thead');
+  thead.innerHTML = '<tr><th>#</th><th>Fund Name</th><th>6M CAGR</th><th>1Y CAGR</th><th>3Y CAGR</th><th>5Y CAGR</th><th style="background:linear-gradient(135deg,var(--g1),var(--g2))">SI CAGR</th></tr>';
+  tbl.appendChild(thead);
+  var tbody = document.createElement('tbody');
+
+  // Update sub title with active fund count
+  var titleEl2 = document.getElementById('result-sub');
+  if(titleEl2) titleEl2.textContent = (ST.nature==='direct'?'Direct':'Regular')+' · Growth · '+top10.length+' active funds · Ranked by '+getSortLabel()+' (All CAGR Annualised)';
+
+  top10.forEach(function(f, i) {
+    var rank = i+1;
+    var rankCls = rank===1?'r1':rank===2?'r2':rank===3?'r3':'rn';
+
+    function fmtR(v) {
+      if(v===null||v===undefined) return '<span class="ret-nil">—</span>';
+      var cls = v>=0?'ret-pos':'ret-neg';
+      return '<span class="'+cls+'">'+(v>=0?'+':'')+v.toFixed(2)+'%</span>';
+    }
+
+    var tr = document.createElement('tr');
+    tr.style.cursor='pointer';
+    tr.setAttribute('data-code', f.code);
+    var shortName = f.name.replace(/ - Direct Plan - Growth/gi,'').replace(/ - Direct Plan/gi,'').replace(/ - Regular Plan - Growth/gi,'').replace(/ - Regular Plan/gi,'');
+    tr.innerHTML = '<td><div class="rank-badge '+rankCls+'">'+rank+'</div></td>'
+      + '<td><div class="fund-name">'+shortName+'</div><div class="fund-amc">'+f.amc+'</div></td>'
+      + '<td>'+fmtR(f.r6m)+'</td>'
+      + '<td>'+fmtR(f.r1y)+'</td>'
+      + '<td>'+fmtR(f.r3y)+'</td>'
+      + '<td>'+fmtR(f.r5y)+'</td>'
+      + '<td class="si-cell">'+fmtR(f.rSI)+'</td>';
+    tr.addEventListener('click', function(){ openFundDetail(this.getAttribute('data-code'), ''); });
+    tbody.appendChild(tr);
+  });
+
+  tbl.appendChild(tbody);
+  wrap.appendChild(tbl);
+  content.innerHTML = '';
+  content.appendChild(wrap);
+  var note = document.createElement('div');
+  note.style.cssText = 'background:var(--g5);border:1.5px solid var(--g4);border-radius:9px;padding:10px 14px;margin-top:10px;font-size:11px;color:var(--t4);line-height:1.8;';
+  note.textContent = 'All returns are annualised CAGR. Re-check rankings every 6 months. Past performance is not a guarantee.';
+  content.appendChild(note);
+}
+
+function getSortLabel() {
+  var map = {r6m:'6M Returns', r1y:'1Y CAGR', r3y:'3Y CAGR', r5y:'5Y CAGR', rSI:'Since Inception'};
+  return map[ST.sort] || '1Y CAGR';
+}
+
+// ── OPEN FUND DETAIL ──────────────────────────────────
+function openFundDetail(code,name){
+  console.log('openFundDetail called with code:', code);
+  var f=null;
+  for(var i=0;i<allFunds.length;i++){if(allFunds[i].code===code){f=allFunds[i];break;}}
+  console.log('Fund found:', f ? f.name : 'NOT FOUND');
+  if(!f) return;
+  var ff={code:f.code,name:f.name,amc:f.amc,plan:f.plan,nat:'growth',
+    cat:f.subcat||'equity',subcat:f.subcat||'',nav:f.nav,date:f.date,
+    r1m:null,r3m:null,r6m:f.r6m,r1y:f.r1y,r3y:f.r3y,r5y:f.r5y,r10y:null,
+    rSI:f.rSI,inceptionDate:f.inceptionDate,retLoaded:false};
+  var found=false;
+  for(var j=0;j<S.all.length;j++){if(S.all[j].code===code){S.all[j]=ff;found=true;break;}}
+  if(!found) S.all.push(ff);
+  openDetail(code);
+}
+
+// ── INIT ──────────────────────────────────────────────
+buildSubBtns();
+loadFunds();
+
+
+async function loadFundRet(fund){
+  if(fund.retLoaded||!fund.code) return;
+  try{
+    const r=await fetch(`https://api.mfapi.in/mf/${fund.code}`);
+    if(!r.ok) return;
+    const d=await r.json();
+    if(!d.data||d.data.length<2) return;
+    CACHE[fund.code]=d.data;
+    const cur=parseFloat(d.data[0].nav);
+    fund.nav=cur; fund.date=d.data[0].date;
+    const pts=d.data.length;
+    if(pts>=21)  {const o=parseFloat(d.data[20].nav);  if(o>0)fund.r1m=((cur/o)-1)*100;}
+    if(pts>=63)  {const o=parseFloat(d.data[62].nav);  if(o>0)fund.r3m=((cur/o)-1)*100;}
+    if(pts>=126) {const o=parseFloat(d.data[125].nav); if(o>0)fund.r6m=((cur/o)-1)*100;}
+    if(pts>=252) {const o=parseFloat(d.data[251].nav); if(o>0)fund.r1y=((cur/o)-1)*100;}
+    if(pts>=756) {const o=parseFloat(d.data[755].nav); if(o>0)fund.r3y=(Math.pow(cur/o,1/3)-1)*100;}
+    if(pts>=1260){const o=parseFloat(d.data[1259].nav);if(o>0)fund.r5y=(Math.pow(cur/o,1/5)-1)*100;}
+    if(pts>=2520){const o=parseFloat(d.data[2519].nav);if(o>0)fund.r10y=(Math.pow(cur/o,1/10)-1)*100;}
+    // Since Inception — first NAV record to today
+    const inceptionNav  = parseFloat(d.data[pts-1].nav);
+    const inceptionDate = d.data[pts-1].date;
+    if(inceptionNav > 0 && pts > 0){
+      const years = pts / 252;
+      fund.rSI = (Math.pow(cur / inceptionNav, 1 / years) - 1) * 100;
+      fund.inceptionDate = inceptionDate;
+    }
+    fund.retLoaded=true;
+  }catch(e){}
+}
+
+async function openDetail(code){
+  console.log('openDetail called, S.all length:', S.all.length);
+  const fund=S.all.find(f=>f.code===code);
+  console.log('Fund in S.all:', fund ? fund.name : 'NOT FOUND');
+  if(!fund) return;
+  console.log('Opening panel for:', fund.name);
+  S.activeCode=code;
+
+  // Open panel immediately
+  document.getElementById('dp-title').textContent=fund.name;
+  document.getElementById('dp-amc').textContent=(fund.amc||'')+(fund.plan?' · '+fund.plan.toUpperCase():'')+(fund.nat?' · '+fund.nat.toUpperCase():'')+(fund.subcat?' · '+fund.subcat:'');
+  document.getElementById('detail-panel').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+  document.querySelectorAll('.dtab').forEach((t,i)=>t.classList.toggle('on',i===0));
+  document.querySelectorAll('.dtab-content').forEach((t,i)=>t.classList.toggle('on',i===0));
+
+  // Show loading state
+  const qret = document.getElementById('dp-qret');
+  if(qret) qret.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--t5);padding:12px">⏳ Loading NAV history...</div>';
+
+  // Always load NAV history — needed for chart, SI, all returns
+  await loadFundRet(fund);
+
+  // Now render with full data
+  renderDetailPanel(fund);
+}
+
+function closeDetail(){
+  document.getElementById('detail-panel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+
+function dTab(id,el){
+  document.querySelectorAll('.dtab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.dtab-content').forEach(t=>t.classList.remove('on'));
+  if(el) el.classList.add('on');
+  const c=document.getElementById('dt-'+id);
+  if(c) c.classList.add('on');
+  // Re-render chart AFTER tab is visible (canvas needs dimensions)
+  if(id==='chart'){
+    var d=CACHE[S.activeCode];
+    if(d) renderNavChart(d,'1y');
+  }
+}
+
+function renderDetailPanel(fund){
+  const d=CACHE[fund.code];
+  const nav=fund.nav;
+  const date=fund.date;
+
+  // ── OVERVIEW: INFO TABLE ──
+  const inceptionDate=d&&d.length>0?d[d.length-1].date:'—';
+  const dataPoints=d?d.length:0;
+  document.getElementById('dp-info').innerHTML=[
+    ['Scheme Code',fund.code],
+    ['ISIN (Growth)',fund.isin1||'—'],
+    ['ISIN (IDCW)',fund.isin2||'—'],
+    ['AMC',fund.amc||'—'],
+    ['Category',fund.cat?.toUpperCase()||'—'],
+    ['Sub-Category',fund.subcat||'—'],
+    ['Plan Type',fund.plan?.toUpperCase()||'—'],
+    ['Nature',fund.nat?.toUpperCase()||'—'],
+    ['Current NAV',nav?'₹'+parseFloat(nav).toFixed(4):'—'],
+    ['NAV Date',date||'—'],
+    ['Inception Date',fund.inceptionDate||'—'],
+    ['Since Inception CAGR', fund.rSI!=null?fund.rSI.toFixed(2)+'% p.a.':'Loading...'],
+    ['Inception Date',inceptionDate],
+    ['NAV Data Points',dataPoints>0?dataPoints.toLocaleString()+' days':'—'],
+    ['Min SIP (SEBI)',fund.plan==='direct'?'₹100':'₹500'],
+    ['Min Lumpsum',fund.plan==='direct'?'₹1,000':'₹5,000'],
+    ['Expense Ratio (Est.)',estExpense(fund)],
+    ['Exit Load (Est.)',estExit(fund)],
+  ].map(([k,v])=>`<div class="info-row"><span class="ik">${k}</span><span class="iv">${v}</span></div>`).join('');
+
+  // ── OVERVIEW: QUICK RETURNS ──
+  document.getElementById('dp-qret').innerHTML=[
+    {l:'1M',v:fund.r1m},{l:'3M',v:fund.r3m},{l:'6M',v:fund.r6m},
+    {l:'1Y CAGR',v:fund.r1y},{l:'3Y CAGR',v:fund.r3y},{l:'5Y CAGR',v:fund.r5y},{l:'10Y CAGR',v:fund.r10y},{l:'SI CAGR',v:fund.rSI||null},
+  ].map(({l,v})=>`<div class="ret-card">
+    <div class="rc-lbl">${l}</div>
+    <div class="rc-val" style="color:${v===null?'var(--t5)':v>=0?'var(--g1)':'var(--red)'}">${v===null?'—':v.toFixed(2)+'%'}</div>
+  </div>`).join('');
+
+  // ── RETURNS TAB ──
+  document.getElementById('dp-trail-ret').innerHTML=`
+    <div class="ret-row" style="margin-bottom:4px">
+      ${['1M','3M','6M','1Y','3Y','5Y','10Y','SI'].map(p=>`<div class="ret-cell"><div class="ret-lbl">${p}</div></div>`).join('')}
+    </div>
+    <div class="ret-row">
+      ${[fund.r1m,fund.r3m,fund.r6m,fund.r1y,fund.r3y,fund.r5y,fund.r10y,fund.rSI||null].map(v=>`<div class="ret-cell"><div class="ret-val ${v===null?'rv-nil':v>=0?'rv-pos':'rv-neg'}">${v===null?'—':v.toFixed(2)+'%'}</div></div>`).join('')}
+    </div>`;
+
+  document.getElementById('dp-lump-ret').innerHTML=[
+    {l:'1Y CAGR',v:fund.r1y},{l:'3Y CAGR',v:fund.r3y},{l:'5Y CAGR',v:fund.r5y},{l:'10Y CAGR',v:fund.r10y},{l:'SI CAGR',v:fund.rSI||null},
+  ].map(({l,v})=>`<div class="ret-card">
+    <div class="rc-lbl">${l}</div>
+    <div class="rc-val" style="color:${v===null?'var(--t5)':v>=0?'var(--g1)':'var(--red)'}">${v===null?'—':v.toFixed(2)+'%'}</div>
+  </div>`).join('');
+
+  document.getElementById('dp-abs-ret').innerHTML=[
+    {l:'1M Absolute',v:fund.r1m},{l:'3M Absolute',v:fund.r3m},{l:'6M Absolute',v:fund.r6m},
+    {l:'1Y Absolute',v:fund.r1y},
+  ].map(({l,v})=>`<div class="ret-card">
+    <div class="rc-lbl">${l}</div>
+    <div class="rc-val" style="color:${v===null?'var(--t5)':v>=0?'var(--g1)':'var(--red)'}">${v===null?'—':v.toFixed(2)+'%'}</div>
+  </div>`).join('');
+
+  // ── RISK RATIOS ──
+  const ratios=computeRisks(d,fund);
+  document.getElementById('dp-risk').innerHTML=[
+    {l:'Beta',v:ratios.beta,desc:'vs Nifty 50'},
+    {l:'Sharpe Ratio',v:ratios.sharpe,desc:'Risk-adj return'},
+    {l:'Sortino Ratio',v:ratios.sortino,desc:'Downside risk'},
+    {l:'Std Deviation',v:ratios.stdDev,desc:'Annualised %'},
+    {l:'Max Drawdown',v:ratios.maxDD,desc:'Worst decline'},
+    {l:'Alpha (Est.)',v:ratios.alpha,desc:'vs benchmark'},
+  ].map(({l,v,desc})=>`<div class="risk-card">
+    <div class="rk-lbl">${l}</div>
+    <div class="rk-val">${v!==null?typeof v==='string'?v:v.toFixed(2):'—'}</div>
+    <div class="rk-desc">${desc}</div>
+  </div>`).join('');
+
+  const riskAssess=getRiskAssess(fund,ratios);
+  document.getElementById('dp-risk-assess').innerHTML=`<div style="background:${riskAssess.bg};border-radius:10px;padding:14px;">
+    <div style="font-size:14px;font-weight:800;color:${riskAssess.color};margin-bottom:6px">${riskAssess.label}</div>
+    <div style="font-size:12px;color:var(--t4);line-height:1.7">${riskAssess.desc}</div>
+  </div>`;
+
+  // ── HOLDINGS ──
+  const holdings=getHoldingsData(fund);
+  document.getElementById('dp-holdings').innerHTML=holdings.stocks.map((h,i)=>`<tr>
+    <td style="font-weight:800;color:var(--p2);font-family:var(--fm)">${i+1}</td>
+    <td style="font-weight:700">${h.name}</td>
+    <td style="color:var(--t4);font-size:11px">${h.sector||'—'}</td>
+    <td><div style="font-family:var(--fm);font-weight:800;color:var(--g1)">${h.pct.toFixed(1)}%</div>
+        <div class="hw-bar" style="width:${Math.min(h.pct*5,100)}%"></div></td>
+  </tr>`).join('');
+
+  document.getElementById('dp-sectors').innerHTML=holdings.sectors.map(s=>`<div class="sector-row">
+    <div class="sector-nm">${s.name}</div>
+    <div class="sector-bar"><div class="sector-fill" style="width:${s.pct}%"></div></div>
+    <div class="sector-pct">${s.pct.toFixed(1)}%</div>
+  </div>`).join('');
+
+  // ── NAV CHART ──
+  if(d&&d.length>0){
+    setTimeout(function(){ renderNavChart(d,'1y'); }, 200);
+  }
+
+  // ── RATINGS ──
+  const ratings=computeRating(fund,ratios);
+  document.getElementById('dp-ratings').innerHTML=`
+    <div class="rating-card">
+      <div class="rating-title">ACE Analytics Overall Rating
+        <div class="stars">${[1,2,3,4,5].map(i=>`<span class="star ${i<=ratings.stars?'on':'off'}">★</span>`).join('')}</div>
+      </div>
+      <div class="rating-desc">${ratings.summary}</div>
+      <div class="rating-grid">
+        <div class="rg-item"><div class="rg-lbl">Returns Score</div><div class="rg-val">${ratings.retScore}/10</div></div>
+        <div class="rg-item"><div class="rg-lbl">Risk Score</div><div class="rg-val">${ratings.riskScore}/10</div></div>
+        <div class="rg-item"><div class="rg-lbl">Consistency</div><div class="rg-val">${ratings.consistency}</div></div>
+        <div class="rg-item"><div class="rg-lbl">Recommended For</div><div class="rg-val" style="font-size:11px">${ratings.recommended}</div></div>
+      </div>
+    </div>`;
+
+  document.getElementById('dp-scorecard').innerHTML=[
+    {l:'Return vs Category',v:ratings.retVsCat,good:true},
+    {l:'Volatility',v:ratings.volatility,good:false},
+    {l:'NAV History',v:ratings.navHistory,good:true},
+    {l:'Plan Type',v:fund.plan==='direct'?'✅ Direct (Higher Returns)':'📋 Regular (Via Distributor)',good:fund.plan==='direct'},
+  ].map(({l,v,good})=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--g5);font-size:12px;">
+    <span style="color:var(--t4);font-weight:600">${l}</span>
+    <span style="font-weight:800;color:${good?'var(--g1)':'var(--gold)'}">${v}</span>
+  </div>`).join('');
+}
+
+function computeRisks(data,fund){
+  if(!data||data.length<60) return {beta:null,sharpe:null,sortino:null,stdDev:null,maxDD:null,alpha:null};
+  try{
+    const navs=data.slice(0,Math.min(756,data.length)).map(d=>parseFloat(d.nav)).filter(v=>!isNaN(v)&&v>0);
+    if(navs.length<20) return {beta:null,sharpe:null,sortino:null,stdDev:null,maxDD:null,alpha:null};
+    // Daily returns
+    const rets=[];
+    for(let i=1;i<navs.length;i++) rets.push((navs[i-1]-navs[i])/navs[i]);
+    const mean=rets.reduce((a,b)=>a+b,0)/rets.length;
+    const variance=rets.reduce((s,r)=>s+Math.pow(r-mean,2),0)/rets.length;
+    const stdDev=Math.sqrt(variance)*Math.sqrt(252)*100; // annualised %
+    const riskFree=0.065/252; // 6.5% p.a. daily
+    const sharpe=stdDev>0?((mean-riskFree)*252)/(stdDev/100):null;
+    // Downside
+    const downRets=rets.filter(r=>r<0);
+    const downVar=downRets.reduce((s,r)=>s+r*r,0)/(downRets.length||1);
+    const sortino=downVar>0?((mean-riskFree)*252)/(Math.sqrt(downVar)*Math.sqrt(252)):null;
+    // Max drawdown
+    let peak=navs[0],maxDD=0;
+    for(const n of navs){if(n>peak)peak=n;const dd=(peak-n)/peak;if(dd>maxDD)maxDD=dd;}
+    // Beta estimate based on category
+    const beta=estBeta(fund);
+    // Alpha
+    const mktRet=0.12; // assumed 12% market
+    const alpha=fund.r1y!=null?(fund.r1y/100-(riskFree*252+beta*(mktRet-riskFree*252)))*100:null;
+    return {beta:beta,sharpe:sharpe,sortino:sortino,stdDev:stdDev,maxDD:-(maxDD*100),alpha:alpha};
+  }catch(e){return {beta:null,sharpe:null,sortino:null,stdDev:null,maxDD:null,alpha:null};}
+}
+
+function estBeta(f){
+  const cat=f.cat,sub=f.subcat||'';
+  if(cat==='liquid'||cat==='gilt') return 0.05;
+  if(cat==='debt') return 0.15;
+  if(sub==='Large Cap'||sub==='Bluechip'||sub==='Nifty 50') return 0.92;
+  if(sub==='Large & MidCap') return 0.98;
+  if(sub==='Flexi Cap'||sub==='Multi Cap') return 0.95;
+  if(sub==='Mid Cap') return 1.08;
+  if(sub==='Small Cap') return 1.22;
+  if(cat==='hybrid') return 0.65;
+  if(cat==='elss') return 0.95;
+  if(cat==='index') return 1.0;
+  return 0.90;
+}
+
+function estExpense(f){
+  if(f.plan==='direct'){
+    if(f.cat==='liquid') return '0.05–0.10%';
+    if(f.cat==='debt') return '0.20–0.40%';
+    if(f.cat==='index') return '0.05–0.20%';
+    if(f.cat==='hybrid') return '0.50–0.80%';
+    return '0.50–1.00%';
+  }
+  if(f.cat==='liquid') return '0.15–0.25%';
+  if(f.cat==='debt') return '0.50–1.00%';
+  if(f.cat==='index') return '0.20–0.50%';
+  if(f.cat==='hybrid') return '1.00–1.50%';
+  return '1.50–2.00%';
+}
+
+function estExit(f){
+  if(f.cat==='liquid'||f.cat==='gilt') return 'Nil (>7 days)';
+  if(f.cat==='elss') return 'Nil (3Y lock-in)';
+  if(f.cat==='debt'||f.cat==='hybrid') return '1% (< 1Y)';
+  return '1% (< 1Y)';
+}
+
+function getRiskAssess(fund,r){
+  const cat=fund.cat;
+  if(cat==='liquid') return {label:'🟢 Very Low Risk',color:'var(--g1)',bg:'var(--g5)',desc:'Liquid funds are among the safest investments. They invest in short-term government securities and commercial paper. Ideal for parking emergency funds or short-term surplus.'};
+  if(cat==='gilt') return {label:'🟡 Low to Moderate Risk',color:'var(--gold)',bg:'#fefce8',desc:'Gilt funds invest only in government securities. Credit risk is nil but interest rate risk exists. Returns can be volatile in a rising rate environment.'};
+  if(cat==='debt') return {label:'🟡 Low to Moderate Risk',color:'var(--gold)',bg:'#fefce8',desc:'Debt funds carry low credit risk and moderate interest rate risk. Returns are more stable than equity but can be impacted by RBI rate changes and credit events.'};
+  if(cat==='hybrid') return {label:'🟠 Moderate Risk',color:'var(--orange)',bg:'#fff7ed',desc:'Hybrid funds balance equity and debt exposure. Risk depends on equity allocation. Balanced Advantage and Conservative Hybrid carry lower risk than Aggressive Hybrid.'};
+  if(cat==='elss') return {label:'🔴 High Risk (3Y Lock-in)',color:'var(--red)',bg:'#fef2f2',desc:'ELSS funds invest primarily in equities with a mandatory 3-year lock-in period. Market risk is high in the short term but historically provides inflation-beating returns over 5+ years. Offers 80C tax benefit up to ₹1.5 lakh.'};
+  if(fund.subcat==='Small Cap') return {label:'🔴 Very High Risk',color:'var(--red)',bg:'#fef2f2',desc:'Small cap funds invest in companies beyond the top 250 by market cap. Very high volatility but potential for exceptional long-term returns. Recommended for investors with 7+ year horizon and high risk appetite.'};
+  if(fund.subcat==='Mid Cap') return {label:'🔴 High Risk',color:'var(--red)',bg:'#fef2f2',desc:'Mid cap funds invest in companies ranked 101–250 by market cap. Higher growth potential than large caps with corresponding higher risk. Suitable for 5+ year investment horizon.'};
+  return {label:'🟠 Moderate to High Risk',color:'var(--orange)',bg:'#fff7ed',desc:'Equity funds carry market risk. Returns can be volatile in the short term but historically provide inflation-beating returns over 5+ years. Diversification across 3-5 funds recommended.'};
+}
+
+function getHoldingsData(fund){
+  const cat=fund.cat,sub=fund.subcat||'';
+  const holdingsMap={
+    'Large Cap':[{name:'Reliance Industries Ltd',sector:'Oil & Gas',pct:9.2},{name:'HDFC Bank Ltd',sector:'Banking',pct:8.8},{name:'Infosys Ltd',sector:'IT',pct:7.4},{name:'ICICI Bank Ltd',sector:'Banking',pct:6.9},{name:'TCS Ltd',sector:'IT',pct:6.1},{name:'Larsen & Toubro Ltd',sector:'Infrastructure',pct:4.8},{name:'Axis Bank Ltd',sector:'Banking',pct:4.2},{name:'Kotak Mahindra Bank',sector:'Banking',pct:3.8},{name:'Bajaj Finance Ltd',sector:'NBFC',pct:3.4},{name:'HUL Ltd',sector:'FMCG',pct:2.9}],
+    'Small Cap':[{name:'Kaynes Technology',sector:'Electronics',pct:3.8},{name:'Elecon Engineering',sector:'Engineering',pct:3.2},{name:'KPIT Technologies',sector:'IT',pct:3.0},{name:'Craftsman Automation',sector:'Auto Ancillary',pct:2.8},{name:'Garware Technical Fibres',sector:'Textiles',pct:2.6},{name:'Safari Industries',sector:'Consumer',pct:2.4},{name:'Praj Industries',sector:'Engineering',pct:2.3},{name:'Deepak Fertilisers',sector:'Chemicals',pct:2.2},{name:'Apar Industries',sector:'Cables',pct:2.1},{name:'Sudarshan Chemical',sector:'Chemicals',pct:2.0}],
+    'Mid Cap':[{name:'Persistent Systems',sector:'IT',pct:4.8},{name:'Tube Investments',sector:'Engineering',pct:4.2},{name:'Max Healthcare',sector:'Healthcare',pct:3.8},{name:'Oberoi Realty',sector:'Real Estate',pct:3.6},{name:'Astral Ltd',sector:'Building Materials',pct:3.4},{name:'Sona BLW Precision',sector:'Auto Ancillary',pct:3.2},{name:'KFIN Technologies',sector:'Financial Services',pct:3.0},{name:'Cams Services',sector:'Financial Services',pct:2.8},{name:'ABB India',sector:'Capital Goods',pct:2.6},{name:'Schaeffler India',sector:'Engineering',pct:2.4}],
+    'Flexi Cap':[{name:'HDFC Bank Ltd',sector:'Banking',pct:7.8},{name:'Reliance Industries',sector:'Oil & Gas',pct:7.2},{name:'Infosys Ltd',sector:'IT',pct:6.8},{name:'ICICI Bank Ltd',sector:'Banking',pct:5.4},{name:'Bajaj Finance',sector:'NBFC',pct:4.2},{name:'Tata Motors',sector:'Auto',pct:3.8},{name:'Maruti Suzuki',sector:'Auto',pct:3.4},{name:'Kotak Mahindra Bank',sector:'Banking',pct:3.2},{name:'Titan Company',sector:'Consumer',pct:2.9},{name:'SBI Ltd',sector:'Banking',pct:2.8}],
+  };
+  const sectorsMap={
+    'Large Cap':[{name:'Banking & Finance',pct:32},{name:'IT/Technology',pct:18},{name:'Oil & Gas',pct:12},{name:'Infrastructure',pct:8},{name:'FMCG',pct:7},{name:'Pharmaceuticals',pct:6},{name:'Auto',pct:5},{name:'Metals',pct:4},{name:'Others',pct:8}],
+    'Small Cap':[{name:'Engineering',pct:22},{name:'Chemicals',pct:18},{name:'IT',pct:14},{name:'Auto Ancillary',pct:12},{name:'Consumer',pct:10},{name:'Healthcare',pct:8},{name:'Textiles',pct:6},{name:'Others',pct:10}],
+    'Mid Cap':[{name:'IT',pct:18},{name:'Healthcare',pct:16},{name:'Engineering',pct:14},{name:'Financial Services',pct:12},{name:'Auto',pct:10},{name:'Real Estate',pct:8},{name:'Consumer',pct:7},{name:'Others',pct:15}],
+  };
+  const defaultStocks=[{name:'HDFC Bank Ltd',sector:'Banking',pct:7.2},{name:'Reliance Industries',sector:'Oil & Gas',pct:6.8},{name:'Infosys Ltd',sector:'IT',pct:6.1},{name:'ICICI Bank Ltd',sector:'Banking',pct:5.4},{name:'TCS Ltd',sector:'IT',pct:4.8},{name:'L&T Ltd',sector:'Infrastructure',pct:4.2},{name:'Axis Bank Ltd',sector:'Banking',pct:3.8},{name:'Kotak Bank',sector:'Banking',pct:3.4},{name:'SBI Ltd',sector:'Banking',pct:3.2},{name:'HUL Ltd',sector:'FMCG',pct:2.9}];
+  const defaultSectors=[{name:'Banking & Finance',pct:28},{name:'IT/Technology',pct:16},{name:'Oil & Gas',pct:12},{name:'FMCG',pct:9},{name:'Infrastructure',pct:8},{name:'Auto',pct:7},{name:'Pharma',pct:6},{name:'Others',pct:14}];
+
+  if(cat==='liquid'||cat==='gilt'){
+    return {stocks:[{name:'Govt of India T-Bills',sector:'Sovereign',pct:35},{name:'GOI Bonds 2026',sector:'Sovereign',pct:28},{name:'RBI CMBs',sector:'Sovereign',pct:18},{name:'HDFC Bank CD',sector:'Certificate of Deposit',pct:10},{name:'SBI CP',sector:'Commercial Paper',pct:9}],sectors:[{name:'Government Securities',pct:81},{name:'Certificate of Deposit',pct:10},{name:'Commercial Paper',pct:9}]};
+  }
+  if(cat==='debt'){
+    return {stocks:[{name:'GOI 7.26% 2033',sector:'Govt Securities',pct:18},{name:'HDFC Bank NCD',sector:'Corporate Bond',pct:12},{name:'Reliance Industries NCD',sector:'Corporate Bond',pct:10},{name:'LIC Housing NCD',sector:'NBFC',pct:9},{name:'Power Finance Corp',sector:'PSU Bond',pct:8},{name:'National Highway Auth',sector:'PSU Bond',pct:7},{name:'State Bank of India CD',sector:'Certificate of Deposit',pct:6},{name:'NTPC Bond',sector:'PSU Bond',pct:6},{name:'REC Limited NCD',sector:'PSU Bond',pct:5},{name:'Bajaj Finance NCD',sector:'Corporate Bond',pct:4}],sectors:[{name:'Govt Securities',pct:28},{name:'PSU Bonds',pct:26},{name:'Corporate Bonds',pct:24},{name:'Certificate of Deposit',pct:12},{name:'Commercial Paper',pct:10}]};
+  }
+  const stocks=holdingsMap[sub]||holdingsMap[sub?.split('/')[0]]||defaultStocks;
+  const sectors=sectorsMap[sub]||sectorsMap[sub?.split('/')[0]]||defaultSectors;
+  return {stocks,sectors};
+}
+
+function renderNavChart(data, period){
+  var pts = data.slice();
+  if(period==='1y')  pts = data.slice(0, Math.min(252, data.length));
+  else if(period==='3y') pts = data.slice(0, Math.min(756, data.length));
+  else if(period==='5y') pts = data.slice(0, Math.min(1260, data.length));
+  // else 'all' — use full data = Since Inception
+  pts = pts.slice().reverse(); // oldest first
+
+  // Downsample to max 150 points for performance
+  if(pts.length > 150){
+    var step = Math.ceil(pts.length / 150);
+    var sampled = [];
+    for(var i=0; i<pts.length; i+=step) sampled.push(pts[i]);
+    if(sampled[sampled.length-1] !== pts[pts.length-1]) sampled.push(pts[pts.length-1]);
+    pts = sampled;
+  }
+
+  var navs = pts.map(function(d){ return parseFloat(d.nav); }).filter(function(v){ return !isNaN(v) && v > 0; });
+  if(navs.length < 2){ return; }
+
+  var minV = Math.min.apply(null, navs);
+  var maxV = Math.max.apply(null, navs);
+  var range = maxV - minV || 1;
+
+  // SVG dimensions
+  var W=560, H=200, padL=64, padR=12, padT=16, padB=28;
+  var cw = W-padL-padR, ch = H-padT-padB;
+
+  // Build polyline points
+  var points = '';
+  for(var i=0; i<navs.length; i++){
+    var x = padL + cw * i / (navs.length-1);
+    var y = padT + ch * (1 - (navs[i]-minV)/range);
+    points += x.toFixed(1)+','+y.toFixed(1)+' ';
+  }
+
+  // Fill polygon (close path to bottom)
+  var fillPoints = points;
+  fillPoints += (padL+cw).toFixed(1)+','+(padT+ch).toFixed(1)+' ';
+  fillPoints += padL.toFixed(1)+','+(padT+ch).toFixed(1);
+
+  // Y axis labels (5 lines)
+  var yLabels = '';
+  var yGridLines = '';
+  for(var i=0; i<=4; i++){
+    var val = maxV - range*i/4;
+    var y = padT + ch*i/4;
+    yGridLines += '<line x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+y.toFixed(1)+'" stroke="#d4eda0" stroke-width="1"/>';
+    yLabels += '<text x="'+(padL-4)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end" font-size="9" fill="#6b7280" font-family="JetBrains Mono,monospace">₹'+val.toFixed(val>100?0:2)+'</text>';
+  }
+
+  // X axis labels (5 dates)
+  var xLabels = '';
+  var step2 = Math.floor(navs.length / 4);
+  for(var i=0; i<navs.length; i+=step2){
+    if(i >= pts.length) break;
+    var x = padL + cw * i / (navs.length-1);
+    var dateStr = pts[i] && pts[i].date ? pts[i].date : '';
+    xLabels += '<text x="'+x.toFixed(1)+'" y="'+(H-6)+'" text-anchor="middle" font-size="8" fill="#9ca3af" font-family="JetBrains Mono,monospace">'+dateStr+'</text>';
+  }
+
+  var svg = '<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:220px;display:block;">'
+    + '<defs><linearGradient id="navGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3c3197" stop-opacity="0.25"/><stop offset="100%" stop-color="#3c3197" stop-opacity="0.03"/></linearGradient></defs>'
+    + yGridLines
+    + yLabels
+    + xLabels
+    + '<polygon points="'+fillPoints+'" fill="url(#navGrad)"/>'
+    + '<polyline points="'+points+'" fill="none" stroke="#3c3197" stroke-width="2" stroke-linejoin="round"/>'
+    + '</svg>';
+
+  // Replace canvas with SVG
+  var wrap = document.getElementById('nav-canvas');
+  if(wrap){
+    var parent = wrap.parentElement;
+    parent.innerHTML = svg;
+  }
+
+  // Stats + Full CAGR bar for all periods
+  var first = navs[0], last = navs[navs.length-1];
+  var statsEl = document.getElementById('nav-chart-stats');
+  if(!statsEl) return;
+
+  // Get the fund for all pre-calculated returns
+  var fund = S.all.filter(function(f){ return f.code === S.activeCode; })[0];
+  if(!fund) return;
+
+  // Calculate period return from chart data too
+  var periodRet = ((last - first) / first) * 100;
+  var startDate = pts[0] ? pts[0].date : '—';
+
+  // Build returns grid — all periods
+  var periods = [
+    {l:'1M',   v: fund.r1m,  abs: true},
+    {l:'3M',   v: fund.r3m,  abs: true},
+    {l:'6M',   v: fund.r6m,  abs: true},
+    {l:'1Y',   v: fund.r1y,  abs: false},
+    {l:'3Y',   v: fund.r3y,  abs: false},
+    {l:'5Y',   v: fund.r5y,  abs: false},
+    {l:'10Y',  v: fund.r10y, abs: false},
+    {l:'SI',   v: fund.rSI,  abs: false},
+  ];
+
+  var html = '<div style="margin-top:10px;">'
+    + '<div style="font-size:10px;font-weight:800;color:var(--t5);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;font-family:var(--fm);">Returns CAGR (%) — All Periods</div>'
+    + '<div style="display:grid;grid-template-columns:repeat(8,1fr);gap:5px;">';
+
+  periods.forEach(function(p){
+    var val = p.v;
+    var isNull = (val === null || val === undefined);
+    var color = isNull ? 'var(--t5)' : val >= 0 ? 'var(--g1)' : 'var(--red)';
+    var display = isNull ? '—' : val.toFixed(2) + '%';
+    var label = p.abs ? p.l + ' Abs' : (p.l === 'SI' ? 'Since Inc.' : p.l + ' CAGR');
+    html += '<div style="background:#fff;border:1.5px solid var(--g4);border-radius:8px;padding:8px 4px;text-align:center;">'
+          + '<div style="font-size:9px;color:var(--t5);font-family:var(--fm);font-weight:700;margin-bottom:4px;">'+label+'</div>'
+          + '<div style="font-family:var(--fm);font-size:13px;font-weight:900;color:'+color+';">'+display+'</div>'
+          + '</div>';
+  });
+
+  html += '</div>'
+    + '<div style="display:flex;justify-content:space-between;margin-top:8px;font-size:10px;color:var(--t5);font-family:var(--fm);">'
+    + '<span>📅 Inception: '+(fund.inceptionDate||'—')+'</span>'
+    + '<span>NAV: ₹'+(fund.nav?fund.nav.toFixed(fund.nav>100?2:4):'—')+' · '+( fund.date||'—')+'</span>'
+    + '</div>'
+    + '</div>';
+
+  statsEl.innerHTML = html;
+}
+
+function changePeriod(btn,p){
+  document.querySelectorAll('.cpb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const d=CACHE[S.activeCode];
+  if(d) renderNavChart(d,p);
+}
+
+function computeRating(fund,ratios){
+  let retScore=5,riskScore=5;
+  if(fund.r3y!=null){
+    if(fund.cat==='equity'||fund.cat==='elss'){retScore=fund.r3y>25?10:fund.r3y>20?9:fund.r3y>15?8:fund.r3y>12?7:fund.r3y>10?6:5;}
+    else if(fund.cat==='debt'){retScore=fund.r3y>9?10:fund.r3y>8?9:fund.r3y>7?8:fund.r3y>6?7:6;}
+    else if(fund.cat==='hybrid'){retScore=fund.r3y>18?10:fund.r3y>14?8:fund.r3y>10?7:6;}
+    else{retScore=fund.r3y>8?9:fund.r3y>6?7:6;}
+  }
+  if(ratios.stdDev!=null){
+    riskScore=ratios.stdDev<5?10:ratios.stdDev<10?9:ratios.stdDev<15?8:ratios.stdDev<20?7:ratios.stdDev<25?6:5;
+  }
+  const avgScore=(retScore+riskScore)/2;
+  const stars=Math.round(Math.min(5,Math.max(1,avgScore/2)));
+  const d=CACHE[fund.code];
+  const navHistory=d?d.length>1260?'10Y+ Data':d.length>756?'5Y+ Data':d.length>252?'3Y+ Data':'<3Y Data':'Limited';
+  const retVsCat=fund.r3y!=null?(fund.cat==='equity'&&fund.r3y>15?'Above Average':fund.cat==='debt'&&fund.r3y>7.5?'Above Average':'In Line'):'Loading...';
+  const volatility=ratios.stdDev!=null?(ratios.stdDev<10?'Low':ratios.stdDev<20?'Moderate':'High'):'Loading...';
+  const recommended=fund.cat==='liquid'?'Emergency Fund / Short-term':fund.cat==='debt'?'1-3 Year Goals / Conservative':fund.cat==='elss'?'Tax Saving + 3Y+ Horizon':fund.subcat==='Small Cap'?'Aggressive · 7Y+ Horizon':fund.subcat==='Mid Cap'?'Growth · 5Y+ Horizon':'Balanced Growth · 3Y+ Horizon';
+  const summaries=['Requires careful analysis','Below category average','Average performer','Good fund with stable returns','Strong performer — above category average','Exceptional fund — top quartile in category'];
+  return {stars,retScore,riskScore,consistency:fund.r1y!=null&&fund.r3y!=null&&fund.r3y>0?'Consistent':'Insufficient Data',navHistory,retVsCat,volatility,recommended,summary:summaries[Math.min(5,Math.max(0,Math.round(avgScore/2)))]};
+}
+
+
+// ESC key closes View Details panel
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape' || e.keyCode === 27){
+    closeDetail();
+  }
+});
+
+</script>
+<div class="overlay" id="overlay" onclick="closeDetail()"></div>
+
+<!-- DETAIL PANEL -->
+<div class="detail-panel" id="detail-panel">
+  <div class="dp-header">
+    <div>
+      <div class="dp-title" id="dp-title">—</div>
+      <div class="dp-amc" id="dp-amc">—</div>
+    </div>
+    <button class="dp-close" onclick="closeDetail()">✕</button>
+  </div>
+  <div class="dp-body">
+    <div class="dtabs">
+      <div class="dtab on"  onclick="dTab('overview',this)">Overview</div>
+      <div class="dtab"     onclick="dTab('returns',this)">Returns</div>
+      <div class="dtab"     onclick="dTab('risk',this)">Risk Ratios</div>
+      <div class="dtab"     onclick="dTab('holdings',this)">Holdings</div>
+      <div class="dtab"     onclick="dTab('chart',this)">NAV Chart</div>
+      <div class="dtab"     onclick="dTab('ratings',this)">Ratings</div>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div class="dtab-content on" id="dt-overview">
+      <div class="ds">
+        <div class="ds-title">Fund Information</div>
+        <div id="dp-info"></div>
+      </div>
+      <div class="ds">
+        <div class="ds-title">Quick Returns (Real from NAV History)</div>
+        <div class="ret-grid" id="dp-qret" style="grid-template-columns:repeat(4,1fr)">
+          <div class="ret-card"><div class="rc-lbl">Loading...</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RETURNS -->
+    <div class="dtab-content" id="dt-returns">
+      <div class="ds">
+        <div class="ds-title">Trailing Returns — 1M, 3M, 6M, 1Y, 3Y, 5Y, 10Y</div>
+        <div id="dp-trail-ret"></div>
+      </div>
+      <div class="ds">
+        <div class="ds-title">Lumpsum CAGR Returns</div>
+        <div class="ret-grid" id="dp-lump-ret" style="grid-template-columns:repeat(4,1fr)"></div>
+      </div>
+      <div class="ds">
+        <div class="ds-title">Absolute Returns (Point to Point)</div>
+        <div class="ret-grid" id="dp-abs-ret" style="grid-template-columns:repeat(4,1fr)"></div>
+      </div>
+    </div>
+
+    <!-- RISK RATIOS -->
+    <div class="dtab-content" id="dt-risk">
+      <div class="ds">
+        <div class="ds-title">Risk Ratios (Computed from NAV History)</div>
+        <div class="risk-grid" id="dp-risk"></div>
+      </div>
+      <div class="ds">
+        <div class="ds-title">Risk Assessment</div>
+        <div id="dp-risk-assess"></div>
+      </div>
+    </div>
+
+    <!-- HOLDINGS -->
+    <div class="dtab-content" id="dt-holdings">
+      <div class="ds">
+        <div class="ds-title">Top Holdings (Representative)</div>
+        <table class="holdings-table">
+          <thead><tr><th>#</th><th>Security</th><th>Sector</th><th>Weight %</th></tr></thead>
+          <tbody id="dp-holdings"></tbody>
+        </table>
+      </div>
+      <div class="ds">
+        <div class="ds-title">Sector Allocation</div>
+        <div id="dp-sectors"></div>
+      </div>
+    </div>
+
+    <!-- NAV CHART -->
+    <div class="dtab-content" id="dt-chart">
+      <div class="ds">
+        <div class="ds-title">NAV History</div>
+        <div class="chart-period-btns" id="chart-period-btns">
+          <div class="cpb on" onclick="changePeriod(this,'1y')">1Y</div>
+          <div class="cpb" onclick="changePeriod(this,'3y')">3Y</div>
+          <div class="cpb" onclick="changePeriod(this,'5y')">5Y</div>
+          <div class="cpb" onclick="changePeriod(this,'all')">📈 Since Inception</div>
+        </div>
+        <div class="chart-wrap"><canvas id="nav-canvas"></canvas></div>
+        <div class="ret-grid" id="nav-chart-stats" style="grid-template-columns:repeat(3,1fr);"></div>
+      </div>
+    </div>
+
+    <!-- RATINGS -->
+    <div class="dtab-content" id="dt-ratings">
+      <div class="ds">
+        <div class="ds-title">ACE Analytics Rating</div>
+        <div id="dp-ratings"></div>
+      </div>
+      <div class="ds">
+        <div class="ds-title">Fund Scorecard</div>
+        <div id="dp-scorecard"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<script>
+
+// Mobile hamburger menu
+(function(){
+  var nav=document.querySelector('nav');
+  if(!nav) return;
+  var overlay=document.createElement('div');
+  overlay.className='mob-nav-overlay';
+  document.body.appendChild(overlay);
+  var drawer=document.createElement('div');
+  drawer.className='mob-nav-drawer';
+  var navLinks=document.querySelector('.nav-links');
+  if(navLinks){
+    var brand=document.createElement('div');
+    brand.className='mnd-brand';
+    brand.innerHTML='<div style="font-family:serif;font-size:15px;font-weight:900;color:#3c3197;">Ace Financial <span style="color:#5a8a10;">Services</span></div><div style="font-size:10px;color:#9ca3af;margin-top:2px;">SEBI ARN · AMFI Registered MFD</div>';
+    drawer.appendChild(brand);
+    navLinks.querySelectorAll('a').forEach(function(link){
+      var a=document.createElement('a');
+      a.href=link.href;
+      a.innerHTML=link.innerHTML;
+      if(link.classList.contains('on')) a.classList.add('on');
+      drawer.appendChild(a);
+    });
+  }
+  document.body.appendChild(drawer);
+  var btn=document.createElement('button');
+  btn.className='mob-menu-btn';
+  btn.innerHTML='☰';
+  nav.appendChild(btn);
+  function open(){drawer.classList.add('open');overlay.classList.add('open');btn.innerHTML='✕';}
+  function close(){drawer.classList.remove('open');overlay.classList.remove('open');btn.innerHTML='☰';}
+  btn.addEventListener('click',function(){drawer.classList.contains('open')?close():open();});
+  overlay.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+})();
+
+</script>
+</body>
+</html>
