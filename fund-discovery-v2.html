@@ -883,8 +883,18 @@ async function init(){
 
   setTxt('status-txt', 'Loading funds...');
   try {
-    var r = await fetch('https://api.mfapi.in/mf');
-    var data = await r.json();
+    // Try direct mfapi first, then allorigins proxy as fallback
+    var data;
+    try {
+      var r = await fetch('https://api.mfapi.in/mf');
+      if(!r.ok) throw new Error('mfapi blocked');
+      data = await r.json();
+    } catch(e1) {
+      // Fallback: use allorigins proxy
+      var r2 = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://api.mfapi.in/mf'));
+      if(!r2.ok) throw new Error('proxy also failed');
+      data = await r2.json();
+    }
     S.all = [];
     for(var i=0; i<data.length; i++){
       var f    = data[i];
@@ -909,6 +919,9 @@ async function init(){
     S.loaded = true;
     onLoaded();
   } catch(e) {
+    console.error('Fund load error:', e);
+    var statusEl = document.getElementById('status-txt');
+    if(statusEl) statusEl.textContent = 'Loading failed. Please refresh the page.';
     setTxt('status-txt', '⚠️ Error: ' + e.message);
     setCls('status-dot', 'dot dot-err');
     console.error('Fund load error:', e.message, e.stack);
