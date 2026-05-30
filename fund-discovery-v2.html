@@ -877,6 +877,30 @@ function setSt(cls,txt){document.getElementById('status-dot').className='dot '+c
 function setPb(pct,show){const w=document.getElementById('pb-wrap');w.style.display=show?'block':'none';if(show)document.getElementById('pb').style.width=pct+'%';}
 
 // ── LOAD DATA ─────────────────────────────────────────────
+async function fetchMFAPI() {
+  // Level 1: Direct
+  try {
+    var r = await fetch('https://api.mfapi.in/mf', {mode:'cors',headers:{'Accept':'application/json'}});
+    if(r.ok) { var d = await r.json(); if(Array.isArray(d) && d.length>100) return d; }
+  } catch(e) {}
+  // Level 2: allorigins
+  try {
+    var r2 = await fetch('https://api.allorigins.win/raw?url=https%3A%2F%2Fapi.mfapi.in%2Fmf');
+    if(r2.ok) { var d2 = await r2.json(); if(Array.isArray(d2) && d2.length>100) return d2; }
+  } catch(e) {}
+  // Level 3: corsproxy
+  try {
+    var r3 = await fetch('https://corsproxy.io/?https://api.mfapi.in/mf');
+    if(r3.ok) { var d3 = await r3.json(); if(Array.isArray(d3) && d3.length>100) return d3; }
+  } catch(e) {}
+  // Level 4: thingproxy
+  try {
+    var r4 = await fetch('https://thingproxy.freeboard.io/fetch/https://api.mfapi.in/mf');
+    if(r4.ok) { var d4 = await r4.json(); if(Array.isArray(d4) && d4.length>100) return d4; }
+  } catch(e) {}
+  return null;
+}
+
 async function init(){
   function setTxt(id, val){ var el=document.getElementById(id); if(el) el.textContent=val; }
   function setCls(id, val){ var el=document.getElementById(id); if(el) el.className=val; }
@@ -885,16 +909,8 @@ async function init(){
   try {
     // Try direct mfapi first, then allorigins proxy as fallback
     var data;
-    try {
-      var r = await fetch('https://api.mfapi.in/mf');
-      if(!r.ok) throw new Error('mfapi blocked');
-      data = await r.json();
-    } catch(e1) {
-      // Fallback: use allorigins proxy
-      var r2 = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://api.mfapi.in/mf'));
-      if(!r2.ok) throw new Error('proxy also failed');
-      data = await r2.json();
-    }
+    data = await fetchMFAPI();
+    if(!data) throw new Error('All data sources failed. Please refresh.');
     S.all = [];
     for(var i=0; i<data.length; i++){
       var f    = data[i];
@@ -921,7 +937,7 @@ async function init(){
   } catch(e) {
     console.error('Fund load error:', e);
     var statusEl = document.getElementById('status-txt');
-    if(statusEl) statusEl.textContent = 'Loading failed. Please refresh the page.';
+    if(statusEl) statusEl.innerHTML = 'Data loading failed. <button onclick="location.reload()" style="background:#8bc32a;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;font-weight:700;">Retry</button>';
     setTxt('status-txt', '⚠️ Error: ' + e.message);
     setCls('status-dot', 'dot dot-err');
     console.error('Fund load error:', e.message, e.stack);
