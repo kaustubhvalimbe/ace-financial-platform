@@ -230,10 +230,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div class="cinp-card">
         <div class="calc-ttl">SIP <span>Calculator</span></div>
         <div class="calc-dsc">Calculate the future value of your Systematic Investment Plan with optional annual step-up. Watch small monthly amounts compound into significant wealth.</div>
-        <div class="ig"><div class="ig-lbl"><span>Monthly SIP Amount (₹)</span><span class="ig-val" id="sv-amt">₹5,000</span></div><input type="range" id="si-amt" min="500" max="200000" step="500" value="5000" oninput="cSIP()"><div class="ig-range"><span>₹500</span><span>₹2L</span></div></div>
-        <div class="ig"><div class="ig-lbl"><span>Expected Annual Return (%)</span><span class="ig-val" id="sv-rate">12%</span></div><input type="range" id="si-rate" min="1" max="30" step=".5" value="12" oninput="cSIP()"><div class="ig-range"><span>1%</span><span>30%</span></div></div>
-        <div class="ig"><div class="ig-lbl"><span>Investment Period (Years)</span><span class="ig-val" id="sv-yrs">10 Yrs</span></div><input type="range" id="si-yrs" min="1" max="40" step="1" value="10" oninput="cSIP()"><div class="ig-range"><span>1 Yr</span><span>40 Yrs</span></div></div>
-        <div class="ig"><div class="ig-lbl"><span>Annual Step-up (%)</span><span class="ig-val" id="sv-su">0%</span></div><input type="range" id="si-su" min="0" max="25" step="1" value="0" oninput="cSIP()"><div class="ig-range"><span>0%</span><span>25%</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Monthly SIP Amount (₹)</span><span class="ig-val" id="sv-amt">₹5,000</span></div><input type="number" id="si-amt" min="100" max="10000000" step="100" value="5000" placeholder="e.g. 5000" oninput="cSIP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSIP()"><div class="ig-range"><span>₹500</span><span>₹2L</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Expected Annual Return (%)</span><span class="ig-val" id="sv-rate">12%</span></div><input type="number" id="si-rate" min="1" max="40" step="0.5" value="12" placeholder="e.g. 12" oninput="cSIP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSIP()"><div class="ig-range"><span>1%</span><span>30%</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Investment Period (Years)</span><span class="ig-val" id="sv-yrs">10 Yrs</span></div><input type="number" id="si-yrs" min="1" max="50" step="1" value="10" placeholder="e.g. 10" oninput="cSIP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSIP()"><div class="ig-range"><span>1 Yr</span><span>40 Yrs</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Annual Step-up (%)</span><span class="ig-val" id="sv-su">0%</span></div><input type="number" id="si-su" min="0" max="50" step="1" value="0" placeholder="e.g. 0" oninput="cSIP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSIP()"><div class="ig-range"><span>0%</span><span>25%</span></div></div>
       </div>
       <div class="cres-card">
         <div class="rcards">
@@ -258,10 +258,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div class="cinp-card">
         <div class="calc-ttl">SWP <span>Calculator</span></div>
         <div class="calc-dsc">Systematic Withdrawal Plan — calculate monthly withdrawal from your corpus while it continues to grow. Ideal for retirement income planning.</div>
-        <div class="ig"><div class="ig-lbl"><span>Initial Investment (₹)</span><span class="ig-val" id="wv-c">₹10,00,000</span></div><input type="range" id="wi-c" min="100000" max="50000000" step="100000" value="1000000" oninput="cSWP()"><div class="ig-range"><span>₹1L</span><span>₹5Cr</span></div></div>
-        <div class="ig"><div class="ig-lbl"><span>Monthly Withdrawal (₹)</span><span class="ig-val" id="wv-w">₹8,000</span></div><input type="range" id="wi-w" min="1000" max="500000" step="1000" value="8000" oninput="cSWP()"><div class="ig-range"><span>₹1K</span><span>₹5L</span></div></div>
-        <div class="ig"><div class="ig-lbl"><span>Expected Annual Return (%)</span><span class="ig-val" id="wv-r">10%</span></div><input type="range" id="wi-r" min="1" max="20" step=".5" value="10" oninput="cSWP()"><div class="ig-range"><span>1%</span><span>20%</span></div></div>
-        <div class="ig"><div class="ig-lbl"><span>Withdrawal Period (Years)</span><span class="ig-val" id="wv-y">15 Yrs</span></div><input type="range" id="wi-y" min="1" max="35" step="1" value="15" oninput="cSWP()"><div class="ig-range"><span>1 Yr</span><span>35 Yrs</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Initial Investment (₹)</span><span class="ig-val" id="wv-c">₹10,00,000</span></div><input type="number" id="wi-c" min="100" max="100000000" step="100" value="1000000" placeholder="e.g. 1000000" oninput="cSWP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSWP()"><div class="ig-range"><span>₹1L</span><span>₹5Cr</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Monthly Withdrawal (₹)</span><span class="ig-val" id="wv-w">₹8,000</span></div><input type="number" id="wi-w" min="100" max="500000" step="100" value="8000" placeholder="e.g. 8000" oninput="cSWP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSWP()"><div class="ig-range"><span>₹1K</span><span>₹5L</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Expected Annual Return (%)</span><span class="ig-val" id="wv-r">10%</span></div><input type="number" id="wi-r" min="1" max="40" step="0.5" value="10" placeholder="e.g. 10" oninput="cSWP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSWP()"><div class="ig-range"><span>1%</span><span>20%</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Withdrawal Period (Years)</span><span class="ig-val" id="wv-y">15 Yrs</span></div><input type="number" id="wi-y" min="1" max="50" step="1" value="15" placeholder="e.g. 15" oninput="cSWP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSWP()"><div class="ig-range"><span>1 Yr</span><span>35 Yrs</span></div></div>
       </div>
       <div class="cres-card">
         <div class="rcards">
@@ -282,9 +282,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div class="cinp-card">
         <div class="calc-ttl">Lumpsum <span>Calculator</span></div>
         <div class="calc-dsc">Calculate returns on a one-time lumpsum investment. Compare growth across conservative, moderate, and aggressive return scenarios.</div>
-        <div class="ig"><div class="ig-lbl"><span>Investment Amount (₹)</span><span class="ig-val" id="lv-a">₹1,00,000</span></div><input type="range" id="li-a" min="1000" max="10000000" step="1000" value="100000" oninput="cLS()"><div class="ig-range"><span>₹1K</span><span>₹1Cr</span></div></div>
-        <div class="ig"><div class="ig-lbl"><span>Expected Annual Return (%)</span><span class="ig-val" id="lv-r">14%</span></div><input type="range" id="li-r" min="1" max="30" step=".5" value="14" oninput="cLS()"><div class="ig-range"><span>1%</span><span>30%</span></div></div>
-        <div class="ig"><div class="ig-lbl"><span>Investment Period (Years)</span><span class="ig-val" id="lv-y">10 Yrs</span></div><input type="range" id="li-y" min="1" max="40" step="1" value="10" oninput="cLS()"><div class="ig-range"><span>1 Yr</span><span>40 Yrs</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Investment Amount (₹)</span><span class="ig-val" id="lv-a">₹1,00,000</span></div><input type="number" id="li-a" min="100" max="100000000" step="100" value="100000" placeholder="e.g. 100000" oninput="cLS()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cLS()"><div class="ig-range"><span>₹1K</span><span>₹1Cr</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Expected Annual Return (%)</span><span class="ig-val" id="lv-r">14%</span></div><input type="number" id="li-r" min="1" max="40" step="0.5" value="14" placeholder="e.g. 14" oninput="cLS()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cLS()"><div class="ig-range"><span>1%</span><span>30%</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Investment Period (Years)</span><span class="ig-val" id="lv-y">10 Yrs</span></div><input type="number" id="li-y" min="1" max="50" step="1" value="10" placeholder="e.g. 10" oninput="cLS()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cLS()"><div class="ig-range"><span>1 Yr</span><span>40 Yrs</span></div></div>
       </div>
       <div class="cres-card">
         <div class="rcards">
@@ -309,10 +309,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div class="cinp-card">
         <div class="calc-ttl">Goal-based <span>Planner</span></div>
         <div class="calc-dsc">Set your target amount — retirement, education, home, wedding — and find out exactly how much SIP or lumpsum you need to invest today.</div>
-        <div class="ig"><div class="ig-lbl"><span>Target Amount (₹)</span><span class="ig-val" id="gv-t">₹50,00,000</span></div><input type="range" id="gi-t" min="100000" max="100000000" step="100000" value="5000000" oninput="cGoal()"><div class="ig-range"><span>₹1L</span><span>₹10Cr</span></div></div>
-        <div class="ig"><div class="ig-lbl"><span>Time to Goal (Years)</span><span class="ig-val" id="gv-y">15 Yrs</span></div><input type="range" id="gi-y" min="1" max="40" step="1" value="15" oninput="cGoal()"><div class="ig-range"><span>1 Yr</span><span>40 Yrs</span></div></div>
-        <div class="ig"><div class="ig-lbl"><span>Expected Annual Return (%)</span><span class="ig-val" id="gv-r">13%</span></div><input type="range" id="gi-r" min="1" max="25" step=".5" value="13" oninput="cGoal()"><div class="ig-range"><span>1%</span><span>25%</span></div></div>
-        <div class="ig"><div class="ig-lbl"><span>Existing Savings (₹)</span><span class="ig-val" id="gv-e">₹0</span></div><input type="range" id="gi-e" min="0" max="5000000" step="10000" value="0" oninput="cGoal()"><div class="ig-range"><span>₹0</span><span>₹50L</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Target Amount (₹)</span><span class="ig-val" id="gv-t">₹50,00,000</span></div><input type="number" id="gi-t" min="100" max="1000000000" step="100" value="5000000" placeholder="e.g. 5000000" oninput="cGoal()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cGoal()"><div class="ig-range"><span>₹1L</span><span>₹10Cr</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Time to Goal (Years)</span><span class="ig-val" id="gv-y">15 Yrs</span></div><input type="number" id="gi-y" min="1" max="50" step="1" value="15" placeholder="e.g. 15" oninput="cGoal()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cGoal()"><div class="ig-range"><span>1 Yr</span><span>40 Yrs</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Expected Annual Return (%)</span><span class="ig-val" id="gv-r">13%</span></div><input type="number" id="gi-r" min="1" max="40" step="0.5" value="13" placeholder="e.g. 13" oninput="cGoal()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cGoal()"><div class="ig-range"><span>1%</span><span>25%</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Existing Savings (₹)</span><span class="ig-val" id="gv-e">₹0</span></div><input type="number" id="gi-e" min="0" max="100000000" step="100" value="0" placeholder="e.g. 0" oninput="cGoal()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cGoal()"><div class="ig-range"><span>₹0</span><span>₹50L</span></div></div>
       </div>
       <div class="cres-card">
         <div class="rcards">
@@ -336,10 +336,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div class="cinp-card">
         <div class="calc-ttl">ELSS <span>Tax Saver</span></div>
         <div class="calc-dsc">Section 80C tax deduction up to ₹1.5L annually. Shortest lock-in (3 years) among all 80C instruments with equity-level returns potential.</div>
-        <div class="ig"><div class="ig-lbl"><span>Annual ELSS Investment (₹)</span><span class="ig-val" id="ev-i">₹1,50,000</span></div><input type="range" id="ei-i" min="500" max="150000" step="500" value="150000" oninput="cELSS()"><div class="ig-range"><span>₹500</span><span>₹1.5L (80C Limit)</span></div></div>
-        <div class="ig"><div class="ig-lbl"><span>Your Tax Slab (%)</span><span class="ig-val" id="ev-s">30%</span></div><input type="range" id="ei-s" min="0" max="30" step="5" value="30" oninput="cELSS()"><div class="ig-range"><span>0%</span><span>30%</span></div></div>
-        <div class="ig"><div class="ig-lbl"><span>Expected Return (%)</span><span class="ig-val" id="ev-r">15%</span></div><input type="range" id="ei-r" min="8" max="25" step=".5" value="15" oninput="cELSS()"><div class="ig-range"><span>8%</span><span>25%</span></div></div>
-        <div class="ig"><div class="ig-lbl"><span>Investment Period (Years)</span><span class="ig-val" id="ev-y">5 Yrs</span></div><input type="range" id="ei-y" min="3" max="20" step="1" value="5" oninput="cELSS()"><div class="ig-range"><span>3 Yrs (min)</span><span>20 Yrs</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Annual ELSS Investment (₹)</span><span class="ig-val" id="ev-i">₹1,50,000</span></div><input type="number" id="ei-i" min="100" max="150000" step="100" value="150000" placeholder="e.g. 150000" oninput="cELSS()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cELSS()"><div class="ig-range"><span>₹500</span><span>₹1.5L (80C Limit)</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Your Tax Slab (%)</span><span class="ig-val" id="ev-s">30%</span></div><input type="number" id="ei-s" min="0" max="30" step="5" value="30" placeholder="e.g. 30" oninput="cELSS()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cELSS()"><div class="ig-range"><span>0%</span><span>30%</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Expected Return (%)</span><span class="ig-val" id="ev-r">15%</span></div><input type="number" id="ei-r" min="1" max="40" step="0.5" value="15" placeholder="e.g. 15" oninput="cELSS()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cELSS()"><div class="ig-range"><span>8%</span><span>25%</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Investment Period (Years)</span><span class="ig-val" id="ev-y">5 Yrs</span></div><input type="number" id="ei-y" min="3" max="50" step="1" value="5" placeholder="e.g. 5" oninput="cELSS()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cELSS()"><div class="ig-range"><span>3 Yrs (min)</span><span>20 Yrs</span></div></div>
       </div>
       <div class="cres-card">
         <div class="rcards">
@@ -361,10 +361,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div class="cinp-card">
         <div class="calc-ttl">Inflation <span>Adjusted Returns</span></div>
         <div class="calc-dsc">Calculate real returns after adjusting for inflation. Understand the true purchasing power of your investment — because nominal returns can be misleading.</div>
-        <div class="ig"><div class="ig-lbl"><span>Investment Amount (₹)</span><span class="ig-val" id="iv-a">₹1,00,000</span></div><input type="range" id="ii-a" min="1000" max="10000000" step="1000" value="100000" oninput="cInf()"><div class="ig-range"><span>₹1K</span><span>₹1Cr</span></div></div>
-        <div class="ig"><div class="ig-lbl"><span>Nominal Annual Return (%)</span><span class="ig-val" id="iv-r">14%</span></div><input type="range" id="ii-r" min="1" max="30" step=".5" value="14" oninput="cInf()"><div class="ig-range"><span>1%</span><span>30%</span></div></div>
-        <div class="ig"><div class="ig-lbl"><span>Inflation Rate (%)</span><span class="ig-val" id="iv-i">6%</span></div><input type="range" id="ii-i" min="2" max="15" step=".5" value="6" oninput="cInf()"><div class="ig-range"><span>2%</span><span>15%</span></div></div>
-        <div class="ig"><div class="ig-lbl"><span>Investment Period (Years)</span><span class="ig-val" id="iv-y">10 Yrs</span></div><input type="range" id="ii-y" min="1" max="40" step="1" value="10" oninput="cInf()"><div class="ig-range"><span>1 Yr</span><span>40 Yrs</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Investment Amount (₹)</span><span class="ig-val" id="iv-a">₹1,00,000</span></div><input type="number" id="ii-a" min="100" max="100000000" step="100" value="100000" placeholder="e.g. 100000" oninput="cInf()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cInf()"><div class="ig-range"><span>₹1K</span><span>₹1Cr</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Nominal Annual Return (%)</span><span class="ig-val" id="iv-r">14%</span></div><input type="number" id="ii-r" min="1" max="40" step="0.5" value="14" placeholder="e.g. 14" oninput="cInf()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cInf()"><div class="ig-range"><span>1%</span><span>30%</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Inflation Rate (%)</span><span class="ig-val" id="iv-i">6%</span></div><input type="number" id="ii-i" min="1" max="15" step="0.5" value="6" placeholder="e.g. 6" oninput="cInf()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cInf()"><div class="ig-range"><span>2%</span><span>15%</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Investment Period (Years)</span><span class="ig-val" id="iv-y">10 Yrs</span></div><input type="number" id="ii-y" min="1" max="50" step="1" value="10" placeholder="e.g. 10" oninput="cInf()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cInf()"><div class="ig-range"><span>1 Yr</span><span>40 Yrs</span></div></div>
       </div>
       <div class="cres-card">
         <div class="rcards">
@@ -453,6 +453,28 @@ function showC(id,el){
 }
 
 cSIP();cSWP();cLS();cGoal();cELSS();cInf();
+
+// ── INPUT VALIDATION ─────────────────────────────────────
+function validateInput(id, min, max, fieldName) {
+  var el = document.getElementById(id);
+  if(!el) return true;
+  var val = parseFloat(el.value);
+  if(isNaN(val) || val < min) {
+    el.style.borderColor = '#dc2626';
+    el.title = fieldName + ' must be at least ' + min;
+    return false;
+  }
+  if(val > max) {
+    el.style.borderColor = '#dc2626';
+    el.title = fieldName + ' cannot exceed ' + max;
+    el.value = max;
+  } else {
+    el.style.borderColor = 'var(--g4)';
+    el.title = '';
+  }
+  return true;
+}
+
 </script>
 
 <!-- ADVISOR BANNER -->
