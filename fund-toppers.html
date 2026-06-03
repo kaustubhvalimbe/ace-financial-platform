@@ -416,7 +416,7 @@ var SUBCATS = {
     {id:'Multi Cap',       nm:'Multi Cap'},
     {id:'Small Cap',       nm:'Small Cap'},
     {id:'Flexi Cap',       nm:'Flexi Cap'},
-    {id:'Bluechip',        nm:'Bluechip'},
+    {id:'Large Cap',       nm:'Large Cap (incl. Bluechip Funds)'},
     {id:'Focused',         nm:'Focused 30'},
     {id:'Dividend Yield',  nm:'Dividend Yield'},
     {id:'Value/Contra',    nm:'Value / Contra'},
@@ -609,7 +609,7 @@ function getSubCat(name) {
   if(u.includes('EQUITY SAVINGS')) return 'Equity Savings';
   if(u.includes('HYBRID')||u.includes('BALANCED')) return 'Aggressive Hybrid';
   // Equity
-  if(u.includes('BLUECHIP')) return 'Bluechip';
+  // Bluechip funds are classified as Large Cap per SEBI
   if(u.includes('LARGE AND MID')||u.includes('LARGE & MID')||u.includes('LARGECAP AND MID')) return 'Large & MidCap';
   if(u.includes('FOCUSED')||u.includes('FOCUS')||u.includes('CONCENTRATED')) return 'Focused';
   if(u.includes('LARGE CAP')||u.includes('LARGECAP')||u.includes('LARGE-CAP')) return 'Large Cap';

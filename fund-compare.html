@@ -87,6 +87,58 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
   .sebi-disc-text{color:#000!important;font-size:9px!important;}
   .sebi-disc-text strong{color:#000!important;}
 }
+
+/* Compare table mobile fixes */
+@media(max-width:768px){
+  .compare-table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .compare-table table{min-width:500px;}
+  .compare-table td:first-child,
+  .compare-table th:first-child{
+    position:sticky;left:0;background:#fff;z-index:10;
+    min-width:120px;max-width:120px;
+    border-right:2px solid #3c3197;
+    font-weight:700;color:#3c3197;
+    white-space:normal!important;
+    word-break:break-word;
+  }
+  .compare-table th:first-child{
+    background:#3c3197;color:#fff;
+  }
+}
+/* Parameter label always visible */
+.compare-param-label{
+  font-weight:700!important;
+  color:#3c3197!important;
+  white-space:normal!important;
+  word-break:break-word!important;
+  min-width:120px!important;
+  max-width:140px!important;
+  font-size:12px!important;
+  vertical-align:middle!important;
+}
+/* Fund name in compare header */
+.compare-fund-header{
+  white-space:normal!important;
+  word-break:break-word!important;
+  font-size:11px!important;
+  max-width:160px!important;
+  text-align:center!important;
+}
+/* Horizontal scroll hint on mobile */
+.scroll-hint{
+  display:none;
+  text-align:center;
+  font-size:11px;
+  color:#6b63c0;
+  padding:6px;
+  background:#f0effe;
+  border-radius:6px;
+  margin-bottom:8px;
+}
+@media(max-width:768px){
+  .scroll-hint{display:block;}
+}
+
 </style>
 <style>
 
