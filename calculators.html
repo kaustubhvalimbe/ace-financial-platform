@@ -202,6 +202,61 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   .hstat-v{font-size:14px!important;}
 }
 
+
+/* ── CALCULATORS MOBILE RESPONSIVE — Complete Fix ── */
+@media(max-width:768px){
+  /* Tabs — scrollable row */
+  .ctabs{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    overflow-x:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+    padding:8px 10px!important;
+    gap:6px!important;
+    scrollbar-width:none!important;
+  }
+  .ctabs::-webkit-scrollbar{display:none!important;}
+  .ctab{
+    flex-shrink:0!important;
+    font-size:10px!important;
+    padding:7px 10px!important;
+    white-space:nowrap!important;
+  }
+  /* Main layout — single column */
+  .clay{
+    display:block!important;
+    grid-template-columns:1fr!important;
+  }
+  /* Input card full width */
+  .cinp-card{
+    width:100%!important;
+    margin-bottom:16px!important;
+  }
+  /* Result card full width */
+  .cres-card{
+    width:100%!important;
+  }
+  /* Input groups */
+  .ig{margin-bottom:14px!important;}
+  .ig-lbl{font-size:12px!important;}
+  /* Hero text */
+  .hero h1{font-size:18px!important;}
+  .hero p{font-size:12px!important;}
+}
+
+@media(max-width:480px){
+  .ctab{font-size:9px!important;padding:6px 8px!important;}
+  .clay{padding:12px!important;}
+  .cinp-card{padding:14px 12px!important;}
+  .ig-lbl span:first-child{font-size:11px!important;}
+  .hero h1{font-size:15px!important;}
+}
+
+@media(max-width:380px){
+  .ctab{font-size:8px!important;padding:5px 7px!important;}
+  .ig-lbl{flex-direction:column!important;gap:2px!important;}
+}
+
 </style>
 </head>
 <body>

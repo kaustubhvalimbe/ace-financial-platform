@@ -46,10 +46,26 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
 .compare-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(139,195,42,.45);}
 .compare-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
 /* TABLE */
-.result-wrap{background:#fff;border:2px solid var(--g4);border-radius:14px;overflow:hidden;display:none;}
+.result-wrap{background:#fff;border:2px solid var(--g4);border-radius:14px;overflow:visible;display:none;}
 .result-wrap.show{display:block;}
-.cmp-tbl{width:100%;border-collapse:collapse;font-size:12px;}
-.cmp-tbl thead th{background:linear-gradient(135deg,var(--p4),var(--g5));padding:12px 14px;font-weight:800;font-size:11px;color:var(--p2);text-align:center;border-bottom:2px solid var(--g4);position:sticky;top:60px;}
+.cmp-scroll-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;position:relative;}
+.cmp-scroll-wrap::before{
+  content:'← Slide to see all funds →';
+  display:none;
+  text-align:center;
+  font-size:11px;
+  color:#6b63c0;
+  padding:5px;
+  background:#f0effe;
+  border-radius:6px;
+  width:100%;
+  margin-bottom:6px;
+}
+@media(max-width:768px){
+  .cmp-scroll-wrap::before{display:block;}
+}
+.cmp-tbl{min-width:100%;border-collapse:collapse;font-size:12px;}
+.cmp-tbl thead th{background:linear-gradient(135deg,var(--p4),var(--g5));padding:12px 14px;font-weight:800;font-size:11px;color:var(--p2);text-align:center;border-bottom:2px solid var(--g4);position:relative;}
 .cmp-tbl thead th:first-child{text-align:left;color:var(--t4);font-size:10px;min-width:140px;}
 .fth{font-size:11px;font-weight:800;color:var(--t1);line-height:1.3;}
 .fam{font-size:9px;color:var(--t4);margin-top:2px;}
