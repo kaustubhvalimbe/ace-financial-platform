@@ -740,7 +740,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
         <div class="inp-hint"><b>Weekly STP</b> gives maximum Rupee Cost Averaging — best for large amounts</div>
       </div>
     </div>
-    <div class="nav-btns"><button class="btn-prev" onclick="goStep(1)">← Back</button><button class="btn-next" onclick="goStep(3)">Next: Asset Classes →</button></div>
+    <div class="nav-btns"><button class="btn-prev" onclick="goStep(1)">← Back</button><button class="btn-next" onclick="goStep(4)">Next: Select Funds →</button></div>
   </div>
 
   <!-- STEP 3 -->
@@ -806,7 +806,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
     </div>
 
     <div class="nav-btns">
-      <button class="btn-prev" onclick="goStep(2)">← Back</button>
+      <button class="btn-prev" onclick="goStep(2)">← Back to Plan</button>
       <button class="btn-next" onclick="goStep(5)">Next: Set Allocation →</button>
     </div>
   </div>
@@ -1180,10 +1180,18 @@ function buildSteps(){
 
 function goStep(n){
   if(n>1&&!validateStep(ST.step)) return;
-  if(n===3) buildStep3();
-  if(n===4){if(!validateStep3())return;buildStep4();}
+  // Step 3 (Asset Class) is REMOVED — skip from 2 to 4
+  if(n===3) n=4;
+  if(n===4){
+    ST.selClasses=ACS.map(function(x){return x.id;});
+    ACS.forEach(function(a){ if(!ST.fundCounts[a.id]) ST.fundCounts[a.id]=1; });
+    buildStep4Cart();
+  }
   if(n===5){if(!validateStep4())return;buildStep5();}
-  for(let i=1;i<=5;i++) document.getElementById("step"+i)?.classList.toggle("show",i===n);
+  for(let i=1;i<=5;i++) {
+    var el=document.getElementById("step"+i);
+    if(el) el.classList.toggle("show",i===n);
+  }
   ST.step=n;buildSteps();window.scrollTo({top:0,behavior:"smooth"});
 }
 

@@ -675,8 +675,11 @@ async function loadFundReturns(fund) {
 }
 
 // ── RENDER TOPPERS ─────────────────────────────────────
+var _rendering = false;
 async function renderToppers() {
   if(!ST.subcat) return;
+  if(_rendering) return;
+  _rendering = true;
   var content = document.getElementById('toppers-content');
   var titleEl = document.getElementById('result-title');
   var subEl   = document.getElementById('result-sub');
@@ -704,6 +707,14 @@ async function renderToppers() {
   // Load returns for all funds in pool (batch of 20 max)
   var toLoad = pool.filter(function(f){ return !f.retLoaded; }).slice(0, 30);
   await Promise.all(toLoad.map(loadFundReturns));
+
+  // Deduplicate pool by fund code
+  var seen = {};
+  pool = pool.filter(function(f){
+    if(seen[f.code]) return false;
+    seen[f.code] = true;
+    return true;
+  });
 
   // Sort
   var sortKey = ST.sort;
@@ -767,6 +778,7 @@ async function renderToppers() {
   note.style.cssText = 'background:var(--g5);border:1.5px solid var(--g4);border-radius:9px;padding:10px 14px;margin-top:10px;font-size:11px;color:var(--t4);line-height:1.8;';
   note.textContent = 'All returns are annualised CAGR. Re-check rankings every 6 months. Past performance is not a guarantee.';
   content.appendChild(note);
+  _rendering = false;
 }
 
 function getSortLabel() {
