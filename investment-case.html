@@ -548,6 +548,30 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
   .sebi-disc-text{color:#000!important;font-size:9px!important;}
   .sebi-disc-text strong{color:#000!important;}
 }
+
+/* ── CART FUND SELECTION ── */
+.cart-cat-tab{padding:7px 14px;border-radius:8px;border:1.5px solid var(--g4);
+  background:#fff;font-size:11px;font-weight:700;cursor:pointer;
+  color:var(--t3);transition:all .15s;font-family:var(--fh);}
+.cart-cat-tab.on{background:var(--p1);border-color:var(--p1);color:#fff;}
+.cart-fund-item{display:flex;align-items:center;gap:10px;padding:10px 14px;
+  border-bottom:1px solid var(--g4);transition:background .1s;cursor:pointer;}
+.cart-fund-item:hover{background:var(--p4);}
+.cart-fund-item:last-child{border-bottom:none;}
+.cfi-name{font-size:12px;font-weight:700;color:var(--t1);line-height:1.3;}
+.cfi-amc{font-size:10px;color:var(--t4);}
+.cfi-returns{font-size:10px;font-weight:700;color:var(--g1);}
+.btn-add-cart{padding:4px 10px;background:var(--p1);color:#fff;border:none;
+  border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;
+  font-family:var(--fh);white-space:nowrap;flex-shrink:0;}
+.btn-add-cart.added{background:var(--g1);}
+.cart-item-row{display:flex;align-items:center;gap:8px;padding:9px 12px;
+  border-bottom:1px solid var(--g4);}
+.cart-item-row:last-child{border-bottom:none;}
+.ci-name{font-size:11px;font-weight:700;color:var(--t1);flex:1;line-height:1.4;}
+.ci-remove{background:none;border:none;color:var(--r1);cursor:pointer;
+  font-size:14px;padding:2px 4px;flex-shrink:0;}
+
 </style>
 <style>
 
@@ -666,14 +690,15 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
     <div class="psub">Who is investing, how much, and for how long.</div>
     <div class="ig2">
       <div class="icard"><label>Investor Name</label><input class="inp inp-sm" type="text" id="v-name" placeholder="e.g. Rajesh Sharma"><div class="inp-hint">Appears on your investment blueprint</div></div>
-      <div class="icard"><label>Total Investment Amount (₹)</label><input class="inp" type="number" id="v-amt" placeholder="e.g. 500000" min="100"><div class="inp-hint"><b>Min ₹100</b> as per SEBI guidelines</div></div>
+      <div class="icard"><label>Total Investment Amount (₹)</label><input class="inp" type="number" id="v-amt" placeholder="e.g. 500000" min="100"
+  onkeydown="if(event.key==='ArrowUp'||event.key==='ArrowDown')event.preventDefault();"><div class="inp-hint"><b>Min ₹100</b> as per SEBI guidelines</div></div>
     </div>
     <div class="icard" style="margin-bottom:14px">
       <label>Investment Horizon</label>
       <div class="hor-wrap">
         <div style="flex:1"><div style="font-size:11px;font-weight:700;color:var(--t4);margin-bottom:5px;">Years</div><input class="inp inp-sm" type="text" id="v-yrs" placeholder="0" value="0" inputmode="numeric" maxlength="2" oninput="validateYrMo(this,0,40);updHor()" onkeydown="allowNumKeys(event,false)" style="font-size:16px;padding:10px 12px;text-align:center;"></div>
         <div class="hor-sep">+</div>
-        <div style="flex:1"><div style="font-size:11px;font-weight:700;color:var(--t4);margin-bottom:5px;">Months</div><input class="inp inp-sm" type="text" id="v-mos" placeholder="0" value="6" inputmode="numeric" maxlength="2" oninput="validateYrMo(this,0,11);updHor()" onkeydown="allowNumKeys(event,false)" style="font-size:16px;padding:10px 12px;text-align:center;"></div>
+        <div style="flex:1"><div style="font-size:11px;font-weight:700;color:var(--t4);margin-bottom:5px;">Months</div><input class="inp inp-sm" type="text" id="v-mos" placeholder="0" value="0" inputmode="numeric" maxlength="2" oninput="validateYrMo(this,0,11);updHor()" onkeydown="allowNumKeys(event,false)" style="font-size:16px;padding:10px 12px;text-align:center;"></div>
         <div class="hor-sep">=</div>
         <div style="flex:1"><div style="font-size:11px;font-weight:700;color:var(--t4);margin-bottom:5px;">Total Period</div><div class="hor-total" id="v-total">6 Months</div></div>
       </div>
@@ -690,8 +715,8 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
       <div class="plan-box">
         <label>Plan Type</label>
         <div class="pills-row">
-          <div class="ppill on" id="pt-d" onclick="selPlan('type','direct')">Direct</div>
-          <div class="ppill" id="pt-r" onclick="selPlan('type','regular')">Regular</div>
+          <div class="ppill" id="pt-d" onclick="selPlan('type','direct')">Direct</div>
+          <div class="ppill on" id="pt-r" onclick="selPlan('type','regular')">Regular</div>
         </div>
         <div style="font-size:11px;color:var(--t5);margin-top:8px;line-height:1.6"><b style="color:var(--g1)">Direct:</b> No commission. Higher returns.<br><b style="color:var(--p2)">Regular:</b> Via distributor. Advisory support.</div>
       </div>
@@ -730,19 +755,63 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
     <div class="nav-btns"><button class="btn-prev" onclick="goStep(2)">← Back</button><button class="btn-next" onclick="goStep(4)">Next: Select Funds →</button></div>
   </div>
 
-  <!-- STEP 4 -->
+  <!-- STEP 4: CART-BASED FUND SELECTION -->
   <div class="panel" id="step4">
-    <div class="ptitle">Select Your <em>Funds</em></div>
-    <!-- FIX 5: Sub-category explanation -->
-    <div style="background:linear-gradient(135deg,var(--p4),var(--g5));border:1.5px solid var(--g4);border-radius:10px;padding:12px 16px;margin-bottom:16px;">
-      <div style="font-size:12px;font-weight:800;color:var(--p2);margin-bottom:4px;">📌 Top 10 Funds per Sub-Category</div>
-      <div style="font-size:11px;color:var(--t4);line-height:1.6">Each asset class is further divided into sub-categories. <b>Equity</b> includes Large Cap, Flexi Cap, Mid Cap, Small Cap, Bluechip, Large & MidCap, Thematic, Multi Cap etc. Use the sub-category tabs to explore within each class and choose from Top 10 funds per sub-category.</div>
+    <div class="ptitle">Select <em>Funds</em> — Add to Cart</div>
+    <div class="psub">Browse by category → Add funds to cart → Review cart → Proceed</div>
+
+    <div style="display:flex;gap:14px;flex-wrap:wrap;">
+
+      <!-- LEFT: Category Tabs + Fund List -->
+      <div style="flex:1;min-width:280px;">
+        <!-- Category Tabs -->
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;" id="cart-cat-tabs"></div>
+
+        <!-- Search -->
+        <div style="margin-bottom:10px;position:relative;">
+          <input type="text" id="cart-search"
+            placeholder="🔍 Search any fund by name or AMC..."
+            oninput="cartSearch(this.value)"
+            style="width:100%;padding:9px 14px;border:1.5px solid var(--g4);
+                   border-radius:9px;font-size:13px;font-family:var(--fh);outline:none;
+                   background:var(--p4);">
+        </div>
+
+        <!-- Fund List -->
+        <div id="cart-fund-list" style="border:1px solid var(--g4);border-radius:10px;overflow:hidden;"></div>
+      </div>
+
+      <!-- RIGHT: Cart -->
+      <div style="width:280px;flex-shrink:0;">
+        <div style="background:linear-gradient(135deg,var(--p1),var(--p2));
+                    border-radius:10px 10px 0 0;padding:12px 14px;
+                    display:flex;align-items:center;justify-content:space-between;">
+          <div style="font-weight:800;font-size:14px;color:#fff;">🛒 My Cart</div>
+          <div id="cart-count" style="background:rgba(255,255,255,.2);color:#fff;
+               font-size:11px;font-weight:800;padding:3px 9px;border-radius:10px;">0 funds</div>
+        </div>
+        <div id="cart-items"
+             style="border:1px solid var(--g4);border-top:none;border-radius:0 0 10px 10px;
+                    min-height:200px;max-height:420px;overflow-y:auto;background:#fff;">
+          <div id="cart-empty" style="text-align:center;padding:30px;color:var(--t4);">
+            <div style="font-size:28px;margin-bottom:8px;">🛒</div>
+            <div style="font-size:12px;">Cart is empty<br>Add funds from the left</div>
+          </div>
+        </div>
+        <div style="margin-top:8px;padding:8px 12px;background:var(--p4);border-radius:8px;
+                    font-size:10px;color:var(--t4);line-height:1.6;">
+          💡 Click any fund row or <b>Add to Cart</b> to select it. Click 🗑 to remove.
+        </div>
+      </div>
     </div>
-    <div id="fund-sel-area"></div>
-    <div class="nav-btns"><button class="btn-prev" onclick="goStep(3)">← Back</button><button class="btn-next" onclick="goStep(5)">Next: Set Allocation →</button></div>
+
+    <div class="nav-btns">
+      <button class="btn-prev" onclick="goStep(2)">← Back</button>
+      <button class="btn-next" onclick="goStep(5)">Next: Set Allocation →</button>
+    </div>
   </div>
 
-  <!-- STEP 5 -->
+<!-- STEP 5 -->
   <div class="panel" id="step5">
     <div class="ptitle">Set <em>Allocation</em></div>
     <div class="psub" id="s5-sub">Allocate investment across funds and set amounts.</div>
@@ -1101,7 +1170,7 @@ function setMode(m){
 }
 
 // ══ STEPS ══
-const LBLS=["Investor Details","Plan Preference","Asset Classes","Fund Selection","Allocation"];
+const LBLS=["Investor Details","Plan Preference","Fund Selection (Cart)","Allocation",""];
 function buildSteps(){
   document.getElementById("steps-row").innerHTML=LBLS.map((l,i)=>{
     const n=i+1,cls=n===ST.step?"act":n<ST.step?"done":"",lc=n===ST.step?"act":"";
@@ -1187,6 +1256,167 @@ function refreshFC(){
 function setFC(id,n){ST.fundCounts[id]=n;refreshFC();}
 
 // ══ STEP 4: FIX 5 — Sub-categories with Top 10 funds ══
+// ── CART STATE ──
+var CART = []; // [{code, name, amc, sub, c5y, risk, nav}]
+var CART_CAT = 'Large Cap';
+
+// Build Fund Cart Categories from FDB
+var CART_CATS = [
+  {id:'Large Cap',    label:'Large Cap'},
+  {id:'Bluechip',     label:'Bluechip'},
+  {id:'Large & MidCap', label:'Large & Mid Cap'},
+  {id:'Flexi Cap',    label:'Flexi Cap'},
+  {id:'Mid Cap',      label:'Mid Cap'},
+  {id:'Small Cap',    label:'Small Cap'},
+  {id:'Multi Cap',    label:'Multi Cap'},
+  {id:'Thematic',     label:'Thematic'},
+  {id:'ELSS Equity',  label:'ELSS (Tax Saving)'},
+];
+
+function buildStep4Cart(){
+  CART=[];
+  // Render category tabs
+  var tabs = document.getElementById('cart-cat-tabs');
+  if(!tabs) return;
+  tabs.innerHTML = CART_CATS.map(function(c){
+    return '<button class="cart-cat-tab'+(c.id===CART_CAT?' on':'')+'" '+
+      'onclick="setCartCat(''+c.id+'')">'+c.label+'</button>';
+  }).join('');
+  renderCartFunds();
+  renderCart();
+}
+
+function setCartCat(cat){
+  CART_CAT = cat;
+  document.getElementById('cart-search').value='';
+  document.querySelectorAll('.cart-cat-tab').forEach(function(t){
+    t.classList.toggle('on', t.textContent.trim()===CART_CATS.find(function(c){return c.id===cat;}).label);
+  });
+  renderCartFunds();
+}
+
+function cartSearch(q){
+  renderCartFunds(q.toLowerCase().trim());
+}
+
+function renderCartFunds(searchQ){
+  var q = searchQ || '';
+  // Get all equity funds
+  var allFunds = FDB.equity ? FDB.equity.funds : [];
+  // Also add debt, hybrid etc
+  ['debt','hybrid','elss','index','liquid','gilt'].forEach(function(cat){
+    if(FDB[cat] && FDB[cat].funds) allFunds = allFunds.concat(FDB[cat].funds);
+  });
+
+  var funds;
+  if(q){
+    funds = allFunds.filter(function(f){
+      return (f.n||'').toLowerCase().indexOf(q)>=0 ||
+             (f.amc||'').toLowerCase().indexOf(q)>=0;
+    }).slice(0,20);
+  } else {
+    // Filter by selected category tab
+    funds = allFunds.filter(function(f){ return f.sub===CART_CAT; }).slice(0,10);
+    if(!funds.length) funds = allFunds.slice(0,10);
+  }
+
+  var el = document.getElementById('cart-fund-list');
+  if(!el) return;
+
+  if(!funds.length){
+    el.innerHTML='<div style="padding:20px;text-align:center;color:var(--t4);font-size:12px;">No funds found</div>';
+    return;
+  }
+
+  el.innerHTML = funds.map(function(f, i){
+    var inCart = CART.some(function(c){return c.name===f.n;});
+    var ret5y = f.c5y||f.c3y||12;
+    return '<div class="cart-fund-item" onclick="addToCart('+i+',''+CART_CAT+'')" id="cfi-'+i+'">'+
+      '<div style="flex:1;min-width:0;">'+
+        '<div class="cfi-name">'+f.n+'</div>'+
+        '<div style="display:flex;gap:10px;margin-top:2px;">'+
+          '<span class="cfi-amc">'+f.amc+'</span>'+
+          '<span class="cfi-returns">5Y: '+ret5y.toFixed(1)+'%</span>'+
+          (f.risk?'<span style="font-size:9px;color:var(--t4);">'+f.risk+'</span>':'')+'</div>'+
+      '</div>'+
+      '<button class="btn-add-cart'+(inCart?' added':'')+'" onclick="event.stopPropagation();addToCartByName(''+f.n.replace(/'/g,"\'")+'')">'+(inCart?'✅ Added':'+ Add')+'</button>'+
+    '</div>';
+  }).join('');
+}
+
+function addToCartByName(name){
+  var allFunds = FDB.equity ? FDB.equity.funds.slice() : [];
+  ['debt','hybrid','elss','index','liquid','gilt'].forEach(function(cat){
+    if(FDB[cat]&&FDB[cat].funds) allFunds=allFunds.concat(FDB[cat].funds);
+  });
+  var f = allFunds.find(function(x){return x.n===name;});
+  if(!f) return;
+  if(CART.some(function(c){return c.name===f.n;})){
+    // Remove from cart
+    CART = CART.filter(function(c){return c.name!==f.n;});
+  } else {
+    if(CART.length>=10){alert('Maximum 10 funds allowed in cart.');return;}
+    CART.push({name:f.n,amc:f.amc,sub:f.sub||CART_CAT,c5y:f.c5y||12,
+               c3y:f.c3y||12,risk:f.risk||'Moderate',nav:f.nav||100,
+               navDate:f.navDate||'',code:f.code||''});
+  }
+  renderCartFunds(document.getElementById('cart-search').value.toLowerCase());
+  renderCart();
+}
+
+function addToCart(idx, cat){
+  addToCartByName(document.getElementById('cfi-'+idx).querySelector('.cfi-name').textContent);
+}
+
+function removeFromCart(name){
+  CART = CART.filter(function(c){return c.name!==name;});
+  renderCartFunds(document.getElementById('cart-search').value.toLowerCase());
+  renderCart();
+}
+
+function renderCart(){
+  var el = document.getElementById('cart-items');
+  var empty = document.getElementById('cart-empty');
+  var cnt = document.getElementById('cart-count');
+  if(!el) return;
+  if(cnt) cnt.textContent = CART.length+' fund'+(CART.length!==1?'s':'');
+
+  if(!CART.length){
+    if(empty) empty.style.display='block';
+    var rows = el.querySelectorAll('.cart-item-row');
+    rows.forEach(function(r){r.remove();});
+    return;
+  }
+  if(empty) empty.style.display='none';
+
+  // Remove old rows and re-render
+  el.querySelectorAll('.cart-item-row').forEach(function(r){r.remove();});
+  CART.forEach(function(c){
+    var row = document.createElement('div');
+    row.className = 'cart-item-row';
+    row.innerHTML = '<div class="ci-name">'+c.name+'<br>'+
+      '<span style="font-size:9px;color:var(--t4);">'+c.amc+'</span></div>'+
+      '<button class="ci-remove" onclick="removeFromCart(''+c.name.replace(/'/g,"\'")+'')">🗑</button>';
+    el.appendChild(row);
+  });
+}
+
+function validateStep4(){
+  if(CART.length===0){
+    alert('Please add at least one fund to your cart.');return false;
+  }
+  // Map cart to CMB rows format for allocation step
+  CMB.rows=CART.map(function(c,i){
+    return {id:i+1,type:'sip',fund:{
+      code:c.code,name:c.name,amc:c.amc,nav:c.nav,
+      navDate:c.navDate,cagr3y:c.c3y
+    },cagr:c.c5y,pct:Math.floor(100/CART.length)};
+  });
+  return true;
+}
+
+function buildStep4(){ buildStep4Cart(); }
+
 function buildStep4(){
   ST.selFunds=[];
   const planLbl=(ST.planType==="direct"?"Direct":"Regular")+" "+(ST.nature==="growth"?"Growth":"IDCW");
@@ -1695,6 +1925,7 @@ function renderRows() {
           ` : `
             <input class="row-inp" type="number"
               placeholder="${row.type==='sip'?'Monthly SIP':'Lumpsum'} ₹"
+              onkeydown="if(event.key==='ArrowUp'||event.key==='ArrowDown')event.preventDefault();"
               value="${row.type==='sip'?row.sipAmt:row.lumpAmt}" min="100" step="${row.type==='sip'?100:1000}"
               id="${row.type==='sip'?'sip':'lmp'}-${row.id}"
               oninput="updateRowAmt(${row.id},'${row.type==='sip'?'sipAmt':'lumpAmt'}',this.value)">
@@ -1873,8 +2104,17 @@ document.addEventListener('click', e => {
 });
 
 // ── CALCULATIONS ──────────────────────────────────────────────────────
-function getCAGR(fund) {
-  // Use fund's actual cagr3y if available, else estimate by category
+function getCAGR(fund, rowId) {
+  // PRIORITY 1: Always use keyboard-entered CAGR if user has typed it
+  if(rowId !== undefined) {
+    const inp = document.getElementById('cagr-row-'+rowId) ||
+                document.getElementById('cagr-'+rowId);
+    if(inp) {
+      const userVal = parseFloat(inp.value);
+      if(!isNaN(userVal) && userVal > 0) return userVal;
+    }
+  }
+  // PRIORITY 2: Fund historic CAGR only as fallback (when no keyboard input)
   if(fund.cagr3y && fund.cagr3y > 0) return fund.cagr3y;
   const name = (fund.name||'').toUpperCase();
   if(name.includes('LIQUID')||name.includes('OVERNIGHT')) return 7.0;
@@ -1888,7 +2128,7 @@ function getCAGR(fund) {
 
 function calcRowValue(row) {
   if(!row.fund) return 0;
-  const cagr = getCAGR(row.fund)/100;
+  const cagr = getCAGR(row.fund, row.id)/100;
   const yrs  = ((row.yrs||0)*12+(row.mos||0))/12;
   if(yrs <= 0) return 0;
 
@@ -1950,7 +2190,7 @@ function generateCMB() {
     const val     = calcRowValue(row);
     const inv     = calcRowInvested(row);
     const gain    = val - inv;
-    const cagr    = row.cagr && row.cagr > 0 ? row.cagr : getCAGR(row.fund);
+    const cagr    = row.cagr && row.cagr > 0 ? row.cagr : getCAGR(row.fund, row.id);
     const mos     = (row.yrs||0)*12+(row.mos||0);
     const horTxt  = (row.yrs>0?row.yrs+'Y ':'')+(row.mos>0?row.mos+'M':'')||'—';
     const typeLbl = TYPE_LABELS[row.type]||row.type;
@@ -1992,7 +2232,7 @@ function generateCMB() {
     const val   = calcRowValue(row);
     const inv   = calcRowInvested(row);
     const gain  = val - inv;
-    const cagr  = getCAGR(row.fund);
+    const cagr  = getCAGR(row.fund, row.id);
     const mos   = (row.yrs||0)*12+(row.mos||0);
     const horTxt= (row.yrs>0?row.yrs+'Y ':'')+(row.mos>0?row.mos+'M':'')||'—';
     totalV += val; totalI += inv;

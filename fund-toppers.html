@@ -316,9 +316,9 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
 <div class="sort-bar">
   <div class="sort-lbl">Rank by:</div>
   <button class="sort-btn" id="sb-6m"  onclick="setSort('r6m',this)">6M Returns</button>
-  <button class="sort-btn on" id="sb-1y"  onclick="setSort('r1y',this)">1Y CAGR</button>
+  <button class="sort-btn" id="sb-1y"  onclick="setSort('r1y',this)">1Y CAGR</button>
   <button class="sort-btn" id="sb-3y"  onclick="setSort('r3y',this)">3Y CAGR</button>
-  <button class="sort-btn" id="sb-5y"  onclick="setSort('r5y',this)">5Y CAGR</button>
+  <button class="sort-btn on" id="sb-5y"  onclick="setSort('r5y',this)">5Y CAGR</button>
   <button class="sort-btn" id="sb-si"  onclick="setSort('rSI',this)">Since Inception</button>
 </div>
 
@@ -370,12 +370,19 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
       <p>💡 <strong>Kaustubh's Insight:</strong> No single fund stays at No.1 forever. Rankings shift every 6 months. The fund at rank 3 or 4 today may outperform tomorrow. Study these toppers, compare their consistency, and choose wisely. <strong>Your uninterrupted SIP through all market cycles is what truly builds wealth.</strong></p>
     </div>
 
-    <div class="section-hdr">
-      <div>
+    <div class="section-hdr" style="flex-wrap:wrap;gap:10px;">
+      <div style="flex:1;">
         <div class="section-title" id="result-title">Select a Category</div>
         <div class="section-sub" id="result-sub">Choose any sub-category from the left panel to see Top 10 funds</div>
       </div>
-      <span class="badge-plan bp-dir" id="plan-badge">Direct Plans</span>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span style="font-size:11px;font-weight:700;color:var(--t5);">Rank By:</span>
+        <button class="sort-btn" onclick="setSort('r1y',this);document.querySelectorAll('.hdr-sort').forEach(b=>b.classList.remove('on'));this.classList.add('on');" style="font-size:10px;padding:4px 8px;" class="hdr-sort">1Y</button>
+        <button class="sort-btn" onclick="setSort('r3y',this);document.querySelectorAll('.hdr-sort').forEach(b=>b.classList.remove('on'));this.classList.add('on');" style="font-size:10px;padding:4px 8px;" class="hdr-sort">3Y</button>
+        <button class="sort-btn on" onclick="setSort('r5y',this);document.querySelectorAll('.hdr-sort').forEach(b=>b.classList.remove('on'));this.classList.add('on');" style="font-size:10px;padding:4px 8px;" class="hdr-sort">5Y</button>
+        <button class="sort-btn" onclick="setSort('rSI',this);document.querySelectorAll('.hdr-sort').forEach(b=>b.classList.remove('on'));this.classList.add('on');" style="font-size:10px;padding:4px 8px;" class="hdr-sort">SI</button>
+        <span class="badge-plan bp-dir" id="plan-badge">Direct Plans</span>
+      </div>
     </div>
 
     <div id="toppers-content">
@@ -404,7 +411,7 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
 // ── STATE ──────────────────────────────────────────────
 var S = {all:[], activeCode:null};
 var CACHE = {};
-var ST = { nature:'direct', subcat:'', sort:'r1y', funds:[] };
+var ST = { nature:'direct', subcat:'', sort:'r5y', funds:[] };
 var CACHE = {};
 
 // ── SUB-CATEGORIES ─────────────────────────────────────
