@@ -1223,8 +1223,7 @@ function updHor(){
   const y=parseInt(document.getElementById("v-yrs").value)||0;
   const m=parseInt(document.getElementById("v-mos").value)||0;
   const el=document.getElementById("v-total");if(!el)return;
-  let t="";if(y>0)t+=y+" Yr"+(y>1?"s":"");if(y>0&&m>0)t+=" ";if(m>0)t+=m+" Mo"+(m>1?"s":"");
-  el.textContent=(!t)?"—":t+" = "+(y*12+m)+" Months";
+  el.textContent=y+"Y "+m+"M = "+(y*12+m)+" Months";
 }
 
 // ══ STEP 2 ══
@@ -1287,18 +1286,18 @@ function buildStep4Cart(){
   var tabs = document.getElementById('cart-cat-tabs');
   if(!tabs) return;
   tabs.innerHTML = CART_CATS.map(function(c){
-    return '<button class="cart-cat-tab'+(c.id===CART_CAT?' on':'')+'" '+
-      'onclick="setCartCat(''+c.id+'')">'+c.label+'</button>';
+    var onCls = c.id===CART_CAT?' on':'';
+    return '<button class="cart-cat-tab'+onCls+'" onclick="setCartCat(this.dataset.id)" data-id="'+c.id+'">'+c.label+'</button>';
   }).join('');
   renderCartFunds();
   renderCart();
 }
 
-function setCartCat(cat){
+function setCartCat(el){ var cat = typeof el==='string'?el:el.dataset.id;
   CART_CAT = cat;
   document.getElementById('cart-search').value='';
   document.querySelectorAll('.cart-cat-tab').forEach(function(t){
-    t.classList.toggle('on', t.textContent.trim()===CART_CATS.find(function(c){return c.id===cat;}).label);
+    var cc=CART_CATS.find(function(c){return c.id===cat;}); t.classList.toggle('on', cc&&t.textContent.trim()===cc.label);
   });
   renderCartFunds();
 }
@@ -1309,68 +1308,66 @@ function cartSearch(q){
 
 function renderCartFunds(searchQ){
   var q = searchQ || '';
-  // Get all equity funds
-  var allFunds = FDB.equity ? FDB.equity.funds : [];
-  // Also add debt, hybrid etc
-  ['debt','hybrid','elss','index','liquid','gilt'].forEach(function(cat){
-    if(FDB[cat] && FDB[cat].funds) allFunds = allFunds.concat(FDB[cat].funds);
+  var allF = [];
+  if(FDB.equity) allF = allF.concat(FDB.equity.funds);
+  ['debt','hybrid','elss','index','liquid','gilt'].forEach(function(c){
+    if(FDB[c]&&FDB[c].funds) allF=allF.concat(FDB[c].funds);
   });
 
-  var funds;
-  if(q){
-    funds = allFunds.filter(function(f){
+  var funds = q ?
+    allF.filter(function(f){
       return (f.n||'').toLowerCase().indexOf(q)>=0 ||
              (f.amc||'').toLowerCase().indexOf(q)>=0;
-    }).slice(0,20);
-  } else {
-    // Filter by selected category tab
-    funds = allFunds.filter(function(f){ return f.sub===CART_CAT; }).slice(0,10);
-    if(!funds.length) funds = allFunds.slice(0,10);
-  }
+    }).slice(0,20) :
+    allF.filter(function(f){ return f.sub===CART_CAT; }).slice(0,10);
+
+  if(!funds.length && !q) funds = allF.slice(0,10);
 
   var el = document.getElementById('cart-fund-list');
   if(!el) return;
+  el.innerHTML='';
 
   if(!funds.length){
     el.innerHTML='<div style="padding:20px;text-align:center;color:var(--t4);font-size:12px;">No funds found</div>';
     return;
   }
 
-  el.innerHTML = funds.map(function(f, i){
+  funds.forEach(function(f, i){
     var inCart = CART.some(function(c){return c.name===f.n;});
-    var ret5y = f.c5y||f.c3y||12;
-    return '<div class="cart-fund-item" onclick="addToCart('+i+',''+CART_CAT+'')" id="cfi-'+i+'">'+
-      '<div style="flex:1;min-width:0;">'+
-        '<div class="cfi-name">'+f.n+'</div>'+
-        '<div style="display:flex;gap:10px;margin-top:2px;">'+
-          '<span class="cfi-amc">'+f.amc+'</span>'+
-          '<span class="cfi-returns">5Y: '+ret5y.toFixed(1)+'%</span>'+
-          (f.risk?'<span style="font-size:9px;color:var(--t4);">'+f.risk+'</span>':'')+'</div>'+
-      '</div>'+
-      '<button class="btn-add-cart'+(inCart?' added':'')+'" onclick="event.stopPropagation();addToCartByName(''+f.n.replace(/'/g,"\'")+'')">'+(inCart?'✅ Added':'+ Add')+'</button>'+
-    '</div>';
-  }).join('');
+    var ret5y  = f.c5y||f.c3y||12;
+
+    var row = document.createElement('div');
+    row.className = 'cart-fund-item';
+    row.id = 'cfi-'+i;
+
+    var info = document.createElement('div');
+    info.style.cssText='flex:1;min-width:0;';
+    info.innerHTML =
+      '<div class="cfi-name">'+f.n+'</div>'+
+      '<div style="display:flex;gap:10px;margin-top:2px;">'+
+        '<span class="cfi-amc">'+f.amc+'</span>'+
+        '<span class="cfi-returns">5Y: '+ret5y.toFixed(1)+'%</span>'+
+      '</div>';
+
+    var btn = document.createElement('button');
+    btn.className = 'btn-add-cart'+(inCart?' added':'');
+    btn.textContent = inCart?'✅ Added':'+ Add';
+    btn.dataset.fname = f.n;
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      addToCartByName(this.dataset.fname);
+    });
+
+    row.appendChild(info);
+    row.appendChild(btn);
+    row.addEventListener('click', function(){
+      var b=this.querySelector('.btn-add-cart');
+      if(b) b.click();
+    });
+    el.appendChild(row);
+  });
 }
 
-function addToCartByName(name){
-  var allFunds = FDB.equity ? FDB.equity.funds.slice() : [];
-  ['debt','hybrid','elss','index','liquid','gilt'].forEach(function(cat){
-    if(FDB[cat]&&FDB[cat].funds) allFunds=allFunds.concat(FDB[cat].funds);
-  });
-  var f = allFunds.find(function(x){return x.n===name;});
-  if(!f) return;
-  if(CART.some(function(c){return c.name===f.n;})){
-    // Remove from cart
-    CART = CART.filter(function(c){return c.name!==f.n;});
-  } else {
-    if(CART.length>=10){alert('Maximum 10 funds allowed in cart.');return;}
-    CART.push({name:f.n,amc:f.amc,sub:f.sub||CART_CAT,c5y:f.c5y||12,
-               c3y:f.c3y||12,risk:f.risk||'Moderate',nav:f.nav||100,
-               navDate:f.navDate||'',code:f.code||''});
-  }
-  renderCartFunds(document.getElementById('cart-search').value.toLowerCase());
-  renderCart();
-}
 
 function addToCart(idx, cat){
   addToCartByName(document.getElementById('cfi-'+idx).querySelector('.cfi-name').textContent);
@@ -1383,28 +1380,30 @@ function removeFromCart(name){
 }
 
 function renderCart(){
-  var el = document.getElementById('cart-items');
+  var el    = document.getElementById('cart-items');
   var empty = document.getElementById('cart-empty');
-  var cnt = document.getElementById('cart-count');
+  var cnt   = document.getElementById('cart-count');
   if(!el) return;
   if(cnt) cnt.textContent = CART.length+' fund'+(CART.length!==1?'s':'');
-
+  el.innerHTML = '';
   if(!CART.length){
-    if(empty) empty.style.display='block';
-    var rows = el.querySelectorAll('.cart-item-row');
-    rows.forEach(function(r){r.remove();});
+    if(empty){ empty.style.display='block'; el.appendChild(empty); }
     return;
   }
   if(empty) empty.style.display='none';
-
-  // Remove old rows and re-render
-  el.querySelectorAll('.cart-item-row').forEach(function(r){r.remove();});
   CART.forEach(function(c){
     var row = document.createElement('div');
     row.className = 'cart-item-row';
-    row.innerHTML = '<div class="ci-name">'+c.name+'<br>'+
-      '<span style="font-size:9px;color:var(--t4);">'+c.amc+'</span></div>'+
-      '<button class="ci-remove" onclick="removeFromCart(''+c.name.replace(/'/g,"\'")+'')">🗑</button>';
+    var nd = document.createElement('div');
+    nd.className = 'ci-name';
+    nd.innerHTML = c.name+'<br><span style="font-size:9px;color:var(--t4);">'+c.amc+'</span>';
+    var rb = document.createElement('button');
+    rb.className = 'ci-remove';
+    rb.textContent = '🗑';
+    rb.dataset.name = c.name;
+    rb.addEventListener('click', function(){ removeFromCart(this.dataset.name); });
+    row.appendChild(nd);
+    row.appendChild(rb);
     el.appendChild(row);
   });
 }
