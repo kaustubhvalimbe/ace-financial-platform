@@ -1029,7 +1029,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
 
 <script>
 // ══ STATE ══
-const ST={mode:"sip",step:1,name:"",amt:0,yrs:0,mos:0,totalMos:6,planType:"direct",nature:"growth",stpFreq:"weekly",selClasses:[],fundCounts:{},selFunds:[],allocs:[],sipAmts:[],lumpAmts:[],stpAmts:[],userCAGR:[]};
+const ST={mode:"sip",step:1,name:"",amt:0,yrs:0,mos:0,totalMos:0,planType:"regular",nature:"growth",stpFreq:"weekly",selClasses:[],fundCounts:{},selFunds:[],allocs:[],sipAmts:[],lumpAmts:[],stpAmts:[],userCAGR:[]};
 const COLS=["#3c3197","#8bc32a","#d97706","#0891b2","#ea580c","#db2777","#7c3aed","#059669","#b45309","#0369a1"];
 
 // ══ ASSET CLASSES ══
@@ -1199,19 +1199,19 @@ function buildSteps(){
 
 function goStep(n){
   if(n>1&&!validateStep(ST.step)) return;
-  // Step 3 (Asset Class) is REMOVED — skip from 2 to 4
-  if(n===3) n=4;
-  if(n===4){
-    ST.selClasses=ACS.map(function(x){return x.id;});
-    ACS.forEach(function(a){ if(!ST.fundCounts[a.id]) ST.fundCounts[a.id]=1; });
-    buildStep4Cart();
-  }
-  if(n===5){if(!validateStep4())return;buildStep5();}
-  for(let i=1;i<=5;i++) {
+  if(n===3) n=4; // Asset Class step removed
+  if(n===5){if(!validateStep4())return;}
+  // Show correct panel FIRST
+  for(var i=1;i<=5;i++){
     var el=document.getElementById("step"+i);
-    if(el) el.classList.toggle("show",i===n);
+    if(el) el.classList.toggle("show", i===n);
   }
-  ST.step=n;buildSteps();window.scrollTo({top:0,behavior:"smooth"});
+  ST.step=n;
+  // Then build content
+  if(n===4) buildStep4Cart();
+  if(n===5) buildStep5();
+  buildSteps();
+  window.scrollTo({top:0,behavior:"smooth"});
 }
 
 function validateStep(n){
@@ -1221,7 +1221,7 @@ function validateStep(n){
     ST.mos=parseInt(document.getElementById("v-mos").value)||0;
     ST.totalMos=ST.yrs*12+ST.mos;
     ST.name=document.getElementById("v-name").value||"Valued Investor";
-    if(!ST.amt||ST.amt<100){alert("Please enter a valid amount (min ₹100 as per SEBI).");return false;}
+    if(!ST.amt||ST.amt<100){alert("Please enter a valid investment amount (minimum ₹100).");return false;}
     if(ST.totalMos<1){alert("Please enter a valid horizon (minimum 1 month).");return false;}
   }
   return true;
