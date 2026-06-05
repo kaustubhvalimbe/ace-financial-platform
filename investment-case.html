@@ -1227,15 +1227,6 @@ function validateStep(n){
   return true;
 }
 function validateStep3(){if(ST.selClasses.length===0){alert("Please select at least one asset class.");return false;}return true;}
-function validateStep4(){
-  for(const id of ST.selClasses){
-    const need=ST.fundCounts[id]||1;
-    const got=ST.selFunds.filter(f=>f.classId===id).length;
-    if(got<need){const ac=ACS.find(x=>x.id===id);alert(`Please select ${need} fund${need>1?"s":""} from ${ac?.nm}.`);return false;}
-  }
-  if(ST.selFunds.length===0){alert("Please select at least one fund.");return false;}
-  return true;
-}
 
 // ══ STEP 1 ══
 function updHor(){
@@ -1577,11 +1568,6 @@ function validateStep4(){
   return true;
 }
 
-// Keep old function names for compatibility
-function buildStep4Cart(){ buildStep4(); }
-function addToCartByName(name){}
-function removeFromCart(name){ CART=CART.filter(function(c){return c.name!==name;}); renderS4Cart(); }
-function renderCart(){ renderS4Cart(); }
 
 
 function buildStep4(){ buildStep4Cart(); }
