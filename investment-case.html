@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html#step3{display:none!important;} lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1349,11 +1349,11 @@ async function s4LoadFunds() {
       var _sub=getSubCat(_n); if(!_sub) continue;
       S4_allFunds.push({code:String(data[_i].schemeCode),name:_n,
         plan:_u.includes('DIRECT')?'direct':'regular',nat:'growth',
-        subcat:_sub,amc:xAMC(_n),
-        r6m:null,r1y:null,r3y:null,r5y:null,rSI:null,
-        inceptionDate:null,nav:null,date:null,retLoaded:false});
+        sub:_sub,amc:xAMC(_n)});
     }
     s4Loaded = true;
+    var st=document.getElementById('s4-status');
+    if(st) st.textContent='✅ '+S4_allFunds.length.toLocaleString('en-IN')+' funds loaded';
     console.log('InvEngine: '+S4_allFunds.length+' funds loaded');
   } catch(e) {
     console.log('Load failed:', e.message);
@@ -1491,9 +1491,10 @@ var CART_CATS = [
 function getFundsForCat(catId){
   var catDef = CART_CATS.find(function(c){return c.id===catId;});
   if(!catDef) return [];
-  var plan = ST.planType || 'regular';
+  var plan = (ST && ST.planType) ? ST.planType : 'regular';
   return S4_allFunds.filter(function(f){
-    return f.subcat===catDef.sub && f.plan===plan && f.nat==='growth';
+    var fSub = f.sub || f.subcat || '';
+    return fSub===catDef.sub && f.plan===plan && f.nat==='growth';
   });
 }
 
