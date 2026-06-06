@@ -1702,78 +1702,66 @@ function s4ToggleCart(f,tr,btn){
 }
 
 function renderS4Cart(){
-  var badge   = document.getElementById('s4-cart-badge');
-  var label   = document.getElementById('s4-cart-label');
-  var viewBtn = document.getElementById('s4-view-cart-btn');
-  if(badge)   badge.textContent  = CART.length+' fund'+(CART.length!==1?'s':'');
-  if(label)   label.textContent  = CART.length?
+  var panel=document.getElementById('s4-cart-panel');
+  var badge=document.getElementById('s4-cart-badge');
+  var label=document.getElementById('s4-cart-label');
+  if(badge) badge.textContent=CART.length+' fund'+(CART.length!==1?'s':'');
+  if(label) label.textContent=CART.length?
     CART.length+' fund'+(CART.length!==1?'s':'')+' in cart':
     'Cart empty — add funds below';
-  if(viewBtn) viewBtn.style.display = CART.length?'block':'none';
+  if(panel) panel.style.display=CART.length?'block':'none';
 
-  // Show cart panel automatically when funds added
-  var panel = document.getElementById('s4-cart-panel');
-  if(panel && CART.length>0) panel.style.display='block';
-
-  var el = document.getElementById('s4-cart-items');
+  var el=document.getElementById('s4-cart-items');
   if(!el) return;
   el.innerHTML='';
 
   if(!CART.length){
-    el.innerHTML='<div style="text-align:center;padding:16px;color:var(--t4);font-size:12px;">'+
-      '<div style="font-size:22px;margin-bottom:4px;">🛒</div>Add funds from the list</div>';
-    s4UpdateAmtSummary();
-    return;
+    el.innerHTML='<div style="padding:16px;text-align:center;color:var(--t4);font-size:12px;">Add funds from the list below</div>';
+    s4UpdateAmtSummary(); return;
   }
 
-  // Total row at top
-  var totalAmt = ST.amt||0;
-  var header = document.createElement('div');
-  header.style.cssText='padding:8px 12px;background:var(--p4);border-bottom:1.5px solid var(--g4);'+
-    'font-size:11px;font-weight:700;color:var(--t4);display:grid;'+
-    'grid-template-columns:1fr 90px 16px;gap:4px;align-items:center;';
-  header.innerHTML='<span>Fund</span><span style="text-align:center;">Inv Amt (₹)</span><span></span>';
-  el.appendChild(header);
+  // Column header
+  el.innerHTML='<div style="display:grid;grid-template-columns:1fr 110px 22px;gap:4px;'+
+    'padding:6px 12px;background:var(--p4);border-bottom:1.5px solid var(--g4);'+
+    'font-size:10px;font-weight:800;color:var(--p1);text-transform:uppercase;">'+
+    '<span>Fund</span><span style="text-align:center;">Inv Amount (₹)</span><span></span></div>';
+
+  var totalAmt=ST.amt||0;
 
   CART.forEach(function(c,idx){
     var row=document.createElement('div');
-    row.style.cssText='display:grid;grid-template-columns:1fr 90px 16px;gap:4px;'+
-      'align-items:center;padding:8px 10px;border-bottom:1px solid var(--g4);background:#fff;';
+    row.style.cssText='display:grid;grid-template-columns:1fr 110px 22px;gap:4px;'+
+      'align-items:center;padding:8px 12px;border-bottom:1px solid var(--g4);';
 
-    // Fund info
     var info=document.createElement('div');
-    info.style.cssText='min-width:0;';
+    info.style.cssText='min-width:0;overflow:hidden;';
     info.innerHTML='<div style="font-weight:700;font-size:11px;color:var(--t1);'+
       'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+c.name+'</div>'+
       '<div style="font-size:10px;color:var(--t4);">'+c.amc+
-      ' · <span style="color:var(--p1);font-weight:700;">'+c.userCagr.toFixed(1)+'%</span></div>';
+      ' · <b style="color:var(--p1);">'+c.userCagr.toFixed(1)+'%</b></div>';
 
-    // InvAmt input — SINGLE SOURCE OF TRUTH
     var amtInp=document.createElement('input');
     amtInp.type='number'; amtInp.min='0'; amtInp.step='1000';
     amtInp.value=c.invAmt||'';
-    amtInp.placeholder='0';
+    amtInp.placeholder='Enter ₹';
     amtInp.className='cart-amt-inp';
-    amtInp.dataset.idx=idx;
-    amtInp.style.cssText='width:100%;padding:4px 5px;border:1.5px solid var(--g4);'+
-      'border-radius:6px;font-size:11px;text-align:right;font-weight:700;'+
-      'color:var(--t1);outline:none;background:#f9f9f9;';
-    amtInp.addEventListener('focus',function(){ this.style.borderColor='var(--p1)'; });
-    amtInp.addEventListener('blur', function(){ this.style.borderColor='var(--g4)'; });
+    amtInp.dataset.idx=String(idx);
+    amtInp.style.cssText='width:100%;padding:5px 6px;border:2px solid '+
+      (c.invAmt>0?'var(--g1)':'#fca5a5')+';border-radius:6px;font-size:12px;'+
+      'text-align:right;font-weight:800;color:var(--t1);outline:none;box-sizing:border-box;';
     amtInp.addEventListener('keydown',function(e){
       if(e.key==='ArrowUp'||e.key==='ArrowDown') e.preventDefault();
     });
     amtInp.addEventListener('input',function(){
       var i=parseInt(this.dataset.idx);
       if(CART[i]) CART[i].invAmt=parseFloat(this.value)||0;
+      this.style.borderColor=CART[i].invAmt>0?'var(--g1)':'#fca5a5';
       s4UpdateAmtSummary();
     });
 
-    // Remove button
     var rb=document.createElement('button');
-    rb.textContent='✕'; rb.title='Remove';
-    rb.style.cssText='background:none;border:none;color:var(--t4);cursor:pointer;'+
-      'font-size:11px;padding:0;line-height:1;';
+    rb.textContent='✕';
+    rb.style.cssText='background:none;border:none;color:#9ca3af;cursor:pointer;font-size:13px;font-weight:700;padding:0;';
     (function(code){ rb.addEventListener('click',function(){
       CART=CART.filter(function(x){return x.code!==code;});
       renderS4Cart();
@@ -1784,6 +1772,22 @@ function renderS4Cart(){
     el.appendChild(row);
   });
 
+  // Auto-split button
+  var splitBtn=document.createElement('div');
+  splitBtn.style.cssText='padding:8px 12px;background:#f0fdf4;border-top:1px solid var(--g4);'+
+    'font-size:11px;color:var(--g1);text-align:center;cursor:pointer;font-weight:700;';
+  splitBtn.innerHTML='⚡ Auto-split ₹'+totalAmt.toLocaleString('en-IN')+' equally across '+CART.length+' fund'+(CART.length!==1?'s':'');
+  splitBtn.addEventListener('click',function(){
+    if(!totalAmt){alert('Please enter Total Investment in Step 1 first.');return;}
+    var share=Math.floor(totalAmt/CART.length);
+    var inputs=document.querySelectorAll('.cart-amt-inp');
+    CART.forEach(function(c,i){
+      c.invAmt=i===CART.length-1?(totalAmt-share*(CART.length-1)):share;
+      if(inputs[i]){inputs[i].value=c.invAmt;inputs[i].style.borderColor='var(--g1)';}
+    });
+    s4UpdateAmtSummary();
+  });
+  el.appendChild(splitBtn);
   s4UpdateAmtSummary();
 }
 
