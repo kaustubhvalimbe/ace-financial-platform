@@ -921,7 +921,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
     <button class="rbtn g" onclick="restart()">🔄 New Case</button>
     <a href="fund-discovery-v2.html" class="rbtn o">🔍 Explore Funds</a>
   </div>
-  <div class="discl"><strong>⚠️ Disclaimer:</strong> Mutual Fund investments are subject to market risks. Read all scheme documents carefully before investing. Past performance is not indicative of future returns. NAV data sourced from AMFI India. Projections are estimates only. Ace Financial Services — SEBI Registered ARN Holder · Kaustubh Valimbe.</div>
+  <div class="discl"><strong>⚠️ Disclaimer:</strong> Mutual Fund investments are subject to market risks. Read all scheme documents carefully before investing. Past performance is not indicative of future returns. NAV data sourced from AMFI India. Projections are estimates only. Ace Financial Services — AMFI Registered MFD · ARN-110832 · Kaustubh Valimbe · EUIN E155215.</div>
 </div>
 </div>
 
@@ -1039,7 +1039,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
     </div>
 
     <div class="discl">
-      <strong>⚠️ Disclaimer:</strong> Mutual Fund investments are subject to market risks. Read all scheme documents carefully before investing. Past performance is not indicative of future returns. NAV data sourced from AMFI India. Return projections are estimates based on historical 3Y CAGR and are not guaranteed. Ace Financial Services — SEBI Registered ARN Holder · Kaustubh Valimbe.
+      <strong>⚠️ Disclaimer:</strong> Mutual Fund investments are subject to market risks. Read all scheme documents carefully before investing. Past performance is not indicative of future returns. NAV data sourced from AMFI India. Return projections are estimates based on historical 3Y CAGR and are not guaranteed. Ace Financial Services — AMFI Registered MFD · ARN-110832 · Kaustubh Valimbe · EUIN E155215.
     </div>
 
   </div>
@@ -2024,8 +2024,8 @@ function generate(){
   });
   // Use userCAGR for all projections — conservative & realistic
   const avgCAGR = ST.userCAGR && ST.userCAGR.length > 0
-    ? ST.selFunds.reduce((s,f,i)=>s+(ST.userCAGR[i]||f.fund.c3y||12)*(ST.allocs[i]/100),0)
-    : ST.selFunds.reduce((s,f,i)=>s+(f.fund.c3y||12)*(ST.allocs[i]/100),0);
+    ? ST.selFunds.reduce((s,f,i)=>s+(ST.userCAGR[i]||f.userCagr||12)*(ST.allocs[i]/100),0)
+    : ST.selFunds.reduce((s,f,i)=>s+(f.userCagr||12)*(ST.allocs[i]/100),0);
 
   const totSIP=ST.sipAmts.reduce((a,b)=>a+b,0);
   const totLump=ST.lumpAmts.reduce((a,b)=>a+b,0);
@@ -2069,7 +2069,7 @@ function generate(){
   document.getElementById("leg").innerHTML=ST.selFunds.map((f,i)=>`
     <div class="li">
       <div class="ldot" style="background:${COLS[i%COLS.length]}"></div>
-      <div class="lnm">${f.fund.n.split(" ").slice(0,4).join(" ")}<br><small style="color:var(--t5)">${f.fund.amc}</small></div>
+      <div class="lnm">${(f.name||(f.fund&&f.fund.n)||"Fund").split(" ").slice(0,4).join(" ")}<br><small style="color:var(--t5)">${f.amc||(f.fund&&f.fund.amc)||""}</small></div>
       <div><div class="lpct">${ST.allocs[i]}%</div><div class="lamt">₹${fmt(ST.amt*ST.allocs[i]/100)}</div></div>
     </div>`).join("");
 
@@ -2084,7 +2084,7 @@ function generate(){
       const periods=ST.stpFreq==="weekly"?"weeks":ST.stpFreq==="fortnightly"?"fortnights":"months";
       const tgt=ST.selFunds.find(x=>x.classId!=="liquid");
       return `<div class="stp-pair">
-        <div class="stp-liq"><div class="stp-liq-nm">${f.fund.n}</div><div class="stp-liq-amt">₹${fmt(lump)} parked</div><div class="stp-liq-earn">~₹${fmt(parseInt(earn))} earnings @7%</div></div>
+        <div class="stp-liq"><div class="stp-liq-nm">${f.name||(f.fund&&f.fund.n)||"Fund"}</div><div class="stp-liq-amt">₹${fmt(lump)} parked</div><div class="stp-liq-earn">~₹${fmt(parseInt(earn))} earnings @7%</div></div>
         <div class="stp-arr"><div style="font-size:20px;color:var(--p2)">→</div><div style="font-size:9px;font-weight:800;font-family:var(--fm);color:var(--p2);background:var(--p4);padding:2px 6px;border-radius:6px;border:1px solid #c4b5fd;">${fl} STP</div><div style="font-size:9px;color:var(--t4)">₹${fmt(stp)}/${ST.stpFreq==="weekly"?"wk":ST.stpFreq==="fortnightly"?"fn":"mo"}</div></div>
         <div class="stp-eq"><div class="stp-eq-nm">${tgt?tgt.fund.n:"Equity Fund"}</div><div class="stp-eq-amt">₹${fmt(lump)} → Equity</div><div class="stp-eq-wk">Full deployment in ${cnt} ${periods}</div></div>
       </div>`;
@@ -2093,27 +2093,67 @@ function generate(){
 
   // Fund cards
   document.getElementById("frc-grid").innerHTML=ST.selFunds.map((f,i)=>{
-    const allAmt=ST.amt*ST.allocs[i]/100;
-    const fCagr=(ST.userCAGR&&ST.userCAGR[i]>0?ST.userCAGR[i]:(f.fund.c3y||12))/100;
-    const fv=sipFV((isSTP?ST.stpAmts[i]*fm:ST.sipAmts[i]),fCagr,yrs)+(ST.lumpAmts[i]||0)*Math.pow(1+fCagr,yrs);
+    const fname   = f.name || (f.fund&&f.fund.n) || "Fund "+(i+1);
+    const famc    = f.amc  || (f.fund&&f.fund.amc) || "";
+    const fsub    = f.sub  || "";
+    const fCagrPct= ST.userCAGR&&ST.userCAGR[i]>0 ? ST.userCAGR[i] : (f.userCagr||12);
+    const fCagr   = fCagrPct/100;
+    const invAmt  = f.invAmt || (ST.amt*ST.allocs[i]/100);
+    const sipAmt  = ST.sipAmts[i]||0;
+    const lmpAmt  = ST.lumpAmts[i]||0;
+    const totalInv= lmpAmt + sipAmt*ST.totalMos;
+    const fv      = sipFV(sipAmt,fCagr,yrs) + lmpAmt*Math.pow(1+fCagr,yrs);
+    const gain    = Math.max(0,fv-totalInv);
+    const horTxt2 = (ST.yrs>0?ST.yrs+"Y ":"")+(ST.mos>0?ST.mos+"M":"");
     return `<div class="frc c${i}">
-      <div class="frc-top"><div class="frc-num" style="background:${COLS[i%COLS.length]}">${i+1}</div><div class="frc-pct">${ST.allocs[i]}%</div></div>
-      <div class="frc-nm">${f.fund.n}${f.isNFO?" 🔥 NFO":""}</div>
-      <div class="frc-amc">${f.fund.amc} · ${f.fund.risk} Risk · ${pLbl}</div>
-      <div class="frc-nav-box">
-        <div><div class="frc-nav-lbl">📊 Last NAV</div><div class="frc-nav-date">${f.fund.navDate}</div></div>
-        <div class="frc-nav-val">₹${f.fund.nav.toFixed(f.fund.nav>100?2:4)}</div>
+      <div class="frc-top">
+        <div class="frc-num" style="background:${COLS[i%COLS.length]}">${i+1}</div>
+        <div style="font-size:10px;font-weight:800;color:var(--p2);">${pLbl}</div>
       </div>
+      <div class="frc-nm">${fname}</div>
+      <div class="frc-amc">${famc}${fsub?" · "+fsub:""}</div>
+
+      <div style="background:var(--p4);border-radius:8px;padding:10px 12px;margin:10px 0;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <div><div style="font-size:9px;font-weight:700;color:var(--t4);text-transform:uppercase;">Investment Period</div>
+               <div style="font-size:13px;font-weight:800;color:var(--p1);">${horTxt2||ST.totalMos+"M"}</div></div>
+          <div><div style="font-size:9px;font-weight:700;color:var(--t4);text-transform:uppercase;">Your CAGR</div>
+               <div style="font-size:13px;font-weight:800;color:var(--p2);">🎯 ${fCagrPct.toFixed(1)}%</div></div>
+          <div><div style="font-size:9px;font-weight:700;color:var(--t4);text-transform:uppercase;">Total Allocated</div>
+               <div style="font-size:13px;font-weight:800;color:var(--t1);">₹${fmt(invAmt)}</div></div>
+          <div><div style="font-size:9px;font-weight:700;color:var(--t4);text-transform:uppercase;">Expected Value</div>
+               <div style="font-size:13px;font-weight:800;color:var(--grn,#16a34a);">₹${fmt(fv)}</div></div>
+        </div>
+      </div>
+
       <div class="frc-amts">
-        ${isSTP?`<div class="frc-row"><span class="frc-k">Parked (Liquid)</span><span class="frc-v">₹${fmt(ST.lumpAmts[i]||0)}</span></div><div class="frc-row"><span class="frc-k">${fl} STP</span><span class="frc-v pu">₹${fmt(ST.stpAmts[i]||0)}</span></div><div class="frc-row"><span class="frc-k">Liquid Earnings (Est.)</span><span class="frc-v gr">₹${fmt((ST.lumpAmts[i]||0)*.07*yrs)}</span></div>`
-        :`<div class="frc-row"><span class="frc-k">Monthly SIP</span><span class="frc-v pu">₹${fmt(ST.sipAmts[i]||0)}</span></div><div class="frc-row"><span class="frc-k">Lumpsum</span><span class="frc-v">₹${fmt(ST.lumpAmts[i]||0)}</span></div>`}
-        <div class="frc-row"><span class="frc-k">Allocated Amount</span><span class="frc-v">₹${fmt(allAmt)}</span></div>
-        <div class="frc-row"><span class="frc-k">Expected Value</span><span class="frc-v gr">₹${fmt(fv)}</span></div>
-      </div>
-      <div class="frc-rets">
-        <div class="frc-ret"><div class="frc-rl">Historical 1Y</div><div class="frc-rv">${f.isNFO?"New":f.fund.c1y+"%"}</div></div>
-        <div class="frc-ret"><div class="frc-rl">Historical 3Y</div><div class="frc-rv">${f.isNFO?"—":f.fund.c3y+"%"}</div></div>
-        <div class="frc-ret" style="background:var(--p4);border-color:#c4b5fd;"><div class="frc-rl" style="color:var(--p2)">🎯 Your CAGR</div><div class="frc-rv" style="color:var(--p2)">${(ST.userCAGR&&ST.userCAGR[i]>0?ST.userCAGR[i]:(f.fund.c3y||12)).toFixed(1)}%</div></div>
+        <div class="frc-row" style="border-top:1.5px solid #c4b5fd;padding-top:8px;">
+          <span class="frc-k" style="font-weight:800;color:var(--p2);">📅 Monthly SIP</span>
+          <span class="frc-v pu" style="font-size:14px;font-weight:900;">₹${fmt(sipAmt)}</span>
+        </div>
+        <div class="frc-row">
+          <span class="frc-k">SIP Corpus after ${horTxt2||ST.totalMos+"M"}</span>
+          <span class="frc-v gr">₹${fmt(sipFV(sipAmt,fCagr,yrs))}</span>
+        </div>
+        <div class="frc-row" style="border-top:1px solid var(--g4);padding-top:6px;margin-top:4px;">
+          <span class="frc-k" style="font-weight:800;color:var(--t1);">💰 Lumpsum</span>
+          <span class="frc-v" style="font-size:14px;font-weight:900;">₹${fmt(lmpAmt)}</span>
+        </div>
+        <div class="frc-row">
+          <span class="frc-k">Lumpsum Corpus after ${horTxt2||ST.totalMos+"M"}</span>
+          <span class="frc-v gr">₹${fmt(lmpAmt*Math.pow(1+fCagr,yrs))}</span>
+        </div>
+        <div class="frc-row" style="border-top:2px solid var(--g1);padding-top:8px;margin-top:6px;background:#f0fdf4;border-radius:0 0 8px 8px;padding:8px 0 0 0;">
+          <span class="frc-k" style="font-weight:800;font-size:12px;">🏆 Total Expected Value</span>
+          <span class="frc-v gr" style="font-size:15px;font-weight:900;">₹${fmt(fv)}</span>
+        </div>
+        <div class="frc-row">
+          <span class="frc-k">Total Invested</span><span class="frc-v">₹${fmt(totalInv)}</span>
+        </div>
+        <div class="frc-row">
+          <span class="frc-k">Wealth Gain</span>
+          <span class="frc-v gr">+₹${fmt(gain)} (+${totalInv>0?(gain/totalInv*100).toFixed(1):0}%)</span>
+        </div>
       </div>
     </div>`;
   }).join("");
