@@ -1644,6 +1644,8 @@ function renderS4Funds(searchQ){
     amtInp.type='number'; amtInp.min='0'; amtInp.step='1000';
     amtInp.value=(cartItem&&cartItem.invAmt)?cartItem.invAmt:'';
     amtInp.placeholder='0';
+    amtInp.dataset.code = f.code;
+    amtInp.className = 's4-amt-inp';
     amtInp.style.cssText='width:82px;padding:4px 5px;border:1.5px solid var(--g4);'+
       'border-radius:6px;font-size:11px;text-align:right;font-weight:700;color:var(--t1);outline:none;';
     amtInp.addEventListener('keydown',function(e){
@@ -1765,6 +1767,18 @@ function s4RenderCart(){ renderS4Cart(); }
 
 function s4UpdateAmtSummary(){
   var totalAmt = ST.amt || 0;
+  // Read invAmt directly from DOM inputs (most reliable)
+  document.querySelectorAll('.s4-amt-inp').forEach(function(inp){
+    var code = inp.dataset.code;
+    var ci = CART.find(function(c){ return c.code===code; });
+    if(ci) ci.invAmt = parseFloat(inp.value)||0;
+  });
+  // Read from DOM inputs for live accuracy
+  document.querySelectorAll('.s4-amt-inp').forEach(function(inp){
+    var code=inp.dataset.code;
+    var ci=CART.find(function(c){return c.code===code;});
+    if(ci) ci.invAmt=parseFloat(inp.value)||0;
+  });
   var cartTotal = CART.reduce(function(s,c){ return s+(c.invAmt||0); }, 0);
   var remaining = totalAmt - cartTotal;
   var badge = document.getElementById('s4-amt-summary');
@@ -1788,6 +1802,12 @@ function s4ViewCart(){
 function validateStep4(){
   if(CART.length===0){alert('Please add at least one fund to your cart.');return false;}
   var totalAmt = ST.amt || 0;
+  // Read invAmt directly from DOM inputs (most reliable)
+  document.querySelectorAll('.s4-amt-inp').forEach(function(inp){
+    var code = inp.dataset.code;
+    var ci = CART.find(function(c){ return c.code===code; });
+    if(ci) ci.invAmt = parseFloat(inp.value)||0;
+  });
   var cartTotal = CART.reduce(function(s,c){ return s+(c.invAmt||0); }, 0);
   if(cartTotal===0){
     alert('Please enter Investment Amount for each fund in the cart.\nTotal must equal ₹'+totalAmt.toLocaleString('en-IN'));
