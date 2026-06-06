@@ -1330,7 +1330,7 @@ async function s4LoadFunds() {
   try {
     var data = await fetchMFAPI();
     if(!data) { 
-      document.getElementById('ft-status').innerHTML = 'Data loading failed. <button onclick="location.reload()" style="background:#8bc32a;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;font-weight:700;">Retry</button>';
+      document.getElementById('s4-status').innerHTML = 'Data loading failed. <button onclick="location.reload()" style="background:#8bc32a;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;font-weight:700;">Retry</button>';
       return; 
     }
     S4_allFunds=[];
@@ -1346,9 +1346,10 @@ async function s4LoadFunds() {
       if(_u.includes('- OPTION I ')||_u.includes('- OPTION II')||_u.includes('- OPTION III')) continue;
       if(_u.includes('- PLAN A')||_u.includes('- PLAN B')||_u.includes('- PLAN C')) continue;
       if(!isActiveAMC(_n)) continue;
+      var _sub=getSubCat(_n); if(!_sub) continue;
       S4_allFunds.push({code:String(data[_i].schemeCode),name:_n,
         plan:_u.includes('DIRECT')?'direct':'regular',nat:'growth',
-        subcat:getSubCat(_n),amc:xAMC(_n),
+        subcat:_sub,amc:xAMC(_n),
         r6m:null,r1y:null,r3y:null,r5y:null,rSI:null,
         inceptionDate:null,nav:null,date:null,retLoaded:false});
     }
@@ -1362,59 +1363,49 @@ async function s4LoadFunds() {
 // ── SUB-CATEGORY DETECTION ─────────────────────────────
 function getSubCat(name) {
   var u = name.toUpperCase();
-  // ELSS
-  if(u.includes('ELSS')||u.includes('TAX SAVER')||u.includes('TAX SAVING')) return 'ELSS Flexi Cap';
-  // Index / ETF
-  if(u.includes('NIFTY SMALLCAP')||u.includes('NIFTY SMALL CAP')||u.includes('SMALLCAP 250')) return 'Nifty Smallcap 250';
-  if(u.includes('NIFTY MIDCAP')||u.includes('NIFTY MID CAP')||u.includes('MIDCAP 150')) return 'Nifty Midcap 150';
-  if(u.includes('NIFTY NEXT 50')||u.includes('NIFTY NEXT50')||u.includes('JUNIOR NIFTY')) return 'Nifty Next 50';
-  if(u.includes('NIFTY 50')||u.includes('NIFTY50')||(u.includes('NIFTY')&&u.includes('INDEX')&&!u.includes('MIDCAP')&&!u.includes('SMALL')&&!u.includes('NEXT'))) return 'Nifty 50';
-  if(u.includes('SENSEX')||u.includes('BSE 30')||u.includes('BSE30')) return 'Sensex';
-  if(u.includes('GOLD')&&(u.includes('ETF')||u.includes('FOF')||u.includes('FUND OF'))) return 'Gold ETF';
-  if(u.includes('ETF')) return 'Sector ETF';
-  if(u.includes('INDEX FUND')||u.includes('INDEX PLAN')) return 'Nifty 50';
-  // Gilt
-  if(u.includes('GILT')&&(u.includes('10')||u.includes('CONSTANT'))) return 'Gilt 10Y Constant';
-  if(u.includes('GILT')) return 'Gilt';
-  // FoF
-  if(u.includes('INTERNATIONAL')||u.includes('OVERSEAS')||u.includes('NASDAQ')||u.includes('GLOBAL')||u.includes('US ')||u.includes('JAPAN')) return 'International FoF';
-  if(u.includes('GOLD')&&u.includes('FUND OF')) return 'Gold FoF';
-  if(u.includes('FUND OF FUND')||u.includes('FOF')) return 'Domestic FoF';
-  // Debt
+  if(u.includes('ELSS')||u.includes('TAX SAVER')||u.includes('TAX SAVING')){
+    if(u.includes('INDEX')) return 'ELSS Index';
+    if(u.includes('LARGE CAP')||u.includes('LARGECAP')) return 'ELSS Large Cap';
+    return 'ELSS Flexi Cap';
+  }
+  if(u.includes('NIFTY SMALLCAP')||u.includes('SMALLCAP 250')) return 'Smallcap 250';
+  if(u.includes('NIFTY MIDCAP')||u.includes('MIDCAP 150')) return 'Midcap 150';
+  if(u.includes('NIFTY NEXT 50')||u.includes('NIFTY NEXT50')) return 'Nifty Next 50';
+  if(u.includes('NIFTY 50')||u.includes('NIFTY50')) return 'Nifty 50';
+  if(u.includes('SENSEX')||u.includes('BSE 30')) return 'Nifty 50';
+  if(u.includes('NIFTY')&&u.includes('INDEX')&&!u.includes('MIDCAP')&&!u.includes('SMALL')&&!u.includes('NEXT')) return 'Nifty 50';
+  if(u.includes('INTERNATIONAL')||u.includes('OVERSEAS')||u.includes('NASDAQ')||u.includes('GLOBAL')||u.includes('US ')||u.includes('JAPAN')||u.includes('TAIWAN')||u.includes('CHINA')||u.includes('EUROPE')) return 'International';
+  if(u.includes('GOLD')) return 'Gold FoF';
+  if(u.includes(' ETF')||u.includes('-ETF')) return null;
+  if(u.includes('GILT')||u.includes('G-SEC')||u.includes('GSEC')||u.includes('GOVERNMENT SECURITIES')) return 'Gilt';
   if(u.includes('OVERNIGHT')) return 'Overnight';
-  if(u.includes('LIQUID')) return 'Liquid';
-  if(u.includes('ULTRA SHORT')) return 'Ultra Short Duration';
-  if(u.includes('LOW DURATION')) return 'Low Duration';
-  if(u.includes('MONEY MARKET')) return 'Ultra Short Duration';
+  if(u.includes('LIQUID')&&!u.includes('LIQUIDBEES')) return 'Liquid';
+  if(u.includes('MONEY MARKET')) return 'Money Market';
+  if(u.includes('ULTRA SHORT')||u.includes('LOW DURATION')) return 'Short Duration';
   if(u.includes('SHORT DURATION')||u.includes('SHORT TERM')) return 'Short Duration';
-  if(u.includes('MEDIUM DURATION')||u.includes('MEDIUM TERM')) return 'Medium Duration';
-  if(u.includes('LONG DURATION')||u.includes('LONG TERM DEBT')) return 'Long Duration';
+  if(u.includes('MEDIUM DURATION')||u.includes('MEDIUM TERM')) return 'Short Duration';
+  if(u.includes('LONG DURATION')) return 'Dynamic Bond';
   if(u.includes('CORPORATE BOND')||u.includes('CORP BOND')) return 'Corporate Bond';
   if(u.includes('BANKING AND PSU')||u.includes('BANKING & PSU')||u.includes('BANK & PSU')) return 'Banking & PSU';
   if(u.includes('DYNAMIC BOND')) return 'Dynamic Bond';
   if(u.includes('CREDIT RISK')) return 'Credit Risk';
-  if(u.includes('DEBT')||u.includes('INCOME')||u.includes('BOND')&&!u.includes('EQUITY')) return 'Short Duration';
-  // Hybrid
+  if(u.includes('DEBT')||u.includes('INCOME')&&!u.includes('EQUITY')) return 'Short Duration';
   if(u.includes('ARBITRAGE')) return 'Arbitrage';
   if(u.includes('BALANCED ADVANTAGE')||u.includes('BAF')||u.includes('DYNAMIC ASSET')) return 'Balanced Advantage';
-  if(u.includes('AGGRESSIVE')||u.includes('EQUITY & DEBT')||u.includes('EQUITY AND DEBT')) return 'Aggressive Hybrid';
-  if(u.includes('CONSERVATIVE')) return 'Conservative Hybrid';
   if(u.includes('MULTI ASSET')||u.includes('MULTIASSET')) return 'Multi Asset';
-  if(u.includes('EQUITY SAVINGS')) return 'Equity Savings';
+  if(u.includes('AGGRESSIVE')||u.includes('EQUITY & DEBT')||u.includes('EQUITY AND DEBT')) return 'Aggressive Hybrid';
   if(u.includes('HYBRID')||u.includes('BALANCED')) return 'Aggressive Hybrid';
-  // Equity
-  // Bluechip funds are classified as Large Cap per SEBI
+  if(u.includes('EQUITY SAVINGS')) return 'Arbitrage';
   if(u.includes('LARGE AND MID')||u.includes('LARGE & MID')||u.includes('LARGECAP AND MID')) return 'Large & MidCap';
-  if(u.includes('FOCUSED')||u.includes('FOCUS')||u.includes('CONCENTRATED')) return 'Focused';
   if(u.includes('LARGE CAP')||u.includes('LARGECAP')||u.includes('LARGE-CAP')) return 'Large Cap';
+  if(u.includes('BLUECHIP')||u.includes('BLUE CHIP')) return 'Large Cap';
   if(u.includes('MULTI CAP')||u.includes('MULTICAP')) return 'Multi Cap';
   if(u.includes('FLEXI CAP')||u.includes('FLEXICAP')||u.includes('FLEXI-CAP')) return 'Flexi Cap';
   if(u.includes('SMALL CAP')||u.includes('SMALLCAP')) return 'Small Cap';
   if(u.includes('MID CAP')||u.includes('MIDCAP')||u.includes('EMERGING BLUECHIP')) return 'Mid Cap';
-  if(u.includes('DIVIDEND YIELD')||u.includes('DIVIDEND OPPORTUN')) return 'Dividend Yield';
-  if(u.includes('VALUE')||u.includes('CONTRA')) return 'Value/Contra';
-  if(u.includes('THEMATIC')||u.includes('SECTOR')||u.includes('INFRA')||u.includes('PHARMA')||u.includes('BANKING')||u.includes('TECH')||u.includes('AUTO')||u.includes('DEFENCE')||u.includes('ENERGY')||u.includes('MANUFACT')||u.includes('DIGITAL')||u.includes('MNC')||u.includes('PSU')) return 'Thematic/Sectoral';
-  return 'Flexi Cap'; // default equity
+  if(u.includes('THEMATIC')||u.includes('SECTOR')||u.includes('INFRA')||u.includes('PHARMA')||u.includes('TECH')||u.includes('AUTO')||u.includes('DEFENCE')||u.includes('ENERGY')||u.includes('MANUFACT')||u.includes('DIGITAL')||u.includes('MNC')||u.includes('PSU')) return 'Thematic/Sectoral';
+  if(u.includes('FOCUSED')||u.includes('FOCUS')||u.includes('VALUE')||u.includes('CONTRA')||u.includes('DIVIDEND YIELD')) return 'Flexi Cap';
+  return 'Flexi Cap';
 }
 
 function xAMC(name) {
@@ -1575,18 +1566,15 @@ function renderS4Funds(searchQ){
   var q=(searchQ||'').toLowerCase().trim();
   var funds;
   if(q){
-    // Search all funds across all categories (by plan)
-    var plan=ST.planType||'regular';
+    // Search ALL funds — same scope as Fund Discovery (all plans, all nat)
     funds=S4_allFunds.filter(function(f){
-      return f.plan===plan && f.nat==='growth' &&
-        (f.name.toLowerCase().indexOf(q)>=0 ||
-         (f.amc||'').toLowerCase().indexOf(q)>=0);
+      return f.name.toLowerCase().indexOf(q)>=0 ||
+             (f.amc||'').toLowerCase().indexOf(q)>=0;
     });
-    if(subEl) subEl.textContent='Search results · '+funds.length+' funds found';
+    if(subEl) subEl.textContent='Search: '+funds.length.toLocaleString('en-IN')+' funds found (all plans)';
   } else {
     funds=getFundsForCat(S4_CAT);
-    if(subEl) subEl.textContent=funds.length+' funds · Sorted by name · '+
-      (ST.planType==='direct'?'Direct':'Regular')+' Plans';
+    if(subEl) subEl.textContent=funds.length+' funds · '+(ST.planType==='direct'?'Direct':'Regular')+' Plans · Growth';
   }
 
   el.innerHTML='';
