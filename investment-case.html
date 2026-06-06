@@ -755,81 +755,103 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
     <div class="nav-btns"><button class="btn-prev" onclick="goStep(2)">← Back</button><button class="btn-next" onclick="goStep(4)">Next: Select Funds →</button></div>
   </div>
 
-  <!-- STEP 4: FUND SELECTION — Fund Toppers Style with Cart -->
+  <!-- STEP 4: FUND SELECTION -->
   <div class="panel" id="step4">
     <div class="ptitle">Select <em>Funds</em></div>
-    <div class="psub">Choose category → funds sorted by 5Y CAGR → Add to Cart → Proceed</div>
+    <div class="psub">Choose category → Add to Cart → Enter your expected CAGR → Proceed</div>
 
-    <div style="display:flex;gap:0;border:1.5px solid var(--g4);border-radius:12px;
-                overflow:hidden;min-height:520px;margin-bottom:16px;">
-
-      <!-- LEFT: Category Panel -->
-      <div style="width:180px;flex-shrink:0;background:var(--p4);
-                  border-right:1.5px solid var(--g4);overflow-y:auto;">
-        <div style="padding:10px 14px;background:var(--p2);
-                    font-weight:800;font-size:12px;color:#fff;letter-spacing:.5px;">
-          CATEGORIES
-        </div>
-        <div id="s4-cat-list"></div>
+    <!-- Cart Summary Bar -->
+    <div style="background:linear-gradient(135deg,var(--p2),var(--p1));
+                border-radius:10px;padding:12px 18px;margin-bottom:12px;
+                display:flex;align-items:center;justify-content:space-between;
+                flex-wrap:wrap;gap:8px;">
+      <div style="color:#fff;font-size:13px;font-weight:700;">
+        🛒 <span id="s4-cart-label">Cart is empty — add funds below</span>
       </div>
-
-      <!-- MIDDLE: Fund List -->
-      <div style="flex:1;display:flex;flex-direction:column;min-width:0;">
-        <div style="padding:10px 14px;background:var(--p4);
-                    border-bottom:1.5px solid var(--g4);
-                    display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-          <div style="flex:1;">
-            <div style="font-weight:800;font-size:13px;color:var(--p2);"
-                 id="s4-cat-title">← Select a category</div>
-            <div style="font-size:10px;color:var(--t4);margin-top:1px;">
-              Sorted by 5Y CAGR (highest first)</div>
-          </div>
-          <input type="text" id="s4-search"
-            placeholder="🔍 Search funds..."
-            oninput="s4Search(this.value)"
-            style="padding:6px 10px;border:1.5px solid var(--g4);border-radius:8px;
-                   font-size:12px;width:160px;outline:none;background:#fff;
-                   font-family:var(--fh);">
-        </div>
-        <div id="s4-fund-list" style="flex:1;overflow-y:auto;max-height:440px;">
-          <div style="text-align:center;padding:40px;color:var(--t4);">
-            <div style="font-size:32px;margin-bottom:8px;">👈</div>
-            <div style="font-weight:700;">Select a category from the left</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- RIGHT: Cart -->
-      <div style="width:220px;flex-shrink:0;border-left:1.5px solid var(--g4);
-                  display:flex;flex-direction:column;background:#fff;">
-        <div style="padding:10px 12px;background:var(--p2);
-                    display:flex;align-items:center;justify-content:space-between;">
-          <span style="font-weight:800;font-size:13px;color:#fff;">🛒 My Cart</span>
-          <span id="s4-cart-badge"
-                style="background:rgba(255,255,255,.25);color:#fff;
-                       font-size:10px;font-weight:800;padding:2px 8px;border-radius:10px;">
-            0 funds</span>
-        </div>
-        <div id="s4-cart-items" style="flex:1;overflow-y:auto;padding:4px 0;">
-          <div id="s4-cart-empty"
-               style="text-align:center;padding:24px 10px;color:var(--t4);">
-            <div style="font-size:24px;">🛒</div>
-            <div style="font-size:11px;margin-top:4px;">Add funds from the list</div>
-          </div>
-        </div>
-        <div style="padding:8px 12px;border-top:1px solid var(--g4);
-                    background:var(--p4);font-size:10px;color:var(--t4);">
-          Max 10 funds · Min 1 required
-        </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span id="s4-cart-badge"
+              style="background:rgba(255,255,255,.25);color:#fff;
+                     font-size:12px;font-weight:800;padding:4px 14px;border-radius:20px;">
+          0 funds</span>
+        <button onclick="s4ViewCart()" id="s4-view-cart-btn"
+                style="display:none;padding:6px 16px;background:#fff;color:var(--p1);
+                       border:none;border-radius:8px;font-size:12px;font-weight:800;
+                       cursor:pointer;font-family:var(--fh);">View Cart ▾</button>
       </div>
     </div>
 
-    <div class="nav-btns">
+    <!-- Cart Items Panel (toggle) -->
+    <div id="s4-cart-panel" style="display:none;background:#fff;
+         border:1.5px solid var(--p1);border-radius:10px;padding:14px;
+         margin-bottom:12px;">
+      <div style="font-weight:800;font-size:13px;color:var(--p1);margin-bottom:10px;">
+        🛒 Selected Funds</div>
+      <div id="s4-cart-items"></div>
+    </div>
+
+    <!-- API Load Status -->
+    <div id="s4-status" style="font-size:11px;color:var(--t4);
+         text-align:center;padding:4px;margin-bottom:8px;"></div>
+
+    <!-- Main Fund Selection Area — full width -->
+    <div style="display:flex;gap:0;border:1.5px solid var(--g4);
+                border-radius:12px;overflow:hidden;height:520px;">
+
+      <!-- LEFT: Categories — fixed 170px, scrollable -->
+      <div style="width:170px;flex-shrink:0;background:var(--p4);
+                  border-right:1.5px solid var(--g4);
+                  display:flex;flex-direction:column;overflow:hidden;">
+        <div style="padding:10px 14px;background:var(--p2);font-weight:800;
+                    font-size:11px;color:#fff;letter-spacing:.5px;flex-shrink:0;">
+          CATEGORIES</div>
+        <div id="s4-cat-list" style="flex:1;overflow-y:auto;"></div>
+      </div>
+
+      <!-- RIGHT: Fund Table — takes all remaining space -->
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden;">
+
+        <!-- Header: Category title + BIG search box -->
+        <div style="padding:12px 16px;background:var(--p4);
+                    border-bottom:1.5px solid var(--g4);flex-shrink:0;">
+          <div style="display:flex;align-items:center;justify-content:space-between;
+                      gap:12px;flex-wrap:wrap;margin-bottom:8px;">
+            <div>
+              <div style="font-weight:800;font-size:14px;color:var(--p2);"
+                   id="s4-cat-title">← Select a category</div>
+              <div style="font-size:11px;color:var(--t4);margin-top:2px;"
+                   id="s4-cat-sub">Regular/Direct plans as per your selection</div>
+            </div>
+          </div>
+          <!-- BIG Search Box -->
+          <input type="text" id="s4-search"
+            placeholder="🔍 Search by fund name or AMC name across all categories..."
+            oninput="s4Search(this.value)"
+            style="width:100%;padding:11px 16px;border:2px solid var(--p1);
+                   border-radius:10px;font-size:14px;outline:none;background:#fff;
+                   font-family:var(--fh);color:var(--t1);box-sizing:border-box;">
+        </div>
+
+        <!-- Fund list — scrollable -->
+        <div style="flex:1;overflow-y:auto;overflow-x:auto;">
+          <div id="s4-fund-list">
+            <div style="text-align:center;padding:50px;color:var(--t4);">
+              <div style="font-size:36px;margin-bottom:10px;">👈</div>
+              <div style="font-weight:700;font-size:14px;">Select a category from left panel</div>
+              <div style="font-size:12px;margin-top:4px;">Or search any fund in the search box above</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="nav-btns" style="margin-top:12px;">
       <button class="btn-prev" onclick="goStep(2)">← Back</button>
       <button class="btn-next" onclick="goStep(5)">Next: Set Allocation →</button>
     </div>
   </div>
 
+  
   <!-- STEP 5 -->
   <div class="panel" id="step5">
     <div class="ptitle">Set <em>Allocation</em></div>
@@ -1273,50 +1295,215 @@ function refreshFC(){
 function setFC(id,n){ST.fundCounts[id]=n;refreshFC();}
 
 // ══ STEP 4: FIX 5 — Sub-categories with Top 10 funds ══
-// ── CART ──────────────────────────────────────────────
+// ── CART & FUND SELECTION ───────────────────────────────
 var CART = [];
-var S4_CAT = '';
+var S4_CAT = 'Large Cap';
+var s4Loaded = false;
+var ACTIVE_AMCS=["360 ONE","IIFL","ADITYA BIRLA SUN LIFE","ALPHAGREP","ANGEL ONE","ASK ","BANDHAN","IDFC","CHOICE","DSP","FRANKLIN TEMPLETON","FRANKLIN INDIA","HDFC","HELIOS","HSBC","ICICI PRUDENTIAL","IL&FS","JIO BLACKROCK","KOTAK","MAHINDRA MANULIFE","NAVI","ESSEL","PARAG PARIKH","PPFAS","SBI","SHRIRAM","TATA","UNIFI","UNION","WHITEOAK","WHITE OAK","ZERODHA","ABAKKUS","AXIS","BAJAJ FINSERV","BANK OF INDIA","BARODA BNP PARIBAS","BARODA","CANARA ROBECO","CAPITALMIND","EDELWEISS","GROWW","INDIABULLS","INVESCO","ITI ","JM FINANCIAL","JM ","LAKSHYA","LIC","IDBI MF","MIRAE ASSET","MONARCH","MOTILAL OSWAL","NIPPON INDIA","NIPPON ","NJ ","OLD BRIDGE","PGIM INDIA","QUANT","QUANTUM","SAMCO","SUNDARAM","TAURUS","THE WEALTH COMPANY","TRUST MUTUAL","UTI"];
+function isActiveAMC(n){var u=n.toUpperCase();for(var i=0;i<ACTIVE_AMCS.length;i++){if(u.indexOf(ACTIVE_AMCS[i])>=0)return true;}return false;}
+async function fetchMFAPI() {
+  // Level 1: Direct
+  try {
+    var r = await fetch('https://api.mfapi.in/mf', {mode:'cors',headers:{'Accept':'application/json'}});
+    if(r.ok) { var d = await r.json(); if(Array.isArray(d) && d.length>100) return d; }
+  } catch(e) {}
+  // Level 2: allorigins
+  try {
+    var r2 = await fetch('https://api.allorigins.win/raw?url=https%3A%2F%2Fapi.mfapi.in%2Fmf');
+    if(r2.ok) { var d2 = await r2.json(); if(Array.isArray(d2) && d2.length>100) return d2; }
+  } catch(e) {}
+  // Level 3: corsproxy
+  try {
+    var r3 = await fetch('https://corsproxy.io/?https://api.mfapi.in/mf');
+    if(r3.ok) { var d3 = await r3.json(); if(Array.isArray(d3) && d3.length>100) return d3; }
+  } catch(e) {}
+  // Level 4: thingproxy
+  try {
+    var r4 = await fetch('https://thingproxy.freeboard.io/fetch/https://api.mfapi.in/mf');
+    if(r4.ok) { var d4 = await r4.json(); if(Array.isArray(d4) && d4.length>100) return d4; }
+  } catch(e) {}
+  return null;
+}
 
-// Exact CART_CATS mapped to FDB sub values
+async function s4LoadFunds() {
+  if(s4Loaded) return;
+  try {
+    var data = await fetchMFAPI();
+    if(!data) { 
+      document.getElementById('ft-status').innerHTML = 'Data loading failed. <button onclick="location.reload()" style="background:#8bc32a;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;font-weight:700;">Retry</button>';
+      return; 
+    }
+    S4_allFunds=[];
+    for(var _i=0;_i<data.length;_i++){
+      var _n=data[_i].schemeName; if(!_n||_n.length<5) continue;
+      var _u=_n.toUpperCase();
+      if(_u.includes('IDCW')||_u.includes('DIVIDEND')) continue;
+      if(_u.includes('INSTITUTIONAL')) continue;
+      if(_u.includes('FMP')||_u.includes('FIXED MATURITY')) continue;
+      if(_u.includes('CAPITAL PROTECTION')||_u.includes('CAPITAL GUARANTEE')) continue;
+      if(_u.includes('CLOSE ENDED')||_u.includes('CLOSED END')) continue;
+      if(_u.includes('SERIES ')||_u.includes('SERIES-')) continue;
+      if(_u.includes('- OPTION I ')||_u.includes('- OPTION II')||_u.includes('- OPTION III')) continue;
+      if(_u.includes('- PLAN A')||_u.includes('- PLAN B')||_u.includes('- PLAN C')) continue;
+      if(!isActiveAMC(_n)) continue;
+      S4_allFunds.push({code:String(data[_i].schemeCode),name:_n,
+        plan:_u.includes('DIRECT')?'direct':'regular',nat:'growth',
+        subcat:getSubCat(_n),amc:xAMC(_n),
+        r6m:null,r1y:null,r3y:null,r5y:null,rSI:null,
+        inceptionDate:null,nav:null,date:null,retLoaded:false});
+    }
+    s4Loaded = true;
+    console.log('InvEngine: '+S4_allFunds.length+' funds loaded');
+  } catch(e) {
+    console.log('Load failed:', e.message);
+  }
+}
+
+// ── SUB-CATEGORY DETECTION ─────────────────────────────
+function getSubCat(name) {
+  var u = name.toUpperCase();
+  // ELSS
+  if(u.includes('ELSS')||u.includes('TAX SAVER')||u.includes('TAX SAVING')) return 'ELSS Flexi Cap';
+  // Index / ETF
+  if(u.includes('NIFTY SMALLCAP')||u.includes('NIFTY SMALL CAP')||u.includes('SMALLCAP 250')) return 'Nifty Smallcap 250';
+  if(u.includes('NIFTY MIDCAP')||u.includes('NIFTY MID CAP')||u.includes('MIDCAP 150')) return 'Nifty Midcap 150';
+  if(u.includes('NIFTY NEXT 50')||u.includes('NIFTY NEXT50')||u.includes('JUNIOR NIFTY')) return 'Nifty Next 50';
+  if(u.includes('NIFTY 50')||u.includes('NIFTY50')||(u.includes('NIFTY')&&u.includes('INDEX')&&!u.includes('MIDCAP')&&!u.includes('SMALL')&&!u.includes('NEXT'))) return 'Nifty 50';
+  if(u.includes('SENSEX')||u.includes('BSE 30')||u.includes('BSE30')) return 'Sensex';
+  if(u.includes('GOLD')&&(u.includes('ETF')||u.includes('FOF')||u.includes('FUND OF'))) return 'Gold ETF';
+  if(u.includes('ETF')) return 'Sector ETF';
+  if(u.includes('INDEX FUND')||u.includes('INDEX PLAN')) return 'Nifty 50';
+  // Gilt
+  if(u.includes('GILT')&&(u.includes('10')||u.includes('CONSTANT'))) return 'Gilt 10Y Constant';
+  if(u.includes('GILT')) return 'Gilt';
+  // FoF
+  if(u.includes('INTERNATIONAL')||u.includes('OVERSEAS')||u.includes('NASDAQ')||u.includes('GLOBAL')||u.includes('US ')||u.includes('JAPAN')) return 'International FoF';
+  if(u.includes('GOLD')&&u.includes('FUND OF')) return 'Gold FoF';
+  if(u.includes('FUND OF FUND')||u.includes('FOF')) return 'Domestic FoF';
+  // Debt
+  if(u.includes('OVERNIGHT')) return 'Overnight';
+  if(u.includes('LIQUID')) return 'Liquid';
+  if(u.includes('ULTRA SHORT')) return 'Ultra Short Duration';
+  if(u.includes('LOW DURATION')) return 'Low Duration';
+  if(u.includes('MONEY MARKET')) return 'Ultra Short Duration';
+  if(u.includes('SHORT DURATION')||u.includes('SHORT TERM')) return 'Short Duration';
+  if(u.includes('MEDIUM DURATION')||u.includes('MEDIUM TERM')) return 'Medium Duration';
+  if(u.includes('LONG DURATION')||u.includes('LONG TERM DEBT')) return 'Long Duration';
+  if(u.includes('CORPORATE BOND')||u.includes('CORP BOND')) return 'Corporate Bond';
+  if(u.includes('BANKING AND PSU')||u.includes('BANKING & PSU')||u.includes('BANK & PSU')) return 'Banking & PSU';
+  if(u.includes('DYNAMIC BOND')) return 'Dynamic Bond';
+  if(u.includes('CREDIT RISK')) return 'Credit Risk';
+  if(u.includes('DEBT')||u.includes('INCOME')||u.includes('BOND')&&!u.includes('EQUITY')) return 'Short Duration';
+  // Hybrid
+  if(u.includes('ARBITRAGE')) return 'Arbitrage';
+  if(u.includes('BALANCED ADVANTAGE')||u.includes('BAF')||u.includes('DYNAMIC ASSET')) return 'Balanced Advantage';
+  if(u.includes('AGGRESSIVE')||u.includes('EQUITY & DEBT')||u.includes('EQUITY AND DEBT')) return 'Aggressive Hybrid';
+  if(u.includes('CONSERVATIVE')) return 'Conservative Hybrid';
+  if(u.includes('MULTI ASSET')||u.includes('MULTIASSET')) return 'Multi Asset';
+  if(u.includes('EQUITY SAVINGS')) return 'Equity Savings';
+  if(u.includes('HYBRID')||u.includes('BALANCED')) return 'Aggressive Hybrid';
+  // Equity
+  // Bluechip funds are classified as Large Cap per SEBI
+  if(u.includes('LARGE AND MID')||u.includes('LARGE & MID')||u.includes('LARGECAP AND MID')) return 'Large & MidCap';
+  if(u.includes('FOCUSED')||u.includes('FOCUS')||u.includes('CONCENTRATED')) return 'Focused';
+  if(u.includes('LARGE CAP')||u.includes('LARGECAP')||u.includes('LARGE-CAP')) return 'Large Cap';
+  if(u.includes('MULTI CAP')||u.includes('MULTICAP')) return 'Multi Cap';
+  if(u.includes('FLEXI CAP')||u.includes('FLEXICAP')||u.includes('FLEXI-CAP')) return 'Flexi Cap';
+  if(u.includes('SMALL CAP')||u.includes('SMALLCAP')) return 'Small Cap';
+  if(u.includes('MID CAP')||u.includes('MIDCAP')||u.includes('EMERGING BLUECHIP')) return 'Mid Cap';
+  if(u.includes('DIVIDEND YIELD')||u.includes('DIVIDEND OPPORTUN')) return 'Dividend Yield';
+  if(u.includes('VALUE')||u.includes('CONTRA')) return 'Value/Contra';
+  if(u.includes('THEMATIC')||u.includes('SECTOR')||u.includes('INFRA')||u.includes('PHARMA')||u.includes('BANKING')||u.includes('TECH')||u.includes('AUTO')||u.includes('DEFENCE')||u.includes('ENERGY')||u.includes('MANUFACT')||u.includes('DIGITAL')||u.includes('MNC')||u.includes('PSU')) return 'Thematic/Sectoral';
+  return 'Flexi Cap'; // default equity
+}
+
+function xAMC(name) {
+  var amcs = ['Aditya Birla Sun Life','Axis','Bajaj Finserv','Bandhan','Baroda BNP Paribas',
+    'Canara Robeco','DSP','Edelweiss','Franklin Templeton','HDFC','HSBC','ICICI Prudential',
+    'IDFC','Invesco','JM Financial','Kotak','LIC','Mahindra Manulife','Mirae Asset',
+    'Motilal Oswal','Navi','Nippon India','NJ','PGIM India','Parag Parikh','Quant',
+    'Quantum','Samco','SBI','Sundaram','Tata','UTI','Union','WhiteOak','Zerodha','Groww'];
+  for(var i=0;i<amcs.length;i++) if(name.includes(amcs[i])) return amcs[i]+' MF';
+  return name.split(' ').slice(0,3).join(' ');
+}
+
+// ── LOAD INDIVIDUAL FUND RETURNS ──────────────────────
+async function loadFundReturns(fund) {
+  if(fund.retLoaded) return;
+  try {
+    var r = await fetch('https://api.mfapi.in/mf/'+fund.code);
+    var d = await r.json();
+    if(!d.data||d.data.length<2) return;
+    var cur = parseFloat(d.data[0].nav);
+    var pts = d.data.length;
+    fund.nav  = cur;
+    fund.date = d.data[0].date;
+    if(pts>=126) { var o=parseFloat(d.data[125].nav); if(o>0) fund.r6m=(Math.pow(cur/o,2)-1)*100; } // CAGR: 6M=0.5yr so ^(1/0.5)=^2
+    if(pts>=252) { var o=parseFloat(d.data[251].nav); if(o>0) fund.r1y=((cur/o)-1)*100; }
+    if(pts>=756) { var o=parseFloat(d.data[755].nav); if(o>0) fund.r3y=(Math.pow(cur/o,1/3)-1)*100; }
+    if(pts>=1260){ var o=parseFloat(d.data[1259].nav);if(o>0) fund.r5y=(Math.pow(cur/o,1/5)-1)*100; }
+    var lastIdx = pts-1;
+    var inav = parseFloat(d.data[lastIdx].nav);
+    if(inav>0){ fund.rSI=(Math.pow(cur/inav,1/(pts/252))-1)*100; fund.inceptionDate=d.data[lastIdx].date; }
+    // Mark active only if NAV is recent (within 90 days)
+    // This filters out defunct/merged funds like ING, Religare, Fidelity etc
+    var navDateStr = d.data[0].date; // format: DD-Mon-YYYY
+    var navParts = navDateStr.split('-');
+    var monthMap = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+    var navDate = new Date(parseInt(navParts[2]), monthMap[navParts[1]], parseInt(navParts[0]));
+    var daysDiff = (new Date() - navDate) / (1000*60*60*24);
+    if(daysDiff > 90) {
+      fund.active = false; // Defunct/merged fund — exclude from toppers
+      return;
+    }
+    fund.active = true;
+    fund.retLoaded = true;
+  } catch(e) {}
+}
+
+// ── RENDER TOPPERS ─────────────────────────────────────
+var _rendering = false;
+// ── CART CATEGORIES (mapped to getSubCat() return values) ──
 var CART_CATS = [
-  {g:'Equity',  id:'Large Cap',        label:'Large Cap',          sub:'Large Cap'},
-  {g:'Equity',  id:'Bluechip',         label:'Bluechip',            sub:'Bluechip'},
-  {g:'Equity',  id:'Flexi Cap',        label:'Flexi Cap',            sub:'Flexi Cap'},
-  {g:'Equity',  id:'Mid Cap',          label:'Mid Cap',              sub:'Mid Cap'},
-  {g:'Equity',  id:'Small Cap',        label:'Small Cap',            sub:'Small Cap'},
-  {g:'Equity',  id:'Multi Asset',      label:'Multi Asset',          sub:'Multi Asset'},
-  {g:'ELSS',    id:'ELSS Flexi Cap',   label:'ELSS Flexi Cap',      sub:'ELSS Flexi Cap'},
-  {g:'ELSS',    id:'ELSS Large Cap',   label:'ELSS Large Cap',      sub:'ELSS Large Cap'},
-  {g:'ELSS',    id:'ELSS Index',       label:'ELSS Index',           sub:'ELSS Index'},
-  {g:'Hybrid',  id:'Bal Advantage',    label:'Balanced Advantage',   sub:'Balanced Advantage'},
-  {g:'Hybrid',  id:'Aggr Hybrid',      label:'Aggressive Hybrid',    sub:'Aggressive Hybrid'},
-  {g:'Hybrid',  id:'Arbitrage',        label:'Arbitrage',            sub:'Arbitrage'},
-  {g:'Debt',    id:'Short Duration',   label:'Short Duration',       sub:'Short Duration'},
-  {g:'Debt',    id:'Corporate Bond',   label:'Corporate Bond',       sub:'Corporate Bond'},
-  {g:'Debt',    id:'Banking PSU',      label:'Banking & PSU',        sub:'Banking & PSU'},
-  {g:'Debt',    id:'Dynamic Bond',     label:'Dynamic Bond',         sub:'Dynamic Bond'},
-  {g:'Liquid',  id:'Liquid',           label:'Liquid',               sub:'Liquid'},
-  {g:'Liquid',  id:'Overnight',        label:'Overnight',            sub:'Overnight'},
-  {g:'Liquid',  id:'Money Market',     label:'Money Market',         sub:'Money Market'},
-  {g:'Index',   id:'Nifty 50',         label:'Nifty 50',             sub:'Nifty 50'},
-  {g:'Index',   id:'Midcap 150',       label:'Midcap 150',           sub:'Midcap 150'},
-  {g:'Index',   id:'Smallcap 250',     label:'Smallcap 250',         sub:'Smallcap 250'},
-  {g:'FoF',     id:'International',    label:'International FoF',    sub:'International'},
-  {g:'FoF',     id:'Gold FoF',         label:'Gold FoF',              sub:'Gold FoF'},
-  {g:'Gilt',    id:'Gilt',             label:'Gilt',                  sub:'Gilt'},
+  {g:'Equity',  id:'Large Cap',         sub:'Large Cap'},
+  {g:'Equity',  id:'Bluechip',          sub:'Bluechip'},
+  {g:'Equity',  id:'Large & MidCap',    sub:'Large & MidCap'},
+  {g:'Equity',  id:'Flexi Cap',         sub:'Flexi Cap'},
+  {g:'Equity',  id:'Mid Cap',           sub:'Mid Cap'},
+  {g:'Equity',  id:'Small Cap',         sub:'Small Cap'},
+  {g:'Equity',  id:'Multi Cap',         sub:'Multi Cap'},
+  {g:'Equity',  id:'Thematic',          sub:'Thematic/Sectoral'},
+  {g:'ELSS',    id:'ELSS Flexi Cap',    sub:'ELSS Flexi Cap'},
+  {g:'ELSS',    id:'ELSS Large Cap',    sub:'ELSS Large Cap'},
+  {g:'ELSS',    id:'ELSS Index',        sub:'ELSS Index'},
+  {g:'Hybrid',  id:'Bal Advantage',     sub:'Balanced Advantage'},
+  {g:'Hybrid',  id:'Aggr Hybrid',       sub:'Aggressive Hybrid'},
+  {g:'Hybrid',  id:'Multi Asset',       sub:'Multi Asset'},
+  {g:'Hybrid',  id:'Arbitrage',         sub:'Arbitrage'},
+  {g:'Debt',    id:'Short Duration',    sub:'Short Duration'},
+  {g:'Debt',    id:'Corporate Bond',    sub:'Corporate Bond'},
+  {g:'Debt',    id:'Banking PSU',       sub:'Banking & PSU'},
+  {g:'Debt',    id:'Dynamic Bond',      sub:'Dynamic Bond'},
+  {g:'Debt',    id:'Credit Risk',       sub:'Credit Risk'},
+  {g:'Liquid',  id:'Liquid',            sub:'Liquid'},
+  {g:'Liquid',  id:'Overnight',         sub:'Overnight'},
+  {g:'Liquid',  id:'Money Market',      sub:'Money Market'},
+  {g:'Index',   id:'Nifty 50',          sub:'Nifty 50'},
+  {g:'Index',   id:'Midcap 150',        sub:'Midcap 150'},
+  {g:'Index',   id:'Smallcap 250',      sub:'Smallcap 250'},
+  {g:'Index',   id:'Nifty Next 50',     sub:'Nifty Next 50'},
+  {g:'FoF',     id:'International',     sub:'International'},
+  {g:'FoF',     id:'Gold FoF',          sub:'Gold FoF'},
+  {g:'Gilt',    id:'Gilt',              sub:'Gilt'},
 ];
 
-// Get all funds for a sub value, sorted by 5Y CAGR desc
-function getFundsForSub(sub){
-  var results = [];
-  Object.keys(FDB).forEach(function(k){
-    if(!FDB[k].funds) return;
-    FDB[k].funds.forEach(function(f){
-      if(f.sub===sub) results.push(f);
-    });
+function getFundsForCat(catId){
+  var catDef = CART_CATS.find(function(c){return c.id===catId;});
+  if(!catDef) return [];
+  var plan = ST.planType || 'regular';
+  return S4_allFunds.filter(function(f){
+    return f.subcat===catDef.sub && f.plan===plan && f.nat==='growth';
   });
-  results.sort(function(a,b){ return (b.c5y||0)-(a.c5y||0); });
-  return results;
 }
 
 function buildStep4Cart(){
@@ -1325,35 +1512,48 @@ function buildStep4Cart(){
   renderS4CatList();
   renderS4Funds();
   renderS4Cart();
+  // Load live data if not loaded
+  if(!s4Loaded){
+    var status = document.getElementById('s4-status');
+    if(status) status.textContent = '⏳ Loading live fund data from AMFI...';
+    s4LoadFunds().then(function(){
+      var status = document.getElementById('s4-status');
+      if(status) status.textContent = '✅ '+S4_allFunds.length+' funds loaded from AMFI';
+      renderS4Funds();
+    }).catch(function(){
+      var status = document.getElementById('s4-status');
+      if(status) status.textContent = '⚠️ Using cached fund data';
+    });
+  }
 }
 
-// Render left category panel
 function renderS4CatList(){
   var el = document.getElementById('s4-cat-list');
   if(!el) return;
-  el.innerHTML = '';
-  var lastGroup = '';
+  el.innerHTML='';
+  var lastGroup='';
   CART_CATS.forEach(function(c){
-    if(c.g !== lastGroup){
-      var hdr = document.createElement('div');
-      hdr.style.cssText = 'padding:6px 14px 3px;font-size:9px;font-weight:800;'+
+    if(c.g!==lastGroup){
+      var hdr=document.createElement('div');
+      hdr.style.cssText='padding:6px 14px 3px;font-size:9px;font-weight:800;'+
         'color:var(--t4);text-transform:uppercase;letter-spacing:.8px;';
-      hdr.textContent = c.g;
+      hdr.textContent=c.g;
       el.appendChild(hdr);
-      lastGroup = c.g;
+      lastGroup=c.g;
     }
-    var btn = document.createElement('div');
-    btn.style.cssText = 'padding:9px 14px;font-size:12px;cursor:pointer;'+
-      'border-left:3px solid '+(c.id===S4_CAT?'var(--p1)':'transparent')+';'+
-      'background:'+(c.id===S4_CAT?'var(--g4)':'transparent')+';'+
-      'color:'+(c.id===S4_CAT?'var(--p1)':'var(--t2)')+';'+
-      'font-weight:'+(c.id===S4_CAT?'700':'400')+';transition:all .15s;';
-    btn.textContent = c.label;
-    btn.dataset.catid = c.id;
-    btn.addEventListener('click', function(){
-      S4_CAT = this.dataset.catid;
-      var srch = document.getElementById('s4-search');
-      if(srch) srch.value='';
+    var btn=document.createElement('div');
+    var sel=(c.id===S4_CAT);
+    btn.style.cssText='padding:9px 14px;font-size:12px;cursor:pointer;'+
+      'border-left:3px solid '+(sel?'var(--p1)':'transparent')+';'+
+      'background:'+(sel?'rgba(60,49,151,.08)':'transparent')+';'+
+      'color:'+(sel?'var(--p1)':'var(--t2)')+';'+
+      'font-weight:'+(sel?'700':'400')+';transition:all .1s;';
+    btn.textContent=c.id;
+    btn.dataset.catid=c.id;
+    btn.addEventListener('click',function(){
+      S4_CAT=this.dataset.catid;
+      var s=document.getElementById('s4-search');
+      if(s) s.value='';
       renderS4CatList();
       renderS4Funds();
     });
@@ -1361,100 +1561,120 @@ function renderS4CatList(){
   });
 }
 
-function s4Search(q){
-  renderS4Funds(q.toLowerCase().trim());
-}
+function s4Search(q){ renderS4Funds(q.toLowerCase().trim()); }
 
-// Render fund list — Fund Toppers style table
 function renderS4Funds(searchQ){
-  var el = document.getElementById('s4-fund-list');
+  var el=document.getElementById('s4-fund-list');
   if(!el) return;
 
-  var catDef = CART_CATS.find(function(c){ return c.id===S4_CAT; });
-  if(!catDef){ el.innerHTML='<div style="padding:20px;text-align:center;color:var(--t4);">Select a category</div>'; return; }
+  var catDef=CART_CATS.find(function(c){return c.id===S4_CAT;});
+  var titleEl=document.getElementById('s4-cat-title');
+  var subEl=document.getElementById('s4-cat-sub');
+  if(titleEl) titleEl.textContent=(catDef?catDef.id:S4_CAT)+' Funds';
 
-  // Update header
-  var title = document.getElementById('s4-cat-title');
-  if(title) title.textContent = catDef.label;
-
-  // Get funds
-  var q = searchQ || '';
+  var q=(searchQ||'').toLowerCase().trim();
   var funds;
   if(q){
-    var all = [];
-    Object.keys(FDB).forEach(function(k){ if(FDB[k].funds) all=all.concat(FDB[k].funds); });
-    funds = all.filter(function(f){
-      return (f.n||'').toLowerCase().indexOf(q)>=0 ||
-             (f.amc||'').toLowerCase().indexOf(q)>=0;
-    }).slice(0,20);
+    // Search all funds across all categories (by plan)
+    var plan=ST.planType||'regular';
+    funds=S4_allFunds.filter(function(f){
+      return f.plan===plan && f.nat==='growth' &&
+        (f.name.toLowerCase().indexOf(q)>=0 ||
+         (f.amc||'').toLowerCase().indexOf(q)>=0);
+    });
+    if(subEl) subEl.textContent='Search results · '+funds.length+' funds found';
   } else {
-    funds = getFundsForSub(catDef.sub);
+    funds=getFundsForCat(S4_CAT);
+    if(subEl) subEl.textContent=funds.length+' funds · Sorted by name · '+
+      (ST.planType==='direct'?'Direct':'Regular')+' Plans';
   }
 
-  el.innerHTML = '';
-
+  el.innerHTML='';
   if(!funds.length){
-    el.innerHTML='<div style="padding:20px;text-align:center;color:var(--t4);font-size:12px;">No funds in this category</div>';
+    el.innerHTML='<div style="padding:30px;text-align:center;color:var(--t4);">'+
+      (s4Loaded?'No funds found in this category':'⏳ Loading funds...')+'</div>';
     return;
   }
 
-  // Table header
-  var tbl = document.createElement('table');
-  tbl.style.cssText='width:100%;border-collapse:collapse;font-size:12px;';
-  var thead = document.createElement('thead');
-  thead.innerHTML='<tr style="background:var(--p4);">'+
-    '<th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:800;color:var(--t4);">#</th>'+
-    '<th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:800;color:var(--t4);">Fund Name</th>'+
-    '<th style="padding:8px 10px;text-align:center;font-size:10px;font-weight:800;color:var(--t4);">1Y</th>'+
-    '<th style="padding:8px 10px;text-align:center;font-size:10px;font-weight:800;color:var(--t4);">3Y</th>'+
-    '<th style="padding:8px 10px;text-align:center;font-size:10px;font-weight:800;color:var(--t4);">5Y</th>'+
-    '<th style="padding:8px 10px;text-align:center;font-size:10px;font-weight:800;color:var(--t4);">CAGR %</th>'+
-    '<th style="padding:8px 4px;text-align:center;font-size:10px;font-weight:800;color:var(--t4);"></th>'+
+  // Build table
+  var tbl=document.createElement('table');
+  tbl.style.cssText='width:100%;border-collapse:collapse;font-size:12px;min-width:500px;';
+
+  var thead=document.createElement('thead');
+  thead.innerHTML='<tr style="background:var(--p4);position:sticky;top:0;">'+
+    '<th style="padding:9px 8px;text-align:left;font-size:10px;font-weight:800;'+
+      'color:var(--t4);width:36px;">#</th>'+
+    '<th style="padding:9px 10px;text-align:left;font-size:10px;font-weight:800;'+
+      'color:var(--t4);">Fund Name</th>'+
+    '<th style="padding:9px 8px;text-align:center;font-size:10px;font-weight:800;'+
+      'color:var(--t4);width:60px;">CAGR %<br><span style="font-weight:400;font-size:9px;">User Input</span></th>'+
+    '<th style="padding:9px 8px;text-align:center;font-size:10px;font-weight:800;'+
+      'color:var(--t4);width:80px;">Action</th>'+
     '</tr>';
   tbl.appendChild(thead);
 
-  var tbody = document.createElement('tbody');
-  funds.forEach(function(f, i){
-    var inCart = CART.some(function(c){ return c.name===f.n; });
-    var cartItem = CART.find(function(c){ return c.name===f.n; });
-    var userCagr = cartItem ? cartItem.userCagr : (f.c5y||f.c3y||12);
+  var tbody=document.createElement('tbody');
+  funds.forEach(function(f,i){
+    var inCart=CART.some(function(c){return c.code===f.code;});
+    var cartItem=inCart?CART.find(function(c){return c.code===f.code;}):null;
+    var userCagr=cartItem?cartItem.userCagr:12;
 
-    var tr = document.createElement('tr');
-    tr.style.cssText='border-bottom:1px solid var(--g4);background:'+(inCart?'#eef7d6':'#fff')+';';
+    var tr=document.createElement('tr');
+    tr.style.cssText='border-bottom:1px solid var(--g4);'+
+      'background:'+(inCart?'#eef7d6':'')+'cursor:pointer;';
 
     // Rank
-    var rank = i+1;
-    var rankStyle = rank===1?'color:#f59e0b;font-weight:900;':rank===2?'color:#6b7280;font-weight:800;':rank===3?'color:#b45309;font-weight:800;':'color:var(--t4);font-weight:600;';
-    tr.innerHTML=
-      '<td style="padding:9px 10px;'+rankStyle+'font-size:13px;">'+rank+'</td>'+
-      '<td style="padding:9px 10px;max-width:200px;">'+
-        '<div style="font-weight:700;font-size:12px;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+f.n+'</div>'+
-        '<div style="font-size:10px;color:var(--t4);">'+f.amc+'</div>'+
-      '</td>'+
-      '<td style="padding:9px 6px;text-align:center;font-size:11px;color:var(--t3);">'+(f.c1y?f.c1y.toFixed(1)+'%':'—')+'</td>'+
-      '<td style="padding:9px 6px;text-align:center;font-size:11px;color:var(--t3);">'+(f.c3y?f.c3y.toFixed(1)+'%':'—')+'</td>'+
-      '<td style="padding:9px 6px;text-align:center;font-size:11px;font-weight:700;color:var(--p1);">'+(f.c5y?f.c5y.toFixed(1)+'%':'—')+'</td>'+
-      '<td style="padding:9px 6px;text-align:center;">'+
-        '<input type="number" value="'+userCagr+'" min="1" max="50" step="0.5"'+
-        ' data-fname="'+i+'"'+
-        ' style="width:52px;padding:3px 5px;border:1.5px solid var(--g4);border-radius:6px;'+
-        'font-size:12px;text-align:center;font-weight:700;color:var(--p1);outline:none;"'+
-        ' onkeydown="if(event.key===\'ArrowUp\'||event.key===\'ArrowDown\')event.preventDefault();"'+
-        ' oninput="updateCartCagr(this,'+i+')">'+
-      '</td>'+
-      '<td style="padding:9px 6px;text-align:center;">';
+    var tdRank=document.createElement('td');
+    tdRank.style.cssText='padding:9px 8px;text-align:center;font-weight:700;'+
+      'color:var(--t4);font-size:11px;';
+    tdRank.textContent=i+1;
+    tr.appendChild(tdRank);
 
-    // Add button cell — use DOM
-    var btnCell = tr.querySelector('td:last-child');
-    var btn = document.createElement('button');
-    btn.style.cssText='padding:5px 10px;border:none;border-radius:6px;font-size:10px;'+
-      'font-weight:700;cursor:pointer;font-family:var(--fh);white-space:nowrap;'+
-      'background:'+(inCart?'var(--g1)':'var(--p1)')+';color:#fff;';
-    btn.textContent = inCart ? '✅ Added' : '+ Add';
-    (function(fund){ 
-      btn.addEventListener('click', function(){ s4ToggleCart(fund, tr, this); });
-    })(f);
-    btnCell.appendChild(btn);
+    // Fund name + AMC
+    var tdName=document.createElement('td');
+    tdName.style.cssText='padding:9px 10px;';
+    tdName.innerHTML='<div style="font-weight:600;font-size:12px;color:var(--t1);">'+
+      f.name+'</div>'+
+      '<div style="font-size:10px;color:var(--t4);">'+f.amc+'</div>';
+    tr.appendChild(tdName);
+
+    // CAGR input
+    var tdCagr=document.createElement('td');
+    tdCagr.style.cssText='padding:6px 8px;text-align:center;';
+    var cagrInp=document.createElement('input');
+    cagrInp.type='number'; cagrInp.min='1'; cagrInp.max='50'; cagrInp.step='0.5';
+    cagrInp.value=userCagr;
+    cagrInp.style.cssText='width:54px;padding:4px 5px;border:1.5px solid var(--g4);'+
+      'border-radius:6px;font-size:12px;text-align:center;font-weight:700;'+
+      'color:var(--p1);outline:none;';
+    cagrInp.addEventListener('keydown',function(e){
+      if(e.key==='ArrowUp'||e.key==='ArrowDown') e.preventDefault();
+    });
+    cagrInp.addEventListener('input',function(){
+      var v=parseFloat(this.value);
+      if(!isNaN(v)&&v>0){
+        var ci=CART.find(function(c){return c.code===f.code;});
+        if(ci) ci.userCagr=v;
+      }
+    });
+    tdCagr.appendChild(cagrInp);
+    tr.appendChild(tdCagr);
+
+    // Add/Remove button
+    var tdBtn=document.createElement('td');
+    tdBtn.style.cssText='padding:6px 8px;text-align:center;';
+    var btn=document.createElement('button');
+    btn.style.cssText='padding:6px 14px;border:none;border-radius:7px;font-size:11px;'+
+      'font-weight:800;cursor:pointer;font-family:var(--fh);white-space:nowrap;'+
+      (inCart?'background:var(--g1);color:#fff;':'background:var(--p1);color:#fff;');
+    btn.textContent=inCart?'✅ Added':'+ Add';
+    (function(fund,row,b,ci){
+      b.addEventListener('click',function(){
+        s4ToggleCart(fund,row,b);
+      });
+    })(f,tr,btn,cagrInp);
+    tdBtn.appendChild(btn);
+    tr.appendChild(tdBtn);
 
     tbody.appendChild(tr);
   });
@@ -1462,37 +1682,21 @@ function renderS4Funds(searchQ){
   el.appendChild(tbl);
 }
 
-// Update CAGR for fund already in cart
-function updateCartCagr(inp, idx){
-  var val = parseFloat(inp.value);
-  if(isNaN(val)||val<=0) return;
-  // Find the fund by position in current list
-  var rows = document.getElementById('s4-fund-list').querySelectorAll('tbody tr');
-  if(!rows[idx]) return;
-  var fname = rows[idx].querySelector('td:nth-child(2) div:first-child');
-  if(!fname) return;
-  var name = fname.textContent;
-  var cartItem = CART.find(function(c){ return c.name===name; });
-  if(cartItem) cartItem.userCagr = val;
-}
-
-function s4ToggleCart(f, tr, btn){
-  var idx = CART.findIndex(function(c){ return c.name===f.n; });
+function s4ToggleCart(f,tr,btn){
+  var idx=CART.findIndex(function(c){return c.code===f.code;});
   if(idx>=0){
     CART.splice(idx,1);
-    tr.style.background='#fff';
+    tr.style.background='';
     btn.style.background='var(--p1)';
     btn.textContent='+ Add';
   } else {
-    if(CART.length>=10){alert('Maximum 10 funds allowed.');return;}
-    // Get user CAGR from input in same row
-    var cagrInp = tr.querySelector('input[type="number"]');
-    var userCagr = cagrInp ? (parseFloat(cagrInp.value)||f.c5y||12) : (f.c5y||12);
-    CART.push({name:f.n, amc:f.amc, sub:f.sub||S4_CAT,
-               c5y:f.c5y||12, c3y:f.c3y||12, c1y:f.c1y||12,
+    if(CART.length>=15){alert('Maximum 15 funds allowed.');return;}
+    var cagrInp=tr.querySelector('input[type="number"]');
+    var userCagr=cagrInp?parseFloat(cagrInp.value)||12:12;
+    CART.push({code:f.code,name:f.name,amc:f.amc,sub:f.subcat||S4_CAT,
                userCagr:userCagr,
-               risk:f.risk||'Moderate', nav:f.nav||100,
-               navDate:f.navDate||'', code:f.code||''});
+               c5y:f.r5y||f.r3y||12,c3y:f.r3y||12,c1y:f.r1y||12,
+               risk:'Moderate',nav:f.nav||100,navDate:f.date||''});
     tr.style.background='#eef7d6';
     btn.style.background='var(--g1)';
     btn.textContent='✅ Added';
@@ -1501,73 +1705,72 @@ function s4ToggleCart(f, tr, btn){
 }
 
 function renderS4Cart(){
-  var el    = document.getElementById('s4-cart-items');
-  var empty = document.getElementById('s4-cart-empty');
-  var badge = document.getElementById('s4-cart-badge');
-  if(!el) return;
-  if(badge) badge.textContent = CART.length+' fund'+(CART.length!==1?'s':'');
-  el.innerHTML='';
-  if(!CART.length){
-    if(empty){empty.style.display='block';el.appendChild(empty);}
-    return;
-  }
-  if(empty) empty.style.display='none';
+  var badge=document.getElementById('s4-cart-badge');
+  var label=document.getElementById('s4-cart-label');
+  var viewBtn=document.getElementById('s4-view-cart-btn');
+  var itemsEl=document.getElementById('s4-cart-items');
+
+  if(badge) badge.textContent=CART.length+' fund'+(CART.length!==1?'s':'');
+  if(label) label.textContent=CART.length?
+    CART.length+' fund'+(CART.length!==1?'s':'')+' in cart — ready to proceed':
+    'Cart is empty — add funds below';
+  if(viewBtn) viewBtn.style.display=CART.length?'block':'none';
+
+  if(!itemsEl) return;
+  itemsEl.innerHTML='';
+
   CART.forEach(function(c){
-    var row = document.createElement('div');
-    row.style.cssText='display:flex;align-items:flex-start;gap:8px;padding:9px 10px;'+
+    var row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:10px;padding:8px 10px;'+
       'border-bottom:1px solid var(--g4);';
-
-    var info = document.createElement('div');
+    var info=document.createElement('div');
     info.style.cssText='flex:1;min-width:0;';
-    info.innerHTML='<div style="font-size:11px;font-weight:700;color:var(--t1);'+
-      'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+c.name+'</div>'+
-      '<div style="font-size:10px;color:var(--t4);">'+c.amc+'</div>'+
-      '<div style="font-size:10px;color:var(--p1);font-weight:700;">CAGR: '+c.userCagr.toFixed(1)+'%</div>';
-
-    var rb = document.createElement('button');
+    info.innerHTML='<div style="font-weight:700;font-size:12px;">'+c.name+'</div>'+
+      '<div style="font-size:10px;color:var(--t4);">'+c.amc+
+      ' · <span style="color:var(--p1);font-weight:700;">CAGR: '+c.userCagr.toFixed(1)+'%</span></div>';
+    var rb=document.createElement('button');
     rb.textContent='🗑';
-    rb.style.cssText='background:none;border:none;color:#b91c1c;cursor:pointer;'+
-      'font-size:13px;padding:0 2px;flex-shrink:0;';
-    (function(name){ rb.addEventListener('click', function(){
-      CART=CART.filter(function(x){return x.name!==name;});
+    rb.style.cssText='background:none;border:none;color:#b91c1c;cursor:pointer;font-size:14px;';
+    (function(code){rb.addEventListener('click',function(){
+      CART=CART.filter(function(x){return x.code!==code;});
       renderS4Cart();
+      // Refresh fund list to update button states
       renderS4Funds(document.getElementById('s4-search').value.toLowerCase());
-    });})(c.name);
-
-    row.appendChild(info);
-    row.appendChild(rb);
-    el.appendChild(row);
+    });})(c.code);
+    row.appendChild(info); row.appendChild(rb);
+    itemsEl.appendChild(row);
   });
+}
+
+function s4ViewCart(){
+  var panel=document.getElementById('s4-cart-panel');
+  if(!panel) return;
+  panel.style.display=panel.style.display==='none'?'block':'none';
 }
 
 function validateStep4(){
   if(CART.length===0){alert('Please add at least one fund to your cart.');return false;}
-  var n = CART.length;
-  var def = Math.floor(100/n);
-  var rem = 100 - def*(n-1);
-
-  // Populate ST.selFunds for buildStep5 compatibility
-  ST.selFunds = CART.map(function(c,i){
-    return {
-      code:c.code, name:c.name, amc:c.amc, nav:c.nav,
-      navDate:c.navDate, sub:c.sub,
-      c1y:c.c1y, c3y:c.c3y, c5y:c.c5y,
-      userCagr:c.userCagr,
-      cagr3y:c.userCagr  // use user-entered CAGR for all calculations
-    };
+  var n=CART.length;
+  var def=Math.floor(100/n);
+  var rem=100-def*(n-1);
+  ST.selFunds=CART.map(function(c,i){
+    return {code:c.code,name:c.name,amc:c.amc,sub:c.sub,
+            userCagr:c.userCagr,cagr3y:c.userCagr,
+            c1y:c.c1y,c3y:c.c3y,c5y:c.c5y};
   });
-
-  // Also populate CMB.rows
-  CMB.rows = CART.map(function(c,i){
-    return {id:i+1, type:'sip',
-      fund:{code:c.code, name:c.name, amc:c.amc, nav:c.nav,
-            navDate:c.navDate, cagr3y:c.userCagr},
-      cagr:c.userCagr,
-      pct: i===n-1 ? rem : def};
+  CMB.rows=CART.map(function(c,i){
+    return {id:i+1,type:'sip',
+      fund:{code:c.code,name:c.name,amc:c.amc,nav:c.nav,
+            navDate:c.navDate,cagr3y:c.userCagr},
+      cagr:c.userCagr, pct:i===n-1?rem:def};
   });
   return true;
 }
 
+// Compat
+function addToCartByName(name){}
+function removeFromCart(code){ CART=CART.filter(function(c){return c.code!==code;}); renderS4Cart(); }
+function renderCart(){ renderS4Cart(); }
 
 
 function buildStep4(){ buildStep4Cart(); }
