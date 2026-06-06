@@ -687,22 +687,30 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
   <!-- STEP 1 -->
   <div class="panel show" id="step1">
     <div class="ptitle">Investor <em>Details</em></div>
-    <div class="psub">Who is investing, how much, and for how long.</div>
-    <div class="ig2">
-      <div class="icard"><label>Investor Name</label><input class="inp inp-sm" type="text" id="v-name" placeholder="e.g. Rajesh Sharma"><div class="inp-hint">Appears on your investment blueprint</div></div>
-      <div class="icard"><label>Total Investment Amount (₹)</label><input class="inp" type="number" id="v-amt" placeholder="e.g. 500000" min="100"
-  onkeydown="if(event.key==='ArrowUp'||event.key==='ArrowDown')event.preventDefault();"><div class="inp-hint"><b>Min ₹100</b> as per SEBI guidelines</div></div>
-    </div>
-    <div class="icard" style="margin-bottom:14px">
-      <label>Investment Horizon</label>
-      <div class="hor-wrap">
-        <div style="flex:1"><div style="font-size:11px;font-weight:700;color:var(--t4);margin-bottom:5px;">Years</div><input class="inp inp-sm" type="text" id="v-yrs" placeholder="0" value="0" inputmode="numeric" maxlength="2" oninput="validateYrMo(this,0,40);updHor()" onkeydown="allowNumKeys(event,false)" style="font-size:16px;padding:10px 12px;text-align:center;"></div>
-        <div class="hor-sep">+</div>
-        <div style="flex:1"><div style="font-size:11px;font-weight:700;color:var(--t4);margin-bottom:5px;">Months</div><input class="inp inp-sm" type="text" id="v-mos" placeholder="0" value="0" inputmode="numeric" maxlength="2" oninput="validateYrMo(this,0,11);updHor()" onkeydown="allowNumKeys(event,false)" style="font-size:16px;padding:10px 12px;text-align:center;"></div>
-        <div class="hor-sep">=</div>
-        <div style="flex:1"><div style="font-size:11px;font-weight:700;color:var(--t4);margin-bottom:5px;">Total Period</div><div class="hor-total" id="v-total">6 Months</div></div>
+    <div class="psub">Enter name, total lumpsum and total monthly SIP. Year &amp; Month are set per fund.</div>
+    <div class="inp-card">
+      <div class="inp-row">
+        <div class="inp-group">
+          <div class="inp-label">Investor Name</div>
+          <input class="inp-field" id="v-name" type="text" placeholder="Full name" value="Valued Investor">
+        </div>
+        <div class="inp-group"></div>
+        <div class="inp-group">
+          <div class="inp-label" style="color:var(--p1)">▣ Total Lumpsum (one-time) ₹</div>
+          <input class="inp-field" id="v-lump" type="number" placeholder="0" min="0" step="1000"
+            style="border-color:var(--p1);background:var(--p4);color:var(--p1);font-weight:700;">
+          <div style="font-size:11px;color:var(--t4);margin-top:3px;">Split across L funds in Fund Selection</div>
+        </div>
+        <div class="inp-group">
+          <div class="inp-label" style="color:#3a7a12">▣ Total Monthly SIP ₹</div>
+          <input class="inp-field" id="v-sip" type="number" placeholder="0" min="0" step="500"
+            style="border-color:#6aaa1e;background:#eef7d6;color:#3a7a12;font-weight:700;">
+          <div style="font-size:11px;color:var(--t4);margin-top:3px;">Split across S funds in Fund Selection</div>
+        </div>
       </div>
-      <div class="inp-hint" style="margin-top:8px;"><b>Minute precision</b> — e.g. 7 years 6 months = 90 months</div>
+      <div style="background:var(--p4);border-radius:8px;padding:10px 14px;font-size:11px;color:var(--p2);margin-top:10px;">
+        ℹ️ <strong>Year &amp; Month are now per fund</strong> — each fund has its own investment horizon.
+      </div>
     </div>
     <div class="nav-btns"><button class="btn-next" onclick="goStep(2)">Next: Plan Preference →</button></div>
   </div>
@@ -758,103 +766,57 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
   <!-- STEP 4: FUND SELECTION -->
   <div class="panel" id="step4">
     <div class="ptitle">Select <em>Funds</em></div>
-    <div class="psub">Choose category → Add to Cart → Enter your expected CAGR → Proceed</div>
-
-    <!-- Cart Summary Bar -->
-    <div style="background:linear-gradient(135deg,var(--p2),var(--p1));
-                border-radius:10px;padding:12px 18px;margin-bottom:12px;
-                display:flex;align-items:center;justify-content:space-between;
-                flex-wrap:wrap;gap:8px;">
-      <div style="color:#fff;font-size:13px;font-weight:700;">
-        🛒 <span id="s4-cart-label">Cart is empty — add funds below</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <span id="s4-cart-badge"
-              style="background:rgba(255,255,255,.25);color:#fff;
-                     font-size:12px;font-weight:800;padding:4px 14px;border-radius:20px;">
-          0 funds</span>
-        <button onclick="s4ViewCart()" id="s4-view-cart-btn"
-                style="display:none;padding:6px 16px;background:#fff;color:var(--p1);
-                       border:none;border-radius:8px;font-size:12px;font-weight:800;
-                       cursor:pointer;font-family:var(--fh);">View Cart ▾</button>
-      </div>
-    </div>
-
-    <!-- Cart Items Panel (toggle) -->
-    <div id="s4-cart-panel" style="display:none;background:#fff;
-         border:1.5px solid var(--p1);border-radius:10px;padding:14px;
-         margin-bottom:12px;">
-      <div style="font-weight:800;font-size:13px;color:var(--p1);margin-bottom:10px;">
-        🛒 Selected Funds</div>
-      <div id="s4-cart-items"></div>
-    </div>
-
-    <!-- Amount Summary -->
-    <div id="s4-amt-summary"
-         style="background:#fff;border:1.5px solid var(--g4);border-radius:8px;
-                padding:8px 14px;margin-bottom:8px;font-size:12px;color:var(--t2);">
-      Enter investment amount and fill Total Investment in Step 1
-    </div>
-
-    <!-- API Load Status -->
-    <div id="s4-status" style="font-size:11px;color:var(--t4);
-         text-align:center;padding:4px;margin-bottom:8px;"></div>
-
-    <!-- Main Fund Selection Area — full width -->
-    <div style="display:flex;gap:0;border:1.5px solid var(--g4);
-                border-radius:12px;overflow:hidden;height:520px;">
-
-      <!-- LEFT: Categories — fixed 170px, scrollable -->
-      <div style="width:170px;flex-shrink:0;background:var(--p4);
-                  border-right:1.5px solid var(--g4);
-                  display:flex;flex-direction:column;overflow:hidden;">
-        <div style="padding:10px 14px;background:var(--p2);font-weight:800;
-                    font-size:11px;color:#fff;letter-spacing:.5px;flex-shrink:0;">
-          CATEGORIES</div>
+    <div class="psub">Choose L=Lumpsum or S=SIP · Year &amp; Month per fund · CAGR · Amount · Add · Generate Blueprint inline</div>
+    <div id="s4-metrics" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;"></div>
+    <div style="display:grid;grid-template-columns:158px 1fr 268px;gap:12px;min-height:480px;">
+      <div style="background:#fff;border:1.5px solid var(--g4);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;">
+        <div style="padding:9px 13px;background:var(--p2);font-size:10px;font-weight:800;color:#fff;letter-spacing:.6px;text-transform:uppercase;flex-shrink:0;">Categories</div>
         <div id="s4-cat-list" style="flex:1;overflow-y:auto;"></div>
       </div>
-
-      <!-- RIGHT: Fund Table — takes all remaining space -->
-      <div style="flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden;">
-
-        <!-- Header: Category title + BIG search box -->
-        <div style="padding:12px 16px;background:var(--p4);
-                    border-bottom:1.5px solid var(--g4);flex-shrink:0;">
-          <div style="display:flex;align-items:center;justify-content:space-between;
-                      gap:12px;flex-wrap:wrap;margin-bottom:8px;">
-            <div>
-              <div style="font-weight:800;font-size:14px;color:var(--p2);"
-                   id="s4-cat-title">← Select a category</div>
-              <div style="font-size:11px;color:var(--t4);margin-top:2px;"
-                   id="s4-cat-sub">Regular/Direct plans as per your selection</div>
-            </div>
+      <div style="background:#fff;border:1.5px solid var(--g4);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;">
+        <div style="padding:10px 14px;background:var(--p4);border-bottom:1.5px solid var(--g4);flex-shrink:0;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+            <div><div style="font-weight:800;font-size:14px;color:var(--p2);" id="s4-cat-title">← Select a category</div>
+            <div style="font-size:10px;color:var(--t4);" id="s4-cat-sub">Regular · Growth</div></div>
+            <div id="s4-status" style="font-size:11px;color:var(--t4);"></div>
           </div>
-          <!-- BIG Search Box -->
-          <input type="text" id="s4-search"
-            placeholder="🔍 Search by fund name or AMC name across all categories..."
+          <input type="text" id="s4-search" placeholder="🔍 Search fund name or AMC across all categories..."
             oninput="s4Search(this.value)"
-            style="width:100%;padding:11px 16px;border:2px solid var(--p1);
-                   border-radius:10px;font-size:14px;outline:none;background:#fff;
-                   font-family:var(--fh);color:var(--t1);box-sizing:border-box;">
+            style="width:100%;padding:9px 12px;border:1.5px solid var(--p1);border-radius:8px;font-size:13px;outline:none;font-family:var(--fh);background:#fff;color:var(--t1);">
         </div>
-
-        <!-- Fund list — scrollable -->
-        <div style="flex:1;overflow-y:auto;overflow-x:auto;">
-          <div id="s4-fund-list">
-            <div style="text-align:center;padding:50px;color:var(--t4);">
-              <div style="font-size:36px;margin-bottom:10px;">👈</div>
-              <div style="font-weight:700;font-size:14px;">Select a category from left panel</div>
-              <div style="font-size:12px;margin-top:4px;">Or search any fund in the search box above</div>
-            </div>
-          </div>
+        <div style="flex:1;overflow-y:auto;overflow-x:auto;max-height:420px;"><div id="s4-fund-list">
+          <div style="text-align:center;padding:40px;color:var(--t4);"><div style="font-size:32px;">👈</div><div style="font-weight:700;margin-top:8px;">Select a category from the left</div></div>
+        </div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;border:1.5px solid var(--g4);border-radius:12px;overflow:hidden;">
+        <div style="padding:9px 12px;background:var(--p1);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+          <span style="font-size:12px;font-weight:800;color:#fff;">🏦 Lumpsum (L)</span>
+          <span id="s4-lump-badge" style="font-size:10px;font-weight:800;background:rgba(255,255,255,.2);color:#fff;padding:2px 8px;border-radius:10px;">₹0</span>
         </div>
-
+        <div id="s4-cart-l" style="min-height:50px;overflow-y:auto;max-height:160px;background:#fff;"></div>
+        <div style="padding:6px 12px;background:var(--p4);border-top:1px solid var(--g4);display:flex;justify-content:space-between;font-size:11px;flex-shrink:0;">
+          <span style="color:var(--t4);">Total lumpsum</span><span style="font-weight:800;color:var(--p1);" id="s4-lump-total">₹0</span>
+        </div>
+        <div style="padding:9px 12px;background:#3a7a12;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+          <span style="font-size:12px;font-weight:800;color:#fff;">📅 SIP Monthly (S)</span>
+          <span id="s4-sip-badge" style="font-size:10px;font-weight:800;background:rgba(255,255,255,.2);color:#fff;padding:2px 8px;border-radius:10px;">₹0/mo</span>
+        </div>
+        <div id="s4-cart-s" style="min-height:50px;overflow-y:auto;max-height:160px;background:#fff;"></div>
+        <div style="padding:6px 12px;background:#eef7d6;border-top:1px solid #c5e8a0;display:flex;justify-content:space-between;font-size:11px;flex-shrink:0;">
+          <span style="color:var(--t4);">Total monthly SIP</span><span style="font-weight:800;color:#3a7a12;" id="s4-sip-total">₹0/mo</span>
+        </div>
+        <div id="s4-val-bar" style="flex-shrink:0;"></div>
       </div>
     </div>
-
-    <div class="nav-btns" style="margin-top:12px;">
-      <button class="btn-prev" onclick="goStep(2)">← Back</button>
-      <button class="btn-next" onclick="goStep(5)">Next: Set Allocation →</button>
+    <div style="background:linear-gradient(135deg,var(--p2),var(--p1));border-radius:12px;padding:16px 20px;margin-top:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#fff;" id="s4-gen-label">Add funds to generate blueprint</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.7);" id="s4-gen-sub">Both lumpsum and SIP totals must match</div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button onclick="goStep(2)" style="padding:10px 18px;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fh);">← Back</button>
+        <button id="s4-gen-btn" onclick="s4Generate()" disabled style="padding:11px 24px;background:#fff;color:var(--p1);border:none;border-radius:9px;font-size:13px;font-weight:800;cursor:not-allowed;font-family:var(--fh);opacity:.4;">⭐ Generate My Blueprint</button>
+      </div>
     </div>
   </div>
 
@@ -1058,7 +1020,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
 
 <script>
 // ══ STATE ══
-const ST={mode:"sip",step:1,name:"",amt:0,yrs:0,mos:0,totalMos:0,planType:"regular",nature:"growth",stpFreq:"weekly",selClasses:[],fundCounts:{},selFunds:[],allocs:[],sipAmts:[],lumpAmts:[],stpAmts:[],userCAGR:[]};
+const ST={mode:"sip",step:1,name:"",totalLump:0,totalSIP:0,amt:0,yrs:0,mos:0,totalMos:0,planType:"regular",nature:"growth",stpFreq:"weekly",selClasses:[],fundCounts:{},selFunds:[],allocs:[],sipAmts:[],lumpAmts:[],stpAmts:[],userCAGR:[]};
 const COLS=["#3c3197","#8bc32a","#d97706","#0891b2","#ea580c","#db2777","#7c3aed","#059669","#b45309","#0369a1"];
 
 // ══ ASSET CLASSES ══
@@ -1227,31 +1189,22 @@ function buildSteps(){
 }
 
 function goStep(n){
-  if(n>1&&!validateStep(ST.step)) return;
-  if(n===3) n=4; // Asset Class step removed
-  if(n===5){if(!validateStep4())return;}
-  // Show correct panel FIRST
-  for(var i=1;i<=5;i++){
-    var el=document.getElementById("step"+i);
-    if(el) el.classList.toggle("show", i===n);
-  }
+  if(n>1&&!validateStep(ST.step))return;
+  if(n===3)n=4;
+  for(var i=1;i<=5;i++){var el=document.getElementById('step'+i);if(el)el.classList.toggle('show',i===n);}
   ST.step=n;
-  // Then build content
-  if(n===4) buildStep4Cart();
-  if(n===5) buildStep5();
-  buildSteps();
-  window.scrollTo({top:0,behavior:"smooth"});
+  if(n===4)buildStep4Cart();
+  if(n===5)buildStep5();
+  buildSteps();window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function validateStep(n){
   if(n===1){
-    ST.amt=parseFloat(document.getElementById("v-amt").value);
-    ST.yrs=parseInt(document.getElementById("v-yrs").value)||0;
-    ST.mos=parseInt(document.getElementById("v-mos").value)||0;
-    ST.totalMos=ST.yrs*12+ST.mos;
-    ST.name=document.getElementById("v-name").value||"Valued Investor";
-    if(!ST.amt||ST.amt<100){alert("Please enter a valid investment amount (minimum ₹100).");return false;}
-    if(ST.totalMos<1){alert("Please enter a valid horizon (minimum 1 month).");return false;}
+    ST.name=document.getElementById('v-name').value||'Valued Investor';
+    ST.totalLump=parseFloat(document.getElementById('v-lump').value)||0;
+    ST.totalSIP=parseFloat(document.getElementById('v-sip').value)||0;
+    ST.amt=ST.totalLump;
+    if(ST.totalLump===0&&ST.totalSIP===0){alert('Enter Total Lumpsum or Total Monthly SIP.');return false;}
   }
   return true;
 }
@@ -1302,11 +1255,22 @@ function refreshFC(){
 function setFC(id,n){ST.fundCounts[id]=n;refreshFC();}
 
 // ══ STEP 4: FIX 5 — Sub-categories with Top 10 funds ══
-// ── CART & FUND SELECTION ───────────────────────────────
-var CART = [];
-var S4_CAT = 'Large Cap';
-var s4Loaded = false;
-var S4_allFunds = [];
+// ── CART & FUND SELECTION ─────────────────────────────────────
+var CART_L=[], CART_S=[], S4_ROW={};
+var S4_allFunds=[], s4Loaded=false, S4_CAT='';
+var CART_CATS=[
+  {g:'Equity',id:'Large Cap'},{g:'Equity',id:'Bluechip'},{g:'Equity',id:'Large & MidCap'},
+  {g:'Equity',id:'Flexi Cap'},{g:'Equity',id:'Mid Cap'},{g:'Equity',id:'Small Cap'},
+  {g:'Equity',id:'Multi Cap'},{g:'Equity',id:'Thematic'},
+  {g:'ELSS',id:'ELSS Flexi Cap'},{g:'ELSS',id:'ELSS Large Cap'},{g:'ELSS',id:'ELSS Index'},
+  {g:'Hybrid',id:'Bal Advantage'},{g:'Hybrid',id:'Aggr Hybrid'},{g:'Hybrid',id:'Multi Asset'},{g:'Hybrid',id:'Arbitrage'},
+  {g:'Debt',id:'Short Duration'},{g:'Debt',id:'Corporate Bond'},{g:'Debt',id:'Banking & PSU'},{g:'Debt',id:'Dynamic Bond'},
+  {g:'Liquid',id:'Liquid'},{g:'Liquid',id:'Overnight'},{g:'Liquid',id:'Money Market'},
+  {g:'Index',id:'Nifty 50'},{g:'Index',id:'Midcap 150'},{g:'Index',id:'Smallcap 250'},{g:'Index',id:'Nifty Next 50'},
+  {g:'FoF',id:'International'},{g:'FoF',id:'Gold FoF'},{g:'Gilt',id:'Gilt'},
+];
+function s4GetRow(c){if(!S4_ROW[c])S4_ROW[c]={type:'',yr:0,mo:0,months:0,cagr:'',amt:''};return S4_ROW[c];}
+function s4SetType(code,type){s4GetRow(code).type=type;var _sr=document.getElementById('s4-search');s4RenderFundList(_sr?_sr.value:'');s4UpdateValBar();}
 var ACTIVE_AMCS=["360 ONE","IIFL","ADITYA BIRLA SUN LIFE","ALPHAGREP","ANGEL ONE","ASK ","BANDHAN","IDFC","CHOICE","DSP","FRANKLIN TEMPLETON","FRANKLIN INDIA","HDFC","HELIOS","HSBC","ICICI PRUDENTIAL","IL&FS","JIO BLACKROCK","KOTAK","MAHINDRA MANULIFE","NAVI","ESSEL","PARAG PARIKH","PPFAS","SBI","SHRIRAM","TATA","UNIFI","UNION","WHITEOAK","WHITE OAK","ZERODHA","ABAKKUS","AXIS","BAJAJ FINSERV","BANK OF INDIA","BARODA BNP PARIBAS","BARODA","CANARA ROBECO","CAPITALMIND","EDELWEISS","GROWW","INDIABULLS","INVESCO","ITI ","JM FINANCIAL","JM ","LAKSHYA","LIC","IDBI MF","MIRAE ASSET","MONARCH","MOTILAL OSWAL","NIPPON INDIA","NIPPON ","NJ ","OLD BRIDGE","PGIM INDIA","QUANT","QUANTUM","SAMCO","SUNDARAM","TAURUS","THE WEALTH COMPANY","TRUST MUTUAL","UTI"];
 function isActiveAMC(n){var u=n.toUpperCase();for(var i=0;i<ACTIVE_AMCS.length;i++){if(u.indexOf(ACTIVE_AMCS[i])>=0)return true;}return false;}
 async function fetchMFAPI() {
@@ -1507,371 +1471,151 @@ function getFundsForCat(catId){
 }
 
 function buildStep4Cart(){
-  CART = [];
-  S4_CAT = CART_CATS[0].id;
-  renderS4CatList();
-  renderS4Funds();
-  renderS4Cart();
-  // Load live data if not loaded
+  CART_L=[];CART_S=[];S4_ROW={};S4_CAT='';
+  ST.totalLump=parseFloat(document.getElementById('v-lump').value)||0;
+  ST.totalSIP=parseFloat(document.getElementById('v-sip').value)||0;
+  s4RenderCatList();s4RenderFundList();s4RenderCart();s4UpdateMetrics();s4UpdateValBar();
   if(!s4Loaded){
-    var status = document.getElementById('s4-status');
-    if(status) status.textContent = '⏳ Loading live fund data from AMFI...';
-    s4LoadFunds().then(function(){
-      var status = document.getElementById('s4-status');
-      if(status) status.textContent = '✅ '+S4_allFunds.length+' funds loaded from AMFI';
-      renderS4Funds();
-    }).catch(function(){
-      var status = document.getElementById('s4-status');
-      if(status) status.textContent = '⚠️ Using cached fund data';
-    });
+    var st=document.getElementById('s4-status');if(st)st.textContent='⏳ Loading funds from AMFI...';
+    s4LoadFunds().then(function(){var st2=document.getElementById('s4-status');if(st2)st2.textContent='✅ '+S4_allFunds.length.toLocaleString('en-IN')+' funds loaded';s4RenderFundList();}).catch(function(){var st2=document.getElementById('s4-status');if(st2)st2.textContent='⚠️ Load failed';});
   }
 }
-
-function renderS4CatList(){
-  var el = document.getElementById('s4-cat-list');
-  if(!el) return;
-  el.innerHTML='';
-  var lastGroup='';
+function s4RenderCatList(){
+  var el=document.getElementById('s4-cat-list');if(!el)return;
+  el.innerHTML='';var lastG='';
   CART_CATS.forEach(function(c){
-    if(c.g!==lastGroup){
-      var hdr=document.createElement('div');
-      hdr.style.cssText='padding:6px 14px 3px;font-size:9px;font-weight:800;'+
-        'color:var(--t4);text-transform:uppercase;letter-spacing:.8px;';
-      hdr.textContent=c.g;
-      el.appendChild(hdr);
-      lastGroup=c.g;
-    }
-    var btn=document.createElement('div');
-    var sel=(c.id===S4_CAT);
-    btn.style.cssText='padding:9px 14px;font-size:12px;cursor:pointer;'+
-      'border-left:3px solid '+(sel?'var(--p1)':'transparent')+';'+
-      'background:'+(sel?'rgba(60,49,151,.08)':'transparent')+';'+
-      'color:'+(sel?'var(--p1)':'var(--t2)')+';'+
-      'font-weight:'+(sel?'700':'400')+';transition:all .1s;';
-    btn.textContent=c.id;
-    btn.dataset.catid=c.id;
-    btn.addEventListener('click',function(){
-      S4_CAT=this.dataset.catid;
-      var s=document.getElementById('s4-search');
-      if(s) s.value='';
-      renderS4CatList();
-      renderS4Funds();
-    });
+    if(c.g!==lastG){var h=document.createElement('div');h.style.cssText='padding:5px 12px 2px;font-size:9px;font-weight:800;color:var(--t5);text-transform:uppercase;letter-spacing:.7px;margin-top:4px;';h.textContent=c.g;el.appendChild(h);lastG=c.g;}
+    var btn=document.createElement('div');var sel=(c.id===S4_CAT);
+    btn.style.cssText='padding:8px 14px;font-size:12px;cursor:pointer;border-left:3px solid '+(sel?'var(--p1)':'transparent')+';background:'+(sel?'var(--p4)':'transparent')+';color:'+(sel?'var(--p1)':'var(--t2)')+';font-weight:'+(sel?'700':'400')+';border-bottom:1px solid var(--g4);';
+    btn.textContent=c.id;btn.dataset.cid=c.id;
+    btn.addEventListener('click',function(){S4_CAT=this.dataset.cid;var sr=document.getElementById('s4-search');if(sr)sr.value='';s4RenderCatList();s4RenderFundList();});
     el.appendChild(btn);
   });
 }
-
-function s4Search(q){ renderS4Funds(q.toLowerCase().trim()); }
-
-function renderS4Funds(searchQ){
-  var el=document.getElementById('s4-fund-list');
-  if(!el) return;
-
-  var catDef=CART_CATS.find(function(c){return c.id===S4_CAT;});
-  var titleEl=document.getElementById('s4-cat-title');
-  var subEl=document.getElementById('s4-cat-sub');
-  if(titleEl) titleEl.textContent=(catDef?catDef.id:S4_CAT)+' Funds';
-
-  var q=(searchQ||'').toLowerCase().trim();
-  var funds;
-  if(q){
-    // Search ALL funds — same scope as Fund Discovery (all plans, all nat)
-    funds=S4_allFunds.filter(function(f){
-      return f.name.toLowerCase().indexOf(q)>=0 ||
-             (f.amc||'').toLowerCase().indexOf(q)>=0;
-    });
-    if(subEl) subEl.textContent='Search: '+funds.length.toLocaleString('en-IN')+' funds found (all plans)';
-  } else {
-    funds=getFundsForCat(S4_CAT);
-    if(subEl) subEl.textContent=funds.length+' funds · '+(ST.planType==='direct'?'Direct':'Regular')+' Plans · Growth';
-  }
-
+function s4Search(q){s4RenderFundList(q?q.toLowerCase().trim():'');}
+function s4RenderFundList(q){
+  var el=document.getElementById('s4-fund-list');if(!el)return;
+  q=q||'';var plan=ST.planType||'regular';
+  var funds=q?S4_allFunds.filter(function(f){return (f.name||'').toLowerCase().indexOf(q)>=0||(f.amc||'').toLowerCase().indexOf(q)>=0;}):
+    S4_allFunds.filter(function(f){var sub=f.sub||f.subcat||'';return sub===S4_CAT&&f.plan===plan&&f.nat==='growth';});
+  var title=document.getElementById('s4-cat-title');var sub=document.getElementById('s4-cat-sub');
+  if(title)title.textContent=q?'Search: '+funds.length+' found':(S4_CAT?S4_CAT+' ('+funds.length+')':'← Select a category');
+  if(sub)sub.textContent=(plan==='direct'?'Direct':'Regular')+' · Growth'+(q?' · all categories':'');
   el.innerHTML='';
-  if(!funds.length){
-    el.innerHTML='<div style="padding:30px;text-align:center;color:var(--t4);">'+
-      (s4Loaded?'No funds found in this category':'⏳ Loading funds...')+'</div>';
-    return;
-  }
-
-  // Build table
+  if(!funds.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t4);">'+(s4Loaded?'No funds':'⏳ Loading...')+'</div>';return;}
   var tbl=document.createElement('table');
-  tbl.style.cssText='width:100%;border-collapse:collapse;font-size:12px;min-width:500px;';
-
-  var thead=document.createElement('thead');
-  thead.innerHTML='<tr style="background:var(--p4);position:sticky;top:0;">'+
-    '<th style="padding:9px 8px;text-align:left;font-size:10px;font-weight:800;'+
-      'color:var(--t4);width:32px;">#</th>'+
-    '<th style="padding:9px 10px;text-align:left;font-size:10px;font-weight:800;'+
-      'color:var(--t4);">Fund Name</th>'+
-    '<th style="padding:9px 8px;text-align:center;font-size:10px;font-weight:800;'+
-      'color:var(--t4);width:65px;">CAGR %<br><span style="font-weight:400;font-size:9px;">expected</span></th>'+
-    '<th style="padding:9px 8px;text-align:center;font-size:10px;font-weight:800;'+
-      'color:var(--t4);width:70px;">Add to Cart</th>'+
-    '</tr>';
-  tbl.appendChild(thead);
-
+  tbl.style.cssText='width:100%;border-collapse:collapse;font-size:11px;min-width:580px;';
+  tbl.innerHTML='<thead><tr style="background:var(--p4);">'+
+    '<th style="padding:7px;font-size:9px;font-weight:800;color:var(--t4);width:26px;text-align:left;">Sr</th>'+
+    '<th style="padding:7px 10px;font-size:9px;font-weight:800;color:var(--t4);text-align:left;">Fund Name</th>'+
+    '<th style="padding:7px;font-size:9px;font-weight:800;color:var(--t4);width:74px;text-align:center;">Type<br><span style="font-weight:400">L / S</span></th>'+
+    '<th style="padding:7px 4px;font-size:9px;font-weight:800;color:var(--t4);width:42px;text-align:center;">Year</th>'+
+    '<th style="padding:7px 4px;font-size:9px;font-weight:800;color:var(--t4);width:46px;text-align:center;">Month</th>'+
+    '<th style="padding:7px 4px;font-size:9px;font-weight:800;color:var(--t4);width:56px;text-align:center;">Total<br>Months</th>'+
+    '<th style="padding:7px 4px;font-size:9px;font-weight:800;color:var(--t4);width:54px;text-align:center;">CAGR%</th>'+
+    '<th style="padding:7px 6px;font-size:9px;font-weight:800;color:var(--t4);width:78px;text-align:right;">Inv Amt \u20b9</th>'+
+    '<th style="padding:7px;font-size:9px;font-weight:800;color:var(--t4);width:70px;text-align:center;">Add</th>'+
+    '</tr></thead>';
   var tbody=document.createElement('tbody');
   funds.forEach(function(f,i){
-    var inCart=CART.some(function(c){return c.code===f.code;});
-    var cartItem=inCart?CART.find(function(c){return c.code===f.code;}):null;
-    var userCagr=cartItem?cartItem.userCagr:10;
-
+    var r=s4GetRow(f.code);
+    var inL=CART_L.some(function(c){return c.code===f.code;});
+    var inS=CART_S.some(function(c){return c.code===f.code;});
+    var tc=r.type==='L'?'#eeedfe':r.type==='S'?'#eef7d6':'#fff';
+    var tclr=r.type==='L'?'var(--p1)':r.type==='S'?'#3a7a12':'var(--t1)';
     var tr=document.createElement('tr');
-    tr.style.cssText='border-bottom:1px solid var(--g4);'+
-      'background:'+(inCart?'#eef7d6':'')+'cursor:pointer;';
-
-    // Rank
-    var tdRank=document.createElement('td');
-    tdRank.style.cssText='padding:9px 8px;text-align:center;font-weight:700;'+
-      'color:var(--t4);font-size:11px;';
-    tdRank.textContent=i+1;
-    tr.appendChild(tdRank);
-
-    // Fund name + AMC
-    var tdName=document.createElement('td');
-    tdName.style.cssText='padding:9px 10px;';
-    tdName.innerHTML='<div style="font-weight:600;font-size:12px;color:var(--t1);">'+
-      f.name+'</div>'+
-      '<div style="font-size:10px;color:var(--t4);">'+f.amc+'</div>';
-    tr.appendChild(tdName);
-
-        // CAGR input
-    var tdCagr=document.createElement('td');
-    tdCagr.style.cssText='padding:6px 8px;text-align:center;';
-    var cagrInp=document.createElement('input');
-    cagrInp.type='number'; cagrInp.min='1'; cagrInp.max='50'; cagrInp.step='0.5';
-    cagrInp.value=userCagr;
-    cagrInp.style.cssText='width:54px;padding:4px 5px;border:1.5px solid var(--g4);'+
-      'border-radius:6px;font-size:12px;text-align:center;font-weight:700;'+
-      'color:var(--p1);outline:none;';
-    cagrInp.addEventListener('keydown',function(e){
-      if(e.key==='ArrowUp'||e.key==='ArrowDown') e.preventDefault();
-    });
-    cagrInp.addEventListener('input',function(){
-      var v=parseFloat(this.value);
-      if(!isNaN(v)&&v>0){
-        var ci=CART.find(function(c){return c.code===f.code;});
-        if(ci) ci.userCagr=v;
-      }
-    });
-    tdCagr.appendChild(cagrInp);
-    tr.appendChild(tdCagr);
-
-    // Add/Remove button
-    var tdBtn=document.createElement('td');
-    tdBtn.style.cssText='padding:6px 8px;text-align:center;';
-    var btn=document.createElement('button');
-    btn.style.cssText='padding:6px 14px;border:none;border-radius:7px;font-size:11px;'+
-      'font-weight:800;cursor:pointer;font-family:var(--fh);white-space:nowrap;'+
-      (inCart?'background:var(--g1);color:#fff;':'background:var(--p1);color:#fff;');
-    btn.textContent=inCart?'✅ Added':'+ Add';
-    (function(fund,row,b,ci){
-      b.addEventListener('click',function(){
-        s4ToggleCart(fund,row,b);
-      });
-    })(f,tr,btn,cagrInp);
-    tdBtn.appendChild(btn);
-    tr.appendChild(tdBtn);
-
-    tbody.appendChild(tr);
-  });
-  tbl.appendChild(tbody);
-  el.appendChild(tbl);
+    tr.style.cssText='border-bottom:1px solid var(--g4);background:'+(inL?'#f0eeff':inS?'#f0fff0':'#fff')+';';
+    var td=document.createElement('td');td.style.cssText='padding:7px;text-align:center;color:var(--t5);';td.textContent=i+1;tr.appendChild(td);
+    td=document.createElement('td');td.style.cssText='padding:7px 10px;';td.innerHTML='<div style="font-weight:600;font-size:12px;">'+f.name+'</div><div style="font-size:10px;color:var(--t4);">'+f.amc+'</div>';tr.appendChild(td);
+    td=document.createElement('td');td.style.cssText='padding:5px;text-align:center;';
+    var lB=document.createElement('span');lB.style.cssText='display:inline-block;padding:3px 7px;border-radius:11px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid var(--p1);margin-right:3px;background:'+(r.type==='L'?'var(--p1)':'var(--p4)')+';color:'+(r.type==='L'?'#fff':'var(--p1)')+';';lB.textContent='L';
+    (function(code){lB.addEventListener('click',function(){s4SetType(code,'L');});})(f.code);
+    var sB=document.createElement('span');sB.style.cssText='display:inline-block;padding:3px 7px;border-radius:11px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid #3a7a12;background:'+(r.type==='S'?'#3a7a12':'#eef7d6')+';color:'+(r.type==='S'?'#fff':'#3a7a12')+';';sB.textContent='S';
+    (function(code){sB.addEventListener('click',function(){s4SetType(code,'S');});})(f.code);
+    td.appendChild(lB);td.appendChild(sB);tr.appendChild(td);
+    function mkI(idStr,w,val,min,max,step){var inp=document.createElement('input');inp.id=idStr;inp.type='number';inp.min=min||'0';inp.max=max||'99';inp.step=step||'1';inp.value=val||'';inp.placeholder='0';inp.style.cssText='width:'+w+'px;padding:4px 3px;border:1.5px solid var(--g4);border-radius:5px;font-size:11px;text-align:center;font-family:var(--fh);outline:none;background:'+tc+';color:'+tclr+';';inp.addEventListener('keydown',function(e){if(e.key==='ArrowUp'||e.key==='ArrowDown')e.preventDefault();});return inp;}
+    var yrTd=document.createElement('td');yrTd.style.cssText='padding:5px 4px;text-align:center;';
+    var yrI=mkI('yr-'+f.code,38,r.yr||'','0','50');
+    (function(code){yrI.addEventListener('input',function(){var r=s4GetRow(code);r.yr=parseInt(this.value)||0;r.months=r.yr*12+(r.mo||0);var m=document.getElementById('s4m-'+code);if(m)m.textContent=r.months||'0';});})(f.code);
+    yrTd.appendChild(yrI);tr.appendChild(yrTd);
+    var moTd=document.createElement('td');moTd.style.cssText='padding:5px 4px;text-align:center;';
+    var moI=mkI('mo-'+f.code,38,r.mo||'','0','11');
+    (function(code){moI.addEventListener('input',function(){var r=s4GetRow(code);r.mo=parseInt(this.value)||0;r.months=(r.yr||0)*12+r.mo;var m=document.getElementById('s4m-'+code);if(m)m.textContent=r.months||'0';});})(f.code);
+    moTd.appendChild(moI);tr.appendChild(moTd);
+    var mTd=document.createElement('td');mTd.style.cssText='padding:5px 4px;text-align:center;';
+    var mSpan=document.createElement('span');mSpan.id='s4m-'+f.code;mSpan.style.cssText='display:inline-block;padding:3px 6px;border-radius:5px;font-size:11px;font-weight:700;background:'+(r.type==='L'?'var(--p4)':r.type==='S'?'#eef7d6':'var(--g5,#f3f3f3)')+';color:'+(r.type==='L'?'var(--p1)':r.type==='S'?'#3a7a12':'var(--t4)')+';min-width:28px;text-align:center;';
+    mSpan.textContent=r.months||'0';mTd.appendChild(mSpan);tr.appendChild(mTd);
+    var cagrTd=document.createElement('td');cagrTd.style.cssText='padding:5px 4px;text-align:center;';
+    var cagrI=mkI('cagr-'+f.code,46,r.cagr||'','5','50','0.5');cagrI.placeholder='\u2014';
+    (function(code){cagrI.addEventListener('input',function(){s4GetRow(code).cagr=this.value;});})(f.code);
+    cagrTd.appendChild(cagrI);tr.appendChild(cagrTd);
+    var amtTd=document.createElement('td');amtTd.style.cssText='padding:5px 6px;text-align:right;';
+    var amtI=document.createElement('input');amtI.id='amt-'+f.code;amtI.type='number';amtI.min='0';amtI.step='1000';amtI.value=r.amt||'';amtI.placeholder='blank';amtI.style.cssText='width:74px;padding:4px 6px;border:1.5px solid var(--g4);border-radius:5px;font-size:11px;text-align:right;font-weight:700;font-family:var(--fh);outline:none;background:'+tc+';color:'+tclr+';';amtI.addEventListener('keydown',function(e){if(e.key==='ArrowUp'||e.key==='ArrowDown')e.preventDefault();});
+    (function(code){amtI.addEventListener('input',function(){s4GetRow(code).amt=this.value;});})(f.code);
+    amtTd.appendChild(amtI);tr.appendChild(amtTd);
+    var addTd=document.createElement('td');addTd.style.cssText='padding:5px 6px;text-align:center;';
+    var addBtn=document.createElement('button');
+    if(inL||inS){addBtn.style.cssText='padding:5px 9px;border:none;border-radius:6px;font-size:10px;font-weight:800;cursor:pointer;font-family:var(--fh);background:'+(inL?'var(--p4)':'#eef7d6')+';color:'+(inL?'var(--p1)':'#3a7a12')+';';addBtn.textContent='\u2705 '+(inL?'L':'S')+' \u2014 Remove';(function(code){addBtn.addEventListener('click',function(){s4Remove(code);});})(f.code);}
+    else{addBtn.style.cssText='padding:5px 9px;border:none;border-radius:6px;font-size:10px;font-weight:800;cursor:pointer;font-family:var(--fh);white-space:nowrap;background:'+(r.type==='L'?'var(--p1)':r.type==='S'?'#3a7a12':'var(--g4)')+';color:'+(r.type?'#fff':'var(--t4)')+';';addBtn.textContent=r.type?'+ Add '+r.type:'Select L/S';if(!r.type)addBtn.disabled=true;(function(fund){addBtn.addEventListener('click',function(){s4Add(fund);});})(f);}
+    addTd.appendChild(addBtn);tr.appendChild(addTd);tbody.appendChild(tr);
+  });tbl.appendChild(tbody);el.appendChild(tbl);
 }
-
-function s4ToggleCart(f,tr,btn){
-  var idx=CART.findIndex(function(c){return c.code===f.code;});
-  if(idx>=0){
-    CART.splice(idx,1);
-    tr.style.background='';
-    btn.style.background='var(--p1)';
-    btn.textContent='+ Add';
-  } else {
-    if(CART.length>=15){alert('Maximum 15 funds allowed.');return;}
-    var cagrInp=tr.querySelector('input[type="number"]');
-    var userCagr=cagrInp?parseFloat(cagrInp.value)||12:12;
-    CART.push({code:f.code,name:f.name,amc:f.amc,sub:f.subcat||S4_CAT,
-               userCagr:userCagr,
-               c5y:f.r5y||f.r3y||12,c3y:f.r3y||12,c1y:f.r1y||12,
-               risk:'Moderate',nav:f.nav||100,navDate:f.date||''});
-    tr.style.background='#eef7d6';
-    btn.style.background='var(--g1)';
-    btn.textContent='✅ Added';
-  }
-  renderS4Cart();
+function s4Add(f){
+  var r=s4GetRow(f.code);if(!r.type){alert('Select L or S first.');return;}
+  r.yr=parseInt((document.getElementById('yr-'+f.code)||{value:'0'}).value)||0;
+  r.mo=parseInt((document.getElementById('mo-'+f.code)||{value:'0'}).value)||0;
+  r.months=r.yr*12+r.mo;r.cagr=parseFloat((document.getElementById('cagr-'+f.code)||{value:''}).value)||0;
+  r.amt=parseInt((document.getElementById('amt-'+f.code)||{value:''}).value)||0;
+  if(!r.months){alert('Enter Year or Month (min 1 month).');return;}
+  if(!r.cagr||r.cagr<5||r.cagr>50){alert('CAGR must be 5\u201350%.');return;}
+  if(!r.amt||r.amt<100){alert('Enter Investment Amount (integers only, min \u20b9100).');return;}
+  if(r.type==='L'){var used=CART_L.reduce(function(s,c){return s+c.amt;},0);if(used+r.amt>ST.totalLump){alert('Exceeds Total Lumpsum \u20b9'+ST.totalLump.toLocaleString('en-IN'));return;}CART_L.push({code:f.code,name:f.name,amc:f.amc,sub:f.sub||f.subcat||S4_CAT,type:'L',yr:r.yr,mo:r.mo,months:r.months,cagr:r.cagr,amt:r.amt,userCagr:r.cagr});}
+  else{var used2=CART_S.reduce(function(s,c){return s+c.amt;},0);if(used2+r.amt>ST.totalSIP){alert('Exceeds Total SIP \u20b9'+ST.totalSIP.toLocaleString('en-IN'));return;}CART_S.push({code:f.code,name:f.name,amc:f.amc,sub:f.sub||f.subcat||S4_CAT,type:'S',yr:r.yr,mo:r.mo,months:r.months,cagr:r.cagr,amt:r.amt,userCagr:r.cagr});}
+  s4RenderCart();s4UpdateMetrics();s4UpdateValBar();var _sr=document.getElementById('s4-search');s4RenderFundList(_sr?_sr.value:'');
 }
-
-function renderS4Cart(){
-  var panel=document.getElementById('s4-cart-panel');
-  var badge=document.getElementById('s4-cart-badge');
-  var label=document.getElementById('s4-cart-label');
-  if(badge) badge.textContent=CART.length+' fund'+(CART.length!==1?'s':'');
-  if(label) label.textContent=CART.length?
-    CART.length+' fund'+(CART.length!==1?'s':'')+' in cart':
-    'Cart empty — add funds below';
-  if(panel) panel.style.display=CART.length?'block':'none';
-
-  var el=document.getElementById('s4-cart-items');
-  if(!el) return;
-  el.innerHTML='';
-
-  if(!CART.length){
-    el.innerHTML='<div style="padding:16px;text-align:center;color:var(--t4);font-size:12px;">Add funds from the list below</div>';
-    s4UpdateAmtSummary(); return;
-  }
-
-  // Column header
-  el.innerHTML='<div style="display:grid;grid-template-columns:1fr 110px 22px;gap:4px;'+
-    'padding:6px 12px;background:var(--p4);border-bottom:1.5px solid var(--g4);'+
-    'font-size:10px;font-weight:800;color:var(--p1);text-transform:uppercase;">'+
-    '<span>Fund</span><span style="text-align:center;">Inv Amount (₹)</span><span></span></div>';
-
-  var totalAmt=ST.amt||0;
-
-  CART.forEach(function(c,idx){
-    var row=document.createElement('div');
-    row.style.cssText='display:grid;grid-template-columns:1fr 110px 22px;gap:4px;'+
-      'align-items:center;padding:8px 12px;border-bottom:1px solid var(--g4);';
-
-    var info=document.createElement('div');
-    info.style.cssText='min-width:0;overflow:hidden;';
-    info.innerHTML='<div style="font-weight:700;font-size:11px;color:var(--t1);'+
-      'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+c.name+'</div>'+
-      '<div style="font-size:10px;color:var(--t4);">'+c.amc+
-      ' · <b style="color:var(--p1);">'+c.userCagr.toFixed(1)+'%</b></div>';
-
-    var amtInp=document.createElement('input');
-    amtInp.type='number'; amtInp.min='0'; amtInp.step='1000';
-    amtInp.value=c.invAmt||'';
-    amtInp.placeholder='Enter ₹';
-    amtInp.className='cart-amt-inp';
-    amtInp.dataset.idx=String(idx);
-    amtInp.style.cssText='width:100%;padding:5px 6px;border:2px solid '+
-      (c.invAmt>0?'var(--g1)':'#fca5a5')+';border-radius:6px;font-size:12px;'+
-      'text-align:right;font-weight:800;color:var(--t1);outline:none;box-sizing:border-box;';
-    amtInp.addEventListener('keydown',function(e){
-      if(e.key==='ArrowUp'||e.key==='ArrowDown') e.preventDefault();
-    });
-    amtInp.addEventListener('input',function(){
-      var i=parseInt(this.dataset.idx);
-      if(CART[i]) CART[i].invAmt=parseFloat(this.value)||0;
-      this.style.borderColor=CART[i].invAmt>0?'var(--g1)':'#fca5a5';
-      s4UpdateAmtSummary();
-    });
-
-    var rb=document.createElement('button');
-    rb.textContent='✕';
-    rb.style.cssText='background:none;border:none;color:#9ca3af;cursor:pointer;font-size:13px;font-weight:700;padding:0;';
-    (function(code){ rb.addEventListener('click',function(){
-      CART=CART.filter(function(x){return x.code!==code;});
-      renderS4Cart();
-      renderS4Funds(document.getElementById('s4-search').value.toLowerCase());
-    });})(c.code);
-
-    row.appendChild(info); row.appendChild(amtInp); row.appendChild(rb);
-    el.appendChild(row);
-  });
-
-  // Auto-split button
-  var splitBtn=document.createElement('div');
-  splitBtn.style.cssText='padding:8px 12px;background:#f0fdf4;border-top:1px solid var(--g4);'+
-    'font-size:11px;color:var(--g1);text-align:center;cursor:pointer;font-weight:700;';
-  splitBtn.innerHTML='⚡ Auto-split ₹'+totalAmt.toLocaleString('en-IN')+' equally across '+CART.length+' fund'+(CART.length!==1?'s':'');
-  splitBtn.addEventListener('click',function(){
-    if(!totalAmt){alert('Please enter Total Investment in Step 1 first.');return;}
-    var share=Math.floor(totalAmt/CART.length);
-    var inputs=document.querySelectorAll('.cart-amt-inp');
-    CART.forEach(function(c,i){
-      c.invAmt=i===CART.length-1?(totalAmt-share*(CART.length-1)):share;
-      if(inputs[i]){inputs[i].value=c.invAmt;inputs[i].style.borderColor='var(--g1)';}
-    });
-    s4UpdateAmtSummary();
-  });
-  el.appendChild(splitBtn);
-  s4UpdateAmtSummary();
+function s4Remove(code){CART_L=CART_L.filter(function(c){return c.code!==code;});CART_S=CART_S.filter(function(c){return c.code!==code;});s4RenderCart();s4UpdateMetrics();s4UpdateValBar();var _sr=document.getElementById('s4-search');s4RenderFundList(_sr?_sr.value:'');}
+function s4RenderCart(){
+  function fmt(n){n=Math.round(n);if(n>=100000)return(n/100000).toFixed(2)+' L';if(n>=1000)return(n/1000).toFixed(1)+' K';return n.toLocaleString('en-IN');}
+  var lT=CART_L.reduce(function(s,c){return s+c.amt;},0);var sT=CART_S.reduce(function(s,c){return s+c.amt;},0);
+  var lb=document.getElementById('s4-lump-badge');var sb=document.getElementById('s4-sip-badge');var lt=document.getElementById('s4-lump-total');var st2=document.getElementById('s4-sip-total');
+  if(lb)lb.textContent='\u20b9'+fmt(lT);if(sb)sb.textContent='\u20b9'+fmt(sT)+'/mo';if(lt)lt.textContent='\u20b9'+lT.toLocaleString('en-IN');if(st2)st2.textContent='\u20b9'+sT.toLocaleString('en-IN')+'/mo';
+  function renderList(cart,elId,isL){var el=document.getElementById(elId);if(!el)return;el.innerHTML=!cart.length?'<div style="padding:12px;text-align:center;font-size:11px;color:var(--t5);">No '+(isL?'lumpsum':'SIP')+' funds yet</div>':cart.map(function(c){return '<div style="display:grid;grid-template-columns:1fr auto 20px;gap:4px;align-items:center;padding:7px 12px;border-bottom:1px solid var(--g4);"><div><div style="font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+c.name+'</div><div style="font-size:9px;color:var(--t4);">'+c.yr+'Y '+c.mo+'M \xb7 '+c.months+'mo \xb7 '+c.cagr+'%</div></div><div style="font-size:12px;font-weight:800;color:'+(isL?'var(--p1)':'#3a7a12')+';white-space:nowrap;">\u20b9'+c.amt.toLocaleString('en-IN')+(isL?'':'/mo')+'</div><button data-code="'+c.code+'" onclick="s4Remove(this.dataset.code)" style="background:none;border:none;color:var(--t5);cursor:pointer;font-size:12px;font-weight:700;padding:0;">\u2715</button></div>';}).join('');}
+  renderList(CART_L,'s4-cart-l',true);renderList(CART_S,'s4-cart-s',false);
 }
-
-
-function s4RenderCart(){ renderS4Cart(); }
-
-
-function s4UpdateAmtSummary(){
-  var totalAmt = ST.amt || 0;
-  // Read invAmt from CART PANEL inputs (always in DOM, not category-dependent)
-  document.querySelectorAll('.cart-amt-inp').forEach(function(inp){
-    var idx=parseInt(inp.dataset.idx);
-    if(CART[idx]) CART[idx].invAmt=parseFloat(inp.value)||0;
-  });
-  // Read from cart panel inputs
-  document.querySelectorAll('.cart-amt-inp').forEach(function(inp){
-    var idx=parseInt(inp.dataset.idx);
-    if(CART[idx]) CART[idx].invAmt=parseFloat(inp.value)||0;
-  });
-  var cartTotal = CART.reduce(function(s,c){ return s+(c.invAmt||0); }, 0);
-  var remaining = totalAmt - cartTotal;
-  var badge = document.getElementById('s4-amt-summary');
-  if(!badge) return;
-  var pct = totalAmt > 0 ? Math.round(cartTotal/totalAmt*100) : 0;
-  var color = (remaining===0)?'var(--g1)':(remaining<0)?'#dc2626':'var(--p1)';
-  badge.innerHTML =
-    'Total: <b>₹'+totalAmt.toLocaleString('en-IN')+'</b> &nbsp;|&nbsp; '+
-    'Allocated: <b style="color:'+color+'">₹'+cartTotal.toLocaleString('en-IN')+
-    ' ('+pct+'%)</b> &nbsp;|&nbsp; '+
-    'Remaining: <b style="color:'+(remaining<0?'#dc2626':remaining===0?'var(--g1)':'var(--t1)')+'">'+
-    '₹'+remaining.toLocaleString('en-IN')+'</b>';
+function s4UpdateMetrics(){
+  var lA=CART_L.reduce(function(s,c){return s+c.amt;},0);var sA=CART_S.reduce(function(s,c){return s+c.amt;},0);
+  var lP=ST.totalLump>0?Math.min(100,Math.round(lA/ST.totalLump*100)):0;var sP=ST.totalSIP>0?Math.min(100,Math.round(sA/ST.totalSIP*100)):0;
+  var el=document.getElementById('s4-metrics');if(!el)return;function f2(n){return Math.round(n).toLocaleString('en-IN');}
+  el.innerHTML=[{l:'Lumpsum allocated',v:'\u20b9'+f2(lA),c:'var(--p1)',s:f2(lA)+' of '+f2(ST.totalLump),p:lP,pc:'var(--p1)'},{l:'SIP allocated/mo',v:'\u20b9'+f2(sA),c:'#3a7a12',s:f2(sA)+' of '+f2(ST.totalSIP),p:sP,pc:'#3a7a12'},{l:'Lumpsum funds',v:CART_L.length,c:'var(--t1)',s:CART_L.length+' fund'+(CART_L.length!==1?'s':''),p:0},{l:'SIP funds',v:CART_S.length,c:'var(--t1)',s:CART_S.length+' fund'+(CART_S.length!==1?'s':''),p:0}].map(function(m){return '<div style="background:#fff;border-radius:10px;border:1.5px solid var(--g4);padding:11px 13px;"><div style="font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;">'+m.l+'</div><div style="font-size:17px;font-weight:800;color:'+m.c+';">'+m.v+'</div>'+(m.p>0?'<div style="height:4px;background:var(--g4);border-radius:3px;margin:4px 0;overflow:hidden;"><div style="height:100%;border-radius:3px;background:'+m.pc+';width:'+m.p+'%;"></div></div>':'')+'<div style="font-size:10px;color:var(--t5);margin-top:2px;">'+m.s+'</div></div>';}).join('');
 }
-
-function s4ViewCart(){
-  var panel=document.getElementById('s4-cart-panel');
-  if(!panel) return;
-  panel.style.display=panel.style.display==='none'?'block':'none';
+function s4UpdateValBar(){
+  var lA=CART_L.reduce(function(s,c){return s+c.amt;},0);var sA=CART_S.reduce(function(s,c){return s+c.amt;},0);
+  var lOk=ST.totalLump===0||(lA===ST.totalLump&&ST.totalLump>0);var sOk=ST.totalSIP===0||(sA===ST.totalSIP&&ST.totalSIP>0);
+  var hasData=(CART_L.length+CART_S.length)>0;var allOk=lOk&&sOk&&hasData;
+  function f2(n){return Math.round(n).toLocaleString('en-IN');}
+  var msgs=[];
+  if(ST.totalLump>0){if(lA<ST.totalLump)msgs.push({c:'#d97706',t:'Lumpsum: \u20b9'+f2(lA)+' of \u20b9'+f2(ST.totalLump)+' \u2014 need \u20b9'+f2(ST.totalLump-lA)+' more'});else if(lA>ST.totalLump)msgs.push({c:'#dc2626',t:'Lumpsum over by \u20b9'+f2(lA-ST.totalLump)});else msgs.push({c:'#3a7a12',t:'\u2705 Lumpsum matched \u20b9'+f2(lA)});}
+  if(ST.totalSIP>0){if(sA<ST.totalSIP)msgs.push({c:'#d97706',t:'SIP: \u20b9'+f2(sA)+'/mo of \u20b9'+f2(ST.totalSIP)+' \u2014 need \u20b9'+f2(ST.totalSIP-sA)+' more'});else if(sA>ST.totalSIP)msgs.push({c:'#dc2626',t:'SIP over by \u20b9'+f2(sA-ST.totalSIP)+'/mo'});else msgs.push({c:'#3a7a12',t:'\u2705 SIP matched \u20b9'+f2(sA)+'/mo'});}
+  if(!hasData)msgs.push({c:'var(--t4)',t:'Add at least one fund'});
+  var el=document.getElementById('s4-val-bar');if(!el)return;
+  var isErr=msgs.some(function(m){return m.c==='#dc2626';});var bg=allOk?'#f0fff4':isErr?'#fef2f2':'#fffbeb';var bd=allOk?'#6aaa1e':isErr?'#fca5a5':'#fcd34d';
+  el.innerHTML='<div style="padding:10px 12px;background:'+bg+';border-top:1.5px solid '+bd+';">'+msgs.map(function(m){return '<div style="font-size:11px;font-weight:600;color:'+m.c+';margin-bottom:2px;">'+m.t+'</div>';}).join('')+'</div>';
+  var btn=document.getElementById('s4-gen-btn');var lbl=document.getElementById('s4-gen-label');var sub=document.getElementById('s4-gen-sub');
+  if(btn){btn.disabled=!allOk;btn.style.opacity=allOk?'1':'.4';btn.style.cursor=allOk?'pointer':'not-allowed';}
+  if(lbl)lbl.textContent=allOk?'Ready \u2014 Generate your Investment Blueprint!':'Allocate all amounts to unlock blueprint';
+  if(sub){var p=[];if(CART_L.length)p.push(CART_L.length+' Lumpsum');if(CART_S.length)p.push(CART_S.length+' SIP');sub.textContent=p.length?p.join(' + ')+' fund'+(CART_L.length+CART_S.length!==1?'s':''):'Enter lumpsum/SIP in Step 1';}
 }
-
-function validateStep4(){
-  if(CART.length===0){alert('Please add at least one fund to your cart.');return false;}
-  var totalAmt = ST.amt || 0;
-  // Read invAmt from CART PANEL inputs (always in DOM, not category-dependent)
-  document.querySelectorAll('.cart-amt-inp').forEach(function(inp){
-    var idx=parseInt(inp.dataset.idx);
-    if(CART[idx]) CART[idx].invAmt=parseFloat(inp.value)||0;
-  });
-  var cartTotal = CART.reduce(function(s,c){ return s+(c.invAmt||0); }, 0);
-  if(cartTotal===0){
-    alert('Please enter Investment Amount for each fund in the cart.\nTotal must equal ₹'+totalAmt.toLocaleString('en-IN'));
-    return false;
-  }
-  if(cartTotal !== totalAmt){
-    alert('Investment amounts do not match!\n\nTotal Investment: ₹'+totalAmt.toLocaleString('en-IN')+
-          '\nCart Total: ₹'+cartTotal.toLocaleString('en-IN')+
-          '\nDifference: ₹'+(totalAmt-cartTotal).toLocaleString('en-IN')+
-          '\n\nPlease adjust fund amounts to match exactly.');
-    return false;
-  }
-  var n=CART.length;
-  var def=Math.floor(100/n);
-  var rem=100-def*(n-1);
-  ST.selFunds=CART.map(function(c){
-    return {
-      code:c.code, name:c.name, amc:c.amc, sub:c.sub,
-      userCagr:c.userCagr, cagr3y:c.userCagr,
-      invAmt:c.invAmt||0,
-      nav:c.nav||100, navDate:c.navDate||''
-    };
-  });
-  CMB.rows=CART.map(function(c,i){
-    var pct=totalAmt>0?Math.round((c.invAmt||0)/totalAmt*100):def;
-    return {id:i+1, type:'sip',
-      fund:{code:c.code,name:c.name,amc:c.amc,nav:c.nav||100,
-            navDate:c.navDate||'',cagr3y:c.userCagr},
-      cagr:c.userCagr, pct:pct, invAmt:c.invAmt||0};
-  });
-  return true;
+function s4Generate(){
+  var allFunds=[].concat(CART_L).concat(CART_S);if(!allFunds.length){alert('Add at least one fund.');return;}
+  ST.selFunds=allFunds.map(function(c){return {code:c.code,name:c.name,amc:c.amc,sub:c.sub,type:c.type,yr:c.yr,mo:c.mo,months:c.months,userCagr:c.cagr,cagr3y:c.cagr,invAmt:c.amt,nav:100,navDate:'',fund:{n:c.name,amc:c.amc,c3y:c.cagr,c1y:c.cagr,nav:100,navDate:'',risk:'Moderate'}};});
+  ST.sipAmts=allFunds.map(function(c){return c.type==='S'?c.amt:0;});ST.lumpAmts=allFunds.map(function(c){return c.type==='L'?c.amt:0;});
+  ST.userCAGR=allFunds.map(function(c){return c.cagr;});ST.allocs=allFunds.map(function(c){var tot=c.type==='L'?ST.totalLump:ST.totalSIP;return tot>0?Math.round(c.amt/tot*100):Math.floor(100/allFunds.length);});
+  ST.totalMos=Math.max.apply(null,allFunds.map(function(c){return c.months;}));ST.yrs=Math.floor(ST.totalMos/12);ST.mos=ST.totalMos%12;ST.amt=ST.totalLump+(ST.totalSIP*12*(ST.totalMos/12));
+  generate();
 }
+function buildStep4(){buildStep4Cart();}
+function validateStep4(){if(!CART_L.length&&!CART_S.length){alert('Add at least one fund.');return false;}return true;}
 
-// Compat
-function addToCartByName(name){}
-function removeFromCart(code){ CART=CART.filter(function(c){return c.code!==code;}); renderS4Cart(); }
-function renderCart(){ renderS4Cart(); }
 
 
 function buildStep4(){ buildStep4Cart(); }
