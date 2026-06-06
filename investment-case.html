@@ -789,6 +789,13 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
       <div id="s4-cart-items"></div>
     </div>
 
+    <!-- Amount Summary -->
+    <div id="s4-amt-summary"
+         style="background:#fff;border:1.5px solid var(--g4);border-radius:8px;
+                padding:8px 14px;margin-bottom:8px;font-size:12px;color:var(--t2);">
+      Enter investment amount and fill Total Investment in Step 1
+    </div>
+
     <!-- API Load Status -->
     <div id="s4-status" style="font-size:11px;color:var(--t4);
          text-align:center;padding:4px;margin-bottom:8px;"></div>
@@ -1593,13 +1600,15 @@ function renderS4Funds(searchQ){
   var thead=document.createElement('thead');
   thead.innerHTML='<tr style="background:var(--p4);position:sticky;top:0;">'+
     '<th style="padding:9px 8px;text-align:left;font-size:10px;font-weight:800;'+
-      'color:var(--t4);width:36px;">#</th>'+
+      'color:var(--t4);width:32px;">#</th>'+
     '<th style="padding:9px 10px;text-align:left;font-size:10px;font-weight:800;'+
       'color:var(--t4);">Fund Name</th>'+
     '<th style="padding:9px 8px;text-align:center;font-size:10px;font-weight:800;'+
-      'color:var(--t4);width:60px;">CAGR %<br><span style="font-weight:400;font-size:9px;">User Input</span></th>'+
+      'color:var(--t4);width:90px;">Inv Amount ₹<br><span style="font-weight:400;font-size:9px;">your split</span></th>'+
     '<th style="padding:9px 8px;text-align:center;font-size:10px;font-weight:800;'+
-      'color:var(--t4);width:80px;">Action</th>'+
+      'color:var(--t4);width:55px;">CAGR %<br><span style="font-weight:400;font-size:9px;">expected</span></th>'+
+    '<th style="padding:9px 8px;text-align:center;font-size:10px;font-weight:800;'+
+      'color:var(--t4);width:70px;">Add to Cart</th>'+
     '</tr>';
   tbl.appendChild(thead);
 
@@ -1607,7 +1616,7 @@ function renderS4Funds(searchQ){
   funds.forEach(function(f,i){
     var inCart=CART.some(function(c){return c.code===f.code;});
     var cartItem=inCart?CART.find(function(c){return c.code===f.code;}):null;
-    var userCagr=cartItem?cartItem.userCagr:12;
+    var userCagr=cartItem?cartItem.userCagr:10;
 
     var tr=document.createElement('tr');
     tr.style.cssText='border-bottom:1px solid var(--g4);'+
@@ -1627,6 +1636,26 @@ function renderS4Funds(searchQ){
       f.name+'</div>'+
       '<div style="font-size:10px;color:var(--t4);">'+f.amc+'</div>';
     tr.appendChild(tdName);
+
+        // Investment Amount
+    var tdAmt=document.createElement('td');
+    tdAmt.style.cssText='padding:6px 8px;text-align:center;';
+    var amtInp=document.createElement('input');
+    amtInp.type='number'; amtInp.min='0'; amtInp.step='1000';
+    amtInp.value=(cartItem&&cartItem.invAmt)?cartItem.invAmt:'';
+    amtInp.placeholder='0';
+    amtInp.style.cssText='width:82px;padding:4px 5px;border:1.5px solid var(--g4);'+
+      'border-radius:6px;font-size:11px;text-align:right;font-weight:700;color:var(--t1);outline:none;';
+    amtInp.addEventListener('keydown',function(e){
+      if(e.key==='ArrowUp'||e.key==='ArrowDown') e.preventDefault();
+    });
+    (function(fund){ amtInp.addEventListener('input',function(){
+      var v=parseFloat(this.value)||0;
+      var ci=CART.find(function(c){return c.code===fund.code;});
+      if(ci){ ci.invAmt=v; s4UpdateAmtSummary(); s4RenderCart(); }
+    }); })(f);
+    tdAmt.appendChild(amtInp);
+    tr.appendChild(tdAmt);
 
     // CAGR input
     var tdCagr=document.createElement('td');
@@ -1731,6 +1760,24 @@ function renderS4Cart(){
     itemsEl.appendChild(row);
   });
 }
+function s4RenderCart(){ renderS4Cart(); }
+
+
+function s4UpdateAmtSummary(){
+  var totalAmt = ST.amt || 0;
+  var cartTotal = CART.reduce(function(s,c){ return s+(c.invAmt||0); }, 0);
+  var remaining = totalAmt - cartTotal;
+  var badge = document.getElementById('s4-amt-summary');
+  if(!badge) return;
+  var pct = totalAmt > 0 ? Math.round(cartTotal/totalAmt*100) : 0;
+  var color = (remaining===0)?'var(--g1)':(remaining<0)?'#dc2626':'var(--p1)';
+  badge.innerHTML =
+    'Total: <b>₹'+totalAmt.toLocaleString('en-IN')+'</b> &nbsp;|&nbsp; '+
+    'Allocated: <b style="color:'+color+'">₹'+cartTotal.toLocaleString('en-IN')+
+    ' ('+pct+'%)</b> &nbsp;|&nbsp; '+
+    'Remaining: <b style="color:'+(remaining<0?'#dc2626':remaining===0?'var(--g1)':'var(--t1)')+'">'+
+    '₹'+remaining.toLocaleString('en-IN')+'</b>';
+}
 
 function s4ViewCart(){
   var panel=document.getElementById('s4-cart-panel');
@@ -1740,19 +1787,36 @@ function s4ViewCart(){
 
 function validateStep4(){
   if(CART.length===0){alert('Please add at least one fund to your cart.');return false;}
+  var totalAmt = ST.amt || 0;
+  var cartTotal = CART.reduce(function(s,c){ return s+(c.invAmt||0); }, 0);
+  if(cartTotal===0){
+    alert('Please enter Investment Amount for each fund in the cart.\nTotal must equal ₹'+totalAmt.toLocaleString('en-IN'));
+    return false;
+  }
+  if(cartTotal !== totalAmt){
+    alert('Investment amounts do not match!\n\nTotal Investment: ₹'+totalAmt.toLocaleString('en-IN')+
+          '\nCart Total: ₹'+cartTotal.toLocaleString('en-IN')+
+          '\nDifference: ₹'+(totalAmt-cartTotal).toLocaleString('en-IN')+
+          '\n\nPlease adjust fund amounts to match exactly.');
+    return false;
+  }
   var n=CART.length;
   var def=Math.floor(100/n);
   var rem=100-def*(n-1);
-  ST.selFunds=CART.map(function(c,i){
-    return {code:c.code,name:c.name,amc:c.amc,sub:c.sub,
-            userCagr:c.userCagr,cagr3y:c.userCagr,
-            c1y:c.c1y,c3y:c.c3y,c5y:c.c5y};
+  ST.selFunds=CART.map(function(c){
+    return {
+      code:c.code, name:c.name, amc:c.amc, sub:c.sub,
+      userCagr:c.userCagr, cagr3y:c.userCagr,
+      invAmt:c.invAmt||0,
+      nav:c.nav||100, navDate:c.navDate||''
+    };
   });
   CMB.rows=CART.map(function(c,i){
-    return {id:i+1,type:'sip',
-      fund:{code:c.code,name:c.name,amc:c.amc,nav:c.nav,
-            navDate:c.navDate,cagr3y:c.userCagr},
-      cagr:c.userCagr, pct:i===n-1?rem:def};
+    var pct=totalAmt>0?Math.round((c.invAmt||0)/totalAmt*100):def;
+    return {id:i+1, type:'sip',
+      fund:{code:c.code,name:c.name,amc:c.amc,nav:c.nav||100,
+            navDate:c.navDate||'',cagr3y:c.userCagr},
+      cagr:c.userCagr, pct:pct, invAmt:c.invAmt||0};
   });
   return true;
 }
@@ -1813,70 +1877,78 @@ function togNFO(i){
 // ══ STEP 5 ══
 function buildStep5(){
   const n=ST.selFunds.length;
-  const def=Math.floor(100/n),rem=100-def*(n-1);
+  if(!n){alert('No funds selected.');return;}
+  const def=Math.floor(100/n), rem=100-def*(n-1);
   ST.allocs=ST.selFunds.map((_,i)=>i===n-1?rem:def);
-  const defSIP=Math.max(100,Math.floor(ST.amt*.6/n/100)*100);
-  const defLump=Math.max(0,Math.floor(ST.amt*.4/n/1000)*1000);
-  const fm=ST.stpFreq==="weekly"?4.33:ST.stpFreq==="fortnightly"?2.17:1;
-  const defSTP=Math.max(100,Math.floor(ST.amt/n/(fm*12)/100)*100);
-  ST.sipAmts=ST.selFunds.map(()=>defSIP);ST.lumpAmts=ST.selFunds.map(()=>defLump);ST.stpAmts=ST.selFunds.map(()=>defSTP);
-  document.getElementById("tot-pct").textContent="100%";
+  ST.sipAmts=ST.selFunds.map(function(f){
+    return Math.max(100,Math.floor((f.invAmt||ST.amt/n)*.6/100)*100);
+  });
+  ST.lumpAmts=ST.selFunds.map(function(f){
+    return Math.max(0,Math.floor((f.invAmt||ST.amt/n)*.4/1000)*1000);
+  });
+  ST.stpAmts=ST.selFunds.map(function(){return 0;});
+  if(!ST.userCAGR||ST.userCAGR.length!==n)
+    ST.userCAGR=ST.selFunds.map(function(f){return f.userCagr||10;});
 
-  document.getElementById("alloc-rows").innerHTML=ST.selFunds.map((f,i)=>{
-    const ac=ACS.find(x=>x.id===f.classId);
-    return `<div class="arow">
-      <div class="anum">${i+1}</div>
-      <div class="ainfo">
-        <div class="aname">${f.fund.n}</div>
-        <div class="acat">${ac?.icon} ${ac?.nm} · ${f.fund.amc}${f.isNFO?" · NFO":""}</div>
-        <input type="number" min="1" max="100" step="1" value="${ST.allocs[i]}" oninput="updA(${i},this.value)" style="width:60px;padding:5px 8px;border:1.5px solid #d4eda0;border-radius:6px;font-family:var(--fm);font-size:13px;font-weight:700;color:#1a1240;background:#fff;outline:none;text-align:center;">
-      </div>
-      <div class="aval" id="av${i}">${ST.allocs[i]}%</div>
-    </div>`;
-  }).join("");
+  // ── Allocation rows ──────────────────────────────────────
+  var allocEl=document.getElementById('alloc-rows');
+  if(allocEl){
+    allocEl.innerHTML=ST.selFunds.map(function(f,i){
+      return '<div class="arow">'+
+        '<div class="anum">'+(i+1)+'</div>'+
+        '<div class="ainfo">'+
+          '<div class="aname">'+f.name+'</div>'+
+          '<div class="acat">'+f.amc+' · '+f.sub+'</div>'+
+          '<input type="number" min="1" max="100" step="1" value="'+ST.allocs[i]+'" '+
+            'oninput="updA('+i+',this.value)" '+
+            'style="width:60px;padding:5px 8px;border:1.5px solid #d4eda0;border-radius:6px;'+
+            'font-size:13px;font-weight:700;color:#1a1240;background:#fff;outline:none;text-align:center;">'+
+        '</div>'+
+        '<div class="aval" id="av'+i+'">'+ST.allocs[i]+'%</div>'+
+      '</div>';
+    }).join('');
+  }
 
-  const isSTP=ST.mode==="stp",isCombo=ST.mode==="combo";
-  const fl={weekly:"Weekly",fortnightly:"Fortnightly",monthly:"Monthly"}[ST.stpFreq];
+  var totEl=document.getElementById('tot-pct');
+  if(totEl) totEl.textContent='100%';
 
-  document.getElementById("fund-amounts").innerHTML=ST.selFunds.map((f,i)=>{
-    const ac=ACS.find(x=>x.id===f.classId);
-    let inputs="";
-    if(isSTP){
-      inputs=`<div class="fi-grid3">
-        <div class="fi-cell"><label>Park Amount (₹)</label><input type="number" id="liq${i}" value="${Math.floor(ST.amt/n/1000)*1000}" min="100" step="1000" oninput="ST.lumpAmts[${i}]=+this.value"></div>
-        <div class="fi-cell"><label>${fl} STP Amount (₹)</label><input type="number" id="stp${i}" value="${ST.stpAmts[i]}" min="100" step="100" oninput="ST.stpAmts[${i}]=+this.value"></div>
-        <div class="fi-cell"><label>STP Target</label><input type="text" value="${getTarget(i)}" readonly style="color:var(--g1);background:var(--g5);"></div>
-      </div>`;
-    } else if(isCombo){
-      inputs=`<div class="fi-grid3">
-        <div class="fi-cell"><label>Monthly SIP (₹)</label><input type="number" id="sip${i}" value="${ST.sipAmts[i]}" min="100" step="100" oninput="ST.sipAmts[${i}]=+this.value"></div>
-        <div class="fi-cell"><label>Lumpsum / Park (₹)</label><input type="number" id="liq${i}" value="${ST.lumpAmts[i]}" min="0" step="1000" oninput="ST.lumpAmts[${i}]=+this.value"></div>
-        <div class="fi-cell"><label>${fl} STP (₹)</label><input type="number" id="stp${i}" value="${ST.stpAmts[i]}" min="0" step="100" oninput="ST.stpAmts[${i}]=+this.value"></div>
-      </div>`;
-    } else {
-      inputs=`<div class="fi-grid">
-        <div class="fi-cell"><label>Monthly SIP Amount (₹)</label><input type="number" id="sip${i}" value="${ST.sipAmts[i]}" min="100" step="100" oninput="ST.sipAmts[${i}]=+this.value"></div>
-        <div class="fi-cell"><label>Lumpsum Amount (₹)</label><input type="number" id="lmp${i}" value="${ST.lumpAmts[i]}" min="0" step="1000" oninput="ST.lumpAmts[${i}]=+this.value"></div>
-      </div>`;
-    }
-    const defC = f.isNFO ? 12 : Math.min(f.fund.c3y||12, 18);
-    if(!ST.userCAGR[i]) ST.userCAGR[i] = defC;
-    return `<div class="fi-card">
-      <div class="fi-hdr">Fund ${i+1}: <span>${f.fund.n}</span>${f.isNFO?" 🔥":""}</div>
-      <div class="nav-hl">📊 Last NAV: ₹${f.fund.nav.toFixed(f.fund.nav>100?2:4)} &nbsp;|&nbsp; Date: ${f.fund.navDate} &nbsp;|&nbsp; Historical 3Y: ${f.fund.c3y||0}%</div>
-      <div class="cagr-inp-wrap">
-        <div class="cagr-label">🎯 Your Expected CAGR (%)</div>
-        <input class="cagr-inp" type="text" id="cagr-${i}"
-          value="${defC}"
-          inputmode="decimal" placeholder="12"
-          oninput="validateCAGR(this);updateCAGR(${i},this.value)"
-          onkeydown="allowNumKeys(event,true)">
-        <div class="cagr-hint">Historical 3Y = <b>${f.fund.c3y||0}%</b>. For conservative planning use <b>10–14%</b> equity, <b>6–8%</b> debt. This CAGR drives all projections.</div>
-      </div>
-      ${inputs}
-    </div>`;
-  }).join("");
+  // ── Per-fund amount cards ─────────────────────────────────
+  var fundAmtEl=document.getElementById('fund-amounts');
+  if(!fundAmtEl) return;
+
+  fundAmtEl.innerHTML=ST.selFunds.map(function(f,i){
+    var cagr=f.userCagr||10;
+    var invAmt=f.invAmt||Math.round(ST.amt/n);
+    var sipAmt=ST.sipAmts[i];
+    var lmpAmt=ST.lumpAmts[i];
+    return '<div class="fi-card">'+
+      '<div class="fi-hdr">Fund '+(i+1)+': <span>'+f.name+'</span></div>'+
+      '<div class="nav-hl">'+
+        '🏢 '+f.amc+' &nbsp;|&nbsp; '+
+        '📂 '+f.sub+' &nbsp;|&nbsp; '+
+        '💰 Investment: ₹'+invAmt.toLocaleString('en-IN')+
+      '</div>'+
+      '<div class="cagr-inp-wrap">'+
+        '<div class="cagr-label">🎯 Expected CAGR (%)</div>'+
+        '<input class="cagr-inp" type="number" id="cagr-'+i+'" value="'+cagr+'"'+
+          ' min="1" max="50" step="0.5"'+
+          ' oninput="updateCAGR('+i+',this.value)"'+
+          ' style="width:80px;padding:5px 8px;border:1.5px solid var(--g4);border-radius:8px;'+
+          'font-size:14px;font-weight:800;color:var(--p1);outline:none;text-align:center;">'+
+        '<div class="cagr-hint">Based on your input CAGR of '+cagr+'%. Adjust if needed for planning.</div>'+
+      '</div>'+
+      '<div class="fi-grid">'+
+        '<div class="fi-cell"><label>Monthly SIP (₹)</label>'+
+          '<input type="number" id="sip'+i+'" value="'+sipAmt+'" min="100" step="100"'+
+          ' oninput="ST.sipAmts['+i+']=+this.value"></div>'+
+        '<div class="fi-cell"><label>Lumpsum (₹)</label>'+
+          '<input type="number" id="lmp'+i+'" value="'+lmpAmt+'" min="0" step="1000"'+
+          ' oninput="ST.lumpAmts['+i+']=+this.value"></div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
 }
+
 
 function getTarget(i){const nL=ST.selFunds.filter(f=>f.classId!=="liquid");return nL[i]?.fund.n||"Target Equity Fund";}
 function updA(i,v){
