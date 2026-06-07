@@ -764,7 +764,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
   </div>
 
   <!-- STEP 4: FUND SELECTION -->
-  <div class="panel" id="step4">
+  <div class="panel" id="step4" style="margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);padding:0 16px;box-sizing:border-box;width:100vw;">
     <div class="ptitle">Select <em>Funds</em></div>
     <div class="psub">Choose L=Lumpsum or S=SIP · Set Year &amp; Month · Enter CAGR &amp; Amount · Add to cart · Generate Blueprint</div>
 
@@ -805,7 +805,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
     </div>
 
     <!-- ── 3-COLUMN LAYOUT ── -->
-    <div style="display:grid;grid-template-columns:170px 1fr 300px;gap:14px;align-items:start;">
+    <div style="display:grid;grid-template-columns:130px 1fr 240px;gap:8px;align-items:start;">
 
       <!-- LEFT: Categories -->
       <div style="background:#fff;border:1.5px solid var(--g4);border-radius:12px;overflow:hidden;position:sticky;top:10px;">
@@ -845,7 +845,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
         <!-- Lumpsum cart -->
         <div style="padding:10px 13px;background:var(--p1);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
           <span style="font-size:12px;font-weight:800;color:#fff;">🏦 Lumpsum (L)</span>
-          <span id="s4-lump-badge" style="font-size:10px;font-weight:800;background:rgba(255,255,255,.22);color:#fff;padding:3px 9px;border-radius:10px;">₹0</span>
+          <span id="s4-lump-badge" style="font-size:10px;font-weight:800;background:rgba(255,255,255,.22);color:#fff;padding:2px 7px;border-radius:10px;">₹0</span>
         </div>
         <div id="s4-cart-l" style="min-height:60px;overflow-y:auto;max-height:190px;background:#fff;"></div>
         <div style="padding:7px 13px;background:var(--p4);border-top:1px solid var(--g4);display:flex;justify-content:space-between;font-size:12px;flex-shrink:0;">
@@ -855,7 +855,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
         <!-- SIP cart -->
         <div style="padding:10px 13px;background:#3a7a12;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
           <span style="font-size:12px;font-weight:800;color:#fff;">📅 SIP Monthly (S)</span>
-          <span id="s4-sip-badge" style="font-size:10px;font-weight:800;background:rgba(255,255,255,.22);color:#fff;padding:3px 9px;border-radius:10px;">₹0/mo</span>
+          <span id="s4-sip-badge" style="font-size:10px;font-weight:800;background:rgba(255,255,255,.22);color:#fff;padding:2px 7px;border-radius:10px;">₹0/mo</span>
         </div>
         <div id="s4-cart-s" style="min-height:60px;overflow-y:auto;max-height:190px;background:#fff;"></div>
         <div style="padding:7px 13px;background:#eef7d6;border-top:1px solid #c5e8a0;display:flex;justify-content:space-between;font-size:12px;flex-shrink:0;">
@@ -1537,9 +1537,9 @@ function s4RenderCatList(){
   var el=document.getElementById('s4-cat-list');if(!el)return;
   el.innerHTML='';var lastG='';
   CART_CATS.forEach(function(c){
-    if(c.g!==lastG){var h=document.createElement('div');h.style.cssText='padding:5px 12px 2px;font-size:9px;font-weight:800;color:var(--t5);text-transform:uppercase;letter-spacing:.7px;margin-top:4px;';h.textContent=c.g;el.appendChild(h);lastG=c.g;}
+    if(c.g!==lastG){var h=document.createElement('div');h.style.cssText='padding:4px 10px 2px;font-size:9px;font-weight:800;color:var(--t5);text-transform:uppercase;letter-spacing:.6px;margin-top:3px;';h.textContent=c.g;el.appendChild(h);lastG=c.g;}
     var btn=document.createElement('div');var sel=(c.id===S4_CAT);
-    btn.style.cssText='padding:8px 14px;font-size:12px;cursor:pointer;border-left:3px solid '+(sel?'var(--p1)':'transparent')+';background:'+(sel?'var(--p4)':'transparent')+';color:'+(sel?'var(--p1)':'var(--t2)')+';font-weight:'+(sel?'700':'400')+';border-bottom:1px solid var(--g4);';
+    btn.style.cssText='padding:7px 10px;font-size:11px;cursor:pointer;border-left:3px solid '+(sel?'var(--p1)':'transparent')+';background:'+(sel?'var(--p4)':'transparent')+';color:'+(sel?'var(--p1)':'var(--t2)')+';font-weight:'+(sel?'700':'400')+';border-bottom:1px solid var(--g4);';
     btn.textContent=c.id;btn.dataset.cid=c.id;
     btn.addEventListener('click',function(){S4_CAT=this.dataset.cid;var sr=document.getElementById('s4-search');if(sr)sr.value='';s4RenderCatList();s4RenderFundList();});
     el.appendChild(btn);
@@ -1557,7 +1557,7 @@ function s4RenderFundList(q){
   el.innerHTML='';
   if(!funds.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t4);">'+(s4Loaded?'No funds':'⏳ Loading...')+'</div>';return;}
   var tbl=document.createElement('table');
-  tbl.style.cssText='width:100%;border-collapse:collapse;font-size:11px;min-width:580px;';
+  tbl.style.cssText='width:100%;border-collapse:collapse;font-size:11px;min-width:500px;';
   tbl.innerHTML='<thead><tr style="background:var(--p4);">'+
     '<th style="padding:7px;font-size:9px;font-weight:800;color:var(--t4);width:26px;text-align:left;">Sr</th>'+
     '<th style="padding:7px 10px;font-size:9px;font-weight:800;color:var(--t4);text-align:left;">Fund Name</th>'+
