@@ -699,7 +699,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
           <div class="inp-label" style="font-size:13px;margin-bottom:8px;color:var(--p1);">▣ Total Lumpsum (one-time) ₹</div>
           <input class="inp-field" id="v-lump" type="number" placeholder="e.g. 200000" min="0" step="1000"
             style="font-size:18px;padding:14px 16px;height:54px;border-color:var(--p1);background:var(--p4);color:var(--p1);font-weight:800;">
-          <div style="font-size:11px;color:var(--t4);margin-top:5px;">One-time · split across L (Lumpsum) funds</div>
+          <div style="font-size:11px;color:var(--t4);margin-top:5px;">One-time · split across L funds. For STP: amount to park in Liquid Fund</div>
         </div>
         <div class="inp-group">
           <div class="inp-label" style="font-size:13px;margin-bottom:8px;color:#3a7a12;">▣ Total Monthly SIP ₹</div>
@@ -1227,9 +1227,20 @@ const ACT_SUB={};
 // ══ MODE ══
 function setMode(m){
   ST.mode=m;
-  ["sip","stp","combo"].forEach(x=>document.getElementById("mb-"+x).classList.toggle("active",x===m));
+  ["sip","stp","combo"].forEach(x=>{var el=document.getElementById("mb-"+x);if(el)el.classList.toggle("active",x===m);});
   const fb=document.getElementById("stp-freq-box");
   if(fb) fb.style.display=(m==="stp"||m==="combo")?"block":"none";
+  // Custom = Create My Blueprint — show its own section
+  const cs=document.getElementById("custom-section");
+  if(m==="custom"){
+    if(cs){
+      cs.style.display="block";
+      setTimeout(function(){cs.scrollIntoView({behavior:"smooth",block:"start"});},120);
+      loadAMFIForCMB();
+    }
+  } else {
+    if(cs) cs.style.display="none";
+  }
 }
 
 // ══ STEPS ══
@@ -1256,8 +1267,22 @@ function validateStep(n){
     ST.name=document.getElementById('v-name').value||'Valued Investor';
     ST.totalLump=parseFloat(document.getElementById('v-lump').value)||0;
     ST.totalSIP=parseFloat(document.getElementById('v-sip').value)||0;
-    ST.amt=ST.totalLump;
-    if(ST.totalLump===0&&ST.totalSIP===0){alert('Enter Total Lumpsum or Total Monthly SIP.');return false;}
+    ST.amt=ST.totalLump||ST.totalSIP;
+    // Custom mode goes to its own section — skip step flow validation
+    if(ST.mode==='custom') return true;
+    // STP needs at least a lumpsum amount (parked in liquid fund)
+    if(ST.mode==='stp'){
+      if(ST.totalLump===0){
+        alert('STP Mode: Please enter the amount to park in Liquid Fund in the "Total Lumpsum" field.');
+        return false;
+      }
+      return true;
+    }
+    // SIP, Combo: need at least one amount
+    if(ST.totalLump===0&&ST.totalSIP===0){
+      alert('Please enter Total Lumpsum, Total Monthly SIP, or both.');
+      return false;
+    }
   }
   return true;
 }
