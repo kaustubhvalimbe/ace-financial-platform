@@ -687,29 +687,29 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
   <!-- STEP 1 -->
   <div class="panel show" id="step1">
     <div class="ptitle">Investor <em>Details</em></div>
-    <div class="psub">Enter name, total lumpsum and total monthly SIP. Year &amp; Month are set per fund.</div>
+    <div class="psub">Enter name, total lumpsum one-time amount and total monthly SIP. Year &amp; Month are set per fund in the next step.</div>
     <div class="inp-card">
-      <div class="inp-row">
+      <div class="inp-row" style="grid-template-columns:1fr 1fr 1fr;gap:20px;">
         <div class="inp-group">
-          <div class="inp-label">Investor Name</div>
-          <input class="inp-field" id="v-name" type="text" placeholder="Full name" value="Valued Investor">
-        </div>
-        <div class="inp-group"></div>
-        <div class="inp-group">
-          <div class="inp-label" style="color:var(--p1)">▣ Total Lumpsum (one-time) ₹</div>
-          <input class="inp-field" id="v-lump" type="number" placeholder="0" min="0" step="1000"
-            style="border-color:var(--p1);background:var(--p4);color:var(--p1);font-weight:700;">
-          <div style="font-size:11px;color:var(--t4);margin-top:3px;">Split across L funds in Fund Selection</div>
+          <div class="inp-label" style="font-size:13px;margin-bottom:8px;">Investor Name</div>
+          <input class="inp-field" id="v-name" type="text" placeholder="Type investor name here..."
+            style="font-size:15px;padding:14px 16px;height:54px;">
         </div>
         <div class="inp-group">
-          <div class="inp-label" style="color:#3a7a12">▣ Total Monthly SIP ₹</div>
-          <input class="inp-field" id="v-sip" type="number" placeholder="0" min="0" step="500"
-            style="border-color:#6aaa1e;background:#eef7d6;color:#3a7a12;font-weight:700;">
-          <div style="font-size:11px;color:var(--t4);margin-top:3px;">Split across S funds in Fund Selection</div>
+          <div class="inp-label" style="font-size:13px;margin-bottom:8px;color:var(--p1);">▣ Total Lumpsum (one-time) ₹</div>
+          <input class="inp-field" id="v-lump" type="number" placeholder="e.g. 200000" min="0" step="1000"
+            style="font-size:18px;padding:14px 16px;height:54px;border-color:var(--p1);background:var(--p4);color:var(--p1);font-weight:800;">
+          <div style="font-size:11px;color:var(--t4);margin-top:5px;">One-time · split across L (Lumpsum) funds</div>
+        </div>
+        <div class="inp-group">
+          <div class="inp-label" style="font-size:13px;margin-bottom:8px;color:#3a7a12;">▣ Total Monthly SIP ₹</div>
+          <input class="inp-field" id="v-sip" type="number" placeholder="e.g. 20000" min="0" step="500"
+            style="font-size:18px;padding:14px 16px;height:54px;border-color:#6aaa1e;background:#eef7d6;color:#3a7a12;font-weight:800;">
+          <div style="font-size:11px;color:var(--t4);margin-top:5px;">Monthly · split across S (SIP) funds</div>
         </div>
       </div>
-      <div style="background:var(--p4);border-radius:8px;padding:10px 14px;font-size:11px;color:var(--p2);margin-top:10px;">
-        ℹ️ <strong>Year &amp; Month are now per fund</strong> — each fund has its own investment horizon.
+      <div style="background:var(--p4);border-radius:8px;padding:10px 16px;font-size:12px;color:var(--p2);margin-top:14px;">
+        ℹ️ <strong>Year &amp; Month are entered per fund</strong> in the Fund Selection step — each fund gets its own investment horizon.
       </div>
     </div>
     <div class="nav-btns"><button class="btn-next" onclick="goStep(2)">Next: Plan Preference →</button></div>
@@ -766,56 +766,109 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
   <!-- STEP 4: FUND SELECTION -->
   <div class="panel" id="step4">
     <div class="ptitle">Select <em>Funds</em></div>
-    <div class="psub">Choose L=Lumpsum or S=SIP · Year &amp; Month per fund · CAGR · Amount · Add · Generate Blueprint inline</div>
-    <div id="s4-metrics" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;"></div>
-    <div style="display:grid;grid-template-columns:158px 1fr 268px;gap:12px;min-height:480px;">
-      <div style="background:#fff;border:1.5px solid var(--g4);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;">
-        <div style="padding:9px 13px;background:var(--p2);font-size:10px;font-weight:800;color:#fff;letter-spacing:.6px;text-transform:uppercase;flex-shrink:0;">Categories</div>
-        <div id="s4-cat-list" style="flex:1;overflow-y:auto;"></div>
+    <div class="psub">Choose L=Lumpsum or S=SIP · Set Year &amp; Month · Enter CAGR &amp; Amount · Add to cart · Generate Blueprint</div>
+
+    <!-- ── METRICS + GENERATE BUTTON (Fix 4: button in same row) ── -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:12px;margin-bottom:14px;align-items:stretch;">
+      <div style="background:#fff;border-radius:10px;border:1.5px solid var(--g4);padding:12px 14px;">
+        <div style="font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Lumpsum allocated</div>
+        <div style="font-size:18px;font-weight:800;color:var(--p1);" id="m-lump-alloc">₹0</div>
+        <div style="height:4px;background:var(--g4);border-radius:3px;margin:5px 0;overflow:hidden;"><div id="m-lump-prog" style="height:100%;border-radius:3px;background:var(--p1);width:0%;transition:width .3s;"></div></div>
+        <div style="font-size:10px;color:var(--t5);" id="m-lump-sub">0 of 0</div>
       </div>
-      <div style="background:#fff;border:1.5px solid var(--g4);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;">
-        <div style="padding:10px 14px;background:var(--p4);border-bottom:1.5px solid var(--g4);flex-shrink:0;">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
-            <div><div style="font-weight:800;font-size:14px;color:var(--p2);" id="s4-cat-title">← Select a category</div>
-            <div style="font-size:10px;color:var(--t4);" id="s4-cat-sub">Regular · Growth</div></div>
-            <div id="s4-status" style="font-size:11px;color:var(--t4);"></div>
-          </div>
-          <input type="text" id="s4-search" placeholder="🔍 Search fund name or AMC across all categories..."
-            oninput="s4Search(this.value)"
-            style="width:100%;padding:9px 12px;border:1.5px solid var(--p1);border-radius:8px;font-size:13px;outline:none;font-family:var(--fh);background:#fff;color:var(--t1);">
-        </div>
-        <div style="flex:1;overflow-y:auto;overflow-x:auto;max-height:420px;"><div id="s4-fund-list">
-          <div style="text-align:center;padding:40px;color:var(--t4);"><div style="font-size:32px;">👈</div><div style="font-weight:700;margin-top:8px;">Select a category from the left</div></div>
-        </div></div>
+      <div style="background:#fff;border-radius:10px;border:1.5px solid var(--g4);padding:12px 14px;">
+        <div style="font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">SIP allocated /month</div>
+        <div style="font-size:18px;font-weight:800;color:#3a7a12;" id="m-sip-alloc">₹0</div>
+        <div style="height:4px;background:var(--g4);border-radius:3px;margin:5px 0;overflow:hidden;"><div id="m-sip-prog" style="height:100%;border-radius:3px;background:#6aaa1e;width:0%;transition:width .3s;"></div></div>
+        <div style="font-size:10px;color:var(--t5);" id="m-sip-sub">0 of 0</div>
       </div>
-      <div style="display:flex;flex-direction:column;border:1.5px solid var(--g4);border-radius:12px;overflow:hidden;">
-        <div style="padding:9px 12px;background:var(--p1);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
-          <span style="font-size:12px;font-weight:800;color:#fff;">🏦 Lumpsum (L)</span>
-          <span id="s4-lump-badge" style="font-size:10px;font-weight:800;background:rgba(255,255,255,.2);color:#fff;padding:2px 8px;border-radius:10px;">₹0</span>
-        </div>
-        <div id="s4-cart-l" style="min-height:50px;overflow-y:auto;max-height:160px;background:#fff;"></div>
-        <div style="padding:6px 12px;background:var(--p4);border-top:1px solid var(--g4);display:flex;justify-content:space-between;font-size:11px;flex-shrink:0;">
-          <span style="color:var(--t4);">Total lumpsum</span><span style="font-weight:800;color:var(--p1);" id="s4-lump-total">₹0</span>
-        </div>
-        <div style="padding:9px 12px;background:#3a7a12;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
-          <span style="font-size:12px;font-weight:800;color:#fff;">📅 SIP Monthly (S)</span>
-          <span id="s4-sip-badge" style="font-size:10px;font-weight:800;background:rgba(255,255,255,.2);color:#fff;padding:2px 8px;border-radius:10px;">₹0/mo</span>
-        </div>
-        <div id="s4-cart-s" style="min-height:50px;overflow-y:auto;max-height:160px;background:#fff;"></div>
-        <div style="padding:6px 12px;background:#eef7d6;border-top:1px solid #c5e8a0;display:flex;justify-content:space-between;font-size:11px;flex-shrink:0;">
-          <span style="color:var(--t4);">Total monthly SIP</span><span style="font-weight:800;color:#3a7a12;" id="s4-sip-total">₹0/mo</span>
-        </div>
-        <div id="s4-val-bar" style="flex-shrink:0;"></div>
+      <div style="background:#fff;border-radius:10px;border:1.5px solid var(--g4);padding:12px 14px;">
+        <div style="font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Lumpsum funds</div>
+        <div style="font-size:18px;font-weight:800;color:var(--t1);" id="m-lump-cnt">0</div>
+        <div style="font-size:10px;color:var(--t5);margin-top:5px;" id="m-lump-cnt-sub">0 funds</div>
       </div>
+      <div style="background:#fff;border-radius:10px;border:1.5px solid var(--g4);padding:12px 14px;">
+        <div style="font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">SIP funds</div>
+        <div style="font-size:18px;font-weight:800;color:var(--t1);" id="m-sip-cnt">0</div>
+        <div style="font-size:10px;color:var(--t5);margin-top:5px;" id="m-sip-cnt-sub">0 funds</div>
+      </div>
+      <!-- Generate Blueprint Button — in same row as metrics, activates when matched -->
+      <button id="s4-gen-btn" onclick="s4Generate()" disabled
+        style="padding:0 22px;background:linear-gradient(135deg,var(--p2),var(--p1));color:#fff;border:none;
+               border-radius:10px;font-size:13px;font-weight:800;cursor:not-allowed;font-family:var(--fh);
+               opacity:.35;min-width:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+               transition:opacity .3s;">
+        <span style="font-size:20px;">⭐</span>
+        <span id="s4-gen-lbl" style="font-size:12px;font-weight:800;text-align:center;line-height:1.3;">Generate<br>Blueprint</span>
+        <span id="s4-gen-sub" style="font-size:10px;opacity:.8;text-align:center;">Match totals first</span>
+      </button>
     </div>
-    <div style="background:linear-gradient(135deg,var(--p2),var(--p1));border-radius:12px;padding:16px 20px;margin-top:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-      <div>
-        <div style="font-size:14px;font-weight:800;color:#fff;" id="s4-gen-label">Add funds to generate blueprint</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.7);" id="s4-gen-sub">Both lumpsum and SIP totals must match</div>
+
+    <!-- ── 3-COLUMN LAYOUT ── -->
+    <div style="display:grid;grid-template-columns:170px 1fr 300px;gap:14px;align-items:start;">
+
+      <!-- LEFT: Categories -->
+      <div style="background:#fff;border:1.5px solid var(--g4);border-radius:12px;overflow:hidden;position:sticky;top:10px;">
+        <div style="padding:10px 14px;background:var(--p2);font-size:10px;font-weight:800;color:#fff;letter-spacing:.6px;text-transform:uppercase;">Categories</div>
+        <div id="s4-cat-list" style="max-height:520px;overflow-y:auto;"></div>
       </div>
-      <div style="display:flex;gap:10px;">
-        <button onclick="goStep(2)" style="padding:10px 18px;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fh);">← Back</button>
-        <button id="s4-gen-btn" onclick="s4Generate()" disabled style="padding:11px 24px;background:#fff;color:var(--p1);border:none;border-radius:9px;font-size:13px;font-weight:800;cursor:not-allowed;font-family:var(--fh);opacity:.4;">⭐ Generate My Blueprint</button>
+
+      <!-- MIDDLE: Fund Table — full remaining width -->
+      <div style="background:#fff;border:1.5px solid var(--g4);border-radius:12px;overflow:hidden;min-width:0;">
+        <div style="padding:12px 16px;background:var(--p4);border-bottom:1.5px solid var(--g4);">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;">
+            <div>
+              <div style="font-weight:800;font-size:15px;color:var(--p2);" id="s4-cat-title">← Select a category</div>
+              <div style="font-size:11px;color:var(--t4);margin-top:2px;" id="s4-cat-sub">Regular · Growth</div>
+            </div>
+            <div id="s4-status" style="font-size:12px;color:var(--t4);font-weight:600;"></div>
+          </div>
+          <input type="text" id="s4-search" placeholder="🔍  Search by fund name or AMC name across all categories..."
+            oninput="s4Search(this.value)"
+            style="width:100%;padding:10px 14px;border:1.5px solid var(--p1);border-radius:9px;
+                   font-size:13px;outline:none;font-family:var(--fh);background:#fff;color:var(--t1);">
+        </div>
+        <!-- Scrollable fund table -->
+        <div style="overflow-x:auto;overflow-y:auto;max-height:490px;">
+          <div id="s4-fund-list">
+            <div style="text-align:center;padding:60px 40px;color:var(--t4);">
+              <div style="font-size:40px;margin-bottom:12px;">👈</div>
+              <div style="font-weight:700;font-size:15px;">Select a category from the left panel</div>
+              <div style="font-size:12px;margin-top:6px;color:var(--t5);">or search by fund / AMC name above</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Cart — fits within grid, no overlap -->
+      <div style="display:flex;flex-direction:column;border:1.5px solid var(--g4);border-radius:12px;overflow:hidden;background:#fff;">
+        <!-- Lumpsum cart -->
+        <div style="padding:10px 13px;background:var(--p1);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+          <span style="font-size:12px;font-weight:800;color:#fff;">🏦 Lumpsum (L)</span>
+          <span id="s4-lump-badge" style="font-size:10px;font-weight:800;background:rgba(255,255,255,.22);color:#fff;padding:3px 9px;border-radius:10px;">₹0</span>
+        </div>
+        <div id="s4-cart-l" style="min-height:60px;overflow-y:auto;max-height:190px;background:#fff;"></div>
+        <div style="padding:7px 13px;background:var(--p4);border-top:1px solid var(--g4);display:flex;justify-content:space-between;font-size:12px;flex-shrink:0;">
+          <span style="color:var(--t4);">Total lumpsum</span>
+          <span style="font-weight:800;color:var(--p1);" id="s4-lump-total">₹0</span>
+        </div>
+        <!-- SIP cart -->
+        <div style="padding:10px 13px;background:#3a7a12;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+          <span style="font-size:12px;font-weight:800;color:#fff;">📅 SIP Monthly (S)</span>
+          <span id="s4-sip-badge" style="font-size:10px;font-weight:800;background:rgba(255,255,255,.22);color:#fff;padding:3px 9px;border-radius:10px;">₹0/mo</span>
+        </div>
+        <div id="s4-cart-s" style="min-height:60px;overflow-y:auto;max-height:190px;background:#fff;"></div>
+        <div style="padding:7px 13px;background:#eef7d6;border-top:1px solid #c5e8a0;display:flex;justify-content:space-between;font-size:12px;flex-shrink:0;">
+          <span style="color:var(--t4);">Total monthly SIP</span>
+          <span style="font-weight:800;color:#3a7a12;" id="s4-sip-total">₹0/mo</span>
+        </div>
+        <!-- Validation status -->
+        <div id="s4-val-bar" style="flex-shrink:0;"></div>
+        <!-- Back button -->
+        <div style="padding:10px 13px;border-top:1px solid var(--g4);background:#fff;">
+          <button onclick="goStep(2)"
+            style="width:100%;padding:9px;background:var(--border,#e4e2f0);color:var(--t2);border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fh);">← Back to Plan Preference</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1583,27 +1636,72 @@ function s4RenderCart(){
   renderList(CART_L,'s4-cart-l',true);renderList(CART_S,'s4-cart-s',false);
 }
 function s4UpdateMetrics(){
-  var lA=CART_L.reduce(function(s,c){return s+c.amt;},0);var sA=CART_S.reduce(function(s,c){return s+c.amt;},0);
-  var lP=ST.totalLump>0?Math.min(100,Math.round(lA/ST.totalLump*100)):0;var sP=ST.totalSIP>0?Math.min(100,Math.round(sA/ST.totalSIP*100)):0;
-  var el=document.getElementById('s4-metrics');if(!el)return;function f2(n){return Math.round(n).toLocaleString('en-IN');}
-  el.innerHTML=[{l:'Lumpsum allocated',v:'\u20b9'+f2(lA),c:'var(--p1)',s:f2(lA)+' of '+f2(ST.totalLump),p:lP,pc:'var(--p1)'},{l:'SIP allocated/mo',v:'\u20b9'+f2(sA),c:'#3a7a12',s:f2(sA)+' of '+f2(ST.totalSIP),p:sP,pc:'#3a7a12'},{l:'Lumpsum funds',v:CART_L.length,c:'var(--t1)',s:CART_L.length+' fund'+(CART_L.length!==1?'s':''),p:0},{l:'SIP funds',v:CART_S.length,c:'var(--t1)',s:CART_S.length+' fund'+(CART_S.length!==1?'s':''),p:0}].map(function(m){return '<div style="background:#fff;border-radius:10px;border:1.5px solid var(--g4);padding:11px 13px;"><div style="font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;">'+m.l+'</div><div style="font-size:17px;font-weight:800;color:'+m.c+';">'+m.v+'</div>'+(m.p>0?'<div style="height:4px;background:var(--g4);border-radius:3px;margin:4px 0;overflow:hidden;"><div style="height:100%;border-radius:3px;background:'+m.pc+';width:'+m.p+'%;"></div></div>':'')+'<div style="font-size:10px;color:var(--t5);margin-top:2px;">'+m.s+'</div></div>';}).join('');
+  var lA=CART_L.reduce(function(s,c){return s+c.amt;},0);
+  var sA=CART_S.reduce(function(s,c){return s+c.amt;},0);
+  var lP=ST.totalLump>0?Math.min(100,Math.round(lA/ST.totalLump*100)):0;
+  var sP=ST.totalSIP>0?Math.min(100,Math.round(sA/ST.totalSIP*100)):0;
+  function f2(n){return Math.round(n).toLocaleString('en-IN');}
+  var e;
+  e=document.getElementById('m-lump-alloc');if(e)e.textContent='₹'+f2(lA);
+  e=document.getElementById('m-lump-prog');if(e)e.style.width=lP+'%';
+  e=document.getElementById('m-lump-sub');if(e)e.textContent=f2(lA)+' of '+f2(ST.totalLump);
+  e=document.getElementById('m-sip-alloc');if(e)e.textContent='₹'+f2(sA);
+  e=document.getElementById('m-sip-prog');if(e)e.style.width=sP+'%';
+  e=document.getElementById('m-sip-sub');if(e)e.textContent=f2(sA)+' of '+f2(ST.totalSIP);
+  e=document.getElementById('m-lump-cnt');if(e)e.textContent=CART_L.length;
+  e=document.getElementById('m-lump-cnt-sub');if(e)e.textContent=CART_L.length+' fund'+(CART_L.length!==1?'s':'');
+  e=document.getElementById('m-sip-cnt');if(e)e.textContent=CART_S.length;
+  e=document.getElementById('m-sip-cnt-sub');if(e)e.textContent=CART_S.length+' fund'+(CART_S.length!==1?'s':'');
 }
 function s4UpdateValBar(){
-  var lA=CART_L.reduce(function(s,c){return s+c.amt;},0);var sA=CART_S.reduce(function(s,c){return s+c.amt;},0);
-  var lOk=ST.totalLump===0||(lA===ST.totalLump&&ST.totalLump>0);var sOk=ST.totalSIP===0||(sA===ST.totalSIP&&ST.totalSIP>0);
-  var hasData=(CART_L.length+CART_S.length)>0;var allOk=lOk&&sOk&&hasData;
+  var lA=CART_L.reduce(function(s,c){return s+c.amt;},0);
+  var sA=CART_S.reduce(function(s,c){return s+c.amt;},0);
+  var lOk=ST.totalLump===0||(lA===ST.totalLump&&ST.totalLump>0);
+  var sOk=ST.totalSIP===0||(sA===ST.totalSIP&&ST.totalSIP>0);
+  var hasData=(CART_L.length+CART_S.length)>0;
+  var allOk=lOk&&sOk&&hasData;
   function f2(n){return Math.round(n).toLocaleString('en-IN');}
   var msgs=[];
-  if(ST.totalLump>0){if(lA<ST.totalLump)msgs.push({c:'#d97706',t:'Lumpsum: \u20b9'+f2(lA)+' of \u20b9'+f2(ST.totalLump)+' \u2014 need \u20b9'+f2(ST.totalLump-lA)+' more'});else if(lA>ST.totalLump)msgs.push({c:'#dc2626',t:'Lumpsum over by \u20b9'+f2(lA-ST.totalLump)});else msgs.push({c:'#3a7a12',t:'\u2705 Lumpsum matched \u20b9'+f2(lA)});}
-  if(ST.totalSIP>0){if(sA<ST.totalSIP)msgs.push({c:'#d97706',t:'SIP: \u20b9'+f2(sA)+'/mo of \u20b9'+f2(ST.totalSIP)+' \u2014 need \u20b9'+f2(ST.totalSIP-sA)+' more'});else if(sA>ST.totalSIP)msgs.push({c:'#dc2626',t:'SIP over by \u20b9'+f2(sA-ST.totalSIP)+'/mo'});else msgs.push({c:'#3a7a12',t:'\u2705 SIP matched \u20b9'+f2(sA)+'/mo'});}
-  if(!hasData)msgs.push({c:'var(--t4)',t:'Add at least one fund'});
-  var el=document.getElementById('s4-val-bar');if(!el)return;
-  var isErr=msgs.some(function(m){return m.c==='#dc2626';});var bg=allOk?'#f0fff4':isErr?'#fef2f2':'#fffbeb';var bd=allOk?'#6aaa1e':isErr?'#fca5a5':'#fcd34d';
-  el.innerHTML='<div style="padding:10px 12px;background:'+bg+';border-top:1.5px solid '+bd+';">'+msgs.map(function(m){return '<div style="font-size:11px;font-weight:600;color:'+m.c+';margin-bottom:2px;">'+m.t+'</div>';}).join('')+'</div>';
-  var btn=document.getElementById('s4-gen-btn');var lbl=document.getElementById('s4-gen-label');var sub=document.getElementById('s4-gen-sub');
-  if(btn){btn.disabled=!allOk;btn.style.opacity=allOk?'1':'.4';btn.style.cursor=allOk?'pointer':'not-allowed';}
-  if(lbl)lbl.textContent=allOk?'Ready \u2014 Generate your Investment Blueprint!':'Allocate all amounts to unlock blueprint';
-  if(sub){var p=[];if(CART_L.length)p.push(CART_L.length+' Lumpsum');if(CART_S.length)p.push(CART_S.length+' SIP');sub.textContent=p.length?p.join(' + ')+' fund'+(CART_L.length+CART_S.length!==1?'s':''):'Enter lumpsum/SIP in Step 1';}
+  if(ST.totalLump>0){
+    if(lA<ST.totalLump)msgs.push({c:'#d97706',t:'Lumpsum: ₹'+f2(lA)+' of ₹'+f2(ST.totalLump)+' — need ₹'+f2(ST.totalLump-lA)+' more'});
+    else if(lA>ST.totalLump)msgs.push({c:'#dc2626',t:'Lumpsum over by ₹'+f2(lA-ST.totalLump)});
+    else msgs.push({c:'#3a7a12',t:'✅ Lumpsum matched ₹'+f2(lA)});
+  }
+  if(ST.totalSIP>0){
+    if(sA<ST.totalSIP)msgs.push({c:'#d97706',t:'SIP: ₹'+f2(sA)+'/mo of ₹'+f2(ST.totalSIP)+' — need ₹'+f2(ST.totalSIP-sA)+' more'});
+    else if(sA>ST.totalSIP)msgs.push({c:'#dc2626',t:'SIP over by ₹'+f2(sA-ST.totalSIP)+'/mo'});
+    else msgs.push({c:'#3a7a12',t:'✅ SIP matched ₹'+f2(sA)+'/mo'});
+  }
+  if(!hasData)msgs.push({c:'var(--t4)',t:'Add at least one fund to proceed'});
+  var el=document.getElementById('s4-val-bar');
+  if(el){
+    var isErr=msgs.some(function(m){return m.c==='#dc2626';});
+    var bg=allOk?'#f0fff4':isErr?'#fef2f2':'#fffbeb';
+    var bd=allOk?'#6aaa1e':isErr?'#fca5a5':'#fcd34d';
+    el.innerHTML='<div style="padding:10px 13px;background:'+bg+';border-top:1.5px solid '+bd+';">'+
+      msgs.map(function(m){return '<div style="font-size:11px;font-weight:600;color:'+m.c+';margin-bottom:2px;">'+m.t+'</div>';}).join('')+'</div>';
+  }
+  // ── Generate button (now in metrics row) ──────────────────
+  var btn=document.getElementById('s4-gen-btn');
+  var lbl=document.getElementById('s4-gen-lbl');
+  var sub=document.getElementById('s4-gen-sub');
+  if(btn){
+    btn.disabled=!allOk;
+    btn.style.opacity=allOk?'1':'.35';
+    btn.style.cursor=allOk?'pointer':'not-allowed';
+    btn.style.background=allOk?'linear-gradient(135deg,#2d2478,var(--p1))':'linear-gradient(135deg,var(--p2),var(--p1))';
+  }
+  if(lbl)lbl.innerHTML=allOk?'Generate<br>Blueprint':'Generate<br>Blueprint';
+  if(sub){
+    if(allOk){
+      var parts=[];
+      if(CART_L.length)parts.push(CART_L.length+' L fund'+(CART_L.length!==1?'s':''));
+      if(CART_S.length)parts.push(CART_S.length+' S fund'+(CART_S.length!==1?'s':''));
+      sub.textContent=parts.join(' + ')||'Ready!';
+    } else {
+      sub.textContent='Match totals first';
+    }
+  }
 }
 function s4Generate(){
   var allFunds=[].concat(CART_L).concat(CART_S);if(!allFunds.length){alert('Add at least one fund.');return;}
