@@ -1237,6 +1237,14 @@ function setMode(m){
       cs.style.display="block";
       setTimeout(function(){cs.scrollIntoView({behavior:"smooth",block:"start"});},120);
       loadAMFIForCMB();
+      // Auto-add 3 rows if empty
+      setTimeout(function(){
+        try{
+          if(CMB&&CMB.rows&&CMB.rows.length===0&&typeof addFundRow==='function'){
+            addFundRow(); addFundRow(); addFundRow();
+          }
+        }catch(e){ console.warn('CMB auto-init:',e); }
+      },100);
     }
   } else {
     if(cs) cs.style.display="none";
@@ -1268,20 +1276,18 @@ function validateStep(n){
     ST.totalLump=parseFloat(document.getElementById('v-lump').value)||0;
     ST.totalSIP=parseFloat(document.getElementById('v-sip').value)||0;
     ST.amt=ST.totalLump||ST.totalSIP;
-    // Custom mode goes to its own section — skip step flow validation
+    // Sync hidden compat fields used by generate()
+    var va=document.getElementById('v-amt'); if(va) va.value=ST.amt;
+    // Custom mode goes to its own section — skip step flow
     if(ST.mode==='custom') return true;
-    // STP needs at least a lumpsum amount (parked in liquid fund)
+    // STP: needs lumpsum (park amount)
     if(ST.mode==='stp'){
-      if(ST.totalLump===0){
-        alert('STP Mode: Please enter the amount to park in Liquid Fund in the "Total Lumpsum" field.');
-        return false;
-      }
+      if(ST.totalLump===0){alert('STP Mode: Enter amount to park in Liquid Fund in Total Lumpsum field.');return false;}
       return true;
     }
-    // SIP, Combo: need at least one amount
+    // SIP + Lumpsum / Combo: need at least one amount
     if(ST.totalLump===0&&ST.totalSIP===0){
-      alert('Please enter Total Lumpsum, Total Monthly SIP, or both.');
-      return false;
+      alert('Please enter Total Lumpsum or Total Monthly SIP (or both).');return false;
     }
   }
   return true;
@@ -1648,7 +1654,7 @@ function s4Add(f){
   if(!r.cagr||r.cagr<5||r.cagr>50){alert('CAGR must be 5\u201350%.');return;}
   if(!r.amt||r.amt<100){alert('Enter Investment Amount (integers only, min \u20b9100).');return;}
   if(r.type==='L'){var used=CART_L.reduce(function(s,c){return s+c.amt;},0);if(used+r.amt>ST.totalLump){alert('Exceeds Total Lumpsum \u20b9'+ST.totalLump.toLocaleString('en-IN'));return;}CART_L.push({code:f.code,name:f.name,amc:f.amc,sub:f.sub||f.subcat||S4_CAT,type:'L',yr:r.yr,mo:r.mo,months:r.months,cagr:r.cagr,amt:r.amt,userCagr:r.cagr});}
-  else{var used2=CART_S.reduce(function(s,c){return s+c.amt;},0);if(used2+r.amt>ST.totalSIP){alert('Exceeds Total SIP \u20b9'+ST.totalSIP.toLocaleString('en-IN'));return;}CART_S.push({code:f.code,name:f.name,amc:f.amc,sub:f.sub||f.subcat||S4_CAT,type:'S',yr:r.yr,mo:r.mo,months:r.months,cagr:r.cagr,amt:r.amt,userCagr:r.cagr});}
+  else{var used2=CART_S.reduce(function(s,c){return s+c.amt;},0);if(ST.mode!=='stp'&&ST.mode!=='combo'&&used2+r.amt>ST.totalSIP){alert('Exceeds Total SIP \u20b9'+ST.totalSIP.toLocaleString('en-IN'));return;}CART_S.push({code:f.code,name:f.name,amc:f.amc,sub:f.sub||f.subcat||S4_CAT,type:'S',yr:r.yr,mo:r.mo,months:r.months,cagr:r.cagr,amt:r.amt,userCagr:r.cagr});}
   s4RenderCart();s4UpdateMetrics();s4UpdateValBar();var _sr=document.getElementById('s4-search');s4RenderFundList(_sr?_sr.value:'');
 }
 function s4Remove(code){CART_L=CART_L.filter(function(c){return c.code!==code;});CART_S=CART_S.filter(function(c){return c.code!==code;});s4RenderCart();s4UpdateMetrics();s4UpdateValBar();var _sr=document.getElementById('s4-search');s4RenderFundList(_sr?_sr.value:'');}
@@ -1682,7 +1688,8 @@ function s4UpdateValBar(){
   var lA=CART_L.reduce(function(s,c){return s+c.amt;},0);
   var sA=CART_S.reduce(function(s,c){return s+c.amt;},0);
   var lOk=ST.totalLump===0||(lA===ST.totalLump&&ST.totalLump>0);
-  var sOk=ST.totalSIP===0||(sA===ST.totalSIP&&ST.totalSIP>0);
+  // STP/Combo: S funds = STP targets, totalSIP not required to match
+  var sOk=(ST.mode==='stp'||ST.mode==='combo')?true:(ST.totalSIP===0||(sA===ST.totalSIP&&ST.totalSIP>0));
   var hasData=(CART_L.length+CART_S.length)>0;
   var allOk=lOk&&sOk&&hasData;
   function f2(n){return Math.round(n).toLocaleString('en-IN');}
@@ -1731,7 +1738,9 @@ function s4UpdateValBar(){
 function s4Generate(){
   var allFunds=[].concat(CART_L).concat(CART_S);if(!allFunds.length){alert('Add at least one fund.');return;}
   ST.selFunds=allFunds.map(function(c){return {code:c.code,name:c.name,amc:c.amc,sub:c.sub,type:c.type,yr:c.yr,mo:c.mo,months:c.months,userCagr:c.cagr,cagr3y:c.cagr,invAmt:c.amt,nav:100,navDate:'',fund:{n:c.name,amc:c.amc,c3y:c.cagr,c1y:c.cagr,nav:100,navDate:'',risk:'Moderate'}};});
-  ST.sipAmts=allFunds.map(function(c){return c.type==='S'?c.amt:0;});ST.lumpAmts=allFunds.map(function(c){return c.type==='L'?c.amt:0;});
+  // STP mode: S-type funds are equity targets, use as stpAmts
+  ST.sipAmts=allFunds.map(function(c){return c.type==='S'?c.amt:0;});
+  ST.stpAmts=allFunds.map(function(c){return c.type==='S'?c.amt:0;});ST.lumpAmts=allFunds.map(function(c){return c.type==='L'?c.amt:0;});
   ST.userCAGR=allFunds.map(function(c){return c.cagr;});ST.allocs=allFunds.map(function(c){var tot=c.type==='L'?ST.totalLump:ST.totalSIP;return tot>0?Math.round(c.amt/tot*100):Math.floor(100/allFunds.length);});
   ST.totalMos=Math.max.apply(null,allFunds.map(function(c){return c.months;}));ST.yrs=Math.floor(ST.totalMos/12);ST.mos=ST.totalMos%12;ST.amt=ST.totalLump+(ST.totalSIP*12*(ST.totalMos/12));
   generate();
@@ -1899,7 +1908,7 @@ function generate(){
   const totSTP=ST.stpAmts.reduce((a,b)=>a+b,0);
   const totInv=isSTP?totLump:(totLump+totSIP*ST.totalMos);
   const sipC=!isSTP?sipFV(totSIP,avgCAGR/100,yrs):0;
-  const lumpC=totLump*Math.pow(1+avgCAGR/100,yrs);
+  const lumpC=totLump*Math.pow(1+(avgCAGR/100)/12,ST.totalMos);
   const stpC=(isSTP||isCombo)?sipFV(totSTP*fm,avgCAGR/100,yrs):0;
   const totCorpus=sipC+lumpC+stpC;
   const liqEarn=(isSTP||isCombo)?totLump*.07*yrs:0;
@@ -1969,7 +1978,7 @@ function generate(){
     const sipAmt  = ST.sipAmts[i]||0;
     const lmpAmt  = ST.lumpAmts[i]||0;
     const totalInv= lmpAmt + sipAmt*ST.totalMos;
-    const fv      = sipFV(sipAmt,fCagr,yrs) + lmpAmt*Math.pow(1+fCagr,yrs);
+    const fv      = sipFV(sipAmt,fCagr,yrs) + lmpAmt*Math.pow(1+fCagr/12,f.months||ST.totalMos);
     const gain    = Math.max(0,fv-totalInv);
     const horTxt2 = (ST.yrs>0?ST.yrs+"Y ":"")+(ST.mos>0?ST.mos+"M":"");
     return `<div class="frc c${i}">
@@ -2008,7 +2017,7 @@ function generate(){
         </div>
         <div class="frc-row">
           <span class="frc-k">Lumpsum Corpus after ${horTxt2||ST.totalMos+"M"}</span>
-          <span class="frc-v gr">₹${fmt(lmpAmt*Math.pow(1+fCagr,yrs))}</span>
+          <span class="frc-v gr">₹${fmt(lmpAmt*Math.pow(1+fCagr/12,f.months||ST.totalMos))}</span>
         </div>
         <div class="frc-row" style="border-top:2px solid var(--g1);padding-top:8px;margin-top:6px;background:#f0fdf4;border-radius:0 0 8px 8px;padding:8px 0 0 0;">
           <span class="frc-k" style="font-weight:800;font-size:12px;">🏆 Total Expected Value</span>
@@ -2111,14 +2120,14 @@ buildSteps();updHor();
 ═══════════════════════════════════════════════════════════════ */
 
 // ── CMB STATE ─────────────────────────────────────────────────────────
-const CMB = {
+var CMB = {
   rows: [],        // [{id, fund, type, sipAmt, lumpAmt, stpAmt, yrs, mos}]
   nextId: 1,
   allFunds: [],    // loaded from AMFI
   loaded: false,
 };
 
-const TYPE_LABELS = {sip:'SIP', lump:'Lumpsum', both:'SIP + Lumpsum', stp:'STP'};
+var TYPE_LABELS = {sip:'SIP', lump:'Lumpsum', both:'SIP + Lumpsum', stp:'STP'};
 const TYPE_CSS    = {sip:'type-sip', lump:'type-lump', both:'type-both', stp:'type-stp'};
 const ROW_COLORS  = ['#3c3197','#8bc32a','#d97706','#0891b2','#ea580c','#db2777','#7c3aed','#059669','#b45309','#0369a1'];
 
@@ -2450,8 +2459,8 @@ function calcRowValue(row) {
 
   let val = 0;
   if(row.type==='sip')  val = sipFV(row.sipAmt,  cagr, yrs);
-  if(row.type==='lump') val = row.lumpAmt * Math.pow(1+cagr, yrs);
-  if(row.type==='both') val = sipFV(row.sipAmt, cagr, yrs) + row.lumpAmt * Math.pow(1+cagr, yrs);
+  if(row.type==='lump') val = row.lumpAmt * Math.pow(1+cagr/12, row.yrs*12+row.mos);
+  if(row.type==='both') val = sipFV(row.sipAmt, cagr, yrs) + row.lumpAmt * Math.pow(1+cagr/12, row.yrs*12+row.mos);
   if(row.type==='stp')  val = sipFV(row.stpAmt*4.33, cagr, yrs) + row.lumpAmt*0.07*yrs; // stpAmt weekly, liq earnings
   return val;
 }
