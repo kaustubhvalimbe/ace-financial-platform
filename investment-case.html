@@ -632,7 +632,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
 
 
 /* ── STP MODE INDEPENDENT SECTION ──────────────────────────── */
-#stp-mode-section { display:none; max-width:980px; margin:0 auto; padding:20px 20px 60px; }
+#stp-mode-section { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:var(--bg,#f7f6ff); z-index:500; overflow-y:auto; padding:20px; }
 #stp-mode-section.show { display:block; }
 .stp-sec { display:none; }
 .stp-sec.stp-show { display:block; }
@@ -694,7 +694,7 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
 
 
 /* ── CREATE MY BLUEPRINT — INDEPENDENT SECTION ──────────────── */
-#cmb-mode-section { display:none; max-width:980px; margin:0 auto; padding:20px 20px 60px; }
+#cmb-mode-section { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:var(--bg,#f7f6ff); z-index:500; overflow-y:auto; padding:20px; }
 #cmb-mode-section.show { display:block; }
 .cmb-row-card { background:#fff; border-radius:12px; border:1.5px solid var(--g4,#e4e2f0); margin-bottom:12px; overflow:hidden; }
 .cmb-row-hdr { padding:10px 16px; background:var(--p4,#f0eeff); display:flex; align-items:center; gap:10px; }
@@ -1014,223 +1014,7 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
   
 
 
-<!-- ═══════════════════════════════════════════════════════════
-     CREATE MY BLUEPRINT — INDEPENDENT SECTION
-═══════════════════════════════════════════════════════════ -->
-<div id="cmb-mode-section">
 
-  <div style="padding:14px 0;margin-bottom:4px;">
-    <button onclick="setMode('sip')" style="background:none;border:none;color:var(--p1);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fh);padding:0;">
-      ← Back to Mode Selection
-    </button>
-  </div>
-
-  <!-- HEADER -->
-  <div style="background:var(--p1);border-radius:14px;padding:22px 26px;color:#fff;margin-bottom:20px;">
-    <div style="font-family:var(--fp);font-size:24px;margin-bottom:4px">✏️ Create My Blueprint</div>
-    <div style="font-size:12px;opacity:.7">Pick any fund · SIP / Lumpsum / Both · Up to 10 funds · Your own complete portfolio blueprint</div>
-    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center;">
-      <div id="cmb-load-status" style="font-size:12px;opacity:.8">⏳ Loading funds...</div>
-      <div style="font-size:11px;opacity:.6" id="cmb-count-display"></div>
-    </div>
-  </div>
-
-  <!-- INVESTOR NAME -->
-  <div style="background:#fff;border-radius:12px;border:1.5px solid var(--g4);padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:16px;">
-    <div style="font-size:11px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;">Investor Name</div>
-    <input type="text" id="cmb-investor-name" placeholder="Type investor name..." 
-      style="flex:1;padding:10px 14px;border:1.5px solid var(--bd);border-radius:9px;font-size:14px;font-family:var(--fh);outline:none;max-width:320px;">
-    <div style="font-size:11px;color:var(--t4);">Max 10 funds · SIP / Lumpsum / Both per fund</div>
-  </div>
-
-  <!-- FUND ROWS -->
-  <div id="cmb-rows-container"></div>
-
-  <!-- ADD FUND BUTTON -->
-  <button class="cmb-add-btn" id="cmb-add-btn" onclick="cmbAddRow()">
-    ➕ Add Fund &nbsp;<span style="font-size:11px;opacity:.7" id="cmb-row-counter">(0 / 10 funds)</span>
-  </button>
-
-  <!-- GENERATE BLUEPRINT BUTTON -->
-  <div style="background:linear-gradient(135deg,var(--p2),var(--p1));border-radius:12px;padding:16px 20px;margin-top:16px;display:flex;align-items:center;justify-content:space-between;">
-    <div>
-      <div style="font-size:14px;font-weight:800;color:#fff">Ready to generate your personalised blueprint?</div>
-      <div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:3px" id="cmb-gen-sub">Add at least 1 fund to proceed</div>
-    </div>
-    <button id="cmb-gen-btn" onclick="cmbGenerate()" disabled
-      style="padding:12px 24px;background:#fff;color:var(--p1);border:none;border-radius:9px;font-size:14px;font-weight:800;cursor:not-allowed;font-family:var(--fh);opacity:.4;">
-      ⭐ Print My Blueprint
-    </button>
-  </div>
-
-  <!-- BLUEPRINT OUTPUT -->
-  <div id="cmb-blueprint-output" style="display:none;margin-top:20px;"></div>
-
-</div>
-<!-- END CMB SECTION -->
-
-<!-- ═══════════════════════════════════════════════════════════
-     STP MODE — INDEPENDENT SECTION
-═══════════════════════════════════════════════════════════ -->
-<div id="stp-mode-section">
-
-  <!-- BACK TO MODES BUTTON -->
-  <div style="padding:14px 0;margin-bottom:4px;">
-    <button onclick="setMode('sip')" style="background:none;border:none;color:var(--p1);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fh);padding:0;">
-      ← Back to Mode Selection
-    </button>
-  </div>
-
-  <!-- STEP 1: INVESTOR & SETUP -->
-  <div class="stp-sec stp-show" id="stp-sec1">
-    <div class="stp-step-hdr">
-      <div class="stp-step-num">1</div>
-      <div>
-        <div class="stp-step-title">Investor & STP Setup</div>
-        <div class="stp-step-sub">Each STP transfer starts its own investment cycle from its transfer date</div>
-      </div>
-    </div>
-    <div class="stp-card">
-      <div class="stp-g3">
-        <div class="stp-field">
-          <div class="stp-lbl">Investor Name</div>
-          <input class="stp-inp" id="stp-v-name" type="text" placeholder="Type investor name...">
-        </div>
-        <div class="stp-field">
-          <div class="stp-lbl" style="color:var(--p1)">▣ Total Lumpsum to Park ₹</div>
-          <input class="stp-inp stp-inp-p" id="stp-v-lump" type="number" placeholder="e.g. 200000" min="1000" oninput="stpLiveCheck()">
-          <div class="stp-hint">Parked in Liquid Fund on start date</div>
-        </div>
-        <div class="stp-field">
-          <div class="stp-lbl">Liquid Fund CAGR % (expected)</div>
-          <input class="stp-inp stp-inp-g" id="stp-v-lcagr" type="number" placeholder="e.g. 5.5" min="1" max="20">
-          <div class="stp-hint">Typical liquid fund ~5–8% p.a. — enter from keyboard</div>
-        </div>
-      </div>
-      <div class="stp-g3">
-        <div class="stp-field">
-          <div class="stp-lbl">Investment Start Date</div>
-          <input class="stp-inp stp-inp-ro" id="stp-v-start" type="date" readonly>
-          <div class="stp-hint">Today — auto-filled</div>
-        </div>
-        <div class="stp-field">
-          <div class="stp-lbl" style="color:var(--p1)">First STP Transfer Date</div>
-          <input class="stp-inp stp-inp-ro" id="stp-v-ft" type="date" readonly>
-          <div class="stp-hint">7 days after start — auto-filled</div>
-        </div>
-        <div class="stp-field">
-          <div class="stp-lbl">STP Type</div>
-          <div class="stp-tgl-row">
-            <div class="stp-tgl on" id="stp-tgl-f" onclick="stpSetType('fixed')">
-              <div class="stp-tgl-t">Fixed</div><div class="stp-tgl-s">Same amount every transfer</div>
-            </div>
-            <div class="stp-tgl" id="stp-tgl-x" onclick="stpSetType('flexi')">
-              <div class="stp-tgl-t">Flexi</div><div class="stp-tgl-s">Different amount each time</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="stp-g3">
-        <div class="stp-field">
-          <div class="stp-lbl">Transfer Frequency</div>
-          <div class="stp-freq-row">
-            <button class="stp-fq" onclick="stpSetFreq('daily',this)">Daily</button>
-            <button class="stp-fq on" onclick="stpSetFreq('weekly',this)">Weekly</button>
-            <button class="stp-fq" onclick="stpSetFreq('monthly',this)">Monthly</button>
-            <button class="stp-fq" onclick="stpSetFreq('quarterly',this)">Quarterly</button>
-          </div>
-        </div>
-        <div class="stp-field">
-          <div class="stp-lbl" id="stp-cnt-lbl">No. of Weeks <span style="color:var(--red,#dc2626);font-size:9px">(min 6)</span></div>
-          <input class="stp-inp stp-inp-p" id="stp-v-count" type="number" placeholder="e.g. 20" min="6" oninput="stpLiveCheck()">
-          <div class="stp-hint">Total number of STP transfers</div>
-        </div>
-        <div class="stp-field" id="stp-amt-field">
-          <div class="stp-lbl">Transfer Amount ₹ <span style="color:var(--red,#dc2626);font-size:9px">(min ₹500)</span></div>
-          <input class="stp-inp stp-inp-p" id="stp-v-amt" type="number" placeholder="Enter amount" min="500" oninput="stpLiveCheck()">
-          <div class="stp-hint" id="stp-amt-hint">Investor's choice — minimum ₹500</div>
-        </div>
-      </div>
-      <div id="stp-live-msg"></div>
-      <div style="border-top:1.5px solid var(--g4,#e4e2f0);margin-top:16px;padding-top:16px">
-        <div style="font-size:12px;font-weight:700;color:var(--p2,#2d2478);margin-bottom:4px">Investment Period per Entry</div>
-        <div class="stp-hint" style="color:var(--p2,#2d2478);margin-bottom:12px">Each STP transfer starts its OWN cycle. Transfer 1 on Date X → matures X+5Y. Transfer 2 on X+1week → matures X+1week+5Y.</div>
-        <div class="stp-g3">
-          <div class="stp-field">
-            <div class="stp-lbl">Period — Years</div>
-            <input class="stp-inp stp-inp-p" id="stp-v-yr" type="number" placeholder="e.g. 5" min="0" max="50" value="5" oninput="stpLiveCheck()">
-          </div>
-          <div class="stp-field">
-            <div class="stp-lbl">Period — Months</div>
-            <input class="stp-inp stp-inp-p" id="stp-v-mo" type="number" placeholder="0" min="0" max="11" value="0" oninput="stpLiveCheck()">
-          </div>
-          <div class="stp-field">
-            <div class="stp-lbl">Total Months (auto)</div>
-            <div class="stp-inp stp-inp-ro" id="stp-v-totm" style="display:flex;align-items:center;font-size:16px;font-weight:800">60 months</div>
-            <div class="stp-hint">Each lumpsum entry grows for this many months from its transfer date</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="stp-nav">
-      <button class="stp-btn-p" onclick="stpGo(2)">Next: Fund Configuration →</button>
-    </div>
-  </div>
-
-  <!-- STEP 2: FUNDS -->
-  <div class="stp-sec" id="stp-sec2">
-    <div class="stp-step-hdr">
-      <div class="stp-step-num">2</div>
-      <div>
-        <div class="stp-step-title">Equity Fund Configuration</div>
-        <div class="stp-step-sub">No actual fund selected. Named Fund 1, Fund 2 etc. CAGR & period from keyboard.</div>
-      </div>
-    </div>
-    <div class="stp-card" id="stp-funds-area"></div>
-    <div class="stp-nav">
-      <button class="stp-btn-b" onclick="stpGo(1)">← Back</button>
-      <button class="stp-btn-p" onclick="stpGo(3)">Next: Transfer Schedule →</button>
-    </div>
-  </div>
-
-  <!-- STEP 3: SCHEDULE -->
-  <div class="stp-sec" id="stp-sec3">
-    <div class="stp-step-hdr">
-      <div class="stp-step-num">3</div>
-      <div>
-        <div class="stp-step-title">STP Transfer Schedule</div>
-        <div class="stp-step-sub">Each row = one lumpsum entry with its own transfer date, maturity date & expected FV</div>
-      </div>
-    </div>
-    <div id="stp-sched-area"></div>
-    <div class="stp-nav">
-      <button class="stp-btn-b" onclick="stpGo(2)">← Back</button>
-      <button class="stp-btn-p" onclick="stpGo(4)">⭐ Generate Blueprint →</button>
-    </div>
-  </div>
-
-  <!-- STEP 4: BLUEPRINT -->
-  <div class="stp-sec" id="stp-sec4">
-    <div class="stp-step-hdr">
-      <div class="stp-step-num">4</div>
-      <div>
-        <div class="stp-step-title">STP Investment Blueprint</div>
-        <div class="stp-step-sub">Each transfer = individual lumpsum · own entry date · own maturity date · own FV</div>
-      </div>
-    </div>
-    <div id="stp-bp-area"></div>
-    <div style="background:var(--bd,#e4e2f0);border-radius:10px;padding:14px 18px;font-size:10px;color:var(--t4,#7a7898);line-height:1.7;margin-top:16px">
-      ⚠️ <strong>AMFI Disclaimer:</strong> Mutual Fund investments are subject to market risks. STP projections are indicative estimates only, not guaranteed.
-      <strong>Ace Financial Services · ARN-110832 · Kaustubh Valimbe · EUIN E155215.</strong>
-    </div>
-    <div class="stp-nav">
-      <button class="stp-btn-b" onclick="stpGo(3)">← Back</button>
-      <button class="stp-btn-p" onclick="window.print()">🖨️ Print Blueprint</button>
-    </div>
-  </div>
-
-</div>
-<!-- END STP MODE SECTION -->
 <div id="stp-flow-sec" style="display:none"><div class="stp-vis"><div class="stp-vis-title">STP Flow — Liquid → Equity Transfer Plan</div><div id="stp-pairs"></div><div style="background:var(--g5);border:1.5px solid var(--g4);border-radius:9px;padding:12px;margin-top:12px;font-size:12px;color:var(--t4);line-height:1.7;">💡 <strong style="color:var(--g1)">Why STP?</strong> Your lumpsum earns ~7% p.a. in Liquid funds while waiting. Regular transfers into Equity provide Rupee Cost Averaging — reducing market timing risk significantly.</div></div></div>
   <div class="sec-hdr">Selected Funds & Allocation</div>
   <div class="frc-grid" id="frc-grid"></div>
@@ -1532,30 +1316,31 @@ const ACT_SUB={};
 function setMode(m){
   ST.mode=m;
   // Highlight active mode card
-  ["sip","stp","combo","custom"].forEach(function(x){
+  ["sip","stp","custom"].forEach(function(x){
     var el=document.getElementById("mb-"+x);
     if(el) el.classList.toggle("active",x===m);
   });
-  // Show/hide sections — ALL INDEPENDENT
+  // ── ALL 3 SECTIONS INDEPENDENT ──────────────────────────
   var wizSection = document.getElementById("wiz-section");
   var stpSection = document.getElementById("stp-mode-section");
-  var cmbSection = document.getElementById("custom-section");
-  if(wizSection) wizSection.style.display = (m==="sip"||m==="combo") ? "" : "none";
-  if(stpSection) stpSection.classList.toggle("show", m==="stp");
-  if(cmbSection){
-    cmbSection.style.display = m==="custom" ? "block" : "none";
-    if(m==="custom"){
-      setTimeout(function(){cmbSection.scrollIntoView({behavior:"smooth",block:"start"});},100);
-      if(typeof loadAMFIForCMB==="function") loadAMFIForCMB();
-    }
-  }
-  // STP freq box (legacy)
-  var fb=document.getElementById("stp-freq-box");
-  if(fb) fb.style.display=(m==="combo")?"block":"none";
-  // STP mode — initialise
-  if(m==="stp"){
-    setTimeout(function(){stpInit();},50);
-    setTimeout(function(){stpSection.scrollIntoView({behavior:"smooth",block:"start"});},100);
+  var cmbSection = document.getElementById("cmb-mode-section");
+  var oldCmb     = document.getElementById("custom-section");
+
+  // Hide all first
+  if(wizSection) wizSection.style.display="none";
+  if(stpSection) stpSection.style.display="none";
+  if(cmbSection) cmbSection.style.display="none";
+  if(oldCmb)     oldCmb.style.display="none";
+
+  // Show only the selected one
+  if(m==="sip"){
+    if(wizSection) wizSection.style.display="";
+  } else if(m==="stp"){
+    if(stpSection){ stpSection.style.display="block"; }
+    setTimeout(function(){ stpInit(); window.scrollTo(0,0); },50);
+  } else if(m==="custom"){
+    if(cmbSection){ cmbSection.style.display="block"; }
+    setTimeout(function(){ cmbInit(); window.scrollTo(0,0); },50);
   }
 }
 
@@ -1715,6 +1500,13 @@ async function s4LoadFunds() {
         plan:_u.includes('DIRECT')?'direct':'regular',nat:'growth',
         sub:_sub,amc:xAMC(_n)});
     }
+    // Dedup by name+plan to prevent double entries
+    var _seen={};
+    S4_allFunds=S4_allFunds.filter(function(f){
+      var k=f.name+'|'+f.plan;
+      if(_seen[k]) return false;
+      _seen[k]=true; return true;
+    });
     s4Loaded = true;
     var st=document.getElementById('s4-status');
     if(st) st.textContent='✅ '+S4_allFunds.length.toLocaleString('en-IN')+' funds loaded';
@@ -3521,5 +3313,225 @@ function stpBuildBlueprint(){
 })();
 
 </script>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     CREATE MY BLUEPRINT — INDEPENDENT SECTION
+═══════════════════════════════════════════════════════════ -->
+<div id="cmb-mode-section">
+
+  <div style="padding:14px 0;margin-bottom:4px;">
+    <button onclick="setMode('sip')" style="background:none;border:none;color:var(--p1);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fh);padding:0;">
+      ← Back to Mode Selection
+    </button>
+  </div>
+
+  <!-- HEADER -->
+  <div style="background:var(--p1);border-radius:14px;padding:22px 26px;color:#fff;margin-bottom:20px;">
+    <div style="font-family:var(--fp);font-size:24px;margin-bottom:4px">✏️ Create My Blueprint</div>
+    <div style="font-size:12px;opacity:.7">Pick any fund · SIP / Lumpsum / Both · Up to 10 funds · Your own complete portfolio blueprint</div>
+    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center;">
+      <div id="cmb-load-status" style="font-size:12px;opacity:.8">⏳ Loading funds...</div>
+      <div style="font-size:11px;opacity:.6" id="cmb-count-display"></div>
+    </div>
+  </div>
+
+  <!-- INVESTOR NAME -->
+  <div style="background:#fff;border-radius:12px;border:1.5px solid var(--g4);padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:16px;">
+    <div style="font-size:11px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;">Investor Name</div>
+    <input type="text" id="cmb-investor-name" placeholder="Type investor name..." 
+      style="flex:1;padding:10px 14px;border:1.5px solid var(--bd);border-radius:9px;font-size:14px;font-family:var(--fh);outline:none;max-width:320px;">
+    <div style="font-size:11px;color:var(--t4);">Max 10 funds · SIP / Lumpsum / Both per fund</div>
+  </div>
+
+  <!-- FUND ROWS -->
+  <div id="cmb-rows-container"></div>
+
+  <!-- ADD FUND BUTTON -->
+  <button class="cmb-add-btn" id="cmb-add-btn" onclick="cmbAddRow()">
+    ➕ Add Fund &nbsp;<span style="font-size:11px;opacity:.7" id="cmb-row-counter">(0 / 10 funds)</span>
+  </button>
+
+  <!-- GENERATE BLUEPRINT BUTTON -->
+  <div style="background:linear-gradient(135deg,var(--p2),var(--p1));border-radius:12px;padding:16px 20px;margin-top:16px;display:flex;align-items:center;justify-content:space-between;">
+    <div>
+      <div style="font-size:14px;font-weight:800;color:#fff">Ready to generate your personalised blueprint?</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:3px" id="cmb-gen-sub">Add at least 1 fund to proceed</div>
+    </div>
+    <button id="cmb-gen-btn" onclick="cmbGenerate()" disabled
+      style="padding:12px 24px;background:#fff;color:var(--p1);border:none;border-radius:9px;font-size:14px;font-weight:800;cursor:not-allowed;font-family:var(--fh);opacity:.4;">
+      ⭐ Print My Blueprint
+    </button>
+  </div>
+
+  <!-- BLUEPRINT OUTPUT -->
+  <div id="cmb-blueprint-output" style="display:none;margin-top:20px;"></div>
+
+</div>
+<!-- END CMB SECTION -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     STP MODE — INDEPENDENT SECTION
+═══════════════════════════════════════════════════════════ -->
+<div id="stp-mode-section">
+
+  <!-- BACK TO MODES BUTTON -->
+  <div style="padding:14px 0;margin-bottom:4px;">
+    <button onclick="setMode('sip')" style="background:none;border:none;color:var(--p1);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fh);padding:0;">
+      ← Back to Mode Selection
+    </button>
+  </div>
+  <div style="max-width:960px;margin:0 auto;">
+
+  <!-- STEP 1: INVESTOR & SETUP -->
+  <div class="stp-sec stp-show" id="stp-sec1">
+    <div class="stp-step-hdr">
+      <div class="stp-step-num">1</div>
+      <div>
+        <div class="stp-step-title">Investor & STP Setup</div>
+        <div class="stp-step-sub">Each STP transfer starts its own investment cycle from its transfer date</div>
+      </div>
+    </div>
+    <div class="stp-card">
+      <div class="stp-g3">
+        <div class="stp-field">
+          <div class="stp-lbl">Investor Name</div>
+          <input class="stp-inp" id="stp-v-name" type="text" placeholder="Type investor name...">
+        </div>
+        <div class="stp-field">
+          <div class="stp-lbl" style="color:var(--p1)">▣ Total Lumpsum to Park ₹</div>
+          <input class="stp-inp stp-inp-p" id="stp-v-lump" type="number" placeholder="e.g. 200000" min="1000" oninput="stpLiveCheck()">
+          <div class="stp-hint">Parked in Liquid Fund on start date</div>
+        </div>
+        <div class="stp-field">
+          <div class="stp-lbl">Liquid Fund CAGR % (expected)</div>
+          <input class="stp-inp stp-inp-g" id="stp-v-lcagr" type="number" placeholder="e.g. 5.5" min="1" max="20">
+          <div class="stp-hint">Typical liquid fund ~5–8% p.a. — enter from keyboard</div>
+        </div>
+      </div>
+      <div class="stp-g3">
+        <div class="stp-field">
+          <div class="stp-lbl">Investment Start Date</div>
+          <input class="stp-inp stp-inp-ro" id="stp-v-start" type="date" readonly>
+          <div class="stp-hint">Today — auto-filled</div>
+        </div>
+        <div class="stp-field">
+          <div class="stp-lbl" style="color:var(--p1)">First STP Transfer Date</div>
+          <input class="stp-inp stp-inp-ro" id="stp-v-ft" type="date" readonly>
+          <div class="stp-hint">7 days after start — auto-filled</div>
+        </div>
+        <div class="stp-field">
+          <div class="stp-lbl">STP Type</div>
+          <div class="stp-tgl-row">
+            <div class="stp-tgl on" id="stp-tgl-f" onclick="stpSetType('fixed')">
+              <div class="stp-tgl-t">Fixed</div><div class="stp-tgl-s">Same amount every transfer</div>
+            </div>
+            <div class="stp-tgl" id="stp-tgl-x" onclick="stpSetType('flexi')">
+              <div class="stp-tgl-t">Flexi</div><div class="stp-tgl-s">Different amount each time</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="stp-g3">
+        <div class="stp-field">
+          <div class="stp-lbl">Transfer Frequency</div>
+          <div class="stp-freq-row">
+            <button class="stp-fq" onclick="stpSetFreq('daily',this)">Daily</button>
+            <button class="stp-fq on" onclick="stpSetFreq('weekly',this)">Weekly</button>
+            <button class="stp-fq" onclick="stpSetFreq('monthly',this)">Monthly</button>
+            <button class="stp-fq" onclick="stpSetFreq('quarterly',this)">Quarterly</button>
+          </div>
+        </div>
+        <div class="stp-field">
+          <div class="stp-lbl" id="stp-cnt-lbl">No. of Weeks <span style="color:var(--red,#dc2626);font-size:9px">(min 6)</span></div>
+          <input class="stp-inp stp-inp-p" id="stp-v-count" type="number" placeholder="e.g. 20" min="6" oninput="stpLiveCheck()">
+          <div class="stp-hint">Total number of STP transfers</div>
+        </div>
+        <div class="stp-field" id="stp-amt-field">
+          <div class="stp-lbl">Transfer Amount ₹ <span style="color:var(--red,#dc2626);font-size:9px">(min ₹500)</span></div>
+          <input class="stp-inp stp-inp-p" id="stp-v-amt" type="number" placeholder="Enter amount" min="500" oninput="stpLiveCheck()">
+          <div class="stp-hint" id="stp-amt-hint">Investor's choice — minimum ₹500</div>
+        </div>
+      </div>
+      <div id="stp-live-msg"></div>
+      <div style="border-top:1.5px solid var(--g4,#e4e2f0);margin-top:16px;padding-top:16px">
+        <div style="font-size:12px;font-weight:700;color:var(--p2,#2d2478);margin-bottom:4px">Investment Period per Entry</div>
+        <div class="stp-hint" style="color:var(--p2,#2d2478);margin-bottom:12px">Each STP transfer starts its OWN cycle. Transfer 1 on Date X → matures X+5Y. Transfer 2 on X+1week → matures X+1week+5Y.</div>
+        <div class="stp-g3">
+          <div class="stp-field">
+            <div class="stp-lbl">Period — Years</div>
+            <input class="stp-inp stp-inp-p" id="stp-v-yr" type="number" placeholder="e.g. 5" min="0" max="50" value="5" oninput="stpLiveCheck()">
+          </div>
+          <div class="stp-field">
+            <div class="stp-lbl">Period — Months</div>
+            <input class="stp-inp stp-inp-p" id="stp-v-mo" type="number" placeholder="0" min="0" max="11" value="0" oninput="stpLiveCheck()">
+          </div>
+          <div class="stp-field">
+            <div class="stp-lbl">Total Months (auto)</div>
+            <div class="stp-inp stp-inp-ro" id="stp-v-totm" style="display:flex;align-items:center;font-size:16px;font-weight:800">60 months</div>
+            <div class="stp-hint">Each lumpsum entry grows for this many months from its transfer date</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="stp-nav">
+      <button class="stp-btn-p" onclick="stpGo(2)">Next: Fund Configuration →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: FUNDS -->
+  <div class="stp-sec" id="stp-sec2">
+    <div class="stp-step-hdr">
+      <div class="stp-step-num">2</div>
+      <div>
+        <div class="stp-step-title">Equity Fund Configuration</div>
+        <div class="stp-step-sub">No actual fund selected. Named Fund 1, Fund 2 etc. CAGR & period from keyboard.</div>
+      </div>
+    </div>
+    <div class="stp-card" id="stp-funds-area"></div>
+    <div class="stp-nav">
+      <button class="stp-btn-b" onclick="stpGo(1)">← Back</button>
+      <button class="stp-btn-p" onclick="stpGo(3)">Next: Transfer Schedule →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: SCHEDULE -->
+  <div class="stp-sec" id="stp-sec3">
+    <div class="stp-step-hdr">
+      <div class="stp-step-num">3</div>
+      <div>
+        <div class="stp-step-title">STP Transfer Schedule</div>
+        <div class="stp-step-sub">Each row = one lumpsum entry with its own transfer date, maturity date & expected FV</div>
+      </div>
+    </div>
+    <div id="stp-sched-area"></div>
+    <div class="stp-nav">
+      <button class="stp-btn-b" onclick="stpGo(2)">← Back</button>
+      <button class="stp-btn-p" onclick="stpGo(4)">⭐ Generate Blueprint →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: BLUEPRINT -->
+  <div class="stp-sec" id="stp-sec4">
+    <div class="stp-step-hdr">
+      <div class="stp-step-num">4</div>
+      <div>
+        <div class="stp-step-title">STP Investment Blueprint</div>
+        <div class="stp-step-sub">Each transfer = individual lumpsum · own entry date · own maturity date · own FV</div>
+      </div>
+    </div>
+    <div id="stp-bp-area"></div>
+    <div style="background:var(--bd,#e4e2f0);border-radius:10px;padding:14px 18px;font-size:10px;color:var(--t4,#7a7898);line-height:1.7;margin-top:16px">
+      ⚠️ <strong>AMFI Disclaimer:</strong> Mutual Fund investments are subject to market risks. STP projections are indicative estimates only, not guaranteed.
+      <strong>Ace Financial Services · ARN-110832 · Kaustubh Valimbe · EUIN E155215.</strong>
+    </div>
+    <div class="stp-nav">
+      <button class="stp-btn-b" onclick="stpGo(3)">← Back</button>
+      <button class="stp-btn-p" onclick="window.print()">🖨️ Print Blueprint</button>
+    </div>
+  </div>
+
+</div>
+<!-- END STP MODE SECTION -->
 </body>
 </html>
