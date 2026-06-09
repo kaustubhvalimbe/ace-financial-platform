@@ -630,6 +630,90 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
   .hstat-v{font-size:14px!important;}
 }
 
+
+/* ── STP MODE INDEPENDENT SECTION ──────────────────────────── */
+#stp-mode-section { display:none; max-width:980px; margin:0 auto; padding:20px 20px 60px; }
+#stp-mode-section.show { display:block; }
+.stp-sec { display:none; }
+.stp-sec.stp-show { display:block; }
+.stp-g3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:18px; margin-bottom:16px; }
+.stp-g2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:16px; }
+.stp-card { background:#fff; border-radius:14px; border:1.5px solid var(--g4,#e4e2f0); padding:22px 26px; margin-bottom:18px; }
+.stp-field { display:flex; flex-direction:column; gap:6px; }
+.stp-lbl { font-size:11px; font-weight:700; color:var(--t4,#7a7898); text-transform:uppercase; letter-spacing:.5px; }
+.stp-inp { padding:11px 14px; border:1.5px solid var(--g4,#e4e2f0); border-radius:9px; font-size:14px; font-family:var(--fh,'Plus Jakarta Sans',sans-serif); color:var(--t1,#1a1240); background:#fff; outline:none; transition:border .2s; }
+.stp-inp:focus { border-color:var(--p1,#3c3197); box-shadow:0 0 0 3px rgba(60,49,151,.08); }
+.stp-inp-p { border-color:#afa9ec; background:var(--p4,#f0eeff); color:var(--p1,#3c3197); font-weight:800; }
+.stp-inp-g { border-color:#7cc43a; background:#eef7d6; color:#2d6b0e; font-weight:800; }
+.stp-inp-ro { background:#f4f3fc; color:var(--p1,#3c3197); font-weight:800; border-color:#c8c3f0; cursor:default; }
+.stp-hint { font-size:11px; color:var(--t4,#7a7898); margin-top:3px; line-height:1.5; }
+.stp-freq-row { display:flex; gap:8px; flex-wrap:wrap; }
+.stp-fq { padding:9px 20px; border-radius:8px; border:1.5px solid var(--g4,#e4e2f0); font-size:13px; font-weight:600; cursor:pointer; color:var(--t2,#3d3b5c); background:#fff; font-family:var(--fh,'Plus Jakarta Sans',sans-serif); }
+.stp-fq.on { background:var(--p1,#3c3197); color:#fff; border-color:var(--p1,#3c3197); }
+.stp-tgl-row { display:flex; gap:10px; }
+.stp-tgl { flex:1; padding:12px; border-radius:10px; border:1.5px solid var(--g4,#e4e2f0); cursor:pointer; text-align:center; }
+.stp-tgl.on { border-color:var(--p1,#3c3197); background:var(--p4,#f0eeff); }
+.stp-tgl-t { font-size:14px; font-weight:800; color:var(--t1,#1a1240); }
+.stp-tgl.on .stp-tgl-t { color:var(--p1,#3c3197); }
+.stp-tgl-s { font-size:11px; color:var(--t4,#7a7898); margin-top:3px; }
+.stp-ibox { border-radius:10px; padding:12px 16px; font-size:12px; margin-bottom:14px; display:flex; gap:10px; align-items:flex-start; line-height:1.6; }
+.stp-ibox.blue { background:var(--p4,#f0eeff); color:var(--p2,#2d2478); }
+.stp-ibox.green { background:#f4fbea; color:#2d6b0e; }
+.stp-ibox.amber { background:#fffbeb; color:#92400e; border:1px solid #fde68a; }
+.stp-ibox.red { background:#fef2f2; color:#991b1b; border:1px solid #fca5a5; }
+.stp-step-hdr { display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+.stp-step-num { width:32px; height:32px; background:var(--p1,#3c3197); color:#fff; border-radius:50%; font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.stp-step-title { font-family:var(--fp,'Playfair Display',serif); font-size:20px; color:var(--p1,#3c3197); }
+.stp-step-sub { font-size:12px; color:var(--t4,#7a7898); margin-top:2px; }
+.stp-tw { overflow-x:auto; border-radius:10px; border:1.5px solid var(--g4,#e4e2f0); }
+table.stp-t { width:100%; border-collapse:collapse; font-size:12px; }
+table.stp-t th { padding:10px 12px; background:var(--p1,#3c3197); color:#fff; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; text-align:right; white-space:nowrap; }
+table.stp-t th:first-child, table.stp-t th:nth-child(2), table.stp-t th:nth-child(3) { text-align:left; }
+table.stp-t td { padding:9px 12px; border-bottom:1px solid var(--g4,#e4e2f0); text-align:right; font-size:12px; }
+table.stp-t td:first-child, table.stp-t td:nth-child(2), table.stp-t td:nth-child(3) { text-align:left; font-weight:600; }
+table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff); font-weight:800; }
+.stp-cred { color:#dc2626; font-weight:700; } .stp-cgrn { color:#6aaa1e; font-weight:700; } .stp-cpur { color:var(--p1,#3c3197); font-weight:800; }
+.stp-bp-hero { background:var(--p1,#3c3197); border-radius:14px; padding:24px; color:#fff; margin-bottom:18px; }
+.stp-bp-title { font-family:var(--fp,'Playfair Display',serif); font-size:24px; margin-bottom:4px; }
+.stp-bp-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+.stp-bp-mc { background:rgba(255,255,255,.13); border-radius:10px; padding:14px; }
+.stp-bp-mc-l { font-size:10px; opacity:.7; text-transform:uppercase; letter-spacing:.5px; margin-bottom:5px; }
+.stp-bp-mc-v { font-size:19px; font-weight:800; }
+.stp-fc { background:#fff; border-radius:12px; border:1.5px solid var(--g4,#e4e2f0); margin-bottom:14px; overflow:hidden; }
+.stp-fc-hdr { padding:14px 18px; display:flex; align-items:center; justify-content:space-between; color:#fff; }
+.stp-fc-body { padding:16px 18px; }
+.stp-sg { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:14px; }
+.stp-st { background:var(--bg,#f7f6ff); border-radius:8px; padding:10px 12px; }
+.stp-st-l { font-size:10px; font-weight:700; color:var(--t4,#7a7898); text-transform:uppercase; margin-bottom:3px; }
+.stp-st-v { font-size:15px; font-weight:800; color:var(--t1,#1a1240); }
+.stp-fbox { background:var(--p4,#f0eeff); border-radius:8px; padding:10px 14px; font-size:11px; color:var(--p2,#2d2478); line-height:1.7; }
+.stp-btn-p { padding:13px 28px; background:var(--p1,#3c3197); color:#fff; border:none; border-radius:9px; font-size:14px; font-weight:800; cursor:pointer; font-family:var(--fh,'Plus Jakarta Sans',sans-serif); }
+.stp-btn-b { padding:13px 22px; background:var(--g4,#e4e2f0); color:var(--t2,#3d3b5c); border:none; border-radius:9px; font-size:13px; font-weight:700; cursor:pointer; font-family:var(--fh,'Plus Jakarta Sans',sans-serif); }
+.stp-nav { display:flex; gap:10px; margin-top:20px; }
+.stp-partial td { background:#fffbeb !important; }
+
+
+/* ── CREATE MY BLUEPRINT — INDEPENDENT SECTION ──────────────── */
+#cmb-mode-section { display:none; max-width:980px; margin:0 auto; padding:20px 20px 60px; }
+#cmb-mode-section.show { display:block; }
+.cmb-row-card { background:#fff; border-radius:12px; border:1.5px solid var(--g4,#e4e2f0); margin-bottom:12px; overflow:hidden; }
+.cmb-row-hdr { padding:10px 16px; background:var(--p4,#f0eeff); display:flex; align-items:center; gap:10px; }
+.cmb-row-badge { padding:4px 12px; background:var(--p1,#3c3197); color:#fff; border-radius:6px; font-size:12px; font-weight:800; }
+.cmb-row-body { padding:14px 16px; display:grid; grid-template-columns:1fr 150px 130px 120px 120px 40px; gap:12px; align-items:center; }
+.cmb-type-btns { display:flex; gap:6px; }
+.cmb-type-btn { padding:6px 12px; border-radius:7px; border:1.5px solid var(--g4,#e4e2f0); font-size:11px; font-weight:700; cursor:pointer; background:#fff; color:var(--t2,#3d3b5c); font-family:var(--fh,'Plus Jakarta Sans',sans-serif); }
+.cmb-type-btn.on-sip  { background:var(--p1,#3c3197); color:#fff; border-color:var(--p1,#3c3197); }
+.cmb-type-btn.on-lump { background:#3a7a12; color:#fff; border-color:#3a7a12; }
+.cmb-type-btn.on-both { background:linear-gradient(90deg,var(--p1,#3c3197),#3a7a12); color:#fff; border-color:var(--p1,#3c3197); }
+.cmb-search-wrap { position:relative; }
+.cmb-dropdown { position:absolute; top:100%; left:0; right:0; background:#fff; border:1.5px solid var(--p1,#3c3197); border-top:none; border-radius:0 0 9px 9px; max-height:220px; overflow-y:auto; z-index:100; box-shadow:0 8px 20px rgba(60,49,151,.15); }
+.cmb-dd-item { padding:9px 12px; cursor:pointer; border-bottom:1px solid var(--g4,#e4e2f0); font-size:12px; }
+.cmb-dd-item:hover { background:var(--p4,#f0eeff); }
+.cmb-dd-name { font-weight:600; color:var(--t1,#1a1240); }
+.cmb-dd-amc { font-size:10px; color:var(--t4,#7a7898); margin-top:1px; }
+.cmb-fv-preview { font-size:13px; font-weight:800; color:var(--g1,#6aaa1e); text-align:right; }
+.cmb-add-btn { width:100%; padding:13px; background:transparent; border:2px dashed #afa9ec; color:var(--p1,#3c3197); border-radius:10px; font-size:13px; font-weight:700; cursor:pointer; font-family:var(--fh,'Plus Jakarta Sans',sans-serif); margin-top:4px; }
+
 </style>
 </head>
 <body>
@@ -927,7 +1011,227 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
 
   <div class="sum-row" id="sum-row"></div>
   <div class="alloc-viz"><div class="dnut-wrap"><canvas id="dnut" width="180" height="180"></canvas></div><div><div class="sec-hdr">Asset Allocation</div><div class="leg" id="leg"></div></div></div>
-  <div id="stp-flow-sec" style="display:none"><div class="stp-vis"><div class="stp-vis-title">STP Flow — Liquid → Equity Transfer Plan</div><div id="stp-pairs"></div><div style="background:var(--g5);border:1.5px solid var(--g4);border-radius:9px;padding:12px;margin-top:12px;font-size:12px;color:var(--t4);line-height:1.7;">💡 <strong style="color:var(--g1)">Why STP?</strong> Your lumpsum earns ~7% p.a. in Liquid funds while waiting. Regular transfers into Equity provide Rupee Cost Averaging — reducing market timing risk significantly.</div></div></div>
+  
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     CREATE MY BLUEPRINT — INDEPENDENT SECTION
+═══════════════════════════════════════════════════════════ -->
+<div id="cmb-mode-section">
+
+  <div style="padding:14px 0;margin-bottom:4px;">
+    <button onclick="setMode('sip')" style="background:none;border:none;color:var(--p1);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fh);padding:0;">
+      ← Back to Mode Selection
+    </button>
+  </div>
+
+  <!-- HEADER -->
+  <div style="background:var(--p1);border-radius:14px;padding:22px 26px;color:#fff;margin-bottom:20px;">
+    <div style="font-family:var(--fp);font-size:24px;margin-bottom:4px">✏️ Create My Blueprint</div>
+    <div style="font-size:12px;opacity:.7">Pick any fund · SIP / Lumpsum / Both · Up to 10 funds · Your own complete portfolio blueprint</div>
+    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center;">
+      <div id="cmb-load-status" style="font-size:12px;opacity:.8">⏳ Loading funds...</div>
+      <div style="font-size:11px;opacity:.6" id="cmb-count-display"></div>
+    </div>
+  </div>
+
+  <!-- INVESTOR NAME -->
+  <div style="background:#fff;border-radius:12px;border:1.5px solid var(--g4);padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:16px;">
+    <div style="font-size:11px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;">Investor Name</div>
+    <input type="text" id="cmb-investor-name" placeholder="Type investor name..." 
+      style="flex:1;padding:10px 14px;border:1.5px solid var(--bd);border-radius:9px;font-size:14px;font-family:var(--fh);outline:none;max-width:320px;">
+    <div style="font-size:11px;color:var(--t4);">Max 10 funds · SIP / Lumpsum / Both per fund</div>
+  </div>
+
+  <!-- FUND ROWS -->
+  <div id="cmb-rows-container"></div>
+
+  <!-- ADD FUND BUTTON -->
+  <button class="cmb-add-btn" id="cmb-add-btn" onclick="cmbAddRow()">
+    ➕ Add Fund &nbsp;<span style="font-size:11px;opacity:.7" id="cmb-row-counter">(0 / 10 funds)</span>
+  </button>
+
+  <!-- GENERATE BLUEPRINT BUTTON -->
+  <div style="background:linear-gradient(135deg,var(--p2),var(--p1));border-radius:12px;padding:16px 20px;margin-top:16px;display:flex;align-items:center;justify-content:space-between;">
+    <div>
+      <div style="font-size:14px;font-weight:800;color:#fff">Ready to generate your personalised blueprint?</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:3px" id="cmb-gen-sub">Add at least 1 fund to proceed</div>
+    </div>
+    <button id="cmb-gen-btn" onclick="cmbGenerate()" disabled
+      style="padding:12px 24px;background:#fff;color:var(--p1);border:none;border-radius:9px;font-size:14px;font-weight:800;cursor:not-allowed;font-family:var(--fh);opacity:.4;">
+      ⭐ Print My Blueprint
+    </button>
+  </div>
+
+  <!-- BLUEPRINT OUTPUT -->
+  <div id="cmb-blueprint-output" style="display:none;margin-top:20px;"></div>
+
+</div>
+<!-- END CMB SECTION -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     STP MODE — INDEPENDENT SECTION
+═══════════════════════════════════════════════════════════ -->
+<div id="stp-mode-section">
+
+  <!-- BACK TO MODES BUTTON -->
+  <div style="padding:14px 0;margin-bottom:4px;">
+    <button onclick="setMode('sip')" style="background:none;border:none;color:var(--p1);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fh);padding:0;">
+      ← Back to Mode Selection
+    </button>
+  </div>
+
+  <!-- STEP 1: INVESTOR & SETUP -->
+  <div class="stp-sec stp-show" id="stp-sec1">
+    <div class="stp-step-hdr">
+      <div class="stp-step-num">1</div>
+      <div>
+        <div class="stp-step-title">Investor & STP Setup</div>
+        <div class="stp-step-sub">Each STP transfer starts its own investment cycle from its transfer date</div>
+      </div>
+    </div>
+    <div class="stp-card">
+      <div class="stp-g3">
+        <div class="stp-field">
+          <div class="stp-lbl">Investor Name</div>
+          <input class="stp-inp" id="stp-v-name" type="text" placeholder="Type investor name...">
+        </div>
+        <div class="stp-field">
+          <div class="stp-lbl" style="color:var(--p1)">▣ Total Lumpsum to Park ₹</div>
+          <input class="stp-inp stp-inp-p" id="stp-v-lump" type="number" placeholder="e.g. 200000" min="1000" oninput="stpLiveCheck()">
+          <div class="stp-hint">Parked in Liquid Fund on start date</div>
+        </div>
+        <div class="stp-field">
+          <div class="stp-lbl">Liquid Fund CAGR % (expected)</div>
+          <input class="stp-inp stp-inp-g" id="stp-v-lcagr" type="number" placeholder="e.g. 5.5" min="1" max="20">
+          <div class="stp-hint">Typical liquid fund ~5–8% p.a. — enter from keyboard</div>
+        </div>
+      </div>
+      <div class="stp-g3">
+        <div class="stp-field">
+          <div class="stp-lbl">Investment Start Date</div>
+          <input class="stp-inp stp-inp-ro" id="stp-v-start" type="date" readonly>
+          <div class="stp-hint">Today — auto-filled</div>
+        </div>
+        <div class="stp-field">
+          <div class="stp-lbl" style="color:var(--p1)">First STP Transfer Date</div>
+          <input class="stp-inp stp-inp-ro" id="stp-v-ft" type="date" readonly>
+          <div class="stp-hint">7 days after start — auto-filled</div>
+        </div>
+        <div class="stp-field">
+          <div class="stp-lbl">STP Type</div>
+          <div class="stp-tgl-row">
+            <div class="stp-tgl on" id="stp-tgl-f" onclick="stpSetType('fixed')">
+              <div class="stp-tgl-t">Fixed</div><div class="stp-tgl-s">Same amount every transfer</div>
+            </div>
+            <div class="stp-tgl" id="stp-tgl-x" onclick="stpSetType('flexi')">
+              <div class="stp-tgl-t">Flexi</div><div class="stp-tgl-s">Different amount each time</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="stp-g3">
+        <div class="stp-field">
+          <div class="stp-lbl">Transfer Frequency</div>
+          <div class="stp-freq-row">
+            <button class="stp-fq" onclick="stpSetFreq('daily',this)">Daily</button>
+            <button class="stp-fq on" onclick="stpSetFreq('weekly',this)">Weekly</button>
+            <button class="stp-fq" onclick="stpSetFreq('monthly',this)">Monthly</button>
+            <button class="stp-fq" onclick="stpSetFreq('quarterly',this)">Quarterly</button>
+          </div>
+        </div>
+        <div class="stp-field">
+          <div class="stp-lbl" id="stp-cnt-lbl">No. of Weeks <span style="color:var(--red,#dc2626);font-size:9px">(min 6)</span></div>
+          <input class="stp-inp stp-inp-p" id="stp-v-count" type="number" placeholder="e.g. 20" min="6" oninput="stpLiveCheck()">
+          <div class="stp-hint">Total number of STP transfers</div>
+        </div>
+        <div class="stp-field" id="stp-amt-field">
+          <div class="stp-lbl">Transfer Amount ₹ <span style="color:var(--red,#dc2626);font-size:9px">(min ₹500)</span></div>
+          <input class="stp-inp stp-inp-p" id="stp-v-amt" type="number" placeholder="Enter amount" min="500" oninput="stpLiveCheck()">
+          <div class="stp-hint" id="stp-amt-hint">Investor's choice — minimum ₹500</div>
+        </div>
+      </div>
+      <div id="stp-live-msg"></div>
+      <div style="border-top:1.5px solid var(--g4,#e4e2f0);margin-top:16px;padding-top:16px">
+        <div style="font-size:12px;font-weight:700;color:var(--p2,#2d2478);margin-bottom:4px">Investment Period per Entry</div>
+        <div class="stp-hint" style="color:var(--p2,#2d2478);margin-bottom:12px">Each STP transfer starts its OWN cycle. Transfer 1 on Date X → matures X+5Y. Transfer 2 on X+1week → matures X+1week+5Y.</div>
+        <div class="stp-g3">
+          <div class="stp-field">
+            <div class="stp-lbl">Period — Years</div>
+            <input class="stp-inp stp-inp-p" id="stp-v-yr" type="number" placeholder="e.g. 5" min="0" max="50" value="5" oninput="stpLiveCheck()">
+          </div>
+          <div class="stp-field">
+            <div class="stp-lbl">Period — Months</div>
+            <input class="stp-inp stp-inp-p" id="stp-v-mo" type="number" placeholder="0" min="0" max="11" value="0" oninput="stpLiveCheck()">
+          </div>
+          <div class="stp-field">
+            <div class="stp-lbl">Total Months (auto)</div>
+            <div class="stp-inp stp-inp-ro" id="stp-v-totm" style="display:flex;align-items:center;font-size:16px;font-weight:800">60 months</div>
+            <div class="stp-hint">Each lumpsum entry grows for this many months from its transfer date</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="stp-nav">
+      <button class="stp-btn-p" onclick="stpGo(2)">Next: Fund Configuration →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: FUNDS -->
+  <div class="stp-sec" id="stp-sec2">
+    <div class="stp-step-hdr">
+      <div class="stp-step-num">2</div>
+      <div>
+        <div class="stp-step-title">Equity Fund Configuration</div>
+        <div class="stp-step-sub">No actual fund selected. Named Fund 1, Fund 2 etc. CAGR & period from keyboard.</div>
+      </div>
+    </div>
+    <div class="stp-card" id="stp-funds-area"></div>
+    <div class="stp-nav">
+      <button class="stp-btn-b" onclick="stpGo(1)">← Back</button>
+      <button class="stp-btn-p" onclick="stpGo(3)">Next: Transfer Schedule →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: SCHEDULE -->
+  <div class="stp-sec" id="stp-sec3">
+    <div class="stp-step-hdr">
+      <div class="stp-step-num">3</div>
+      <div>
+        <div class="stp-step-title">STP Transfer Schedule</div>
+        <div class="stp-step-sub">Each row = one lumpsum entry with its own transfer date, maturity date & expected FV</div>
+      </div>
+    </div>
+    <div id="stp-sched-area"></div>
+    <div class="stp-nav">
+      <button class="stp-btn-b" onclick="stpGo(2)">← Back</button>
+      <button class="stp-btn-p" onclick="stpGo(4)">⭐ Generate Blueprint →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: BLUEPRINT -->
+  <div class="stp-sec" id="stp-sec4">
+    <div class="stp-step-hdr">
+      <div class="stp-step-num">4</div>
+      <div>
+        <div class="stp-step-title">STP Investment Blueprint</div>
+        <div class="stp-step-sub">Each transfer = individual lumpsum · own entry date · own maturity date · own FV</div>
+      </div>
+    </div>
+    <div id="stp-bp-area"></div>
+    <div style="background:var(--bd,#e4e2f0);border-radius:10px;padding:14px 18px;font-size:10px;color:var(--t4,#7a7898);line-height:1.7;margin-top:16px">
+      ⚠️ <strong>AMFI Disclaimer:</strong> Mutual Fund investments are subject to market risks. STP projections are indicative estimates only, not guaranteed.
+      <strong>Ace Financial Services · ARN-110832 · Kaustubh Valimbe · EUIN E155215.</strong>
+    </div>
+    <div class="stp-nav">
+      <button class="stp-btn-b" onclick="stpGo(3)">← Back</button>
+      <button class="stp-btn-p" onclick="window.print()">🖨️ Print Blueprint</button>
+    </div>
+  </div>
+
+</div>
+<!-- END STP MODE SECTION -->
+<div id="stp-flow-sec" style="display:none"><div class="stp-vis"><div class="stp-vis-title">STP Flow — Liquid → Equity Transfer Plan</div><div id="stp-pairs"></div><div style="background:var(--g5);border:1.5px solid var(--g4);border-radius:9px;padding:12px;margin-top:12px;font-size:12px;color:var(--t4);line-height:1.7;">💡 <strong style="color:var(--g1)">Why STP?</strong> Your lumpsum earns ~7% p.a. in Liquid funds while waiting. Regular transfers into Equity provide Rupee Cost Averaging — reducing market timing risk significantly.</div></div></div>
   <div class="sec-hdr">Selected Funds & Allocation</div>
   <div class="frc-grid" id="frc-grid"></div>
   <div class="ptw"><div class="sec-hdr">Projected Wealth Growth</div><div style="overflow-x:auto"><table class="ptbl"><thead><tr id="proj-hdr"></tr></thead><tbody id="proj-body"></tbody></table></div></div>
@@ -1227,27 +1531,31 @@ const ACT_SUB={};
 // ══ MODE ══
 function setMode(m){
   ST.mode=m;
-  ["sip","stp","combo"].forEach(x=>{var el=document.getElementById("mb-"+x);if(el)el.classList.toggle("active",x===m);});
-  const fb=document.getElementById("stp-freq-box");
-  if(fb) fb.style.display=(m==="stp"||m==="combo")?"block":"none";
-  // Custom = Create My Blueprint — show its own section
-  const cs=document.getElementById("custom-section");
-  if(m==="custom"){
-    if(cs){
-      cs.style.display="block";
-      setTimeout(function(){cs.scrollIntoView({behavior:"smooth",block:"start"});},120);
-      loadAMFIForCMB();
-      // Auto-add 3 rows if empty
-      setTimeout(function(){
-        try{
-          if(CMB&&CMB.rows&&CMB.rows.length===0&&typeof addFundRow==='function'){
-            addFundRow(); addFundRow(); addFundRow();
-          }
-        }catch(e){ console.warn('CMB auto-init:',e); }
-      },100);
+  // Highlight active mode card
+  ["sip","stp","combo","custom"].forEach(function(x){
+    var el=document.getElementById("mb-"+x);
+    if(el) el.classList.toggle("active",x===m);
+  });
+  // Show/hide sections — ALL INDEPENDENT
+  var wizSection = document.getElementById("wiz-section");
+  var stpSection = document.getElementById("stp-mode-section");
+  var cmbSection = document.getElementById("custom-section");
+  if(wizSection) wizSection.style.display = (m==="sip"||m==="combo") ? "" : "none";
+  if(stpSection) stpSection.classList.toggle("show", m==="stp");
+  if(cmbSection){
+    cmbSection.style.display = m==="custom" ? "block" : "none";
+    if(m==="custom"){
+      setTimeout(function(){cmbSection.scrollIntoView({behavior:"smooth",block:"start"});},100);
+      if(typeof loadAMFIForCMB==="function") loadAMFIForCMB();
     }
-  } else {
-    if(cs) cs.style.display="none";
+  }
+  // STP freq box (legacy)
+  var fb=document.getElementById("stp-freq-box");
+  if(fb) fb.style.display=(m==="combo")?"block":"none";
+  // STP mode — initialise
+  if(m==="stp"){
+    setTimeout(function(){stpInit();},50);
+    setTimeout(function(){stpSection.scrollIntoView({behavior:"smooth",block:"start"});},100);
   }
 }
 
@@ -2641,6 +2949,539 @@ restart = function() {
 };
 
 buildSteps();updHor();
+
+// ── STP MODE — INDEPENDENT FUNCTIONS ─────────────────────────
+function stpInit(){
+  var today = new Date();
+  var ft = new Date(today); ft.setDate(ft.getDate()+7);
+  var vs = document.getElementById('stp-v-start');
+  var vft= document.getElementById('stp-v-ft');
+  if(vs && !vs.value) vs.value = stpFmt0(today);
+  if(vft && !vft.value) vft.value = stpFmt0(ft);
+  // Reset to step 1
+  document.querySelectorAll('.stp-sec').forEach(function(s){s.classList.remove('stp-show');});
+  var s1=document.getElementById('stp-sec1');
+  if(s1) s1.classList.add('stp-show');
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+var STP_STP_FREQ = 'weekly', STP_STYPE = 'fixed';
+var STP_STP_FUNDS = [{id:1,label:'Fund 1',desc:'',splitPct:100,cagr:12,yr:5,mo:0}];
+var STP_STP_FID = 2;
+
+function stpInit(){
+  var t = new Date(), ft = new Date(t); ft.setDate(ft.getDate()+7);
+  document.getElementById('stp-v-start').value = stpFmt0(t);
+  document.getElementById('stp-v-ft').value = stpFmt0(ft);
+  stpLiveCheck();
+};
+
+// ── HELPERS ───────────────────────────────────────────────────
+function stpFmt0(d){ return d.toISOString().split('T')[0]; }
+
+function addDays(dateStr, days){
+  var d = new Date(dateStr); d.setDate(d.getDate()+days); return stpFmt0(d);
+}
+function addWeeks(dateStr, w){ return addDays(dateStr, w*7); }
+function addMonths(dateStr, m){
+  var d = new Date(dateStr); d.setMonth(d.getMonth()+m); return stpFmt0(d);
+}
+function addYears(dateStr, y){
+  var d = new Date(dateStr); d.setFullYear(d.getFullYear()+y); return stpFmt0(d);
+}
+
+// Get the Nth transfer date from first transfer date
+function stpGetTransferDate(firstDt, freq, idx){
+  // idx = 0 for first transfer
+  if(freq==='daily')     return addDays(firstDt, idx);
+  if(freq==='weekly')    return addWeeks(firstDt, idx);
+  if(freq==='monthly')   return addMonths(firstDt, idx);
+  if(freq==='quarterly') return addMonths(firstDt, idx*3);
+}
+
+// Get maturity date = transfer date + years + months
+function stpGetMaturityDate(transferDt, yr, mo){
+  var d = new Date(transferDt);
+  d.setFullYear(d.getFullYear() + (yr||0));
+  d.setMonth(d.getMonth() + (mo||0));
+  return stpFmt0(d);
+}
+
+function stpFmtD(s){
+  return new Date(s).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+}
+function stpFmtN(n){
+  n=Math.round(n);
+  if(n>=10000000) return (n/10000000).toFixed(2)+' Cr';
+  if(n>=100000)   return (n/100000).toFixed(2)+' L';
+  if(n>=1000)     return (n/1000).toFixed(1)+' K';
+  return n.toLocaleString('en-IN');
+}
+function stpFmtI(n){ return Math.round(n).toLocaleString('en-IN'); }
+
+// ── KEY FORMULA ───────────────────────────────────────────────
+// FV = P × (1 + (CAGR/100)/12)^months  (monthly compounding, Excel-accurate)
+function stpLumpFV(P, cagrPct, months){
+  var r = (cagrPct/100)/12;
+  return P * Math.pow(1+r, months);
+}
+
+// ── CONTROLS ──────────────────────────────────────────────────
+function stpSetFreq(f, btn){
+  STP_FREQ = f;
+  document.querySelectorAll('.fq').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  var lbl = {daily:'Days',weekly:'Weeks',monthly:'Months',quarterly:'Quarters'}[f];
+  document.getElementById('stp-cnt-lbl').innerHTML =
+    'No. of '+lbl+' <span style="color:var(--red);font-size:9px">(min 6)</span>';
+  stpLiveCheck();
+}
+function stpSetType(t){
+  STYPE=t;
+  document.getElementById('stp-tgl-f').classList.toggle('on',t==='fixed');
+  document.getElementById('stp-tgl-x').classList.toggle('on',t==='flexi');
+  document.getElementById('stp-amt-field').style.display = t==='fixed'?'':'none';
+  stpLiveCheck();
+}
+
+// ── LIVE CHECK ────────────────────────────────────────────────
+function stpLiveCheck(){
+  var lump  = parseFloat(document.getElementById('stp-v-lump').value)||0;
+  var count = parseInt(document.getElementById('stp-v-count').value)||0;
+  var amt   = parseFloat(document.getElementById('stp-v-amt').value)||0;
+  var yr    = parseInt(document.getElementById('stp-v-yr').value)||0;
+  var mo    = parseInt(document.getElementById('stp-v-mo').value)||0;
+  var totM  = yr*12+mo;
+
+  // Update months display
+  var md = document.getElementById('stp-v-totm');
+  md.textContent = totM > 0 ? totM+' months ('+yr+'Y '+mo+'M)' : '—';
+
+  var msg = '';
+  if(count > 0 && count < 6){
+    msg = '<div class="ibox red">❌ Minimum 6 transfers required</div>';
+  } else if(lump>0 && count>=6 && amt>=500 && STP_STYPE==='fixed'){
+    var total = amt*count;
+    if(Math.abs(total-lump)<1){
+      msg='<div class="ibox green">✅ ₹'+stpFmtI(amt)+' × '+count+' = ₹'+stpFmtI(lump)+' — full lumpsum transfers to equity</div>';
+    } else if(total > lump){
+      var full = Math.floor(lump/amt);
+      var rem  = lump - full*amt;
+      msg='<div class="ibox amber">⚠️ ₹'+stpFmtI(amt)+' × '+count+' = ₹'+stpFmtI(total)+' exceeds ₹'+stpFmtI(lump)+'<br>'+
+          '→ '+full+' full transfers'+(rem>=500?' + 1 partial of ₹'+stpFmtI(rem):' (₹'+stpFmtI(rem)+' below ₹500 min stays in Liquid)')+
+          '<br>→ Actual transfers: '+(full+(rem>=500?1:0))+' (not '+count+')</div>';
+    } else {
+      var stay = lump - total;
+      msg='<div class="ibox blue">ℹ️ ₹'+stpFmtI(amt)+' × '+count+' = ₹'+stpFmtI(total)+' — ₹'+stpFmtI(stay)+' stays in Liquid Fund after transfers</div>';
+    }
+  }
+  document.getElementById('stp-live-msg').innerHTML = msg;
+}
+
+// ── COMPUTE ACTUAL TRANSFERS ──────────────────────────────────
+function stpComputeTransfers(){
+  var lump    = parseFloat(document.getElementById('stp-v-lump').value)||0;
+  var count   = parseInt(document.getElementById('stp-v-count').value)||0;
+  var amt     = parseFloat(document.getElementById('stp-v-amt').value)||0;
+  var firstDt = document.getElementById('stp-v-ft').value;
+  var minAmt  = 500;
+  var transfers = [], balance = lump, reason = '';
+
+  if(!lump)    { reason='Please enter Total Lumpsum amount.'; return {transfers:[],remainingLiquid:0,reason:reason}; }
+  if(count<6)  { reason='Minimum 6 transfers required.'; return {transfers:[],remainingLiquid:0,reason:reason}; }
+  if(!firstDt) { reason='Start date missing.'; return {transfers:[],remainingLiquid:0,reason:reason}; }
+  if(STP_STYPE==='fixed' && amt<500){ reason='Please enter Transfer Amount per instalment (minimum ₹500).'; return {transfers:[],remainingLiquid:0,reason:reason}; }
+
+  for(var i=0; i<count; i++){
+    if(balance <= 0) break;
+    var thisAmt;
+    if(STP_STYPE==='fixed'){
+      thisAmt = Math.min(amt, balance);
+      if(thisAmt < minAmt) break;
+    } else {
+      thisAmt = amt || Math.round(lump/count);
+      thisAmt = Math.min(thisAmt, balance);
+      if(thisAmt < minAmt) break;
+    }
+    transfers.push({
+      idx: i,
+      date: stpGetTransferDate(firstDt, STP_FREQ, i),
+      amount: thisAmt,
+      isPartial: (STP_STYPE==='fixed' && thisAmt < amt - 0.01)
+    });
+    balance -= thisAmt;
+  }
+  return { transfers:transfers, remainingLiquid: Math.max(0,balance), reason:'' };
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────
+function stpGo(n){
+  // Validate before going to schedule or blueprint
+  if(n===3 || n===4){
+    var r = stpComputeTransfers();
+    if(!r.transfers.length){
+      alert(r.reason || 'Please complete all fields in Section 1 before proceeding.\n\nChecklist:\n• Total Lumpsum ₹\n• No. of transfers (min 6)\n• Transfer Amount ₹ (min ₹500)\n• Period (Years/Months)');
+      return;
+    }
+  }
+  if(n===2) stpBuildFunds();
+  if(n===3) stpBuildSchedule();
+  if(n===4) stpBuildBlueprint();
+  document.querySelectorAll('.stp-sec').forEach(function(s){s.classList.remove('stp-show');});
+  document.getElementById('sec'+n).classList.add('stp-show');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── FUND ROWS ──────────────────────────────────────────────────
+function stpBuildFunds(){
+  var el = document.getElementById('stp-funds-area');
+  el.innerHTML='';
+  var ib=document.createElement('div');
+  ib.className='ibox blue';
+  ib.innerHTML='<span style="font-size:18px;flex-shrink:0">ℹ️</span><div>No actual fund selected — named Fund 1, Fund 2 etc. Enter expected CAGR % and Period (Y &amp; M) from keyboard. Split % decides how each STP transfer is divided.</div>';
+  el.appendChild(ib);
+
+  STP_FUNDS.forEach(function(f,i){
+    var row=document.createElement('div');
+    row.style.cssText='display:grid;grid-template-columns:100px 1fr 110px 100px 130px 36px;gap:12px;align-items:center;padding:12px 16px;background:#fff;border:1.5px solid var(--bd);border-radius:10px;margin-bottom:10px;';
+    row.innerHTML=
+      '<div><div style="padding:6px 10px;background:var(--p4);color:var(--p1);border-radius:7px;font-size:12px;font-weight:800;text-align:center;">'+f.label+'</div></div>'+
+      '<input class="inp" style="padding:8px;font-size:12px;" placeholder="Description (optional)" value="'+f.desc+'" oninput="STP_FUNDS['+i+'].desc=this.value">'+
+      '<div>'+
+        '<div class="lbl" style="margin-bottom:4px">Split %</div>'+
+        '<input class="inp inp-p" style="padding:8px;font-size:13px;" type="number" placeholder="100" value="'+f.splitPct+'" min="1" max="100" oninput="STP_FUNDS['+i+'].splitPct=parseInt(this.value)||0">'+
+      '</div>'+
+      '<div>'+
+        '<div class="lbl" style="margin-bottom:4px">CAGR %</div>'+
+        '<input class="inp inp-g" style="padding:8px;font-size:13px;" type="number" placeholder="12" value="'+f.cagr+'" min="1" max="50" oninput="STP_FUNDS['+i+'].cagr=parseFloat(this.value)||12">'+
+      '</div>'+
+      '<div>'+
+        '<div class="lbl" style="margin-bottom:4px">Period (Y / M)</div>'+
+        '<div style="display:flex;gap:6px">'+
+          '<input class="inp" style="padding:8px;width:56px;text-align:center;font-size:12px;" type="number" placeholder="Y" value="'+f.yr+'" oninput="STP_FUNDS['+i+'].yr=parseInt(this.value)||0">'+
+          '<input class="inp" style="padding:8px;width:56px;text-align:center;font-size:12px;" type="number" placeholder="M" value="'+f.mo+'" oninput="STP_FUNDS['+i+'].mo=parseInt(this.value)||0">'+
+        '</div>'+
+      '</div>'+
+      '<button onclick="stpRmFund('+f.id+')" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:16px;font-weight:800;" title="Remove">✕</button>';
+    el.appendChild(row);
+  });
+  var ab=document.createElement('button');
+  ab.style.cssText='width:100%;padding:12px;background:transparent;border:2px dashed #afa9ec;color:var(--p1);border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fh);margin-top:4px;';
+  ab.innerHTML='➕ Add Another Fund';
+  ab.onclick=stpAddFund;
+  el.appendChild(ab);
+}
+function stpAddFund(){
+  STP_FUNDS.push({id:STP_FID++,label:'Fund '+STP_FUNDS.length+1,desc:'',splitPct:Math.floor(100/STP_FUNDS.length+1),cagr:12,yr:5,mo:0});
+  stpBuildFunds();
+}
+function stpRmFund(id){ FUNDS=STP_FUNDS.filter(function(f){return f.id!==id;}); stpBuildFunds(); }
+
+// ── SCHEDULE ──────────────────────────────────────────────────
+function stpBuildSchedule(){
+  var el = document.getElementById('stp-sched-area');
+  el.innerHTML='';
+  var lump   = parseFloat(document.getElementById('stp-v-lump').value)||0;
+  var lcagr  = parseFloat(document.getElementById('stp-v-lcagr').value)||7;
+  var yr     = parseInt(document.getElementById('stp-v-yr').value)||5;
+  var mo     = parseInt(document.getElementById('stp-v-mo').value)||0;
+  var mR     = (lcagr/100)/12;
+  var dpi    = {daily:1, weekly:7, monthly:30.44, quarterly:91.31}[FREQ];
+
+  var result1 = stpComputeTransfers();
+  var transfers = result1.transfers;
+  var remainingLiquid = result1.remainingLiquid;
+  if(!transfers.length){
+    el.innerHTML='<div class="ibox red" style="font-size:13px;">'+
+      '<span style="font-size:20px;flex-shrink:0">❌</span>'+
+      '<div><strong>Please fix before proceeding:</strong><br>'+
+      (result1.reason||'Check all Section 1 fields are filled correctly.')+
+      '</div></div>';
+    return;
+  }
+
+  var totalXfer = transfers.reduce(function(s,t){return s+t.amount;},0);
+  var cls = remainingLiquid>0?'blue':(transfers.some(function(t){return t.isPartial;})?'amber':'green');
+  var summaryMsg = remainingLiquid>500 ?
+    'ℹ️ '+transfers.length+' transfers totalling ₹'+stpFmtI(totalXfer)+'. <strong>₹'+stpFmtI(remainingLiquid)+' stays in Liquid Fund</strong> after all transfers complete.' :
+    (transfers.some(function(t){return t.isPartial;}) ?
+    '⚠️ Last transfer is partial — transfer amount × count exceeded lumpsum.' :
+    '✅ All '+transfers.length+' transfers complete — full lumpsum transferred to equity.');
+
+  var ib2=document.createElement('div');
+  ib2.className='ibox '+cls;
+  ib2.innerHTML='<span style="flex-shrink:0;font-size:16px">'+(cls==='green'?'✅':cls==='amber'?'⚠️':'ℹ️')+'</span><div>'+summaryMsg+'</div>';
+  el.appendChild(ib2);
+
+  // Table with maturity dates
+  var tw = document.createElement('div'); tw.className='tw';
+  var balance=lump, totalInt=0, rows='';
+
+  transfers.forEach(function(t,i){
+    var mf = dpi/30.44;
+    var interest = balance * mR * mf;
+    var balBefore = balance + interest;
+    var balAfter  = balBefore - t.amount;
+    totalInt += interest;
+    balance = balAfter;
+
+    // Maturity date for THIS transfer = transfer date + yr years + mo months
+    var matDate = stpGetMaturityDate(t.date, yr, mo);
+    var pc = t.isPartial ? ' partial' : '';
+    var pn = t.isPartial ? ' <span style="font-size:10px;color:var(--amber)">(partial)</span>' : '';
+    rows += '<tr class="'+pc+'">'+
+      '<td style="text-align:center;font-weight:800;color:var(--p1);width:36px">'+(i+1)+'</td>'+
+      '<td>'+stpFmtD(t.date)+'</td>'+
+      '<td style="color:var(--p2);font-weight:700">'+stpFmtD(matDate)+'</td>'+
+      '<td class="cred">-₹'+stpFmtI(t.amount)+pn+'</td>'+
+      '<td>₹'+stpFmtI(Math.max(0,balBefore))+'</td>'+
+      '<td class="cgrn">+₹'+stpFmtI(Math.round(interest))+'</td>'+
+      '<td class="cpur">₹'+stpFmtI(Math.max(0,balAfter))+'</td>'+
+    '</tr>';
+  });
+
+  rows += '<tr>'+
+    '<td colspan="3" style="text-align:left">TOTALS</td>'+
+    '<td class="cred">-₹'+stpFmtI(totalXfer)+'</td>'+
+    '<td>—</td>'+
+    '<td class="cgrn">+₹'+stpFmtI(Math.round(totalInt))+'</td>'+
+    '<td class="cpur">₹'+stpFmtI(Math.max(0,remainingLiquid))+'</td>'+
+  '</tr>';
+
+  tw.innerHTML='<table class="t"><thead><tr>'+
+    '<th style="text-align:center">#</th>'+
+    '<th>Transfer Date</th>'+
+    '<th>Maturity Date</th>'+
+    '<th>STP Amount ₹</th>'+
+    '<th>Liquid Before ₹</th>'+
+    '<th>Interest ₹</th>'+
+    '<th>Liquid After ₹</th>'+
+    '</tr></thead><tbody>'+rows+'</tbody></table>';
+  el.appendChild(tw);
+}
+
+// ── BLUEPRINT ─────────────────────────────────────────────────
+function stpBuildBlueprint(){
+  var el=document.getElementById('stp-bp-area'); el.innerHTML='';
+  var name   = document.getElementById('stp-v-name').value||'Valued Investor';
+  var lump   = parseFloat(document.getElementById('stp-v-lump').value)||0;
+  var lcagr  = parseFloat(document.getElementById('stp-v-lcagr').value)||7;
+  var yr     = parseInt(document.getElementById('stp-v-yr').value)||5;
+  var mo     = parseInt(document.getElementById('stp-v-mo').value)||0;
+  var totM   = yr*12+mo;
+  var startDt= document.getElementById('stp-v-start').value;
+  var mR     = (lcagr/100)/12;
+  var dpi    = {daily:1, weekly:7, monthly:30.44, quarterly:91.31}[FREQ];
+  var freqLbl= {daily:'Daily',weekly:'Weekly',monthly:'Monthly',quarterly:'Quarterly'}[FREQ];
+
+  var {transfers, remainingLiquid} = stpComputeTransfers();
+  if(!transfers.length){ el.innerHTML='<div class="ibox red">Please complete all fields first.</div>'; return; }
+
+  var totalXfer = transfers.reduce(function(s,t){return s+t.amount;},0);
+
+  // ── LIQUID INTEREST ───────────────────────────────────────────
+  var balance=lump, totalInt=0;
+  transfers.forEach(function(t){
+    var mf=dpi/30.44;
+    var interest=balance*mR*mf;
+    totalInt+=interest;
+    balance=balance+interest-t.amount;
+  });
+
+  // ── EQUITY CORPUS (CORRECT: each transfer = own lumpsum, own period) ──
+  // Each transfer of amount A at its own date grows for EXACTLY totM months
+  // FV = A × (1 + r/12)^totM — SAME for every transfer (same period, same CAGR)
+  var fundCorpora = STP_FUNDS.map(function(){ return 0; });
+  var totalEquity = 0;
+
+  // For each fund, per-transfer FV
+  var perTransferFVs = [];
+  STP_FUNDS.forEach(function(f, fi){
+    var fundM = f.yr*12+f.mo || totM;
+    var perFV = stpLumpFV(1, f.cagr, fundM); // FV per ₹1
+    transfers.forEach(function(t, ti){
+      var principal = t.amount * (f.splitPct/100);
+      var fv = principal * perFV;
+      fundCorpora[fi] += fv;
+      totalEquity += fv;
+    });
+  });
+
+  // ── HERO ──────────────────────────────────────────────────────
+  var hero=document.createElement('div'); hero.className='bp-hero';
+  hero.innerHTML=
+    '<div class="bp-title">STP Investment Blueprint</div>'+
+    '<div class="bp-sub">Prepared for <strong>'+name+'</strong> &nbsp;·&nbsp; '+stpFmtD(startDt)+' &nbsp;·&nbsp; '+freqLbl+' STP</div>'+
+    '<div class="bp-grid">'+
+    '<div class="bp-mc"><div class="bp-mc-l">Lumpsum Parked</div><div class="bp-mc-v">₹'+stpFmtN(lump)+'</div></div>'+
+    '<div class="bp-mc"><div class="bp-mc-l">Liquid Interest Est.</div><div class="bp-mc-v" style="color:#a5f3a5">+₹'+stpFmtN(totalInt)+'</div></div>'+
+    '<div class="bp-mc"><div class="bp-mc-l">STP Transfers</div><div class="bp-mc-v">'+transfers.length+' × ₹'+stpFmtN(transfers[0].amount)+'</div></div>'+
+    '<div class="bp-mc"><div class="bp-mc-l">Total Equity Corpus</div><div class="bp-mc-v">₹'+stpFmtN(totalEquity)+'</div></div>'+
+    '</div>';
+  el.appendChild(hero);
+
+  // ── LIQUID CARD ────────────────────────────────────────────────
+  var lc=document.createElement('div'); lc.innerHTML=
+    '<div class="fc"><div class="fc-hdr" style="background:linear-gradient(135deg,#5b2d9e,var(--p1))">'+
+    '<div><div style="font-size:11px;opacity:.8;margin-bottom:2px">PARKING FUND — Decreasing</div>'+
+    '<div style="font-size:16px;font-weight:800">🏦 Liquid Fund</div></div>'+
+    '<div style="text-align:right"><div style="font-size:11px;opacity:.8">CAGR while parked</div><div style="font-size:19px;font-weight:800">'+lcagr+'% p.a.</div></div>'+
+    '</div><div class="fc-body"><div class="sg">'+
+    '<div class="st"><div class="st-l">Amount Parked</div><div class="st-v">₹'+stpFmtI(lump)+'</div></div>'+
+    '<div class="st"><div class="st-l">Interest Earned (est.)</div><div class="st-v" style="color:var(--g1)">+₹'+stpFmtI(Math.round(totalInt))+'</div></div>'+
+    '<div class="st"><div class="st-l">Remaining in Liquid</div><div class="st-v" style="color:'+(remainingLiquid>0?'var(--p1)':'var(--t5)')+'">₹'+stpFmtI(Math.max(0,remainingLiquid))+'</div></div>'+
+    '</div>'+
+    (remainingLiquid>500?'<div class="ibox amber">⚠️ ₹'+stpFmtI(remainingLiquid)+' stays in Liquid Fund — continues to earn '+lcagr+'% p.a.</div>':'')+
+    '</div></div>';
+  el.appendChild(lc);
+
+  // ── EQUITY FUND CARDS ──────────────────────────────────────────
+  var clrs=['linear-gradient(135deg,#167a12,var(--g1))','linear-gradient(135deg,#0e6b8a,#1a9cc7)',
+    'linear-gradient(135deg,#7a3b10,#c96e2a)','linear-gradient(135deg,#5c1a7a,#9b3dbf)'];
+
+  STP_FUNDS.forEach(function(f, fi){
+    var fundM   = f.yr*12+f.mo || totM;
+    var corpus  = fundCorpora[fi];
+    var invested= totalXfer*(f.splitPct/100);
+    var gain    = Math.max(0,corpus-invested);
+    var perAmt  = transfers[0].amount*(f.splitPct/100);
+    var perFV   = stpLumpFV(perAmt, f.cagr, fundM);
+
+    // Get first & last transfer dates and maturity dates
+    var firstXfer = transfers[0].date;
+    var lastXfer  = transfers[transfers.length-1].date;
+    var firstMat  = stpGetMaturityDate(firstXfer, f.yr, f.mo);
+    var lastMat   = stpGetMaturityDate(lastXfer, f.yr, f.mo);
+
+    var fc2=document.createElement('div');
+    fc2.innerHTML=
+      '<div class="fc"><div class="fc-hdr" style="background:'+clrs[fi%4]+'">'+
+      '<div><div style="font-size:11px;opacity:.8;margin-bottom:2px">EQUITY TARGET · FUND '+(fi+1)+'</div>'+
+      '<div style="font-size:16px;font-weight:800">📈 '+f.label+(f.desc?' — '+f.desc:'')+'</div></div>'+
+      '<div style="text-align:right"><div style="font-size:11px;opacity:.8">Expected CAGR</div><div style="font-size:19px;font-weight:800">'+f.cagr.toFixed(1)+'%</div></div>'+
+      '</div><div class="fc-body"><div class="sg">'+
+      '<div class="st"><div class="st-l">STP Split</div><div class="st-v">'+f.splitPct+'%</div></div>'+
+      '<div class="st"><div class="st-l">Total Invested</div><div class="st-v">₹'+stpFmtI(Math.round(invested))+'</div></div>'+
+      '<div class="st"><div class="st-l">No. of Entries</div><div class="st-v">'+transfers.length+' lumpsums</div></div>'+
+      '<div class="st"><div class="st-l">Period per Entry</div><div class="st-v">'+f.yr+'Y '+f.mo+'M ('+fundM+' mo)</div></div>'+
+      '<div class="st"><div class="st-l">Expected Corpus</div><div class="st-v" style="color:var(--g1)">₹'+stpFmtN(corpus)+'</div></div>'+
+      '<div class="st"><div class="st-l">Wealth Gain</div><div class="st-v" style="color:var(--g1)">+₹'+stpFmtN(gain)+'</div></div>'+
+      '</div>'+
+
+      // DATE LOGIC explanation
+      '<div style="background:#f8f7ff;border:1px solid var(--bd);border-radius:8px;padding:10px 14px;font-size:11px;color:var(--t2);margin-bottom:12px;line-height:1.8">'+
+      '<strong>Date Logic:</strong><br>'+
+      'Entry 1: ₹'+stpFmtI(Math.round(perAmt))+' on <strong>'+stpFmtD(firstXfer)+'</strong> → matures <strong>'+stpFmtD(firstMat)+'</strong> ('+fundM+' months)<br>'+
+      'Entry 2: ₹'+stpFmtI(Math.round(perAmt))+' on <strong>'+stpFmtD(stpGetTransferDate(document.getElementById("v-ft").value, STP_FREQ, 1))+'</strong> → matures <strong>'+stpFmtD(stpGetMaturityDate(stpGetTransferDate(document.getElementById("v-ft").value, STP_FREQ, 1), f.yr, f.mo))+'</strong> ('+fundM+' months)<br>'+
+      '...<br>'+
+      'Entry '+transfers.length+': ₹'+stpFmtI(Math.round(perAmt))+' on <strong>'+stpFmtD(lastXfer)+'</strong> → matures <strong>'+stpFmtD(lastMat)+'</strong> ('+fundM+' months)'+
+      '</div>'+
+
+      '<div class="fbox">'+
+      '<strong>Formula per entry:</strong> FV = ₹'+stpFmtI(Math.round(perAmt))+' × (1 + ('+f.cagr+'/100)/12)^'+fundM+
+      ' = <strong>₹'+stpFmtI(Math.round(perFV))+'</strong><br>'+
+      '<strong>Total corpus</strong> = '+transfers.length+' entries × ₹'+stpFmtI(Math.round(perFV))+
+      ' = <strong>₹'+stpFmtN(corpus)+'</strong>'+
+      '</div></div></div>';
+    el.appendChild(fc2);
+  });
+
+  // ── STAGGERED MATURITY TABLE ───────────────────────────────────
+  // ── MATURITY SCHEDULE TABLE ─────────────────────────────────
+  var proj = document.createElement('div');
+  proj.className = 'card';
+  proj.style.marginTop = '18px';
+
+  var totalAmt = transfers.reduce(function(s,t){return s+t.amount;},0);
+  var fund0    = STP_FUNDS[0];
+  var fundM0   = fund0.yr*12+fund0.mo||totM;
+  var totalFV  = transfers.reduce(function(s,t){return s+stpLumpFV(t.amount*(fund0.splitPct/100),fund0.cagr,fundM0);},0);
+  var showAll  = transfers.length <= 20;
+  var mrows    = '';
+
+  var displayXfers = showAll ? transfers :
+    transfers.slice(0,5).concat([null]).concat(transfers.slice(-5));
+
+  displayXfers.forEach(function(t, i){
+    if(!t){
+      mrows += '<tr><td colspan="5" style="text-align:center;color:var(--t5);font-style:italic;padding:8px">... '+(transfers.length-10)+' more entries ...</td></tr>';
+      return;
+    }
+    var ai = showAll ? i : (i<5 ? i : transfers.length-5+(i-6));
+    var perAmt  = t.amount*(fund0.splitPct/100);
+    var fv      = stpLumpFV(perAmt, fund0.cagr, fundM0);
+    var matDate = stpGetMaturityDate(t.date, fund0.yr, fund0.mo);
+    mrows += '<tr>'+
+      '<td style="text-align:center;font-weight:800;color:var(--p1)">'+(ai+1)+'</td>'+
+      '<td>'+stpFmtD(t.date)+'</td>'+
+      '<td>&#8377;'+stpFmtI(t.amount)+'</td>'+
+      '<td>'+stpFmtD(matDate)+'</td>'+
+      '<td class="cgrn">&#8377;'+stpFmtI(Math.round(fv))+'</td>'+
+    '</tr>';
+  });
+
+  var grandRow =
+    '<tr style="background:var(--p1);">'+
+      '<td colspan="2" style="text-align:left;font-weight:800;color:#fff;font-size:13px;padding:12px;">GRAND TOTAL &#8212; '+transfers.length+' Entries</td>'+
+      '<td style="text-align:right;font-weight:800;color:#fff;font-size:13px;">&#8377;'+stpFmtI(totalAmt)+'</td>'+
+      '<td style="font-size:11px;color:rgba(255,255,255,.75);font-style:italic;">Each entry: own '+fund0.yr+'Y '+fund0.mo+'M cycle</td>'+
+      '<td style="text-align:right;font-weight:800;color:#a5f3a5;font-size:15px;">&#8377;'+stpFmtN(totalFV)+'</td>'+
+    '</tr>';
+
+  proj.innerHTML =
+    '<div style="font-family:var(--fp);font-size:18px;color:var(--p1);margin-bottom:6px;">Transfer-wise Maturity Schedule</div>'+
+    '<div style="font-size:12px;color:var(--t4);margin-bottom:14px;">Each entry grows for its own '+fund0.yr+'Y '+fund0.mo+'M from its own transfer date</div>'+
+    '<div class="tw"><table class="t"><thead><tr>'+
+      '<th style="text-align:center;">#</th>'+
+      '<th>Transfer Date</th>'+
+      '<th>Amount &#8377;</th>'+
+      '<th>Maturity Date</th>'+
+      '<th>Expected FV &#8377;</th>'+
+    '</tr></thead><tbody>'+mrows+grandRow+'</tbody></table></div>';
+
+  el.appendChild(proj);
+
+  // ── GRAND TOTAL SUMMARY BOX ──────────────────────────────────
+  var totalAmt2 = transfers.reduce(function(s,t){return s+t.amount;},0);
+  var totalFV2  = 0;
+  transfers.forEach(function(t){
+    STP_FUNDS.forEach(function(f){
+      var fundM = f.yr*12+f.mo||totM;
+      totalFV2 += stpLumpFV(t.amount*(f.splitPct/100), f.cagr, fundM);
+    });
+  });
+
+  var summaryBox = document.createElement('div');
+  summaryBox.style.cssText = 'background:linear-gradient(135deg,var(--p2),var(--p1));border-radius:14px;padding:22px 26px;margin-top:18px;';
+  summaryBox.innerHTML =
+    '<div style="font-family:var(--fp);font-size:22px;color:#fff;margin-bottom:16px">📊 Grand Total Summary</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;">'+
+    '<div style="background:rgba(255,255,255,.13);border-radius:10px;padding:14px;">'+
+      '<div style="font-size:10px;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Total Lumpsum Parked</div>'+
+      '<div style="font-size:20px;font-weight:800;color:#fff">₹'+stpFmtN(lump)+'</div>'+
+    '</div>'+
+    '<div style="background:rgba(255,255,255,.13);border-radius:10px;padding:14px;">'+
+      '<div style="font-size:10px;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Total Transferred ('+transfers.length+' entries)</div>'+
+      '<div style="font-size:20px;font-weight:800;color:#fff">₹'+stpFmtN(totalAmt2)+'</div>'+
+    '</div>'+
+    '<div style="background:rgba(255,255,255,.13);border-radius:10px;padding:14px;">'+
+      '<div style="font-size:10px;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Total Equity Corpus</div>'+
+      '<div style="font-size:22px;font-weight:800;color:#a5f3a5">₹'+stpFmtN(totalFV2)+'</div>'+
+    '</div>'+
+    '<div style="background:rgba(255,255,255,.13);border-radius:10px;padding:14px;">'+
+      '<div style="font-size:10px;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Wealth Gain</div>'+
+      '<div style="font-size:22px;font-weight:800;color:#a5f3a5">+₹'+stpFmtN(Math.max(0,totalFV2-totalAmt2))+'</div>'+
+    '</div>'+
+    '</div>'+
+    '<div style="margin-top:14px;font-size:11px;color:rgba(255,255,255,.7);line-height:1.7">'+
+      'Each of the '+transfers.length+' STP transfers is treated as an individual lumpsum entry. '+
+      'Every entry of ₹'+stpFmtI(transfers[0]?Math.round(transfers[0].amount):0)+' grows for '+
+      (STP_FUNDS[0].yr)+'Y '+(STP_FUNDS[0].mo)+'M = '+(STP_FUNDS[0].yr*12+STP_FUNDS[0].mo)+' months at '+STP_FUNDS[0].cagr+'% CAGR from its own transfer date.'+
+      ' Total corpus = '+transfers.length+' × ₹'+stpFmtI(Math.round(totalFV2/transfers.length))+' = ₹'+stpFmtN(totalFV2)+'.'+
+    '</div>';
+  el.appendChild(summaryBox);
+}
+
 </script>
 <script>
 
