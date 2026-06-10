@@ -3562,16 +3562,18 @@ function cmbSearch(q,id){
   var matches=CMB_FUNDS_ALL.filter(function(f){return f.name.toLowerCase().indexOf(q.toLowerCase())>=0;}).slice(0,40);
   if(!matches.length){dd.style.display='none';return;}
   dd.innerHTML=matches.map(function(f){
-    return '<div style="padding:9px 12px;cursor:pointer;border-bottom:1px solid #f0eeff;font-size:12px;font-weight:600;color:#1a1240" data-name="'+f.name.replace(/"/g,'&quot;')+'" data-id="'+id+'" onclick="cmbPick(this)">'+f.name.substring(0,65)+'</div>';
+    return '<div style="padding:9px 12px;cursor:pointer;border-bottom:1px solid #f0eeff;font-size:12px;font-weight:600;color:#1a1240" data-name="'+f.name.replace(/"/g,'&quot;')+'" data-id="'+id+'" onmousedown="cmbPick(this)">'+f.name.substring(0,65)+'</div>';
   }).join('');
   dd.style.display='block';
 }
 function cmbPick(el){
   var name=el.getAttribute('data-name'),id=parseInt(el.getAttribute('data-id'));
   var row=CMB_ROWS.find(function(r){return r.id===id;});
-  if(row){row.fundName=name;}
-  var inp=document.getElementById('cmb-inp-'+id);if(inp)inp.value=name;
+  if(row){ row.fundName=name; }
+  var inp=document.getElementById('cmb-inp-'+id);
+  if(inp){ inp.value=name; inp.blur(); }
   var dd=document.getElementById('cmb-dd-'+id);if(dd)dd.style.display='none';
+  cmbRender();   // refresh header to show selected fund name
   cmbCalc(id);
 }
 function cmbHideDd(id){setTimeout(function(){var dd=document.getElementById('cmb-dd-'+id);if(dd)dd.style.display='none';},200);}
