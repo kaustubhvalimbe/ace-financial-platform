@@ -3547,7 +3547,11 @@ async function cmbLoadFunds(){
   try{
     var r=await fetch('https://api.mfapi.in/mf');
     var data=await r.json();
-    CMB_FUNDS_ALL=data.map(function(f){return{code:String(f.schemeCode),name:f.schemeName||''};});
+    // Filter to Growth plans only (exclude IDCW / Dividend)
+    CMB_FUNDS_ALL=data.filter(function(f){
+      var n=(f.schemeName||'').toUpperCase();
+      return !n.includes('IDCW') && !n.includes('DIVIDEND');
+    }).map(function(f){return{code:String(f.schemeCode),name:f.schemeName||''};});
     CMB_LOADED=true;
     if(st)st.textContent='\u2705 '+CMB_FUNDS_ALL.length.toLocaleString('en-IN')+' funds loaded';
   }catch(e){CMB_LOADED=true;if(st)st.textContent='\u26a0\ufe0f Could not load \u2014 type name manually';}
@@ -3555,7 +3559,7 @@ async function cmbLoadFunds(){
 function cmbSearch(q,id){
   var dd=document.getElementById('cmb-dd-'+id);if(!dd)return;
   if(!q||q.length<2){dd.style.display='none';return;}
-  var matches=CMB_FUNDS_ALL.filter(function(f){return f.name.toLowerCase().indexOf(q.toLowerCase())>=0;}).slice(0,20);
+  var matches=CMB_FUNDS_ALL.filter(function(f){return f.name.toLowerCase().indexOf(q.toLowerCase())>=0;}).slice(0,40);
   if(!matches.length){dd.style.display='none';return;}
   dd.innerHTML=matches.map(function(f){
     return '<div style="padding:9px 12px;cursor:pointer;border-bottom:1px solid #f0eeff;font-size:12px;font-weight:600;color:#1a1240" data-name="'+f.name.replace(/"/g,'&quot;')+'" data-id="'+id+'" onclick="cmbPick(this)">'+f.name.substring(0,65)+'</div>';
