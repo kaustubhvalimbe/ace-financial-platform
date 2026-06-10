@@ -352,6 +352,10 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
   nav,.mode-bar,.adv-bar,#wiz-section,.res-btns,.cmb-actions{display:none!important;}
   body{background:#fff!important;}
   .result,.cmb-result-section>div{padding:0!important;}
+  /* FUND NAMES: Bold Black — no faint colours in print */
+  .frc-name{color:#000!important;font-weight:900!important;font-size:13px!important;}
+  .frc-amc{color:#222!important;font-weight:700!important;}
+  .frc-k,.frc-v,.frc-rv,.frc-rl{color:#000!important;}
   /* FIX: Hide browser file path — suppresses header/footer in Chrome/Edge/Firefox */
   @page{
     margin:10mm;
@@ -1023,7 +1027,7 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
     <button class="rbtn g" onclick="restart()">🔄 New Case</button>
     <a href="fund-discovery-v2.html" class="rbtn o">🔍 Explore Funds</a>
   </div>
-  <div class="discl"><strong>⚠️ Disclaimer:</strong> Mutual Fund investments are subject to market risks. Read all scheme documents carefully before investing. Past performance is not indicative of future returns. NAV data sourced from AMFI India. Projections are estimates only. Ace Financial Services — AMFI Registered MFD · ARN-110832 · Kaustubh Valimbe · EUIN E155215.</div>
+  <div class="discl"><strong>⚠️ Disclaimer:</strong> Mutual Fund investments are subject to market risks. Read all scheme documents carefully before investing. Past performance is not indicative of future returns. NAV data sourced from AMFI India. Projections are estimates only. Kaustubh Valimbe · AMFI Certified MFD.</div>
 </div>
 </div>
 
@@ -1141,7 +1145,7 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
     </div>
 
     <div class="discl">
-      <strong>⚠️ Disclaimer:</strong> Mutual Fund investments are subject to market risks. Read all scheme documents carefully before investing. Past performance is not indicative of future returns. NAV data sourced from AMFI India. Return projections are estimates based on historical 3Y CAGR and are not guaranteed. Ace Financial Services — AMFI Registered MFD · ARN-110832 · Kaustubh Valimbe · EUIN E155215.
+      <strong>⚠️ Disclaimer:</strong> Mutual Fund investments are subject to market risks. Read all scheme documents carefully before investing. Past performance is not indicative of future returns. NAV data sourced from AMFI India. Return projections are estimates based on historical 3Y CAGR and are not guaranteed. Kaustubh Valimbe · AMFI Certified MFD.
     </div>
 
   </div>
@@ -2022,6 +2026,17 @@ function generate(){
   document.getElementById("r-cagr").textContent=avgCAGR.toFixed(1)+"% p.a.";
   document.getElementById("r-hor").textContent=horTxt;
   document.getElementById("rh-sub").textContent=`Prepared for ${ST.name} · ${new Date().toLocaleDateString("en-IN",{day:"2-digit",month:"long",year:"numeric"})}`;
+  // Add investor name to LAST PAGE (disclaimer section)
+  const disclaimEl = document.querySelector(".discl");
+  if(disclaimEl){
+    const existingName = disclaimEl.querySelector(".discl-investor");
+    if(existingName) existingName.remove();
+    const nameEl = document.createElement("div");
+    nameEl.className = "discl-investor";
+    nameEl.style.cssText = "margin-top:10px;font-size:13px;font-weight:800;color:#1a1240;border-top:1px solid #e4e2f0;padding-top:8px;";
+    nameEl.textContent = "Prepared for: " + ST.name;
+    disclaimEl.appendChild(nameEl);
+  }
   document.getElementById("rh-nav-note").textContent=`NAV sourced from AMFI India · As on ${new Date().toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"})}`;
   document.getElementById("rh-bdgs").innerHTML=[mNm,pLbl,n+" Funds",horTxt].map(b=>`<span class="bpb">${b}</span>`).join("");
 
@@ -3231,6 +3246,9 @@ function stpBuildBlueprint(){
     '</tr></thead><tbody>'+mrows+grandRow+'</tbody></table></div>';
 
   el.appendChild(proj);
+  // Show investor name on last page
+  var stpNameEl = document.getElementById('stp-discl-investor');
+  if(stpNameEl){ stpNameEl.style.display='block'; stpNameEl.textContent='Prepared for: '+name; }
 
   // ── GRAND TOTAL SUMMARY BOX ──────────────────────────────────
   var totalAmt2 = transfers.reduce(function(s,t){return s+t.amount;},0);
@@ -3524,7 +3542,8 @@ function stpBuildBlueprint(){
     <div id="stp-bp-area"></div>
     <div style="background:var(--bd,#e4e2f0);border-radius:10px;padding:14px 18px;font-size:10px;color:var(--t4,#7a7898);line-height:1.7;margin-top:16px">
       ⚠️ <strong>AMFI Disclaimer:</strong> Mutual Fund investments are subject to market risks. STP projections are indicative estimates only, not guaranteed.
-      <strong>Ace Financial Services · ARN-110832 · Kaustubh Valimbe · EUIN E155215.</strong>
+      <strong>Kaustubh Valimbe · AMFI Certified MFD</strong>
+      <div id="stp-discl-investor" style="margin-top:8px;font-size:13px;font-weight:800;color:#1a1240;border-top:1px solid #e4e2f0;padding-top:8px;display:none;">Prepared for: </div>
     </div>
     <div class="stp-nav">
       <button class="stp-btn-b" onclick="stpGo(3)">← Back</button>
@@ -3681,7 +3700,7 @@ function cmbGenerate(){
   '<div style="background:linear-gradient(135deg,#2d2478,#3c3197);border-radius:14px;padding:22px 26px;margin-top:4px;">'+
     '<div style="font-family:var(--fp,serif);font-size:22px;color:#fff;margin-bottom:16px">\ud83d\udcca Grand Total</div>'+
     '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">'+mc('Total Invested','\u20b9'+cmbN(tInv))+mc('Monthly SIP','\u20b9'+cmbN(tSIP)+'/mo')+mc('Expected Corpus','\u20b9'+cmbN(tFV),'#a5f3a5')+mc('Wealth Gain','+\u20b9'+cmbN(Math.max(0,tFV-tInv)),'#a5f3a5')+'</div></div>'+
-  '<div style="background:#e4e2f0;border-radius:10px;padding:14px 18px;font-size:10px;color:#7a7898;line-height:1.7;margin-top:16px">\u26a0\ufe0f <strong>AMFI Disclaimer:</strong> Mutual Fund investments are subject to market risks. Past performance is not indicative of future returns. <strong>Ace Financial Services \xb7 ARN-110832 \xb7 Kaustubh Valimbe \xb7 EUIN E155215.</strong></div>'+
+  '<div style="background:#e4e2f0;border-radius:10px;padding:14px 18px;font-size:10px;color:#7a7898;line-height:1.7;margin-top:16px">\u26a0\ufe0f <strong>AMFI Disclaimer:</strong> Mutual Fund investments are subject to market risks. Past performance is not indicative of future returns. <strong>Kaustubh Valimbe \xb7 AMFI Certified MFD</strong></div>'+
   '<div style="margin-top:16px;display:flex;gap:12px;"><button onclick="cmbGenerate()" style="padding:12px 22px;background:#f0eeff;color:#3c3197;border:1.5px solid #3c3197;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fh);">\u21ba Recalculate</button><button onclick="window.print()" style="padding:12px 26px;background:#3c3197;color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--fh);">\ud83d\uddb6\ufe0f Print My Blueprint</button></div>';
   out.scrollIntoView({behavior:'smooth',block:'start'});
 }
