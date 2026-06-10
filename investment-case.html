@@ -714,6 +714,8 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
 .cmb-fv-preview { font-size:13px; font-weight:800; color:var(--g1,#6aaa1e); text-align:right; }
 .cmb-add-btn { width:100%; padding:13px; background:transparent; border:2px dashed #afa9ec; color:var(--p1,#3c3197); border-radius:10px; font-size:13px; font-weight:700; cursor:pointer; font-family:var(--fh,'Plus Jakarta Sans',sans-serif); margin-top:4px; }
 
+
+#s4-fund-list table thead th{position:sticky;top:0;z-index:5;background:var(--p4);}
 </style>
 </head>
 <body>
@@ -754,10 +756,7 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
     <div class="mc-icon">🔄</div>
     <div><div class="mc-ttl">STP Mode</div><div class="mc-sub">Park in Liquid → Weekly/Monthly STP to Equity</div><div class="mc-badge bg">GAME CHANGER</div></div>
   </div>
-  <div class="mcard" id="mb-combo" onclick="setMode('combo')">
-    <div class="mc-icon">🎯</div>
-    <div><div class="mc-ttl">Combination</div><div class="mc-sub">Part SIP + Part STP — advanced strategy</div><div class="mc-badge bo">ADVANCED</div></div>
-  </div>
+  
   <div class="mcard" id="mb-custom" onclick="setMode('custom')">
     <div class="mc-icon">✏️</div>
     <div><div class="mc-ttl">Create My Blueprint</div><div class="mc-sub">Pick any fund yourself · Full control · Max 10 funds</div><div class="mc-badge" style="background:linear-gradient(135deg,#f0effe,#f5fce8);color:#3c3197;border:1px solid #c4b5fd;">NEW ⭐</div></div>
@@ -3272,6 +3271,157 @@ function stpBuildBlueprint(){
       ' Total corpus = '+transfers.length+' × ₹'+stpFmtI(Math.round(totalFV2/transfers.length))+' = ₹'+stpFmtN(totalFV2)+'.'+
     '</div>';
   el.appendChild(summaryBox);
+}
+
+
+var CMB_ROWS=[],CMB_FUNDS_ALL=[],CMB_LOADED=false,CMB_NEXT_ID=1;
+function cmbLumpFV(P,c,m){var r=(c/100)/12;return P*Math.pow(1+r,m);}
+function cmbSipFV(p,c,m){var r=(c/100)/12;if(!r)return p*m;return p*((Math.pow(1+r,m)-1)/r)*(1+r);}
+function cmbN(n){n=Math.round(n);if(n>=10000000)return (n/10000000).toFixed(2)+' Cr';if(n>=100000)return (n/100000).toFixed(2)+' L';if(n>=1000)return (n/1000).toFixed(1)+' K';return n.toLocaleString('en-IN');}
+function cmbI(n){return Math.round(n).toLocaleString('en-IN');}
+async function cmbLoadFunds(){
+  if(CMB_LOADED)return;
+  var st=document.getElementById('cmb-load-status');if(st)st.textContent='Loading funds...';
+  try{
+    var r=await fetch('https://api.mfapi.in/mf');
+    var data=await r.json();
+    CMB_FUNDS_ALL=data.map(function(f){return{code:String(f.schemeCode),name:f.schemeName||''};});
+    CMB_LOADED=true;
+    if(st)st.textContent='\u2705 '+CMB_FUNDS_ALL.length.toLocaleString('en-IN')+' funds loaded';
+  }catch(e){CMB_LOADED=true;if(st)st.textContent='\u26a0\ufe0f Could not load \u2014 type name manually';}
+}
+function cmbSearch(q,id){
+  var dd=document.getElementById('cmb-dd-'+id);if(!dd)return;
+  if(!q||q.length<2){dd.style.display='none';return;}
+  var matches=CMB_FUNDS_ALL.filter(function(f){return f.name.toLowerCase().indexOf(q.toLowerCase())>=0;}).slice(0,20);
+  if(!matches.length){dd.style.display='none';return;}
+  dd.innerHTML=matches.map(function(f){
+    return '<div style="padding:9px 12px;cursor:pointer;border-bottom:1px solid #f0eeff;font-size:12px;font-weight:600;color:#1a1240" data-name="'+f.name.replace(/"/g,'&quot;')+'" data-id="'+id+'" onclick="cmbPick(this)">'+f.name.substring(0,65)+'</div>';
+  }).join('');
+  dd.style.display='block';
+}
+function cmbPick(el){
+  var name=el.getAttribute('data-name'),id=parseInt(el.getAttribute('data-id'));
+  var row=CMB_ROWS.find(function(r){return r.id===id;});
+  if(row){row.fundName=name;}
+  var inp=document.getElementById('cmb-inp-'+id);if(inp)inp.value=name;
+  var dd=document.getElementById('cmb-dd-'+id);if(dd)dd.style.display='none';
+  cmbCalc(id);
+}
+function cmbHideDd(id){setTimeout(function(){var dd=document.getElementById('cmb-dd-'+id);if(dd)dd.style.display='none';},200);}
+function cmbAddRow(){
+  if(CMB_ROWS.length>=10){alert('Maximum 10 funds.');return;}
+  var id=CMB_NEXT_ID++;
+  CMB_ROWS.push({id:id,fundName:'',type:'sip',sipAmt:0,lumpAmt:0,yr:5,mo:0,cagr:12,fv:0});
+  cmbRender();
+  if(!CMB_LOADED)cmbLoadFunds();
+}
+function cmbRemRow(id){CMB_ROWS=CMB_ROWS.filter(function(r){return r.id!==id;});cmbRender();}
+function cmbType(id,t){var r=CMB_ROWS.find(function(r){return r.id===id;});if(r){r.type=t;cmbRender();}}
+function cmbField(id,f,v){
+  var row=CMB_ROWS.find(function(r){return r.id===id;});
+  if(!row)return;
+  if(f==='yr'||f==='mo')row[f]=parseInt(v)||0;
+  else if(f==='cagr')row[f]=parseFloat(v)||12;
+  else row[f]=parseFloat(v)||0;
+  cmbCalc(id);
+}
+function cmbCalc(id){
+  var row=CMB_ROWS.find(function(r){return r.id===id;});if(!row)return;
+  var m=row.yr*12+row.mo,fv=0;
+  if(row.type==='sip') fv=cmbSipFV(row.sipAmt,row.cagr,m);
+  if(row.type==='lump')fv=cmbLumpFV(row.lumpAmt,row.cagr,m);
+  if(row.type==='both')fv=cmbSipFV(row.sipAmt,row.cagr,m)+cmbLumpFV(row.lumpAmt,row.cagr,m);
+  row.fv=fv;
+  var el=document.getElementById('cmb-fv-'+id);if(el)el.textContent=fv>0?'\u20b9'+cmbN(fv):'\u2014';
+  cmbBtn();
+}
+function cmbBtn(){
+  var ok=CMB_ROWS.length>0&&CMB_ROWS.some(function(r){return r.fv>0;});
+  var btn=document.getElementById('cmb-gen-btn');if(btn){btn.disabled=!ok;btn.style.opacity=ok?'1':'.4';btn.style.cursor=ok?'pointer':'not-allowed';}
+  var sub=document.getElementById('cmb-gen-sub');if(sub)sub.textContent=ok?CMB_ROWS.length+' fund'+(CMB_ROWS.length!==1?'s':'')+' ready':'Add at least 1 fund with amount';
+  var cnt=document.getElementById('cmb-row-counter');if(cnt)cnt.textContent='('+CMB_ROWS.length+'/10)';
+  var ab=document.getElementById('cmb-add-btn');if(ab)ab.style.display=CMB_ROWS.length>=10?'none':'';
+}
+function cmbRender(){
+  var el=document.getElementById('cmb-rows-container');if(!el)return;
+  var gradients=['linear-gradient(90deg,#3c3197,#5247c8)','linear-gradient(90deg,#167a12,#6aaa1e)',
+    'linear-gradient(90deg,#0e6b8a,#1a9cc7)','linear-gradient(90deg,#7a3b10,#c96e2a)','linear-gradient(90deg,#5c1a7a,#9b3dbf)'];
+  el.innerHTML=CMB_ROWS.map(function(row,idx){
+    var m=row.yr*12+row.mo,g=gradients[idx%5];
+    var mkBtn=function(type,lbl,bg,clr){return '<button style="padding:5px 9px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--fh);border:1.5px solid '+bg+';background:'+(row.type===type?bg:'#fff')+';color:'+(row.type===type?clr:bg)+'" onclick="cmbType('+row.id+',\''+type+'\')">'+lbl+'</button>';};
+    return '<div style="background:#fff;border-radius:12px;border:1.5px solid #e4e2f0;margin-bottom:12px;overflow:hidden;">'+
+      '<div style="padding:10px 16px;background:'+g+';display:flex;align-items:center;gap:10px;">'+
+        '<span style="background:rgba(255,255,255,.2);color:#fff;padding:4px 12px;border-radius:6px;font-size:12px;font-weight:800;">Fund '+(idx+1)+'</span>'+
+        '<span style="flex:1;font-size:12px;color:#fff;font-weight:600;">'+(row.fundName?row.fundName.substring(0,55):'<span style="opacity:.6">No fund selected yet</span>')+'</span>'+
+        '<span id="cmb-fv-'+row.id+'" style="font-size:14px;font-weight:800;color:#a5f3a5;">'+(row.fv>0?'\u20b9'+cmbN(row.fv):'\u2014')+'</span>'+
+        '<button onclick="cmbRemRow('+row.id+')" style="background:rgba(255,255,255,.15);border:none;color:#fff;cursor:pointer;padding:4px 8px;border-radius:5px;margin-left:8px;font-weight:700;">\u2715</button>'+
+      '</div>'+
+      '<div style="padding:14px 16px;display:grid;grid-template-columns:1fr 165px 110px 100px 110px;gap:12px;align-items:start;">'+
+        '<div style="position:relative;">'+
+          '<input type="text" id="cmb-inp-'+row.id+'" style="width:100%;padding:9px 12px;border:1.5px solid #e4e2f0;border-radius:9px;font-size:13px;font-family:var(--fh);outline:none;" placeholder="\ud83d\udd0d Search fund name..." value="'+row.fundName+'" oninput="cmbSearch(this.value,'+row.id+')" onblur="cmbHideDd('+row.id+')">'+
+          '<div id="cmb-dd-'+row.id+'" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid #3c3197;border-top:none;border-radius:0 0 9px 9px;max-height:200px;overflow-y:auto;z-index:999;box-shadow:0 8px 20px rgba(60,49,151,.15);"></div>'+
+        '</div>'+
+        '<div><div style="font-size:10px;font-weight:700;color:#7a7898;text-transform:uppercase;margin-bottom:5px">Type</div>'+
+          '<div style="display:flex;gap:5px;flex-wrap:wrap;">'+mkBtn('sip','SIP','#3c3197','#fff')+mkBtn('lump','Lumpsum','#3a7a12','#fff')+mkBtn('both','Both','#3c3197','#fff')+'</div></div>'+
+        '<div><div style="font-size:10px;font-weight:700;color:#7a7898;text-transform:uppercase;margin-bottom:5px">'+(row.type==='lump'?'Lumpsum \u20b9':row.type==='sip'?'SIP/month \u20b9':'SIP/mo \u20b9')+'</div>'+
+          '<input type="number" style="width:100%;padding:9px;border:1.5px solid #afa9ec;border-radius:9px;font-size:13px;background:#f0eeff;color:#3c3197;font-weight:700;font-family:var(--fh);outline:none;" placeholder="Amount" value="'+(row.type==='lump'?row.lumpAmt||'':row.sipAmt||'')+'" oninput="cmbField('+row.id+',\''+(row.type==='lump'?'lumpAmt':'sipAmt')+'\',this.value)">'+
+          (row.type==='both'?'<input type="number" style="width:100%;padding:9px;border:1.5px solid #7cc43a;border-radius:9px;font-size:13px;background:#eef7d6;color:#2d6b0e;font-weight:700;font-family:var(--fh);outline:none;margin-top:5px;" placeholder="Lump \u20b9" value="'+(row.lumpAmt||'')+'" oninput="cmbField('+row.id+',\'lumpAmt\',this.value)">':'')+
+        '</div>'+
+        '<div><div style="font-size:10px;font-weight:700;color:#7a7898;text-transform:uppercase;margin-bottom:5px">CAGR %</div>'+
+          '<input type="number" style="width:100%;padding:9px;border:1.5px solid #7cc43a;border-radius:9px;font-size:13px;background:#eef7d6;color:#2d6b0e;font-weight:700;font-family:var(--fh);outline:none;" placeholder="12" value="'+(row.cagr||12)+'" oninput="cmbField('+row.id+',\'cagr\',this.value)"></div>'+
+        '<div><div style="font-size:10px;font-weight:700;color:#7a7898;text-transform:uppercase;margin-bottom:5px">Period (Y/M)</div>'+
+          '<div style="display:flex;gap:5px;align-items:center;">'+
+            '<input type="number" style="width:50px;padding:8px;border:1.5px solid #e4e2f0;border-radius:8px;font-size:12px;text-align:center;font-family:var(--fh);outline:none;" placeholder="Y" value="'+(row.yr||5)+'" oninput="cmbField('+row.id+',\'yr\',this.value)"> Y '+
+            '<input type="number" style="width:50px;padding:8px;border:1.5px solid #e4e2f0;border-radius:8px;font-size:12px;text-align:center;font-family:var(--fh);outline:none;" placeholder="M" value="'+(row.mo||0)+'" oninput="cmbField('+row.id+',\'mo\',this.value)"> M'+
+          '</div>'+
+          '<div style="font-size:10px;color:#7a7898;margin-top:3px">'+m+' months</div></div>'+
+      '</div></div>';
+  }).join('');
+  cmbBtn();
+}
+function cmbGenerate(){
+  var name=(document.getElementById('cmb-investor-name')||{value:''}).value||'Valued Investor';
+  var out=document.getElementById('cmb-blueprint-output');if(!out)return;
+  var tSIP=CMB_ROWS.reduce(function(s,r){return s+(r.type!=='lump'?r.sipAmt:0);},0);
+  var tLump=CMB_ROWS.reduce(function(s,r){return s+(r.type!=='sip'?r.lumpAmt:0);},0);
+  var tFV=CMB_ROWS.reduce(function(s,r){return s+r.fv;},0);
+  var tInv=CMB_ROWS.reduce(function(s,r){var m=r.yr*12+r.mo;return s+(r.type==='lump'?r.lumpAmt:r.type==='sip'?r.sipAmt*m:r.sipAmt*m+r.lumpAmt);},0);
+  var grads=['linear-gradient(135deg,#2d2478,#3c3197)','linear-gradient(135deg,#167a12,#6aaa1e)','linear-gradient(135deg,#0e6b8a,#1a9cc7)','linear-gradient(135deg,#7a3b10,#c96e2a)','linear-gradient(135deg,#5c1a7a,#9b3dbf)'];
+  var mc=function(l,v,c){return '<div style="background:rgba(255,255,255,.13);border-radius:10px;padding:14px;"><div style="font-size:10px;opacity:.7;text-transform:uppercase;margin-bottom:5px">'+l+'</div><div style="font-size:19px;font-weight:800;color:'+(c||'#fff')+';">'+v+'</div></div>';};
+  var sc=function(l,v,c){return '<div style="background:#f7f6ff;border-radius:8px;padding:10px 12px;"><div style="font-size:10px;font-weight:700;color:#7a7898;text-transform:uppercase;margin-bottom:3px">'+l+'</div><div style="font-size:14px;font-weight:800;color:'+(c||'#1a1240')+';">'+v+'</div></div>';};
+  out.style.display='block';
+  out.innerHTML='<div style="background:#3c3197;border-radius:14px;padding:24px;color:#fff;margin-bottom:18px;">'+
+    '<div style="font-family:var(--fp,serif);font-size:22px;margin-bottom:4px">\u270f\ufe0f My Investment Blueprint</div>'+
+    '<div style="font-size:12px;opacity:.7;margin-bottom:16px">Prepared for <strong>'+name+'</strong> &nbsp;\xb7&nbsp; '+new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})+'</div>'+
+    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">'+mc('Total Funds',CMB_ROWS.length)+mc('Monthly SIP','\u20b9'+cmbN(tSIP)+'/mo')+mc('Total Lumpsum','\u20b9'+cmbN(tLump))+mc('Expected Corpus','\u20b9'+cmbN(tFV),'#a5f3a5')+'</div></div>'+
+  CMB_ROWS.map(function(r,i){
+    var m=r.yr*12+r.mo,sfv=r.type!=='lump'?cmbSipFV(r.sipAmt,r.cagr,m):0,lfv=r.type!=='sip'?cmbLumpFV(r.lumpAmt,r.cagr,m):0,fv=sfv+lfv,inv=r.type==='lump'?r.lumpAmt:r.type==='sip'?r.sipAmt*m:r.sipAmt*m+r.lumpAmt;
+    return '<div style="background:#fff;border-radius:12px;border:1.5px solid #e4e2f0;margin-bottom:14px;overflow:hidden;">'+
+      '<div style="padding:14px 18px;background:'+grads[i%5]+';display:flex;align-items:center;justify-content:space-between;color:#fff;">'+
+        '<div><div style="font-size:11px;opacity:.8;margin-bottom:2px">FUND '+(i+1)+'</div><div style="font-size:16px;font-weight:800;">'+(r.fundName||'Fund '+(i+1))+'</div></div>'+
+        '<div style="text-align:right;"><div style="font-size:11px;opacity:.8">CAGR</div><div style="font-size:20px;font-weight:800;">'+r.cagr+'%</div></div></div>'+
+      '<div style="padding:14px 18px;"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;">'+
+        sc('Type',r.type.toUpperCase())+(r.type!=='lump'?sc('SIP/month','\u20b9'+cmbI(r.sipAmt)):'')+
+        (r.type!=='sip'?sc('Lumpsum','\u20b9'+cmbI(r.lumpAmt)):'')+sc('Period',r.yr+'Y '+r.mo+'M ('+m+' mo)')+
+        sc('Expected FV','\u20b9'+cmbN(fv),'#6aaa1e')+sc('Wealth Gain','+\u20b9'+cmbN(Math.max(0,fv-inv)),'#6aaa1e')+
+      '</div>'+
+      '<div style="background:#f0eeff;border-radius:8px;padding:9px 14px;font-size:11px;color:#2d2478;">'+
+        (sfv>0?'<strong>SIP FV:</strong> \u20b9'+cmbI(r.sipAmt)+'/mo \xd7 '+m+' mo @ '+r.cagr+'% = \u20b9'+cmbN(sfv)+'<br>':'')+
+        (lfv>0?'<strong>Lump FV:</strong> \u20b9'+cmbI(r.lumpAmt)+' \xd7 (1+'+(r.cagr/100/12).toFixed(4)+')^'+m+' = \u20b9'+cmbN(lfv):'')+'</div></div></div>';
+  }).join('')+
+  '<div style="background:linear-gradient(135deg,#2d2478,#3c3197);border-radius:14px;padding:22px 26px;margin-top:4px;">'+
+    '<div style="font-family:var(--fp,serif);font-size:22px;color:#fff;margin-bottom:16px">\ud83d\udcca Grand Total</div>'+
+    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">'+mc('Total Invested','\u20b9'+cmbN(tInv))+mc('Monthly SIP','\u20b9'+cmbN(tSIP)+'/mo')+mc('Expected Corpus','\u20b9'+cmbN(tFV),'#a5f3a5')+mc('Wealth Gain','+\u20b9'+cmbN(Math.max(0,tFV-tInv)),'#a5f3a5')+'</div></div>'+
+  '<div style="background:#e4e2f0;border-radius:10px;padding:14px 18px;font-size:10px;color:#7a7898;line-height:1.7;margin-top:16px">\u26a0\ufe0f <strong>AMFI Disclaimer:</strong> Mutual Fund investments are subject to market risks. Past performance is not indicative of future returns. <strong>Ace Financial Services \xb7 ARN-110832 \xb7 Kaustubh Valimbe \xb7 EUIN E155215.</strong></div>'+
+  '<div style="margin-top:16px;display:flex;gap:12px;"><button onclick="cmbGenerate()" style="padding:12px 22px;background:#f0eeff;color:#3c3197;border:1.5px solid #3c3197;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fh);">\u21ba Recalculate</button><button onclick="window.print()" style="padding:12px 26px;background:#3c3197;color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--fh);">\ud83d\uddb6\ufe0f Print My Blueprint</button></div>';
+  out.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function cmbInit(){
+  if(!CMB_LOADED)cmbLoadFunds();
+  if(CMB_ROWS.length===0){cmbAddRow();cmbAddRow();cmbAddRow();}
+  else cmbRender();
+  var out=document.getElementById('cmb-blueprint-output');if(out)out.style.display='none';
 }
 
 </script>
