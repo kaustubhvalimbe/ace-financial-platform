@@ -39,9 +39,9 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 28px;height:66px
 .hero-in p{color:rgba(255,255,255,.72);font-size:13px;margin-top:6px;}
 
 /* MODE BAR */
-.mode-bar{background:#fff;border-bottom:2px solid var(--g4);padding:14px 28px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.mode-bar{background:#fff;border-bottom:2px solid var(--g4);padding:10px 20px;display:flex;gap:8px;align-items:center;flex-wrap:nowrap;overflow-x:auto;}
 .mode-lbl{font-size:11px;font-weight:800;color:var(--t5);text-transform:uppercase;letter-spacing:.8px;}
-.mcard{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;border:2px solid var(--g4);background:#fff;cursor:pointer;transition:all .22s;}
+.mcard{display:flex;align-items:center;gap:7px;padding:9px 14px;border-radius:10px;border:2px solid var(--g4);background:#fff;cursor:pointer;transition:all .22s;flex-shrink:0;}
 .mcard:hover{border-color:var(--p3);transform:translateY(-1px);}
 .mcard.active{border-color:var(--p2);background:var(--p4);}
 .mc-icon{font-size:20px;}
@@ -790,15 +790,13 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
     <div class="mc-icon">🔄</div>
     <div><div class="mc-ttl">STP Mode</div><div class="mc-sub">Park in Liquid → Weekly/Monthly STP to Equity</div><div class="mc-badge bg">GAME CHANGER</div></div>
   </div>
-  
   <div class="mcard" id="mb-custom" onclick="setMode('custom')">
     <div class="mc-icon">✏️</div>
-    <div><div class="mc-ttl">Create My Blueprint</div><div class="mc-sub">Pick any fund yourself · Full control · Max 10 funds</div><div class="mc-badge" style="background:linear-gradient(135deg,#f0effe,#f5fce8);color:#3c3197;border:1px solid #c4b5fd;">NEW ⭐</div></div>
+    <div><div class="mc-ttl">Create My Blueprint</div><div class="mc-sub">Pick any fund · SIP / Lumpsum / Both · Max 10 funds</div><div class="mc-badge bo">ADVANCED</div></div>
   </div>
   <div class="mcard" id="mb-analyse" onclick="setMode('analyse')">
     <div class="mc-icon">🔍</div>
-    <div><div class="mc-ttl">Analyse My Portfolio</div><div class="mc-sub">Upload CAS &middot; CAMS / KFintech / NSDL &middot; Full report</div><div class="mc-badge" style="background:#e65c00;color:#fff;">NEW</div></div>
-  </div>
+    <div><div class="mc-ttl">Analyse My Portfolio</div><div class="mc-sub">Upload CAS · CAMS / KFintech / NSDL · Full report</div><div class="mc-badge" style="background:#e65c00;color:#fff">NEW</div></div>
   </div>
 </div>
 
