@@ -720,6 +720,36 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
 
 
 #s4-fund-list table thead th{position:sticky;top:0;z-index:5;background:var(--p4);}
+
+/* ── ANALYSE MY PORTFOLIO ─────────────────────────────────── */
+#analyse-mode-section{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg,#f7f6ff);z-index:500;overflow-y:auto;padding:20px;}
+#analyse-mode-section.show{display:block;}
+.anl-card{background:#fff;border-radius:14px;border:1.5px solid var(--bd,#e4e2f0);padding:24px 28px;margin-bottom:18px;max-width:860px;margin-left:auto;margin-right:auto;}
+.anl-upload-box{border:2.5px dashed #afa9ec;border-radius:14px;padding:40px;text-align:center;cursor:pointer;background:var(--p4,#f0eeff);transition:all .2s;}
+.anl-upload-box:hover{border-color:var(--p1,#3c3197);background:#e8e4ff;}
+.anl-upload-box.has-file{border-color:var(--g1,#6aaa1e);background:#f4fbea;border-style:solid;}
+.anl-btn{padding:13px 28px;background:var(--p1,#3c3197);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--fh);}
+.anl-btn:disabled{opacity:.4;cursor:not-allowed;}
+.anl-btn-sec{padding:13px 22px;background:var(--bd,#e4e2f0);color:var(--t2,#3d3b5c);border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fh);}
+.anl-status{border-radius:10px;padding:14px 18px;font-size:13px;font-weight:600;margin:14px 0;display:flex;align-items:center;gap:12px;}
+.anl-status.ok{background:#f4fbea;color:#2d6b0e;border:1.5px solid #6aaa1e;}
+.anl-status.warn{background:#fffbeb;color:#92400e;border:1.5px solid #fde68a;}
+.anl-status.err{background:#fef2f2;color:#991b1b;border:1.5px solid #fca5a5;}
+.anl-status.info{background:var(--p4,#f0eeff);color:var(--p2,#2d2478);border:1.5px solid #afa9ec;}
+.anl-fund-edit-row{display:grid;grid-template-columns:2fr 100px 90px 110px 50px;gap:10px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--bd,#e4e2f0);background:#fff;}
+.anl-fund-edit-row.flag{background:#fffbeb;}
+.anl-inp{padding:8px 10px;border:1.5px solid var(--bd,#e4e2f0);border-radius:8px;font-size:12px;font-family:var(--fh);width:100%;outline:none;}
+.anl-inp.empty{border-color:#fca5a5;background:#fef2f2;}
+.anl-section-hdr{font-family:var(--fp,'Playfair Display',serif);font-size:20px;color:var(--p1,#3c3197);margin-bottom:14px;}
+/* Report print styles */
+@media print{
+  #analyse-mode-section .no-print{display:none!important;}
+  .anl-report-page{page-break-after:always;}
+  .anl-report-page:last-child{page-break-after:avoid;}
+}
+
+
+@keyframes spin{to{transform:rotate(360deg);}}
 </style>
 </head>
 <body>
@@ -1319,7 +1349,7 @@ const ACT_SUB={};
 function setMode(m){
   ST.mode=m;
   // Highlight active mode card
-  ["sip","stp","custom"].forEach(function(x){
+  ["sip","stp","custom","analyse"].forEach(function(x){
     var el=document.getElementById("mb-"+x);
     if(el) el.classList.toggle("active",x===m);
   });
@@ -3710,6 +3740,814 @@ function cmbInit(){
   else cmbRender();
   var out=document.getElementById('cmb-blueprint-output');if(out)out.style.display='none';
 }
+</script>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     ANALYSE MY PORTFOLIO — INDEPENDENT SECTION
+═══════════════════════════════════════════════════════ -->
+<div id="analyse-mode-section">
+  <div style="max-width:860px;margin:0 auto;">
+
+    <!-- Back button -->
+    <div style="padding:14px 0 4px;">
+      <button onclick="setMode('sip')" style="background:none;border:none;color:var(--p1);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fh);padding:0;">← Back to Mode Selection</button>
+    </div>
+
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#e65c00,#f59e0b);border-radius:14px;padding:22px 26px;color:#fff;margin-bottom:20px;">
+      <div style="font-family:var(--fp);font-size:24px;margin-bottom:4px;">🔍 Analyse My Portfolio</div>
+      <div style="font-size:12px;opacity:.8;">Upload your CAS statement · Auto-detect CAMS / KFintech / NSDL / CDSL · Full portfolio assessment</div>
+    </div>
+
+    <!-- STEP 1: Upload -->
+    <div class="anl-card" id="anl-upload-card">
+      <div class="anl-section-hdr">Step 1 — Upload CAS Statement</div>
+      
+      <div class="anl-upload-box" id="anl-drop-zone" onclick="document.getElementById('anl-file-input').click()">
+        <div style="font-size:40px;margin-bottom:12px;">📄</div>
+        <div id="anl-upload-label" style="font-size:15px;font-weight:700;color:var(--p1);">Click to upload your CAS PDF</div>
+        <div style="font-size:12px;color:var(--t4);margin-top:6px;">Supports CAMS · KFintech · NSDL · CDSL · Password protected PDFs</div>
+        <input type="file" id="anl-file-input" accept=".pdf" style="display:none;" onchange="anlFileSelected(this)">
+      </div>
+
+      <!-- Password field — shows only if needed -->
+      <div id="anl-pwd-row" style="display:none;margin-top:16px;">
+        <div style="font-size:13px;font-weight:700;color:var(--p2);margin-bottom:8px;">🔒 This PDF is password protected</div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <input type="password" id="anl-pwd" placeholder="Enter CAS password..." 
+            style="flex:1;max-width:320px;padding:11px 14px;border:1.5px solid #afa9ec;border-radius:9px;font-size:14px;font-family:var(--fh);outline:none;">
+          <div style="font-size:11px;color:var(--t4);">Password stays in your browser — never sent anywhere</div>
+        </div>
+      </div>
+
+      <div id="anl-status-msg"></div>
+
+      <div style="margin-top:18px;display:flex;gap:12px;">
+        <button class="anl-btn" id="anl-assess-btn" onclick="anlAssess()" disabled>
+          🔍 Assess My Portfolio
+        </button>
+        <div id="anl-spinner" style="display:none;align-items:center;gap:8px;font-size:13px;color:var(--p1);font-weight:600;">
+          <div style="width:20px;height:20px;border:2.5px solid var(--p4);border-top-color:var(--p1);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+          Reading your CAS file...
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2: Verification / Manual Override -->
+    <div class="anl-card" id="anl-verify-card" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div class="anl-section-hdr" style="margin-bottom:0;">Step 2 — Verify Extracted Data</div>
+        <span id="anl-cas-type-badge" style="padding:4px 14px;border-radius:20px;font-size:11px;font-weight:800;background:var(--p4);color:var(--p1);">CAMS</span>
+      </div>
+      <div id="anl-verify-status" class="anl-status info" style="display:none;"></div>
+      
+      <!-- Investor details -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px;padding:16px;background:var(--p4);border-radius:10px;">
+        <div>
+          <div style="font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;margin-bottom:5px;">Investor Name</div>
+          <input class="anl-inp" id="anl-inv-name" type="text" placeholder="Name from CAS">
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;margin-bottom:5px;">PAN</div>
+          <input class="anl-inp" id="anl-inv-pan" type="text" placeholder="XXXXX0000X">
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;margin-bottom:5px;">Statement Date</div>
+          <input class="anl-inp" id="anl-inv-date" type="text" placeholder="DD Mon YYYY">
+        </div>
+      </div>
+
+      <!-- Fund rows table header -->
+      <div style="display:grid;grid-template-columns:2fr 100px 90px 110px 50px;gap:10px;padding:8px 14px;background:var(--p1);border-radius:8px 8px 0 0;font-size:10px;font-weight:800;color:#fff;text-transform:uppercase;">
+        <div>Fund Name</div><div style="text-align:center;">Units</div><div style="text-align:center;">NAV ₹</div><div style="text-align:right;">Value ₹</div><div></div>
+      </div>
+      <div id="anl-fund-rows" style="border:1.5px solid var(--bd);border-top:none;border-radius:0 0 8px 8px;overflow:hidden;"></div>
+
+      <div style="margin-top:12px;display:flex;gap:10px;">
+        <button onclick="anlAddFundRow()" style="padding:9px 16px;background:transparent;border:1.5px dashed #afa9ec;color:var(--p1);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fh);">+ Add Fund Manually</button>
+      </div>
+
+      <div style="margin-top:20px;display:flex;gap:12px;">
+        <button class="anl-btn" onclick="anlGenerateReport()">📊 Generate Analysis Report →</button>
+        <button class="anl-btn-sec" onclick="anlReset()">↺ Start Over</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Report Output -->
+    <div id="anl-report-output" style="display:none;"></div>
+
+  </div>
+</div>
+<!-- END ANALYSE SECTION -->
+
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// ANALYSE MY PORTFOLIO — COMPLETE JS
+// ═══════════════════════════════════════════════════════════
+
+// ── State ──────────────────────────────────────────────────
+var ANL = {
+  file: null, pdfDoc: null, casType: '', rawText: '',
+  investor: { name:'', pan:'', date:'' },
+  funds: [], flaggedCount: 0
+};
+
+// ── File Selected ──────────────────────────────────────────
+function anlFileSelected(input){
+  var file = input.files[0];
+  if(!file) return;
+  ANL.file = file;
+  var label = document.getElementById('anl-upload-label');
+  var box   = document.getElementById('anl-drop-zone');
+  label.textContent = '📄 ' + file.name + ' (' + (file.size/1024).toFixed(0) + ' KB)';
+  box.classList.add('has-file');
+  document.getElementById('anl-assess-btn').disabled = false;
+  anlSetStatus('info', 'File selected. Click "Assess My Portfolio" to analyse.');
+}
+
+function anlSetStatus(type, msg){
+  var el = document.getElementById('anl-status-msg');
+  if(!el) return;
+  el.className = 'anl-status ' + type;
+  el.style.display = 'flex';
+  var icon = {ok:'✅', warn:'⚠️', err:'❌', info:'ℹ️'}[type]||'';
+  el.innerHTML = '<span style="font-size:18px;flex-shrink:0">' + icon + '</span><span>' + msg + '</span>';
+}
+
+// ── Main Assess Function ────────────────────────────────────
+async function anlAssess(){
+  if(!ANL.file){ alert('Please select a CAS PDF first.'); return; }
+  var btn = document.getElementById('anl-assess-btn');
+  var spinner = document.getElementById('anl-spinner');
+  btn.disabled = true;
+  spinner.style.display = 'flex';
+  anlSetStatus('info', 'Reading your CAS file...');
+
+  try {
+    // Load pdf.js from CDN
+    if(typeof pdfjsLib === 'undefined'){
+      await anlLoadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+
+    var arrayBuffer = await ANL.file.arrayBuffer();
+    var loadParams  = { data: arrayBuffer };
+
+    // Try without password first
+    try {
+      ANL.pdfDoc = await pdfjsLib.getDocument(loadParams).promise;
+    } catch(e) {
+      if(e.name === 'PasswordException' || e.code === 1 || e.code === 2){
+        // Password protected
+        document.getElementById('anl-pwd-row').style.display = 'block';
+        var pwd = document.getElementById('anl-pwd').value;
+        if(!pwd){
+          anlSetStatus('warn', '🔒 This PDF is password protected. Please enter your CAS password above and click Assess again.');
+          btn.disabled = false; spinner.style.display = 'none'; return;
+        }
+        loadParams.password = pwd;
+        ANL.pdfDoc = await pdfjsLib.getDocument(loadParams).promise;
+      } else { throw e; }
+    }
+
+    // Extract text from all pages
+    anlSetStatus('info', 'Extracting text from ' + ANL.pdfDoc.numPages + ' pages...');
+    var fullText = '';
+    for(var p = 1; p <= ANL.pdfDoc.numPages; p++){
+      var page    = await ANL.pdfDoc.getPage(p);
+      var content = await page.getTextContent();
+      var pageText = content.items.map(function(i){ return i.str; }).join(' ');
+      fullText += pageText + '\n';
+    }
+    ANL.rawText = fullText;
+
+    // Detect CAS type
+    ANL.casType = anlDetectType(fullText);
+    anlSetStatus('info', 'Detected: ' + ANL.casType.toUpperCase() + ' statement. Parsing...');
+
+    // Parse based on type
+    var parsed;
+    if(ANL.casType === 'cams')  parsed = anlParseCAMS(fullText);
+    else if(ANL.casType === 'kfin') parsed = anlParseKFin(fullText);
+    else parsed = anlParseNSDL(fullText);
+
+    ANL.investor = parsed.investor;
+    ANL.funds    = parsed.funds;
+
+    // Check quality
+    var flags = ANL.funds.filter(function(f){
+      return !f.name || !f.units || !f.nav || !f.value || f.flagged;
+    });
+    ANL.flaggedCount = flags.length;
+
+    spinner.style.display = 'none';
+    btn.disabled = false;
+
+    if(flags.length === 0 && ANL.funds.length >= 1){
+      anlSetStatus('ok', '✅ File read successfully — ' + ANL.funds.length +
+        ' funds found in your ' + ANL.casType.toUpperCase() + ' CAS statement.');
+    } else if(flags.length > 0){
+      anlSetStatus('warn', ANL.funds.length + ' funds found. ' + flags.length +
+        ' fund(s) need your attention — please verify the highlighted rows below.');
+    } else {
+      anlSetStatus('warn', 'Could not extract fund data automatically. Please enter details manually below.');
+    }
+
+    anlShowVerification();
+
+  } catch(err) {
+    spinner.style.display = 'none';
+    btn.disabled = false;
+    anlSetStatus('err', 'Could not read this PDF: ' + (err.message||'Unknown error') +
+      '. If password protected, please enter password and try again.');
+    console.error(err);
+  }
+}
+
+function anlLoadScript(src){
+  return new Promise(function(resolve, reject){
+    if(document.querySelector('script[src="'+src+'"]')){ resolve(); return; }
+    var s = document.createElement('script');
+    s.src = src; s.onload = resolve; s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+// ── CAS TYPE DETECTION ─────────────────────────────────────
+function anlDetectType(text){
+  var t = text.toUpperCase();
+  if(t.includes('COMPUTER AGE MANAGEMENT') || t.includes('CAMS') || t.includes('CAMSONLINE'))
+    return 'cams';
+  if(t.includes('KFIN') || t.includes('KARVY') || t.includes('KFINTECH'))
+    return 'kfin';
+  if(t.includes('NSDL') || t.includes('CDSL') || t.includes('NATIONAL SECURITIES DEPOSITORY') || t.includes('CENTRAL DEPOSITORY'))
+    return 'nsdl';
+  return 'cams'; // default fallback
+}
+
+// ── PARSER 1: CAMS ─────────────────────────────────────────
+function anlParseCAMS(text){
+  var inv = { name:'', pan:'', date:'' };
+  var funds = [];
+
+  // Investor name
+  var nm = text.match(/Investor\s+Name\s*[:\-]\s*([A-Z][A-Za-z\s]{2,50})/);
+  if(nm) inv.name = nm[1].trim();
+
+  // PAN
+  var pan = text.match(/PAN\s*[:\-]\s*([A-Z]{5}[0-9]{4}[A-Z])/);
+  if(pan) inv.pan = pan[1];
+
+  // Date
+  var dt = text.match(/(\d{1,2}[\/\-]\w{3,9}[\/\-]\d{4})/);
+  if(dt) inv.date = dt[1];
+
+  // Fund blocks — CAMS uses "Folio No:" pattern
+  var lines = text.split('\n');
+  var currentFund = null;
+
+  for(var i=0; i<lines.length; i++){
+    var line = lines[i].trim();
+    if(!line) continue;
+
+    // Folio line signals new fund
+    var folioMatch = line.match(/Folio\s*(?:No\.?|Number)?\s*[:\-]?\s*(\d[\d\/\s]+)/i);
+    if(folioMatch){
+      if(currentFund) funds.push(currentFund);
+      // Fund name is usually on the previous non-empty line
+      var fname = '';
+      for(var j=i-1; j>=Math.max(0,i-5); j--){
+        var prev = lines[j].trim();
+        if(prev && prev.length > 5 && !/folio/i.test(prev)){
+          fname = prev.replace(/\s+/g,' '); break;
+        }
+      }
+      currentFund = {
+        name: fname, folio: folioMatch[1].trim(),
+        units:0, nav:0, value:0, invested:0, gain:0, flagged:false
+      };
+    }
+
+    // Closing balance
+    if(currentFund && /closing\s+balance/i.test(line)){
+      var nums = line.match(/[\d,]+\.[\d]+/g);
+      if(nums && nums.length >= 3){
+        currentFund.units = parseFloat(nums[0].replace(/,/g,''));
+        currentFund.nav   = parseFloat(nums[1].replace(/,/g,''));
+        currentFund.value = parseFloat(nums[2].replace(/,/g,''));
+      }
+    }
+
+    // Unrealised gain
+    if(currentFund && /unrealised\s+gain/i.test(line)){
+      var gn = line.match(/[\-]?[\d,]+\.[\d]+/);
+      if(gn) currentFund.gain = parseFloat(gn[0].replace(/,/g,''));
+    }
+  }
+  if(currentFund) funds.push(currentFund);
+
+  // Flag incomplete entries
+  funds.forEach(function(f){
+    if(!f.units || !f.nav || !f.value || !f.name) f.flagged = true;
+    if(f.value > 0 && f.gain) f.invested = f.value - f.gain;
+  });
+
+  return { investor: inv, funds: funds };
+}
+
+// ── PARSER 2: KFintech ─────────────────────────────────────
+function anlParseKFin(text){
+  var inv = { name:'', pan:'', date:'' };
+  var funds = [];
+
+  var nm = text.match(/Name\s*[:\-]\s*([A-Z][A-Za-z\s]{2,50})/);
+  if(nm) inv.name = nm[1].trim();
+  var pan = text.match(/([A-Z]{5}[0-9]{4}[A-Z])/);
+  if(pan) inv.pan = pan[1];
+  var dt = text.match(/(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4})/);
+  if(dt) inv.date = dt[1];
+
+  var lines = text.split('\n');
+  var currentFund = null;
+
+  for(var i=0; i<lines.length; i++){
+    var line = lines[i].trim();
+    // KFin uses "FOLIO NO :" (uppercase)
+    var folioM = line.match(/FOLIO\s+NO\s*[:\-]\s*(\w+)/i);
+    if(folioM){
+      if(currentFund) funds.push(currentFund);
+      var fname = '';
+      for(var j=i-1; j>=Math.max(0,i-5); j--){
+        var prev = lines[j].trim();
+        if(prev && prev.length > 5 && !/folio/i.test(prev)){
+          fname = prev.replace(/\s+/g,' '); break;
+        }
+      }
+      currentFund = {
+        name: fname, folio: folioM[1],
+        units:0, nav:0, value:0, invested:0, gain:0, flagged:false
+      };
+    }
+
+    // KFin closing: "Closing Balance as on DD/MM/YYYY"
+    if(currentFund && /closing\s+balance/i.test(line)){
+      var nums = line.match(/[\d,]+\.[\d]+/g);
+      if(nums && nums.length >= 3){
+        currentFund.units = parseFloat(nums[0].replace(/,/g,''));
+        currentFund.nav   = parseFloat(nums[1].replace(/,/g,''));
+        currentFund.value = parseFloat(nums[2].replace(/,/g,''));
+      }
+    }
+
+    if(currentFund && /net\s+gain/i.test(line)){
+      var gn = line.match(/[\-]?[\d,]+\.[\d]+/);
+      if(gn) currentFund.gain = parseFloat(gn[0].replace(/,/g,''));
+    }
+  }
+  if(currentFund) funds.push(currentFund);
+
+  funds.forEach(function(f){
+    if(!f.units || !f.nav || !f.value || !f.name) f.flagged = true;
+    if(f.value > 0 && f.gain) f.invested = f.value - f.gain;
+  });
+
+  return { investor: inv, funds: funds };
+}
+
+// ── PARSER 3: NSDL/CDSL ────────────────────────────────────
+function anlParseNSDL(text){
+  // NSDL/CDSL: First parse MF section, then equity section
+  var mfSection = text;
+  var equitySection = '';
+
+  // Split at equity section marker
+  var equityIdx = text.search(/EQUITY\s+HOLDING|DEMAT\s+HOLDING/i);
+  if(equityIdx > 0){
+    mfSection     = text.substring(0, equityIdx);
+    equitySection = text.substring(equityIdx);
+  }
+
+  // Parse MF using CAMS-like approach
+  var result = anlParseCAMS(mfSection);
+
+  // Parse equity holdings (bonus)
+  result.equityHoldings = [];
+  if(equitySection){
+    var eLines = equitySection.split('\n');
+    eLines.forEach(function(line){
+      var nums = line.match(/[\d,]+\.?\d*/g);
+      if(nums && nums.length >= 3 && line.length > 20){
+        result.equityHoldings.push({
+          name: line.substring(0, Math.min(50, line.indexOf(nums[0]))).trim(),
+          qty: parseFloat(nums[0].replace(/,/g,'')),
+          value: parseFloat(nums[nums.length-1].replace(/,/g,''))
+        });
+      }
+    });
+  }
+
+  return result;
+}
+
+// ── SHOW VERIFICATION SCREEN ───────────────────────────────
+function anlShowVerification(){
+  document.getElementById('anl-verify-card').style.display = 'block';
+
+  // Set badge
+  var badge = document.getElementById('anl-cas-type-badge');
+  var typeLabels = {cams:'CAMS',kfin:'KFintech',nsdl:'NSDL/CDSL'};
+  badge.textContent = typeLabels[ANL.casType] || ANL.casType.toUpperCase();
+
+  // Set investor details
+  document.getElementById('anl-inv-name').value  = ANL.investor.name;
+  document.getElementById('anl-inv-pan').value   = ANL.investor.pan;
+  document.getElementById('anl-inv-date').value  = ANL.investor.date;
+
+  // Show status if flagged
+  if(ANL.flaggedCount > 0){
+    var vs = document.getElementById('anl-verify-status');
+    vs.style.display = 'flex';
+    vs.className = 'anl-status warn';
+    vs.innerHTML = '<span style="font-size:18px">⚠️</span><span>' + ANL.flaggedCount +
+      ' fund(s) highlighted in yellow need your review — please correct or fill in missing values.</span>';
+  }
+
+  // Render fund rows
+  anlRenderFundRows();
+
+  // Scroll to verify card
+  document.getElementById('anl-verify-card').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ── RENDER FUND ROWS ────────────────────────────────────────
+function anlRenderFundRows(){
+  var el = document.getElementById('anl-fund-rows'); if(!el) return;
+  if(!ANL.funds.length){
+    el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--t4);font-size:13px;">No funds extracted — please add manually using the button below.</div>';
+    return;
+  }
+  el.innerHTML = ANL.funds.map(function(f,i){
+    var cls = f.flagged ? 'anl-fund-edit-row flag' : 'anl-fund-edit-row';
+    var ni = f.name ?'anl-inp':'anl-inp empty';
+    var ui = f.units?'anl-inp':'anl-inp empty';
+    var navi = f.nav ?'anl-inp':'anl-inp empty';
+    var vi = f.value?'anl-inp':'anl-inp empty';
+    return '<div class="'+cls+'">'+
+      '<input class="'+ni+'" value="'+anlEsc(f.name)+'" placeholder="Fund name" oninput="ANL.funds['+i+'].name=this.value;ANL.funds['+i+'].flagged=false;">'+
+      '<input class="'+ui+'" type="number" value="'+(f.units||'')+'" placeholder="Units" style="text-align:center;" oninput="ANL.funds['+i+'].units=parseFloat(this.value)||0;">'+
+      '<input class="'+navi+'" type="number" value="'+(f.nav||'')+'" placeholder="NAV" style="text-align:center;" oninput="ANL.funds['+i+'].nav=parseFloat(this.value)||0;">'+
+      '<input class="'+vi+'" type="number" value="'+(f.value||'')+'" placeholder="Value ₹" style="text-align:right;" oninput="ANL.funds['+i+'].value=parseFloat(this.value)||0;">'+
+      '<button onclick="ANL.funds.splice('+i+',1);anlRenderFundRows();" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:14px;font-weight:800;">✕</button>'+
+    '</div>';
+  }).join('');
+}
+
+function anlEsc(s){ return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+function anlAddFundRow(){
+  ANL.funds.push({name:'',units:0,nav:0,value:0,invested:0,gain:0,flagged:true});
+  anlRenderFundRows();
+}
+
+function anlReset(){
+  ANL = {file:null,pdfDoc:null,casType:'',rawText:'',investor:{name:'',pan:'',date:''},funds:[],flaggedCount:0};
+  document.getElementById('anl-verify-card').style.display='none';
+  document.getElementById('anl-report-output').style.display='none';
+  document.getElementById('anl-upload-label').textContent='Click to upload your CAS PDF';
+  document.getElementById('anl-drop-zone').classList.remove('has-file');
+  document.getElementById('anl-assess-btn').disabled=true;
+  document.getElementById('anl-pwd-row').style.display='none';
+  document.getElementById('anl-pwd').value='';
+  document.getElementById('anl-fund-rows').innerHTML='';
+  anlSetStatus('info','File cleared. Upload a new CAS PDF.');
+}
+
+// ── CATEGORISE FUND ────────────────────────────────────────
+function anlCategoriseFund(name){
+  var n = (name||'').toUpperCase();
+  if(n.includes('LIQUID')||n.includes('OVERNIGHT')||n.includes('MONEY MARKET')) return 'Liquid';
+  if(n.includes('GILT')||n.includes('GSEC'))      return 'Gilt';
+  if(n.includes('DEBT')||n.includes('BOND')||n.includes('INCOME')||n.includes('CORPORATE')||n.includes('DURATION')||n.includes('BANKING & PSU')) return 'Debt';
+  if(n.includes('HYBRID')||n.includes('BALANCED')||n.includes('ASSET ALLOCATION')||n.includes('BAF')||n.includes('DYNAMIC ASSET')) return 'Hybrid';
+  if(n.includes('ARBITRAGE')) return 'Arbitrage';
+  if(n.includes('INDEX')||n.includes('NIFTY')||n.includes('SENSEX')||n.includes('ETF')) return 'Index/ETF';
+  if(n.includes('ELSS')||n.includes('TAX')) return 'ELSS';
+  if(n.includes('GOLD')||n.includes('SILVER')) return 'Commodity';
+  if(n.includes('INTERNATIONAL')||n.includes('GLOBAL')||n.includes('OVERSEAS')) return 'International';
+  return 'Equity'; // default
+}
+
+function anlIsEquity(cat){
+  return ['Equity','ELSS','Index/ETF','International'].includes(cat);
+}
+function anlIsDebt(cat){
+  return ['Debt','Gilt','Liquid','Arbitrage'].includes(cat);
+}
+
+// ── GENERATE REPORT ────────────────────────────────────────
+function anlGenerateReport(){
+  // Sync latest edits from inputs
+  ANL.investor.name = document.getElementById('anl-inv-name').value||ANL.investor.name;
+  ANL.investor.pan  = document.getElementById('anl-inv-pan').value||ANL.investor.pan;
+  ANL.investor.date = document.getElementById('anl-inv-date').value||ANL.investor.date;
+
+  var funds = ANL.funds.filter(function(f){ return f.name && f.value > 0; });
+  if(!funds.length){ alert('Please add at least one fund with a name and value.'); return; }
+
+  // Compute summaries
+  var totalValue    = funds.reduce(function(s,f){return s+f.value;},0);
+  var totalInvested = funds.reduce(function(s,f){return s+(f.invested||f.value);},0);
+  var totalGain     = totalValue - totalInvested;
+  var gainPct       = totalInvested>0 ? ((totalGain/totalInvested)*100) : 0;
+
+  // Categorise
+  funds.forEach(function(f){
+    f.category = anlCategoriseFund(f.name);
+    f.allocPct = totalValue>0 ? ((f.value/totalValue)*100) : 0;
+    if(!f.invested) f.invested = f.value; // fallback
+    f.gainAmt = f.value - f.invested;
+    f.gainPct = f.invested>0 ? ((f.gainAmt/f.invested)*100) : 0;
+  });
+
+  // Asset allocation
+  var eqVal = funds.filter(function(f){return anlIsEquity(f.category);}).reduce(function(s,f){return s+f.value;},0);
+  var dtVal = funds.filter(function(f){return anlIsDebt(f.category);}).reduce(function(s,f){return s+f.value;},0);
+  var hyVal = funds.filter(function(f){return f.category==='Hybrid';}).reduce(function(s,f){return s+f.value;},0);
+  var otVal = totalValue - eqVal - dtVal - hyVal;
+  var eqPct = totalValue>0?(eqVal/totalValue*100):0;
+  var dtPct = totalValue>0?(dtVal/totalValue*100):0;
+  var hyPct = totalValue>0?(hyVal/totalValue*100):0;
+  var otPct = totalValue>0?(otVal/totalValue*100):0;
+
+  // AMC concentration
+  var amcMap = {};
+  funds.forEach(function(f){
+    var amc = anlExtractAMC(f.name);
+    amcMap[amc] = (amcMap[amc]||0) + f.value;
+  });
+  var amcList = Object.keys(amcMap).map(function(k){
+    return {name:k, value:amcMap[k], pct:totalValue>0?(amcMap[k]/totalValue*100):0};
+  }).sort(function(a,b){return b.value-a.value;});
+
+  // Overlap risk (funds in same category)
+  var catMap = {};
+  funds.forEach(function(f){
+    catMap[f.category] = (catMap[f.category]||0) + 1;
+  });
+  var overlaps = Object.keys(catMap).filter(function(c){ return catMap[c]>1; });
+
+  // Concentration risk
+  var topAMC = amcList[0];
+  var concentrationRisk = topAMC && topAMC.pct > 40;
+
+  function fmtN(n){
+    n=Math.round(n||0);
+    if(n>=10000000)return (n/10000000).toFixed(2)+' Cr';
+    if(n>=100000) return (n/100000).toFixed(2)+' L';
+    if(n>=1000)   return (n/1000).toFixed(1)+' K';
+    return n.toLocaleString('en-IN');
+  }
+  function fmtI(n){return Math.round(n||0).toLocaleString('en-IN');}
+  function fmtP(n){return (n||0).toFixed(1)+'%';}
+  function gainColor(g){ return g>=0?'#16a34a':'#dc2626'; }
+  function gaugeBar(pct, color){
+    return '<div style="height:8px;background:#e4e2f0;border-radius:4px;overflow:hidden;margin-top:4px;">'+
+      '<div style="height:100%;border-radius:4px;background:'+color+';width:'+Math.min(100,pct)+'%;transition:width .3s;"></div></div>';
+  }
+
+  // ── BUILD REPORT HTML ─────────────────────────────────────
+  var typeLabel = {cams:'CAMS',kfin:'KFintech',nsdl:'NSDL/CDSL'}[ANL.casType]||'CAS';
+  var today = new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
+
+  var report = '<div id="anl-report-body" style="font-family:var(--fh,\'Plus Jakarta Sans\',sans-serif);max-width:860px;margin:0 auto;">';
+
+  // ── PAGE 1: PORTFOLIO SUMMARY ───────────────────────────
+  report += '<div class="anl-report-page" style="margin-bottom:32px;">';
+  report += '<div style="background:linear-gradient(135deg,#e65c00,#f59e0b);border-radius:14px;padding:28px;color:#fff;margin-bottom:20px;">';
+  report += '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">';
+  report += '<div><div style="font-family:var(--fp,serif);font-size:26px;margin-bottom:4px;">Portfolio Analysis Report</div>';
+  report += '<div style="font-size:13px;opacity:.85;">Prepared for <strong>'+anlEsc(ANL.investor.name||'Investor')+'</strong> &nbsp;·&nbsp; Statement: '+anlEsc(ANL.investor.date||today)+'</div>';
+  report += '<div style="font-size:11px;opacity:.7;margin-top:3px;">'+typeLabel+' Statement &nbsp;·&nbsp; Generated: '+today+'</div></div>';
+  report += '<div style="text-align:right;background:rgba(255,255,255,.15);border-radius:10px;padding:14px 18px;">';
+  report += '<div style="font-size:11px;opacity:.8;margin-bottom:3px;">TOTAL PORTFOLIO VALUE</div>';
+  report += '<div style="font-size:28px;font-weight:900;">₹'+fmtN(totalValue)+'</div></div></div>';
+
+  // Summary metrics
+  report += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px;">';
+  var metrics = [
+    {l:'Total Invested',v:'₹'+fmtN(totalInvested),c:'rgba(255,255,255,.9)'},
+    {l:'Current Value',v:'₹'+fmtN(totalValue),c:'#fff'},
+    {l:'Total Gain',v:(totalGain>=0?'+':'')+'\u20b9'+fmtN(Math.abs(totalGain)),c:totalGain>=0?'#bbf7d0':'#fecaca'},
+    {l:'Return',v:(gainPct>=0?'+':'')+fmtP(gainPct),c:gainPct>=0?'#bbf7d0':'#fecaca'},
+  ];
+  metrics.forEach(function(m){
+    report += '<div style="background:rgba(255,255,255,.15);border-radius:10px;padding:14px;">';
+    report += '<div style="font-size:10px;opacity:.75;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;">'+m.l+'</div>';
+    report += '<div style="font-size:20px;font-weight:800;color:'+m.c+';">'+m.v+'</div></div>';
+  });
+  report += '</div></div>'; // end hero
+
+  // Asset Allocation Card
+  report += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">';
+  report += '<div style="background:#fff;border-radius:12px;border:1.5px solid #e4e2f0;padding:20px;">';
+  report += '<div style="font-family:var(--fp,serif);font-size:17px;color:#3c3197;margin-bottom:14px;">Asset Allocation</div>';
+  var allocs = [
+    {l:'Equity (incl. ELSS, Index)',v:eqPct,c:'#3c3197',amt:eqVal},
+    {l:'Debt (incl. Liquid, Gilt)',v:dtPct,c:'#6aaa1e',amt:dtVal},
+    {l:'Hybrid',v:hyPct,c:'#f59e0b',amt:hyVal},
+    {l:'Other',v:otPct,c:'#9ca3af',amt:otVal},
+  ];
+  allocs.forEach(function(a){
+    if(a.amt<=0) return;
+    report += '<div style="margin-bottom:12px;">';
+    report += '<div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;">';
+    report += '<span>'+a.l+'</span><span style="color:'+a.c+';">'+fmtP(a.v)+' (₹'+fmtN(a.amt)+')</span></div>';
+    report += gaugeBar(a.v, a.c)+'</div>';
+  });
+  report += '</div>';
+
+  // AMC Concentration
+  report += '<div style="background:#fff;border-radius:12px;border:1.5px solid #e4e2f0;padding:20px;">';
+  report += '<div style="font-family:var(--fp,serif);font-size:17px;color:#3c3197;margin-bottom:14px;">AMC Concentration</div>';
+  amcList.slice(0,6).forEach(function(a){
+    var risk = a.pct>40?'#dc2626':a.pct>25?'#d97706':'#6aaa1e';
+    report += '<div style="margin-bottom:10px;">';
+    report += '<div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;">';
+    report += '<span>'+anlEsc(a.name)+'</span><span style="color:'+risk+';">'+fmtP(a.pct)+'</span></div>';
+    report += gaugeBar(a.pct, risk)+'</div>';
+  });
+  report += '</div></div>'; // end grid
+  report += '</div>'; // end page 1
+
+  // ── PAGE 2: FUND-WISE DETAIL ───────────────────────────
+  report += '<div class="anl-report-page" style="margin-bottom:32px;">';
+  report += '<div style="background:#fff;border-radius:12px;border:1.5px solid #e4e2f0;overflow:hidden;">';
+  report += '<div style="padding:16px 20px;background:#3c3197;color:#fff;">';
+  report += '<div style="font-family:var(--fp,serif);font-size:20px;">Fund-wise Holdings</div>';
+  report += '<div style="font-size:12px;opacity:.7;margin-top:2px;">'+funds.length+' funds &nbsp;·&nbsp; Total value ₹'+fmtN(totalValue)+'</div></div>';
+
+  // Table header
+  report += '<div style="display:grid;grid-template-columns:3fr 80px 80px 100px 100px 80px;gap:0;padding:10px 16px;background:#f0eeff;font-size:10px;font-weight:800;color:#3c3197;text-transform:uppercase;">';
+  ['Fund Name','Category','Units','NAV ₹','Value ₹','Gain %'].forEach(function(h){
+    report += '<div>'+h+'</div>';
+  });
+  report += '</div>';
+
+  funds.forEach(function(f,i){
+    var bg = i%2===0?'#fff':'#fafaf8';
+    var gc = gainColor(f.gainPct);
+    report += '<div style="display:grid;grid-template-columns:3fr 80px 80px 100px 100px 80px;gap:0;padding:10px 16px;border-bottom:1px solid #f0eeff;background:'+bg+';">';
+    report += '<div><div style="font-size:12px;font-weight:700;color:#000;">'+anlEsc(f.name)+'</div>';
+    if(f.folio) report += '<div style="font-size:10px;color:#7a7898;">Folio: '+anlEsc(f.folio)+'</div></div>';
+    else report += '</div>';
+    report += '<div style="font-size:11px;color:#3c3197;font-weight:600;padding-top:2px;">'+f.category+'</div>';
+    report += '<div style="font-size:12px;font-weight:600;color:#000;">'+fmtI(f.units)+'</div>';
+    report += '<div style="font-size:12px;font-weight:600;color:#000;">₹'+fmtI(f.nav)+'</div>';
+    report += '<div style="font-size:12px;font-weight:700;color:#000;">₹'+fmtN(f.value)+'</div>';
+    report += '<div style="font-size:12px;font-weight:800;color:'+gc+';">'+(f.gainPct>=0?'+':'')+fmtP(f.gainPct)+'</div>';
+    report += '</div>';
+  });
+  report += '</div></div>'; // end page 2
+
+  // ── PAGE 3: ASSESSMENT & RECOMMENDATIONS ──────────────
+  report += '<div class="anl-report-page" style="margin-bottom:32px;">';
+
+  // Risk Analysis
+  var riskScore = 0;
+  var riskNotes = [];
+  if(concentrationRisk){ riskScore+=2; riskNotes.push({type:'warn',msg:'High AMC concentration: '+topAMC.name+' has '+fmtP(topAMC.pct)+' of your portfolio. Consider spreading across more AMCs.'}); }
+  if(overlaps.length>0){ riskScore+=1; riskNotes.push({type:'info',msg:'Category overlap: You have multiple funds in '+overlaps.join(', ')+'. This may lead to portfolio overlap.'}); }
+  if(eqPct>80){ riskScore+=1; riskNotes.push({type:'warn',msg:'High equity concentration ('+fmtP(eqPct)+'). Consider adding some debt allocation for stability.'}); }
+  if(eqPct<20 && totalValue>500000){ riskScore+=1; riskNotes.push({type:'info',msg:'Low equity exposure ('+fmtP(eqPct)+'). For long-term wealth creation, consider increasing equity allocation.'}); }
+  if(dtPct>60){ riskScore+=1; riskNotes.push({type:'info',msg:'High debt allocation ('+fmtP(dtPct)+'). Review if this aligns with your investment horizon.'}); }
+  if(funds.length<3){ riskNotes.push({type:'info',msg:'Portfolio has only '+funds.length+' fund(s). Diversification across 4-8 funds is generally recommended.'}); }
+  if(gainPct>50){ riskNotes.push({type:'ok',msg:'Excellent returns! Your portfolio has grown by '+fmtP(gainPct)+'. Consider periodic review to rebalance.'}); }
+  if(riskNotes.length===0){ riskNotes.push({type:'ok',msg:'Portfolio appears well-balanced. Keep investing regularly and review annually.'}); }
+
+  var riskLevel = riskScore===0?'Low':riskScore<=2?'Moderate':'High';
+  var riskColor = riskScore===0?'#16a34a':riskScore<=2?'#d97706':'#dc2626';
+
+  report += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">';
+
+  // Risk summary
+  report += '<div style="background:#fff;border-radius:12px;border:1.5px solid #e4e2f0;padding:20px;">';
+  report += '<div style="font-family:var(--fp,serif);font-size:17px;color:#3c3197;margin-bottom:14px;">Portfolio Risk Assessment</div>';
+  report += '<div style="font-size:32px;font-weight:900;color:'+riskColor+';">'+riskLevel+' Risk</div>';
+  report += '<div style="font-size:12px;color:#7a7898;margin:8px 0 16px;">Based on allocation, concentration & diversification</div>';
+  report += '<div><div style="font-size:11px;font-weight:700;color:#7a7898;text-transform:uppercase;margin-bottom:6px;">Key Metrics</div>';
+  var keyMetrics = [
+    {l:'No. of Funds', v: funds.length},
+    {l:'No. of AMCs',  v: amcList.length},
+    {l:'Equity %',    v: fmtP(eqPct)},
+    {l:'Debt %',      v: fmtP(dtPct)},
+    {l:'Hybrid %',    v: fmtP(hyPct)},
+  ];
+  keyMetrics.forEach(function(m){
+    report += '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0eeff;font-size:12px;">';
+    report += '<span style="color:#7a7898;">'+m.l+'</span><span style="font-weight:700;color:#000;">'+m.v+'</span></div>';
+  });
+  report += '</div></div>';
+
+  // Top performers
+  var sortedFunds = funds.slice().sort(function(a,b){return b.gainPct-a.gainPct;});
+  report += '<div style="background:#fff;border-radius:12px;border:1.5px solid #e4e2f0;padding:20px;">';
+  report += '<div style="font-family:var(--fp,serif);font-size:17px;color:#3c3197;margin-bottom:14px;">Top & Bottom Performers</div>';
+  var top3 = sortedFunds.slice(0,3);
+  var bot3 = sortedFunds.slice(-3).reverse();
+  report += '<div style="font-size:11px;font-weight:700;color:#16a34a;text-transform:uppercase;margin-bottom:6px;">Best Performing</div>';
+  top3.forEach(function(f){
+    report += '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0eeff;font-size:11px;">';
+    report += '<span style="font-weight:600;color:#000;">'+anlEsc(f.name.substring(0,35))+(f.name.length>35?'...':'')+'</span>';
+    report += '<span style="font-weight:800;color:#16a34a;">+'+ fmtP(f.gainPct)+'</span></div>';
+  });
+  if(bot3.length && bot3[0] !== top3[0]){
+    report += '<div style="font-size:11px;font-weight:700;color:#dc2626;text-transform:uppercase;margin:10px 0 6px;">Needs Attention</div>';
+    bot3.forEach(function(f){
+      if(top3.includes(f)) return;
+      report += '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0eeff;font-size:11px;">';
+      report += '<span style="font-weight:600;color:#000;">'+anlEsc(f.name.substring(0,35))+(f.name.length>35?'...':'')+'</span>';
+      report += '<span style="font-weight:800;color:'+gainColor(f.gainPct)+';">'+(f.gainPct>=0?'+':'')+fmtP(f.gainPct)+'</span></div>';
+    });
+  }
+  report += '</div></div>'; // end 2-col grid
+
+  // Recommendations
+  report += '<div style="background:#fff;border-radius:12px;border:1.5px solid #e4e2f0;padding:20px;">';
+  report += '<div style="font-family:var(--fp,serif);font-size:17px;color:#3c3197;margin-bottom:14px;">Observations & Recommendations</div>';
+  riskNotes.forEach(function(n){
+    var bg = n.type==='ok'?'#f4fbea':n.type==='warn'?'#fffbeb':'#f0eeff';
+    var bc = n.type==='ok'?'#6aaa1e':n.type==='warn'?'#d97706':'#3c3197';
+    var ic2 = n.type==='ok'?'✅':n.type==='warn'?'⚠️':'ℹ️';
+    report += '<div style="background:'+bg+';border-left:4px solid '+bc+';border-radius:6px;padding:12px 14px;margin-bottom:10px;font-size:12px;display:flex;gap:10px;">';
+    report += '<span style="flex-shrink:0;font-size:15px;">'+ic2+'</span><span style="color:#1a1240;font-weight:500;">'+n.msg+'</span></div>';
+  });
+  report += '</div>';
+  report += '</div>'; // end page 3
+
+  // ── LAST PAGE: SIGNATURE ───────────────────────────────
+  report += '<div class="anl-report-page">';
+  report += '<div style="background:linear-gradient(135deg,#2d2478,#3c3197);border-radius:14px;padding:24px 28px;color:#fff;">';
+  report += '<div style="font-family:var(--fp,serif);font-size:20px;margin-bottom:16px;">Report Summary</div>';
+  report += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;">';
+  [
+    {l:'Investor',v:ANL.investor.name||'Valued Investor'},
+    {l:'Total Funds',v:funds.length+' funds across '+amcList.length+' AMCs'},
+    {l:'Portfolio Value',v:'₹'+fmtN(totalValue)},
+    {l:'Total Invested',v:'₹'+fmtN(totalInvested)},
+    {l:'Overall Return',v:(gainPct>=0?'+':'')+fmtP(gainPct)},
+    {l:'Risk Level',v:riskLevel+' Risk'},
+  ].forEach(function(m){
+    report += '<div style="background:rgba(255,255,255,.12);border-radius:8px;padding:12px;">';
+    report += '<div style="font-size:10px;opacity:.7;text-transform:uppercase;margin-bottom:4px;">'+m.l+'</div>';
+    report += '<div style="font-size:14px;font-weight:800;">'+anlEsc(m.v)+'</div></div>';
+  });
+  report += '</div>';
+  // Investor name on last page
+  report += '<div style="border-top:1px solid rgba(255,255,255,.2);padding-top:16px;display:flex;align-items:center;justify-content:space-between;">';
+  report += '<div><div style="font-size:13px;font-weight:800;">Prepared for: '+anlEsc(ANL.investor.name||'Valued Investor')+'</div>';
+  report += '<div style="font-size:11px;opacity:.7;margin-top:2px;">Generated on '+today+'</div></div>';
+  report += '<div style="text-align:right;"><div style="font-size:14px;font-weight:800;">Kaustubh Valimbe</div>';
+  report += '<div style="font-size:12px;opacity:.8;">AMFI Certified MFD</div>';
+  report += '<div style="font-size:11px;opacity:.6;">Ace Financial Services</div></div></div>';
+  report += '</div></div>'; // end last page
+  report += '</div>'; // end report body
+
+  // Disclaimer
+  report += '<div style="background:#e4e2f0;border-radius:10px;padding:14px 18px;font-size:10px;color:#7a7898;line-height:1.7;margin-top:16px;">';
+  report += '⚠️ <strong>AMFI Disclaimer:</strong> Mutual Fund investments are subject to market risks. ';
+  report += 'This report is generated based on CAS data provided by the investor and is for informational purposes only. ';
+  report += 'Past performance is not indicative of future returns. Consult your MFD before making investment decisions. ';
+  report += '<strong>Kaustubh Valimbe · AMFI Certified MFD · Ace Financial Services.</strong></div>';
+
+  // ── RENDER + DOWNLOAD ──────────────────────────────────
+  var output = document.getElementById('anl-report-output');
+  output.style.display = 'block';
+  output.innerHTML = report +
+    '<div class="no-print" style="margin-top:20px;display:flex;gap:12px;max-width:860px;margin-left:auto;margin-right:auto;">' +
+    '<button class="anl-btn" onclick="window.print()">🖨️ Save / Print Report</button>' +
+    '<button class="anl-btn-sec" onclick="anlReset()">↺ Analyse Another</button>' +
+    '</div>';
+
+  output.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function anlExtractAMC(fundName){
+  var n = (fundName||'').toUpperCase();
+  var amcs = ['HDFC','SBI','ICICI PRUDENTIAL','AXIS','KOTAK','NIPPON','MIRAE',
+    'PARAG PARIKH','PPFAS','DSP','FRANKLIN','TATA','EDELWEISS','ADITYA BIRLA',
+    'UTI','BANDHAN','CANARA ROBECO','INVESCO','MOTILAL OSWAL','QUANT',
+    'NAVI','ZERODHA','WHITEOAK','BAJAJ FINSERV'];
+  for(var i=0; i<amcs.length; i++){
+    if(n.includes(amcs[i])) return amcs[i];
+  }
+  // Extract first word(s) as AMC name
+  var words = fundName.split(' ');
+  return words.slice(0, Math.min(2, words.length)).join(' ');
+}
+
 </script>
 </body>
 </html>
