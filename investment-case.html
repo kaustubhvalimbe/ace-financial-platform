@@ -858,6 +858,7 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
     <div class="anl-card" id="anl-verify-card" style="display:none;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
         <div class="anl-section-hdr" style="margin-bottom:0;">Step 2 — Verify Extracted Data</div>
+          <button onclick="anlShowRaw()" style="padding:6px 14px;background:var(--bg);border:1px solid var(--bd);border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--fh);">🔍 View Raw Text</button>
         <span id="anl-cas-type-badge" style="padding:4px 14px;border-radius:20px;font-size:11px;font-weight:800;background:var(--p4);color:var(--p1);">CAMS</span>
       </div>
       <div id="anl-verify-status" class="anl-status info" style="display:none;"></div>
@@ -3422,6 +3423,17 @@ function stpBuildBlueprint(){
 
 
 
+
+function anlShowRaw(){
+  var raw = ANL.rawTextPreview || ANL.rawText.substring(0,3000) || 'No text extracted';
+  var w = window.open('','_blank','width=700,height=600');
+  w.document.write('<html><head><title>CAS Raw Text</title></head><body>'+
+    '<pre style="font-size:11px;font-family:monospace;white-space:pre-wrap;padding:16px;">'+
+    raw.replace(/</g,'&lt;').replace(/>/g,'&gt;')+
+    '</pre></body></html>');
+  w.document.close();
+}
+
 </script>
 <script>
 
@@ -3991,168 +4003,210 @@ function anlDetectType(text){
 }
 
 // ── PARSER 1: CAMS ─────────────────────────────────────────
+// ── IMPROVED PARSERS ──────────────────────────────────────
+// CAS PDFs vary. Strategy: multiple pattern attempts per field.
+
 function anlParseCAMS(text){
   var inv = { name:'', pan:'', date:'' };
   var funds = [];
 
-  // Investor name
-  var nm = text.match(/Investor\s+Name\s*[:\-]\s*([A-Z][A-Za-z\s]{2,50})/);
-  if(nm) inv.name = nm[1].trim();
+  // Investor details — try multiple patterns
+  var nmPatterns = [
+    /Investor\s*Name\s*[:\-]\s*([A-Za-z][A-Za-z\s\.]{2,50})/i,
+    /Name\s*[:\-]\s*([A-Z][A-Za-z\s\.]{2,50})/,
+    /Dear\s+([A-Z][A-Za-z\s\.]{2,40}),/
+  ];
+  for(var ni=0; ni<nmPatterns.length; ni++){
+    var nm = text.match(nmPatterns[ni]);
+    if(nm && nm[1].trim().length > 2){ inv.name = nm[1].trim(); break; }
+  }
 
-  // PAN
-  var pan = text.match(/PAN\s*[:\-]\s*([A-Z]{5}[0-9]{4}[A-Z])/);
+  var pan = text.match(/([A-Z]{5}[0-9]{4}[A-Z])/);
   if(pan) inv.pan = pan[1];
 
-  // Date
-  var dt = text.match(/(\d{1,2}[\/\-]\w{3,9}[\/\-]\d{4})/);
-  if(dt) inv.date = dt[1];
+  var dtP = [
+    /(\d{1,2}[\-\/]\w{3,9}[\-\/]\d{4})/,
+    /(\d{2}\/\d{2}\/\d{4})/,
+    /([A-Za-z]+ \d{4})/
+  ];
+  for(var di=0; di<dtP.length; di++){
+    var dm = text.match(dtP[di]);
+    if(dm){ inv.date = dm[1]; break; }
+  }
 
-  // Fund blocks — CAMS uses "Folio No:" pattern
-  var lines = text.split('\n');
-  var currentFund = null;
+  // Split text into lines for line-by-line parsing
+  var lines = text.split(/\n|\r\n?/);
+  var i = 0;
 
-  for(var i=0; i<lines.length; i++){
+  while(i < lines.length){
     var line = lines[i].trim();
-    if(!line) continue;
 
-    // Folio line signals new fund
-    var folioMatch = line.match(/Folio\s*(?:No\.?|Number)?\s*[:\-]?\s*(\d[\d\/\s]+)/i);
+    // Detect folio line — marks start of a fund block
+    var folioMatch = line.match(/Folio\s*(?:No\.?|Number)?\s*[:\-]?\s*([\w\/]+)/i);
+    if(!folioMatch && line.match(/FOLIO/i)){
+      folioMatch = line.match(/FOLIO[^:]*:\s*([\w\/]+)/i);
+    }
+
     if(folioMatch){
-      if(currentFund) funds.push(currentFund);
-      // Fund name is usually on the previous non-empty line
+      var folio = folioMatch[1].trim();
+      // Fund name: search previous non-empty lines (up to 5 back)
       var fname = '';
-      for(var j=i-1; j>=Math.max(0,i-5); j--){
+      for(var j = i-1; j >= Math.max(0, i-6); j--){
         var prev = lines[j].trim();
-        if(prev && prev.length > 5 && !/folio/i.test(prev)){
-          fname = prev.replace(/\s+/g,' '); break;
+        // Fund name: long line, contains "Fund" or ends with "Growth"/"Option"
+        if(prev.length > 10 &&
+           !prev.match(/^(Date|Transaction|Amount|Units|NAV|Value|Balance|Pan|KYC|PAN)/i) &&
+           !prev.match(/^\d/) &&
+           !prev.match(/Folio/i)){
+          fname = prev;
+          break;
         }
       }
-      currentFund = {
-        name: fname, folio: folioMatch[1].trim(),
+
+      var fund = {
+        name: fname, folio: folio,
         units:0, nav:0, value:0, invested:0, gain:0, flagged:false
       };
-    }
 
-    // Closing balance
-    if(currentFund && /closing\s+balance/i.test(line)){
-      var nums = line.match(/[\d,]+\.[\d]+/g);
-      if(nums && nums.length >= 3){
-        currentFund.units = parseFloat(nums[0].replace(/,/g,''));
-        currentFund.nav   = parseFloat(nums[1].replace(/,/g,''));
-        currentFund.value = parseFloat(nums[2].replace(/,/g,''));
+      // Look ahead for closing balance (up to 30 lines)
+      for(var k = i+1; k < Math.min(lines.length, i+35); k++){
+        var kl = lines[k].trim();
+
+        // Closing balance line
+        if(/closing\s+balance/i.test(kl)){
+          // Extract all numbers from this line and next 2 lines
+          var numText = kl;
+          if(k+1 < lines.length) numText += ' ' + lines[k+1].trim();
+          if(k+2 < lines.length) numText += ' ' + lines[k+2].trim();
+          var nums = numText.match(/[\d,]+\.[\d]{2,4}/g);
+          if(nums && nums.length >= 2){
+            var cleaned = nums.map(function(n){ return parseFloat(n.replace(/,/g,'')); });
+            // Units: usually < 100000 and has 3 decimal places
+            // NAV: usually between 5-10000
+            // Value: largest number
+            cleaned.sort(function(a,b){return a-b;});
+            if(cleaned.length >= 3){
+              // Try to identify: units (middle-ish), nav (smallish), value (largest)
+              fund.units = cleaned[0];
+              fund.nav   = cleaned[1];
+              fund.value = cleaned[cleaned.length-1];
+            } else if(cleaned.length === 2){
+              fund.units = cleaned[0];
+              fund.value = cleaned[1];
+            }
+          }
+          break;
+        }
+
+        // Also catch "Market Value" pattern
+        if(/market\s+value|current\s+value/i.test(kl)){
+          var mv = kl.match(/([\d,]+\.[\d]{2})/g);
+          if(mv) fund.value = parseFloat(mv[mv.length-1].replace(/,/g,''));
+        }
+
+        // Unrealised gain
+        if(/unrealised|gain.*loss|profit.*loss/i.test(kl)){
+          var gm = kl.match(/([\-\d,]+\.[\d]{2})/);
+          if(gm) fund.gain = parseFloat(gm[1].replace(/,/g,''));
+        }
+
+        // If we hit next folio, stop
+        if(k > i+2 && /Folio/i.test(kl)) break;
       }
-    }
 
-    // Unrealised gain
-    if(currentFund && /unrealised\s+gain/i.test(line)){
-      var gn = line.match(/[\-]?[\d,]+\.[\d]+/);
-      if(gn) currentFund.gain = parseFloat(gn[0].replace(/,/g,''));
+      if(fund.value > 0) fund.invested = fund.value - fund.gain;
+      if(!fund.name || fund.units===0 || fund.nav===0 || fund.value===0) fund.flagged = true;
+      funds.push(fund);
     }
+    i++;
   }
-  if(currentFund) funds.push(currentFund);
 
-  // Flag incomplete entries
-  funds.forEach(function(f){
-    if(!f.units || !f.nav || !f.value || !f.name) f.flagged = true;
-    if(f.value > 0 && f.gain) f.invested = f.value - f.gain;
-  });
-
-  return { investor: inv, funds: funds };
+  return { investor:inv, funds:funds };
 }
 
-// ── PARSER 2: KFintech ─────────────────────────────────────
 function anlParseKFin(text){
   var inv = { name:'', pan:'', date:'' };
   var funds = [];
 
-  var nm = text.match(/Name\s*[:\-]\s*([A-Z][A-Za-z\s]{2,50})/);
+  var nm = text.match(/Name\s*[:\-]\s*([A-Z][A-Za-z\s\.]{2,50})/);
+  if(!nm) nm = text.match(/([A-Z][A-Z\s]{5,40})\s+PAN/);
   if(nm) inv.name = nm[1].trim();
   var pan = text.match(/([A-Z]{5}[0-9]{4}[A-Z])/);
   if(pan) inv.pan = pan[1];
-  var dt = text.match(/(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4})/);
+  var dt = text.match(/(\d{2}[\/\-]\d{2}[\/\-]\d{4})/);
   if(dt) inv.date = dt[1];
 
-  var lines = text.split('\n');
-  var currentFund = null;
+  var lines = text.split(/\n|\r\n?/);
+  var i = 0;
 
-  for(var i=0; i<lines.length; i++){
+  while(i < lines.length){
     var line = lines[i].trim();
-    // KFin uses "FOLIO NO :" (uppercase)
-    var folioM = line.match(/FOLIO\s+NO\s*[:\-]\s*(\w+)/i);
-    if(folioM){
-      if(currentFund) funds.push(currentFund);
+    // KFin uses "FOLIO NO :" uppercase
+    var fm = line.match(/FOLIO\s+NO\s*[:\-]\s*([\w\/]+)/i);
+    if(!fm) fm = line.match(/Folio\s*[:\-]\s*([\w\/]+)/i);
+
+    if(fm){
+      var folio = fm[1];
       var fname = '';
-      for(var j=i-1; j>=Math.max(0,i-5); j--){
+      for(var j = i-1; j >= Math.max(0, i-6); j--){
         var prev = lines[j].trim();
-        if(prev && prev.length > 5 && !/folio/i.test(prev)){
-          fname = prev.replace(/\s+/g,' '); break;
+        if(prev.length > 8 && !/^(FOLIO|PAN|Date|Txn|Balance)/i.test(prev) && !/^\d/.test(prev)){
+          fname = prev; break;
         }
       }
-      currentFund = {
-        name: fname, folio: folioM[1],
-        units:0, nav:0, value:0, invested:0, gain:0, flagged:false
-      };
-    }
 
-    // KFin closing: "Closing Balance as on DD/MM/YYYY"
-    if(currentFund && /closing\s+balance/i.test(line)){
-      var nums = line.match(/[\d,]+\.[\d]+/g);
-      if(nums && nums.length >= 3){
-        currentFund.units = parseFloat(nums[0].replace(/,/g,''));
-        currentFund.nav   = parseFloat(nums[1].replace(/,/g,''));
-        currentFund.value = parseFloat(nums[2].replace(/,/g,''));
+      var fund = {name:fname, folio:folio, units:0, nav:0, value:0, invested:0, gain:0, flagged:false};
+
+      for(var k = i+1; k < Math.min(lines.length, i+35); k++){
+        var kl = lines[k].trim();
+        if(/closing\s+balance/i.test(kl)){
+          var numText = kl + ' ' + (lines[k+1]||'') + ' ' + (lines[k+2]||'');
+          var nums = numText.match(/[\d,]+\.[\d]{2,4}/g);
+          if(nums && nums.length >= 2){
+            var cl = nums.map(function(n){return parseFloat(n.replace(/,/g,''));}).sort(function(a,b){return a-b;});
+            if(cl.length>=3){fund.units=cl[0];fund.nav=cl[1];fund.value=cl[cl.length-1];}
+            else if(cl.length===2){fund.units=cl[0];fund.value=cl[1];}
+          }
+          break;
+        }
+        if(/net\s+gain|profit\s+loss/i.test(kl)){
+          var gm=kl.match(/([\-\d,]+\.[\d]{2})/);
+          if(gm) fund.gain=parseFloat(gm[1].replace(/,/g,''));
+        }
+        if(k>i+2 && /FOLIO/i.test(kl)) break;
       }
-    }
 
-    if(currentFund && /net\s+gain/i.test(line)){
-      var gn = line.match(/[\-]?[\d,]+\.[\d]+/);
-      if(gn) currentFund.gain = parseFloat(gn[0].replace(/,/g,''));
+      if(fund.value>0) fund.invested=fund.value-fund.gain;
+      if(!fund.name||fund.units===0||fund.value===0) fund.flagged=true;
+      funds.push(fund);
     }
+    i++;
   }
-  if(currentFund) funds.push(currentFund);
-
-  funds.forEach(function(f){
-    if(!f.units || !f.nav || !f.value || !f.name) f.flagged = true;
-    if(f.value > 0 && f.gain) f.invested = f.value - f.gain;
-  });
-
-  return { investor: inv, funds: funds };
+  return {investor:inv, funds:funds};
 }
 
-// ── PARSER 3: NSDL/CDSL ────────────────────────────────────
 function anlParseNSDL(text){
-  // NSDL/CDSL: First parse MF section, then equity section
-  var mfSection = text;
-  var equitySection = '';
-
-  // Split at equity section marker
-  var equityIdx = text.search(/EQUITY\s+HOLDING|DEMAT\s+HOLDING/i);
-  if(equityIdx > 0){
-    mfSection     = text.substring(0, equityIdx);
-    equitySection = text.substring(equityIdx);
-  }
-
-  // Parse MF using CAMS-like approach
-  var result = anlParseCAMS(mfSection);
-
-  // Parse equity holdings (bonus)
+  var mfIdx = text.search(/MUTUAL\s+FUND/i);
+  var eqIdx = text.search(/EQUITY\s+HOLD|DEMAT\s+HOLD/i);
+  var mfText = mfIdx>=0 ? text.substring(mfIdx, eqIdx>0?eqIdx:text.length) : text;
+  var result = anlParseCAMS(mfText);
   result.equityHoldings = [];
-  if(equitySection){
-    var eLines = equitySection.split('\n');
-    eLines.forEach(function(line){
+  if(eqIdx>0){
+    var eqLines = text.substring(eqIdx).split(/\n|\r\n?/);
+    eqLines.forEach(function(line){
       var nums = line.match(/[\d,]+\.?\d*/g);
-      if(nums && nums.length >= 3 && line.length > 20){
+      if(nums && nums.length>=2 && line.length>20 && !/^(ISIN|Company|Qty)/i.test(line)){
         result.equityHoldings.push({
-          name: line.substring(0, Math.min(50, line.indexOf(nums[0]))).trim(),
-          qty: parseFloat(nums[0].replace(/,/g,'')),
+          name: line.substring(0,Math.min(50,line.length)).trim(),
           value: parseFloat(nums[nums.length-1].replace(/,/g,''))
         });
       }
     });
   }
-
   return result;
 }
+
+
 
 // ── SHOW VERIFICATION SCREEN ───────────────────────────────
 function anlShowVerification(){
