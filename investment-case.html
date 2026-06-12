@@ -746,6 +746,41 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
   #analyse-mode-section .no-print{display:none!important;}
   .anl-report-page{page-break-after:always;}
   .anl-report-page:last-child{page-break-after:avoid;}
+
+  /* ── BOLD BLACK everywhere in print — no grey/faint ── */
+  #anl-report-body *{
+    -webkit-print-color-adjust:exact!important;
+    print-color-adjust:exact!important;
+  }
+  #anl-report-body div[style*="opacity"],
+  #anl-report-body span[style*="opacity"]{
+    opacity:1!important;
+    color:#000!important;
+    font-weight:700!important;
+  }
+  #anl-report-body div[style*="color:#7a7898"],
+  #anl-report-body span[style*="color:#7a7898"],
+  #anl-report-body div[style*="color:var(--t4)"],
+  #anl-report-body div[style*="color:var(--ink3)"],
+  #anl-report-body div[style*="color:var(--ink4)"]{
+    color:#000!important;
+    font-weight:700!important;
+  }
+  /* Fund name, folio, labels — all black bold */
+  #anl-report-body .anl-fund-name,
+  #anl-report-body [style*="font-size:10px"],
+  #anl-report-body [style*="font-size:11px"],
+  #anl-report-body [style*="font-size:12px"]{
+    color:#000!important;
+    font-weight:700!important;
+  }
+  /* Keep colored backgrounds but text always black */
+  #anl-report-body [style*="background:#f7f6ff"] *,
+  #anl-report-body [style*="background:var(--bg)"] *,
+  #anl-report-body [style*="background:#f0eeff"] *{
+    color:#000!important;
+    font-weight:700!important;
+  }
 }
 
 
@@ -866,15 +901,15 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
       <!-- Investor details -->
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px;padding:16px;background:var(--p4);border-radius:10px;">
         <div>
-          <div style="font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;margin-bottom:5px;">Investor Name</div>
+          <div style="font-size:10px;font-weight:800;color:#000;text-transform:uppercase;margin-bottom:5px;">Investor Name</div>
           <input class="anl-inp" id="anl-inv-name" type="text" placeholder="Name from CAS">
         </div>
         <div>
-          <div style="font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;margin-bottom:5px;">PAN</div>
+          <div style="font-size:10px;font-weight:800;color:#000;text-transform:uppercase;margin-bottom:5px;">PAN</div>
           <input class="anl-inp" id="anl-inv-pan" type="text" placeholder="XXXXX0000X">
         </div>
         <div>
-          <div style="font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;margin-bottom:5px;">Statement Date</div>
+          <div style="font-size:10px;font-weight:800;color:#000;text-transform:uppercase;margin-bottom:5px;">Statement Date</div>
           <input class="anl-inp" id="anl-inv-date" type="text" placeholder="DD Mon YYYY">
         </div>
       </div>
@@ -992,24 +1027,24 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
     <!-- ── METRICS + GENERATE BUTTON (Fix 4: button in same row) ── -->
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:12px;margin-bottom:14px;align-items:stretch;">
       <div style="background:#fff;border-radius:10px;border:1.5px solid var(--g4);padding:12px 14px;">
-        <div style="font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Lumpsum allocated</div>
+        <div style="font-size:10px;font-weight:800;color:#000;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Lumpsum allocated</div>
         <div style="font-size:18px;font-weight:800;color:var(--p1);" id="m-lump-alloc">₹0</div>
         <div style="height:4px;background:var(--g4);border-radius:3px;margin:5px 0;overflow:hidden;"><div id="m-lump-prog" style="height:100%;border-radius:3px;background:var(--p1);width:0%;transition:width .3s;"></div></div>
         <div style="font-size:10px;color:var(--t5);" id="m-lump-sub">0 of 0</div>
       </div>
       <div style="background:#fff;border-radius:10px;border:1.5px solid var(--g4);padding:12px 14px;">
-        <div style="font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">SIP allocated /month</div>
+        <div style="font-size:10px;font-weight:800;color:#000;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">SIP allocated /month</div>
         <div style="font-size:18px;font-weight:800;color:#3a7a12;" id="m-sip-alloc">₹0</div>
         <div style="height:4px;background:var(--g4);border-radius:3px;margin:5px 0;overflow:hidden;"><div id="m-sip-prog" style="height:100%;border-radius:3px;background:#6aaa1e;width:0%;transition:width .3s;"></div></div>
         <div style="font-size:10px;color:var(--t5);" id="m-sip-sub">0 of 0</div>
       </div>
       <div style="background:#fff;border-radius:10px;border:1.5px solid var(--g4);padding:12px 14px;">
-        <div style="font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Lumpsum funds</div>
+        <div style="font-size:10px;font-weight:800;color:#000;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Lumpsum funds</div>
         <div style="font-size:18px;font-weight:800;color:var(--t1);" id="m-lump-cnt">0</div>
         <div style="font-size:10px;color:var(--t5);margin-top:5px;" id="m-lump-cnt-sub">0 funds</div>
       </div>
       <div style="background:#fff;border-radius:10px;border:1.5px solid var(--g4);padding:12px 14px;">
-        <div style="font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">SIP funds</div>
+        <div style="font-size:10px;font-weight:800;color:#000;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">SIP funds</div>
         <div style="font-size:18px;font-weight:800;color:var(--t1);" id="m-sip-cnt">0</div>
         <div style="font-size:10px;color:var(--t5);margin-top:5px;" id="m-sip-cnt-sub">0 funds</div>
       </div>
@@ -3425,7 +3460,7 @@ function stpBuildBlueprint(){
 
 
 function anlShowRaw(){
-  var raw = ANL.rawTextPreview || ANL.rawText.substring(0,3000) || 'No text extracted';
+  var raw = ANL.rawTextPreview || ANL.rawText.substring(0,10000) || 'No text extracted';
   var w = window.open('','_blank','width=700,height=600');
   w.document.write('<html><head><title>CAS Raw Text</title></head><body>'+
     '<pre style="font-size:11px;font-family:monospace;white-space:pre-wrap;padding:16px;">'+
@@ -4469,7 +4504,7 @@ function anlGenerateReport(){
   ];
   metrics.forEach(function(m){
     report += '<div style="background:rgba(255,255,255,.15);border-radius:10px;padding:14px;">';
-    report += '<div style="font-size:10px;opacity:.75;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;">'+m.l+'</div>';
+    report += '<div style="font-size:10px;font-weight:800;color:#000;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;">'+m.l+'</div>';
     report += '<div style="font-size:20px;font-weight:800;color:'+m.c+';">'+m.v+'</div></div>';
   });
   report += '</div></div>'; // end hero
@@ -4525,7 +4560,7 @@ function anlGenerateReport(){
     var gc = gainColor(f.gainPct);
     report += '<div style="display:grid;grid-template-columns:3fr 80px 80px 100px 100px 80px;gap:0;padding:10px 16px;border-bottom:1px solid #f0eeff;background:'+bg+';">';
     report += '<div><div style="font-size:12px;font-weight:700;color:#000;">'+anlEsc(f.name)+'</div>';
-    if(f.folio) report += '<div style="font-size:10px;color:#7a7898;">Folio: '+anlEsc(f.folio)+'</div></div>';
+    if(f.folio) report += '<div style="font-size:10px;color:#000;font-weight:700;">Folio: '+anlEsc(f.folio)+'</div></div>';
     else report += '</div>';
     report += '<div style="font-size:11px;color:#3c3197;font-weight:600;padding-top:2px;">'+f.category+'</div>';
     report += '<div style="font-size:12px;font-weight:600;color:#000;">'+fmtI(f.units)+'</div>';
@@ -4625,7 +4660,7 @@ function anlGenerateReport(){
     {l:'Risk Level',v:riskLevel+' Risk'},
   ].forEach(function(m){
     report += '<div style="background:rgba(255,255,255,.12);border-radius:8px;padding:12px;">';
-    report += '<div style="font-size:10px;opacity:.7;text-transform:uppercase;margin-bottom:4px;">'+m.l+'</div>';
+    report += '<div style="font-size:10px;font-weight:800;color:#000;text-transform:uppercase;margin-bottom:4px;">'+m.l+'</div>';
     report += '<div style="font-size:14px;font-weight:800;">'+anlEsc(m.v)+'</div></div>';
   });
   report += '</div>';
