@@ -750,6 +750,9 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
 
 
 @keyframes spin{to{transform:rotate(360deg);}}
+
+#analyse-mode-section{display:none;}
+#analyse-mode-section.anl-show{display:block;}
 </style>
 </head>
 <body>
@@ -800,6 +803,103 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════════════════
+     ANALYSE MY PORTFOLIO — INDEPENDENT SECTION
+═══════════════════════════════════════════════════════ -->
+<div id="analyse-mode-section">
+  <div style="max-width:860px;margin:0 auto;">
+
+    <!-- Back button -->
+    <div style="padding:14px 0 4px;">
+      <button onclick="setMode('sip')" style="background:none;border:none;color:var(--p1);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fh);padding:0;">← Back to Mode Selection</button>
+    </div>
+
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#e65c00,#f59e0b);border-radius:14px;padding:22px 26px;color:#fff;margin-bottom:20px;">
+      <div style="font-family:var(--fp);font-size:24px;margin-bottom:4px;">🔍 Analyse My Portfolio</div>
+      <div style="font-size:12px;opacity:.8;">Upload your CAS statement · Auto-detect CAMS / KFintech / NSDL / CDSL · Full portfolio assessment</div>
+    </div>
+
+    <!-- STEP 1: Upload -->
+    <div class="anl-card" id="anl-upload-card">
+      <div class="anl-section-hdr">Step 1 — Upload CAS Statement</div>
+      
+      <div class="anl-upload-box" id="anl-drop-zone" onclick="document.getElementById('anl-file-input').click()">
+        <div style="font-size:40px;margin-bottom:12px;">📄</div>
+        <div id="anl-upload-label" style="font-size:15px;font-weight:700;color:var(--p1);">Click to upload your CAS PDF</div>
+        <div style="font-size:12px;color:var(--t4);margin-top:6px;">Supports CAMS · KFintech · NSDL · CDSL · Password protected PDFs</div>
+        <input type="file" id="anl-file-input" accept=".pdf" style="display:none;" onchange="anlFileSelected(this)">
+      </div>
+
+      <!-- Password field — shows only if needed -->
+      <div id="anl-pwd-row" style="display:none;margin-top:16px;">
+        <div style="font-size:13px;font-weight:700;color:var(--p2);margin-bottom:8px;">🔒 This PDF is password protected</div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <input type="password" id="anl-pwd" placeholder="Enter CAS password..." 
+            style="flex:1;max-width:320px;padding:11px 14px;border:1.5px solid #afa9ec;border-radius:9px;font-size:14px;font-family:var(--fh);outline:none;">
+          <div style="font-size:11px;color:var(--t4);">Password stays in your browser — never sent anywhere</div>
+        </div>
+      </div>
+
+      <div id="anl-status-msg"></div>
+
+      <div style="margin-top:18px;display:flex;gap:12px;">
+        <button class="anl-btn" id="anl-assess-btn" onclick="anlAssess()" disabled>
+          🔍 Assess My Portfolio
+        </button>
+        <div id="anl-spinner" style="display:none;align-items:center;gap:8px;font-size:13px;color:var(--p1);font-weight:600;">
+          <div style="width:20px;height:20px;border:2.5px solid var(--p4);border-top-color:var(--p1);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+          Reading your CAS file...
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2: Verification / Manual Override -->
+    <div class="anl-card" id="anl-verify-card" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div class="anl-section-hdr" style="margin-bottom:0;">Step 2 — Verify Extracted Data</div>
+        <span id="anl-cas-type-badge" style="padding:4px 14px;border-radius:20px;font-size:11px;font-weight:800;background:var(--p4);color:var(--p1);">CAMS</span>
+      </div>
+      <div id="anl-verify-status" class="anl-status info" style="display:none;"></div>
+      
+      <!-- Investor details -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px;padding:16px;background:var(--p4);border-radius:10px;">
+        <div>
+          <div style="font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;margin-bottom:5px;">Investor Name</div>
+          <input class="anl-inp" id="anl-inv-name" type="text" placeholder="Name from CAS">
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;margin-bottom:5px;">PAN</div>
+          <input class="anl-inp" id="anl-inv-pan" type="text" placeholder="XXXXX0000X">
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;margin-bottom:5px;">Statement Date</div>
+          <input class="anl-inp" id="anl-inv-date" type="text" placeholder="DD Mon YYYY">
+        </div>
+      </div>
+
+      <!-- Fund rows table header -->
+      <div style="display:grid;grid-template-columns:2fr 100px 90px 110px 50px;gap:10px;padding:8px 14px;background:var(--p1);border-radius:8px 8px 0 0;font-size:10px;font-weight:800;color:#fff;text-transform:uppercase;">
+        <div>Fund Name</div><div style="text-align:center;">Units</div><div style="text-align:center;">NAV ₹</div><div style="text-align:right;">Value ₹</div><div></div>
+      </div>
+      <div id="anl-fund-rows" style="border:1.5px solid var(--bd);border-top:none;border-radius:0 0 8px 8px;overflow:hidden;"></div>
+
+      <div style="margin-top:12px;display:flex;gap:10px;">
+        <button onclick="anlAddFundRow()" style="padding:9px 16px;background:transparent;border:1.5px dashed #afa9ec;color:var(--p1);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fh);">+ Add Fund Manually</button>
+      </div>
+
+      <div style="margin-top:20px;display:flex;gap:12px;">
+        <button class="anl-btn" onclick="anlGenerateReport()">📊 Generate Analysis Report →</button>
+        <button class="anl-btn-sec" onclick="anlReset()">↺ Start Over</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Report Output -->
+    <div id="anl-report-output" style="display:none;"></div>
+
+  </div>
+</div>
+<!-- END ANALYSE SECTION -->
 <div id="wiz-section">
 <div class="wiz">
   <div class="steps" id="steps-row"></div>
@@ -1351,37 +1451,29 @@ const ACT_SUB={};
 // ══ MODE ══
 function setMode(m){
   ST.mode=m;
-  // Highlight active mode card
+  // Highlight active card
   ["sip","stp","custom","analyse"].forEach(function(x){
     var el=document.getElementById("mb-"+x);
     if(el) el.classList.toggle("active",x===m);
   });
-  // ── ALL 3 SECTIONS INDEPENDENT ──────────────────────────
-  var wizSection = document.getElementById("wiz-section");
-  var stpSection = document.getElementById("stp-mode-section");
-  var cmbSection = document.getElementById("cmb-mode-section");
-  var oldCmb     = document.getElementById("custom-section");
-
-  // Hide all first
-  if(wizSection) wizSection.style.display="none";
-  if(stpSection) stpSection.style.display="none";
-  if(cmbSection) cmbSection.style.display="none";
-  if(oldCmb)     oldCmb.style.display="none";
-
-  // Show only the selected one
-  if(m==="sip"){
-    if(wizSection) wizSection.style.display="";
-  } else if(m==="stp"){
-    if(stpSection){ stpSection.style.display="block"; }
-    setTimeout(function(){ stpInit(); window.scrollTo(0,0); },50);
-  } else if(m==="custom"){
-    if(cmbSection){ cmbSection.style.display="block"; }
-    setTimeout(function(){ cmbInit(); window.scrollTo(0,0); },50);
-  } else if(m==="analyse"){
-    var anlSection = document.getElementById("analyse-mode-section");
-    if(anlSection){ anlSection.style.display="block"; }
-    window.scrollTo(0,0);
-  }
+  // Hide ALL sections first
+  var sections=["wiz-section","stp-mode-section","cmb-mode-section","analyse-mode-section","custom-section"];
+  sections.forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.style.display="none";
+  });
+  // Show selected section only
+  var show={
+    "sip":"wiz-section",
+    "stp":"stp-mode-section",
+    "custom":"cmb-mode-section",
+    "analyse":"analyse-mode-section"
+  };
+  var target=document.getElementById(show[m]);
+  if(target) target.style.display="block";
+  window.scrollTo(0,0);
+  if(m==="stp") setTimeout(function(){stpInit();},50);
+  if(m==="custom") setTimeout(function(){cmbInit();},50);
 }
 
 // ══ STEPS ══
@@ -4461,102 +4553,5 @@ function anlExtractAMC(fundName){
 </script>
 
 
-<!-- ═══════════════════════════════════════════════════════
-     ANALYSE MY PORTFOLIO — INDEPENDENT SECTION
-═══════════════════════════════════════════════════════ -->
-<div id="analyse-mode-section">
-  <div style="max-width:860px;margin:0 auto;">
-
-    <!-- Back button -->
-    <div style="padding:14px 0 4px;">
-      <button onclick="setMode('sip')" style="background:none;border:none;color:var(--p1);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fh);padding:0;">← Back to Mode Selection</button>
-    </div>
-
-    <!-- Header -->
-    <div style="background:linear-gradient(135deg,#e65c00,#f59e0b);border-radius:14px;padding:22px 26px;color:#fff;margin-bottom:20px;">
-      <div style="font-family:var(--fp);font-size:24px;margin-bottom:4px;">🔍 Analyse My Portfolio</div>
-      <div style="font-size:12px;opacity:.8;">Upload your CAS statement · Auto-detect CAMS / KFintech / NSDL / CDSL · Full portfolio assessment</div>
-    </div>
-
-    <!-- STEP 1: Upload -->
-    <div class="anl-card" id="anl-upload-card">
-      <div class="anl-section-hdr">Step 1 — Upload CAS Statement</div>
-      
-      <div class="anl-upload-box" id="anl-drop-zone" onclick="document.getElementById('anl-file-input').click()">
-        <div style="font-size:40px;margin-bottom:12px;">📄</div>
-        <div id="anl-upload-label" style="font-size:15px;font-weight:700;color:var(--p1);">Click to upload your CAS PDF</div>
-        <div style="font-size:12px;color:var(--t4);margin-top:6px;">Supports CAMS · KFintech · NSDL · CDSL · Password protected PDFs</div>
-        <input type="file" id="anl-file-input" accept=".pdf" style="display:none;" onchange="anlFileSelected(this)">
-      </div>
-
-      <!-- Password field — shows only if needed -->
-      <div id="anl-pwd-row" style="display:none;margin-top:16px;">
-        <div style="font-size:13px;font-weight:700;color:var(--p2);margin-bottom:8px;">🔒 This PDF is password protected</div>
-        <div style="display:flex;gap:10px;align-items:center;">
-          <input type="password" id="anl-pwd" placeholder="Enter CAS password..." 
-            style="flex:1;max-width:320px;padding:11px 14px;border:1.5px solid #afa9ec;border-radius:9px;font-size:14px;font-family:var(--fh);outline:none;">
-          <div style="font-size:11px;color:var(--t4);">Password stays in your browser — never sent anywhere</div>
-        </div>
-      </div>
-
-      <div id="anl-status-msg"></div>
-
-      <div style="margin-top:18px;display:flex;gap:12px;">
-        <button class="anl-btn" id="anl-assess-btn" onclick="anlAssess()" disabled>
-          🔍 Assess My Portfolio
-        </button>
-        <div id="anl-spinner" style="display:none;align-items:center;gap:8px;font-size:13px;color:var(--p1);font-weight:600;">
-          <div style="width:20px;height:20px;border:2.5px solid var(--p4);border-top-color:var(--p1);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
-          Reading your CAS file...
-        </div>
-      </div>
-    </div>
-
-    <!-- STEP 2: Verification / Manual Override -->
-    <div class="anl-card" id="anl-verify-card" style="display:none;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-        <div class="anl-section-hdr" style="margin-bottom:0;">Step 2 — Verify Extracted Data</div>
-        <span id="anl-cas-type-badge" style="padding:4px 14px;border-radius:20px;font-size:11px;font-weight:800;background:var(--p4);color:var(--p1);">CAMS</span>
-      </div>
-      <div id="anl-verify-status" class="anl-status info" style="display:none;"></div>
-      
-      <!-- Investor details -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px;padding:16px;background:var(--p4);border-radius:10px;">
-        <div>
-          <div style="font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;margin-bottom:5px;">Investor Name</div>
-          <input class="anl-inp" id="anl-inv-name" type="text" placeholder="Name from CAS">
-        </div>
-        <div>
-          <div style="font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;margin-bottom:5px;">PAN</div>
-          <input class="anl-inp" id="anl-inv-pan" type="text" placeholder="XXXXX0000X">
-        </div>
-        <div>
-          <div style="font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;margin-bottom:5px;">Statement Date</div>
-          <input class="anl-inp" id="anl-inv-date" type="text" placeholder="DD Mon YYYY">
-        </div>
-      </div>
-
-      <!-- Fund rows table header -->
-      <div style="display:grid;grid-template-columns:2fr 100px 90px 110px 50px;gap:10px;padding:8px 14px;background:var(--p1);border-radius:8px 8px 0 0;font-size:10px;font-weight:800;color:#fff;text-transform:uppercase;">
-        <div>Fund Name</div><div style="text-align:center;">Units</div><div style="text-align:center;">NAV ₹</div><div style="text-align:right;">Value ₹</div><div></div>
-      </div>
-      <div id="anl-fund-rows" style="border:1.5px solid var(--bd);border-top:none;border-radius:0 0 8px 8px;overflow:hidden;"></div>
-
-      <div style="margin-top:12px;display:flex;gap:10px;">
-        <button onclick="anlAddFundRow()" style="padding:9px 16px;background:transparent;border:1.5px dashed #afa9ec;color:var(--p1);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fh);">+ Add Fund Manually</button>
-      </div>
-
-      <div style="margin-top:20px;display:flex;gap:12px;">
-        <button class="anl-btn" onclick="anlGenerateReport()">📊 Generate Analysis Report →</button>
-        <button class="anl-btn-sec" onclick="anlReset()">↺ Start Over</button>
-      </div>
-    </div>
-
-    <!-- STEP 3: Report Output -->
-    <div id="anl-report-output" style="display:none;"></div>
-
-  </div>
-</div>
-<!-- END ANALYSE SECTION -->
 </body>
 </html>
