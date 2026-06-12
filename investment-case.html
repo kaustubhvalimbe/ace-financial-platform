@@ -743,41 +743,61 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
 .anl-section-hdr{font-family:var(--fp,'Playfair Display',serif);font-size:20px;color:var(--p1,#3c3197);margin-bottom:14px;}
 /* Report print styles */
 @media print{
-  #analyse-mode-section .no-print{display:none!important;}
-  .anl-report-page{page-break-after:always;}
-  .anl-report-page:last-child{page-break-after:avoid;}
+  /* ── HIDE EVERYTHING EXCEPT THE REPORT ── */
+  body > *:not(#analyse-mode-section){ display:none!important; }
+  nav, .topbar, .mode-bar, #wiz-section, 
+  #stp-mode-section, #cmb-mode-section,
+  .no-print, .anl-btn, .anl-btn-sec,
+  #anl-upload-card, #anl-verify-card { display:none!important; }
 
-  /* ── BOLD BLACK everywhere in print — no grey/faint ── */
-  #anl-report-body *{
-    -webkit-print-color-adjust:exact!important;
+  /* ── SHOW REPORT CLEANLY ── */
+  #analyse-mode-section{ display:block!important; padding:0!important; }
+  #anl-report-output{ display:block!important; }
+  #anl-report-body{ max-width:100%!important; margin:0!important; padding:0!important; }
+
+  /* ── PAGE BREAKS ── */
+  .anl-report-page{ 
+    page-break-after:always!important; 
+    break-after:always!important;
+    page-break-inside:avoid;
+    margin-bottom:0!important;
+  }
+  .anl-report-page:last-child{ 
+    page-break-after:avoid!important; 
+    break-after:avoid!important;
+  }
+
+  /* ── PRINT BACKGROUND COLORS ── */
+  * { 
+    -webkit-print-color-adjust:exact!important; 
     print-color-adjust:exact!important;
+    color-adjust:exact!important;
   }
-  #anl-report-body div[style*="opacity"],
-  #anl-report-body span[style*="opacity"]{
+
+  /* ── ALL TEXT BLACK BOLD (no grey/faint) ── */
+  #anl-report-body [style*="color:#7a7898"],
+  #anl-report-body [style*="opacity:.7"],
+  #anl-report-body [style*="opacity:.75"],
+  #anl-report-body [style*="opacity:.8"],
+  #anl-report-body [style*="opacity:.6"],
+  #anl-report-body [style*="opacity:.85"]{
+    color:#000!important;
     opacity:1!important;
-    color:#000!important;
     font-weight:700!important;
   }
-  #anl-report-body div[style*="color:#7a7898"],
-  #anl-report-body span[style*="color:#7a7898"],
-  #anl-report-body div[style*="color:var(--t4)"],
-  #anl-report-body div[style*="color:var(--ink3)"],
-  #anl-report-body div[style*="color:var(--ink4)"]{
-    color:#000!important;
-    font-weight:700!important;
+  /* White text inside colored hero sections stays white */
+  [style*="background:linear-gradient"] *,
+  [style*="background:#3c3197"] *,
+  [style*="background:#e65c00"] *,
+  [style*="background:#065f46"] *{
+    color:#fff!important;
+    opacity:1!important;
   }
-  /* Fund name, folio, labels — all black bold */
-  #anl-report-body .anl-fund-name,
-  #anl-report-body [style*="font-size:10px"],
-  #anl-report-body [style*="font-size:11px"],
-  #anl-report-body [style*="font-size:12px"]{
-    color:#000!important;
-    font-weight:700!important;
-  }
-  /* Keep colored backgrounds but text always black */
-  #anl-report-body [style*="background:#f7f6ff"] *,
-  #anl-report-body [style*="background:var(--bg)"] *,
-  #anl-report-body [style*="background:#f0eeff"] *{
+  /* Grey stat boxes — black text */
+  [style*="background:#f7f6ff"] *,
+  [style*="background:var(--bg)"] *,
+  [style*="background:#f0eeff"] *,
+  [style*="background:#f8fafc"] *{
     color:#000!important;
     font-weight:700!important;
   }
@@ -4484,8 +4504,8 @@ function anlGenerateReport(){
   var report = '<div id="anl-report-body" style="font-family:var(--fh,\'Plus Jakarta Sans\',sans-serif);max-width:860px;margin:0 auto;">';
 
   // ── PAGE 1: PORTFOLIO SUMMARY ───────────────────────────
-  report += '<div class="anl-report-page" style="margin-bottom:32px;">';
-  report += '<div style="background:linear-gradient(135deg,#e65c00,#f59e0b);border-radius:14px;padding:28px;color:#fff;margin-bottom:20px;">';
+  report += '<div class="anl-report-page" style="margin-bottom:0;page-break-after:always;break-after:always;">';
+  report += '<div style="background:linear-gradient(135deg,#e65c00,#f59e0b);-webkit-print-color-adjust:exact;print-color-adjust:exact;border-radius:14px;padding:28px;color:#fff;margin-bottom:20px;">';
   report += '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">';
   report += '<div><div style="font-family:var(--fp,serif);font-size:26px;margin-bottom:4px;">Portfolio Analysis Report</div>';
   report += '<div style="font-size:13px;opacity:.85;">Prepared for <strong>'+anlEsc(ANL.investor.name||'Investor')+'</strong> &nbsp;·&nbsp; Statement: '+anlEsc(ANL.investor.date||today)+'</div>';
@@ -4542,7 +4562,7 @@ function anlGenerateReport(){
   report += '</div>'; // end page 1
 
   // ── PAGE 2: FUND-WISE DETAIL ───────────────────────────
-  report += '<div class="anl-report-page" style="margin-bottom:32px;">';
+  report += '<div class="anl-report-page" style="margin-bottom:0;page-break-after:always;break-after:always;">';
   report += '<div style="background:#fff;border-radius:12px;border:1.5px solid #e4e2f0;overflow:hidden;">';
   report += '<div style="padding:16px 20px;background:#3c3197;color:#fff;">';
   report += '<div style="font-family:var(--fp,serif);font-size:20px;">Fund-wise Holdings</div>';
@@ -4572,7 +4592,7 @@ function anlGenerateReport(){
   report += '</div></div>'; // end page 2
 
   // ── PAGE 3: ASSESSMENT & RECOMMENDATIONS ──────────────
-  report += '<div class="anl-report-page" style="margin-bottom:32px;">';
+  report += '<div class="anl-report-page" style="margin-bottom:0;page-break-after:always;break-after:always;">';
 
   // Risk Analysis
   var riskScore = 0;
@@ -4648,7 +4668,7 @@ function anlGenerateReport(){
 
   // ── LAST PAGE: SIGNATURE ───────────────────────────────
   report += '<div class="anl-report-page">';
-  report += '<div style="background:linear-gradient(135deg,#2d2478,#3c3197);border-radius:14px;padding:24px 28px;color:#fff;">';
+  report += '<div style="background:linear-gradient(135deg,#2d2478,#3c3197);-webkit-print-color-adjust:exact;print-color-adjust:exact;border-radius:14px;padding:24px 28px;color:#fff;">';
   report += '<div style="font-family:var(--fp,serif);font-size:20px;margin-bottom:16px;">Report Summary</div>';
   report += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;">';
   [
