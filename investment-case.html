@@ -3489,6 +3489,40 @@ function anlShowRaw(){
   w.document.close();
 }
 
+
+function anlPrintReport(){
+  var reportEl = document.getElementById('anl-report-body');
+  if(!reportEl){ alert('Please generate the report first.'); return; }
+  var html = reportEl.innerHTML;
+  var w = window.open('','_blank');
+  var css = [
+    '*{box-sizing:border-box;margin:0;padding:0;}',
+    "body{font-family:'Plus Jakarta Sans',sans-serif;background:#fff;color:#000;font-size:13px;}",
+    '@page{margin:12mm 15mm;size:A4;}',
+    '@media print{',
+    '.ps{page-break-after:always!important;break-after:page!important;}',
+    '.ps:last-child{page-break-after:avoid!important;}',
+    '*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}',
+    '}',
+    '.ps{margin-bottom:20px;}',
+    '[style*="color:#7a7898"]{color:#000!important;font-weight:700!important;}',
+    '[style*="opacity:.7"],[style*="opacity:.6"],[style*="opacity:.75"],[style*="opacity:.8"]{opacity:1!important;}',
+    '[style*="background:linear-gradient"] *,[style*="background:#3c3197"] *,[style*="background:#e65c00"] *,[style*="background:#2d2478"] *,[style*="background:#065f46"] *{color:#fff!important;}',
+    '[style*="background:#f7f6ff"] *,[style*="background:#f8fafc"] *,[style*="background:#f0eeff"] *,[style*="background:#f4fbea"] *{color:#000!important;font-weight:700!important;}'
+  ].join('\n');
+  var doc = '<!DOCTYPE html><html><head><meta charset="UTF-8">';
+  doc += '<title>Portfolio Analysis - Ace Financial Services</title>';
+  doc += '<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">';
+  doc += '<style>' + css + '</style></head><body>';
+  doc += '<div>' + html + '</div>';
+  doc += '<script>window.onload=function(){';
+  doc += 'document.querySelectorAll(".anl-report-page").forEach(function(p){p.className="ps";});';
+  doc += 'setTimeout(function(){window.print();},800);};';
+  doc += '<\/script></body></html>';
+  w.document.write(doc);
+  w.document.close();
+}
+
 </script>
 <script>
 
@@ -4706,7 +4740,7 @@ function anlGenerateReport(){
   output.style.display = 'block';
   output.innerHTML = report +
     '<div class="no-print" style="margin-top:20px;display:flex;gap:12px;max-width:860px;margin-left:auto;margin-right:auto;">' +
-    '<button class="anl-btn" onclick="window.print()">🖨️ Save / Print Report</button>' +
+    '<button class="anl-btn" onclick="anlPrintReport()">🖨️ Save / Print Report</button>' +
     '<button class="anl-btn-sec" onclick="anlReset()">↺ Analyse Another</button>' +
     '</div>';
 
