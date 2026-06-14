@@ -4034,7 +4034,8 @@ async function anlAssess(){
 
     // Parse based on type
     var parsed;
-    if(ANL.casType === 'kfincas')    parsed = anlParseKFinCAS(fullText);
+    if(ANL.casType === 'camscas')    parsed = anlParseCAMSCAS(fullText);
+    else if(ANL.casType === 'kfincas') parsed = anlParseKFinCAS(fullText);
     else if(ANL.casType === 'halfyearly') parsed = anlParseHalfYearlyCAS(fullText);
     else if(ANL.casType === 'mfcentral') parsed = anlParseMFCentral(fullText);
     else if(ANL.casType === 'cams') parsed = anlParseCAMS(fullText);
@@ -4086,9 +4087,12 @@ function anlLoadScript(src){
 // ── CAS TYPE DETECTION ─────────────────────────────────────
 function anlDetectType(text){
   var t = text.toUpperCase();
+  // CAMS Consolidated Account Summary (email-based)
+  if(t.includes('CAMSCASWS'))
+    return 'camscas';
   // KFintech Consolidated Account Summary
-  if(t.includes('KFINCASWS') || t.includes('KFINTECH') ||
-     (t.includes('CONSOLIDATED ACCOUNT SUMMARY') && t.includes('NON-DEMAT')))
+  if(t.includes('KFINCASWS') ||
+     (t.includes('CONSOLIDATED ACCOUNT SUMMARY') && t.includes('NON-DEMAT') && !t.includes('CAMSCASWS')))
     return 'kfincas';
   // Half-Yearly CAMS CAS — tabular format with SeshPAN:
   if(t.includes('HALF YEARLY CONSOLIDATED') || t.includes('SESHPAN:') ||
@@ -4110,6 +4114,47 @@ function anlDetectType(text){
 
 // ── PARSER 1: CAMS ─────────────────────────────────────────
 
+
+// ── CAMS CONSOLIDATED ACCOUNT SUMMARY PARSER ────────────
+// ── CAMS CONSOLIDATED ACCOUNT SUMMARY PARSER ────────────
+// Format: {Folio/suffix}  {MarketValue} {CODE} - {FundName} (Non-Demat) {Units} {Date} {NAV} {CAMS|KFINTECH} {ISIN} {CostValue}
+function anlParseCAMSCAS(text){
+  var inv={name:'',pan:'',date:''};
+  var funds=[];
+
+  // Investor name — after "Email Id:" line
+  var nmM=text.match(/Email Id:[^\n\r]+[\n\r]+([A-Z][A-Z\s\.]{5,50})/);
+  if(!nmM) nmM=text.match(/GMAIL\.COM\s+([A-Z][A-Z\s]{5,50})/);
+  if(!nmM) nmM=text.match(/([A-Z]{2}[A-Z\s]{4,40})\s+S\.N\./);
+  if(nmM){ inv.name=nmM[1].trim().replace(/\s+/g,' ').replace(/\s+S\.N\..*$/,'').trim(); }
+
+  // Date: "As on 13-Jun-2026"
+  var dt=text.match(/As on\s+(\d{1,2}[-\/][A-Za-z]+-\d{4})/i);
+  if(dt) inv.date=dt[1];
+
+  // Fund rows:
+  // {Folio/N}   {MarketValue} {CODE} - {FundName} (Non[-]Demat) {Units}   {Date}   {NAV}   {CAMS|KFINTECH} {ISIN}   {CostValue}
+  var pattern='(\\d{7,15}\\/\\d+)\\s+([\\d,]+\\.\\d+)\\s+[A-Z0-9]{2,10}\\s+-\\s+([A-Za-z][A-Za-z0-9 \\-\\/\\.]+?)\\s+\\(Non[-\\s]?Demat\\)\\s+([\\d,]+\\.\\d+)\\s+\\d{2}-[A-Za-z]+-\\d{4}\\s+([\\d,]+\\.\\d+)\\s+(?:CAMS|KFINTECH)\\s+INF\\w+\\s+([\\d,]+\\.\\d+)';
+  var re=new RegExp(pattern,'g');
+  var m;
+  while((m=re.exec(text))!==null){
+    var value=parseFloat(m[2].replace(/,/g,''));
+    var units=parseFloat(m[4].replace(/,/g,''));
+    var invested=parseFloat(m[6].replace(/,/g,''));
+    if(units===0||value===0) continue;
+    // Clean folio — remove /suffix
+    var folio=m[1].split('/')[0];
+    funds.push({
+      folio:folio,
+      name:m[3].trim().replace(/\s+/g,' '),
+      units:units,
+      nav:parseFloat(m[5].replace(/,/g,'')),
+      value:value, invested:invested,
+      gain:value-invested, flagged:false
+    });
+  }
+  return{investor:inv,funds:funds};
+}
 
 // ── KFINTECH CONSOLIDATED ACCOUNT SUMMARY PARSER ───────
 function anlParseKFinCAS(text){
@@ -4465,7 +4510,7 @@ function anlShowVerification(){
 
   // Set badge
   var badge = document.getElementById('anl-cas-type-badge');
-  var typeLabels = {kfincas:'KFin CAS',halfyearly:'Half-Yearly CAS',mfcentral:'MFCentral',cams:'CAMS',kfin:'KFintech',nsdl:'NSDL/CDSL'};
+  var typeLabels = {camscas:'CAMS CAS',kfincas:'KFin CAS',halfyearly:'Half-Yearly CAS',mfcentral:'MFCentral',cams:'CAMS',kfin:'KFintech',nsdl:'NSDL/CDSL'};
   badge.textContent = typeLabels[ANL.casType] || ANL.casType.toUpperCase();
 
   // Set investor details
