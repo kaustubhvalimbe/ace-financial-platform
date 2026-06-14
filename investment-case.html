@@ -4126,7 +4126,7 @@ function anlParseCAMSCAS(text){
   var nmM=text.match(/Email Id:[^\n\r]+[\n\r]+([A-Z][A-Z\s\.]{5,50})/);
   if(!nmM) nmM=text.match(/GMAIL\.COM\s+([A-Z][A-Z\s]{5,50})/);
   if(!nmM) nmM=text.match(/([A-Z]{2}[A-Z\s]{4,40})\s+S\.N\./);
-  if(nmM){ inv.name=nmM[1].trim().replace(/\s+/g,' ').replace(/\s+S\.N\..*$/,'').trim(); }
+  if(nmM){ var n=nmM[1].trim().replace(/\s+/g,' '); inv.name=n.replace(/\s+S\.N\..*$/,'').trim(); }
 
   // Date: "As on 13-Jun-2026"
   var dt=text.match(/As on\s+(\d{1,2}[-\/][A-Za-z]+-\d{4})/i);
