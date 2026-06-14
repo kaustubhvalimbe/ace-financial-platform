@@ -3996,23 +3996,24 @@ async function anlAssess(){
         'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     }
 
+    // Read file as Uint8Array — prevents ArrayBuffer detachment on retry
     var arrayBuffer = await ANL.file.arrayBuffer();
-    var loadParams  = { data: arrayBuffer };
+    ANL.fileBytes = new Uint8Array(arrayBuffer);
 
-    // Try without password first
+    // Try without password first (fresh copy each attempt)
     try {
-      ANL.pdfDoc = await pdfjsLib.getDocument(loadParams).promise;
+      ANL.pdfDoc = await pdfjsLib.getDocument({ data: ANL.fileBytes.slice() }).promise;
     } catch(e) {
       if(e.name === 'PasswordException' || e.code === 1 || e.code === 2){
-        // Password protected
+        // Password protected — show field
         document.getElementById('anl-pwd-row').style.display = 'block';
         var pwd = document.getElementById('anl-pwd').value;
         if(!pwd){
-          anlSetStatus('warn', '🔒 This PDF is password protected. Please enter your CAS password above and click Assess again.');
+          anlSetStatus('warn', '🔒 This PDF is password protected. Enter your CAS password above (usually PAN in UPPERCASE) and click Assess again.');
           btn.disabled = false; spinner.style.display = 'none'; return;
         }
-        loadParams.password = pwd;
-        ANL.pdfDoc = await pdfjsLib.getDocument(loadParams).promise;
+        // Retry with fresh copy + password
+        ANL.pdfDoc = await pdfjsLib.getDocument({ data: ANL.fileBytes.slice(), password: pwd }).promise;
       } else { throw e; }
     }
 
