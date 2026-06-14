@@ -4113,74 +4113,80 @@ function anlDetectType(text){
 
 // ── KFINTECH CONSOLIDATED ACCOUNT SUMMARY PARSER ───────
 function anlParseKFinCAS(text){
-  var inv={name:'',pan:'',date:''};var funds=[];
+  var inv={name:'',pan:'',date:''};
+  var funds=[];
 
-  // Investor name — standalone ALL CAPS line
-  var nmM=text.match(/\n([A-Z][A-Z\s]{5,50})\n/);
-  if(!nmM) nmM=text.match(/Email Id:[^\n]+\n([A-Z][A-Z\s]{5,50})/);
-  if(nmM) inv.name=nmM[1].trim();
-
-  // No PAN in this format — use email as identifier
-  var emailM=text.match(/Email Id:\s*([^\s]+)/i);
-  if(emailM) inv.pan=''; // PAN not available in this CAS type
+  // Investor name
+  var lines=text.split(/\n/);
+  for(var i=0;i<lines.length;i++){
+    var l=lines[i].trim();
+    if(l.match(/^[A-Z][A-Z\s]{5,50}$/)&&l.indexOf('Email')<0&&l.indexOf('ISIN')<0&&l.indexOf('CAMS')<0){
+      inv.name=l; break;
+    }
+  }
+  if(!inv.name){
+    var nm=text.match(/Email Id:[^\n]+\n([A-Z][A-Z\s]{5,50})/);
+    if(nm) inv.name=nm[1].trim();
+  }
 
   // Date: "As on 14-Jun-2026"
-  var dtM=text.match(/As on\s+(\d{1,2}[-\/][A-Za-z]+-\d{4})/i);
-  if(dtM) inv.date=dtM[1];
+  var dt=text.match(/As on\s+(\d{1,2}[-\/][A-Za-z]+-\d{4})/i);
+  if(dt) inv.date=dt[1];
 
-  // Fund rows pattern:
-  // {CAMS|KFINTECH} {FolioNo}   {CODE}-{FundName}   (Non[-]Demat) {Units}   {DD-MON-YYYY}   {NAV}   {Value} {ISIN}   {Cost}
-  var re=/(CAMS|KFINTECH)\s+(\d{7,15})\s+[A-Z0-9]{2,10}-([A-Za-z][A-Za-z0-9\s\-\/\(\)\.]+?)\s+\(Non[-\s]?Demat\)\s+([\d,]+\.\d+)\s+\d{2}-[A-Z]{3}-\d{4}\s+([\d,]+\.\d+)\s+([\d,]+\.\d+)\s+INF\w+\s+([\d,]+\.?\d*)/g;
+  // Fund rows using RegExp constructor (avoids escaping issues)
+  var pattern='(CAMS|KFINTECH)\\s+(\\d{7,15})\\s+[A-Z0-9]{2,10}-([A-Za-z][A-Za-z0-9 \\-\\/\\(\\)\\.]+?)\\s+\\(Non[- ]?Demat\\)\\s+([\\d,]+\\.\\d+)\\s+\\d{2}-[A-Z]{3}-\\d{4}\\s+([\\d,]+\\.\\d+)\\s+([\\d,]+\\.\\d+)\\s+INF\\w+\\s+([\\d,]+\\.?\\d*)';
+  var re=new RegExp(pattern,'g');
   var m;
   while((m=re.exec(text))!==null){
     var units=parseFloat(m[4].replace(/,/g,''));
     var value=parseFloat(m[6].replace(/,/g,''));
     var invested=parseFloat(m[7].replace(/,/g,''));
-    if(units===0||value===0)continue;
+    if(units===0||value===0) continue;
     funds.push({
-      registrar:m[1],
-      folio:m[2].trim(),
+      registrar:m[1], folio:m[2].trim(),
       name:m[3].trim().replace(/\s+/g,' '),
-      units:units,
-      nav:parseFloat(m[5].replace(/,/g,'')),
-      value:value,invested:invested,
-      gain:value-invested,flagged:false
+      units:units, nav:parseFloat(m[5].replace(/,/g,'')),
+      value:value, invested:invested,
+      gain:value-invested, flagged:false
     });
   }
   return{investor:inv,funds:funds};
 }
 
-// ── HALF-YEARLY & MONTHLY CAMS CAS PARSER ─────────────
+// ── HALF-YEARLY & MONTHLY CAMS CAS PARSER ───────────────
 function anlParseHalfYearlyCAS(text){
-  var inv={name:'',pan:'',date:''};var funds=[];
+  var inv={name:'',pan:'',date:''};
+  var funds=[];
+
   var panM=text.match(/(?:SeshPAN|PAN)\s*[:\s]+([A-Z]{5}[0-9]{4}[A-Z])/);
-  if(panM)inv.pan=panM[1];
+  if(panM) inv.pan=panM[1];
+
   var nmM=text.match(/([A-Z][A-Z\s]{5,50})\s+S\/O:/);
-  if(!nmM)nmM=text.match(/Investor Name\s*[:\-]+\s*([A-Z][A-Z\s]{5,50})/);
-  if(nmM)inv.name=nmM[1].trim();
+  if(!nmM) nmM=text.match(/Investor Name\s*[:\-]+\s*([A-Z][A-Z\s]{5,50})/);
+  if(nmM) inv.name=nmM[1].trim();
+
   var dtM=text.match(/(?:to|as on)\s+(\d{1,2}[-\/][A-Za-z]+-\d{4})/i);
-  if(dtM)inv.date=dtM[1];
+  if(dtM) inv.date=dtM[1];
 
   // Find summary section
   var summaryIdx=text.search(/Summary of|Folio No\s+Scheme Name/i);
   var summaryText=summaryIdx>0?text.substring(summaryIdx):text;
 
-  // Match fund rows directly using regex on full text
-  // Pattern: 7-8 digit folio, spaces, code prefix with dash, fund name, then 4 numbers
-  var re=/(\d{7,8})\s{2,}[A-Z0-9]{2,6}-([A-Za-z][A-Za-z0-9 \-\/\(\)\.]+?)\s{2,}([\d,]+\.\d+)\s+([\d,]+\.\d+)\s+([\d,]+\.\d+)\s+([\d,]+\.\d{2})/g;
+  // Use RegExp constructor to avoid escaping issues
+  var pattern='(\\d{7,8})\\s{2,}[A-Z0-9]{2,6}-([A-Za-z][A-Za-z0-9 \\-\\/\\(\\)\\.]+?)\\s{2,}([\\d,]+\\.\\d+)\\s+([\\d,]+\\.\\d+)\\s+([\\d,]+\\.\\d+)\\s+([\\d,]+\\.\\d{2})';
+  var re=new RegExp(pattern,'g');
   var m;
   while((m=re.exec(summaryText))!==null){
     var units=parseFloat(m[3].replace(/,/g,''));
     var value=parseFloat(m[5].replace(/,/g,''));
     var invested=parseFloat(m[6].replace(/,/g,''));
-    if(units===0||value===0)continue;
+    if(units===0||value===0) continue;
     funds.push({
       folio:m[1].trim(),
       name:m[2].trim().replace(/\s+/g,' '),
-      units:units,
-      nav:parseFloat(m[4].replace(/,/g,'')),
-      value:value,invested:invested,
-      gain:value-invested,flagged:false
+      units:units, nav:parseFloat(m[4].replace(/,/g,'')),
+      value:value, invested:invested,
+      gain:value-invested, flagged:false
     });
   }
   return{investor:inv,funds:funds};
