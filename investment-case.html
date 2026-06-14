@@ -4034,7 +4034,8 @@ async function anlAssess(){
 
     // Parse based on type
     var parsed;
-    if(ANL.casType === 'mfcentral') parsed = anlParseMFCentral(fullText);
+    if(ANL.casType === 'halfyearly') parsed = anlParseHalfYearlyCAS(fullText);
+    else if(ANL.casType === 'mfcentral') parsed = anlParseMFCentral(fullText);
     else if(ANL.casType === 'cams') parsed = anlParseCAMS(fullText);
     else if(ANL.casType === 'kfin') parsed = anlParseKFin(fullText);
     else parsed = anlParseNSDL(fullText);
@@ -4084,7 +4085,11 @@ function anlLoadScript(src){
 // ── CAS TYPE DETECTION ─────────────────────────────────────
 function anlDetectType(text){
   var t = text.toUpperCase();
-  // MFCentral = combined CAMS+KFintech CAS (most common in India 2024+)
+  // Half-Yearly CAMS CAS — tabular format with SeshPAN:
+  if(t.includes('HALF YEARLY CONSOLIDATED') || t.includes('SESHPAN:') ||
+     t.includes('SUMMARY OF HOLDINGS AS ON'))
+    return 'halfyearly';
+  // MFCentral = combined CAMS+KFintech (most common 2024+)
   if(t.includes('MFCENTRAL') || t.includes('MFCENTRALDETAILCAS') ||
      (t.includes('CAMS') && t.includes('KFINTECH')))
     return 'mfcentral';
@@ -4094,10 +4099,50 @@ function anlDetectType(text){
     return 'kfin';
   if(t.includes('NSDL') || t.includes('CDSL') || t.includes('NATIONAL SECURITIES DEPOSITORY'))
     return 'nsdl';
-  return 'mfcentral'; // default — most common format
+  return 'mfcentral';
 }
 
 // ── PARSER 1: CAMS ─────────────────────────────────────────
+
+
+// ── HALF-YEARLY CAMS CAS PARSER ──────────────────────────
+// Format: Tabular — {Folio} {Code-FundName} {Units} {NAV} {Value} {Cost} INF...
+function anlParseHalfYearlyCAS(text){
+  var inv = { name:'', pan:'', date:'' };
+  var funds = [];
+
+  // PAN: "SeshPAN:AAFPV6170P"
+  var panM = text.match(/(?:SeshPAN|PAN)\s*[:\s]+([A-Z]{5}[0-9]{4}[A-Z])/);
+  if(panM) inv.pan = panM[1];
+
+  // Investor name before "S/O:"
+  var nmM = text.match(/([A-Z][A-Z\s]{5,50})\s+S\/O:/);
+  if(!nmM) nmM = text.match(/([A-Z][A-Z\s]{5,50})\s+(?:D\/O|W\/O)/);
+  if(nmM) inv.name = nmM[1].trim();
+
+  // Statement date
+  var dtM = text.match(/(?:to|as on)\s+(\d{1,2}[-\/][A-Za-z]+[-\/]\d{4})/i);
+  if(dtM) inv.date = dtM[1];
+
+  // Fund rows: {Folio} {CODE-FundName} {Units} {NAV} {MktValue} {CostValue} INF...
+  var fundRe = /(\d{7,8})\s+[A-Z0-9]{2,5}-((?:[A-Za-z][A-Za-z0-9\s\-\/\(\)\.]+?))\s+([\d,]+\.[\d]+)\s+([\d,]+\.[\d]+)\s+([\d,]+\.[\d]+)\s+([\d,]+\.[\d]+)\s+INF/g;
+  var m;
+  while((m = fundRe.exec(text)) !== null){
+    var value    = parseFloat(m[5].replace(/,/g,''));
+    var invested = parseFloat(m[6].replace(/,/g,''));
+    funds.push({
+      folio:    m[1],
+      name:     m[2].trim().replace(/\s+/g,' '),
+      units:    parseFloat(m[3].replace(/,/g,'')),
+      nav:      parseFloat(m[4].replace(/,/g,'')),
+      value:    value,
+      invested: invested,
+      gain:     value - invested,
+      flagged:  false
+    });
+  }
+  return { investor:inv, funds:funds };
+}
 
 // ── MFCENTRAL PARSER (tested against Kaustubh's CAS) ────
 function anlParseMFCentral(text){
@@ -4372,7 +4417,7 @@ function anlShowVerification(){
 
   // Set badge
   var badge = document.getElementById('anl-cas-type-badge');
-  var typeLabels = {mfcentral:'MFCentral',cams:'CAMS',kfin:'KFintech',nsdl:'NSDL/CDSL'};
+  var typeLabels = {halfyearly:'Half-Yearly CAS',mfcentral:'MFCentral',cams:'CAMS',kfin:'KFintech',nsdl:'NSDL/CDSL'};
   badge.textContent = typeLabels[ANL.casType] || ANL.casType.toUpperCase();
 
   // Set investor details
