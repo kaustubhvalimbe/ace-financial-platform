@@ -4034,7 +4034,8 @@ async function anlAssess(){
 
     // Parse based on type
     var parsed;
-    if(ANL.casType === 'camscas')    parsed = anlParseCAMSCAS(fullText);
+    if(ANL.casType === 'mfcentral_summary') parsed = anlParseMFCentralSummary(fullText);
+    else if(ANL.casType === 'camscas') parsed = anlParseCAMSCAS(fullText);
     else if(ANL.casType === 'kfincas') parsed = anlParseKFinCAS(fullText);
     else if(ANL.casType === 'halfyearly') parsed = anlParseHalfYearlyCAS(fullText);
     else if(ANL.casType === 'mfcentral') parsed = anlParseMFCentral(fullText);
@@ -4099,8 +4100,11 @@ function anlDetectType(text){
      t.includes('SUMMARY OF HOLDINGS AS ON') || t.includes('SUMMARY OF TRANSACTED FOLIOS') ||
      t.includes('FINANCIAL TRANSACTIONS DURING'))
     return 'halfyearly';
-  // MFCentral = combined CAMS+KFintech (most common 2024+)
-  if(t.includes('MFCENTRAL') || t.includes('MFCENTRALDETAILCAS') ||
+  // MFCentral Summary (email-based, tabular)
+  if(t.includes('MFCENTRALCASSUMMARY'))
+    return 'mfcentral_summary';
+  // MFCentral Detail CAS
+  if(t.includes('MFCENTRALDETAILCAS') || t.includes('MFCENTRAL') ||
      (t.includes('CAMS') && t.includes('KFINTECH')))
     return 'mfcentral';
   if(t.includes('COMPUTER AGE MANAGEMENT') || t.includes('CAMSONLINE'))
@@ -4234,6 +4238,70 @@ function anlParseHalfYearlyCAS(text){
       gain:value-invested, flagged:false
     });
   }
+  return{investor:inv,funds:funds};
+}
+
+// ── MFCENTRAL SUMMARY CAS PARSER (MFCentralCASSummary_v2.1) ──
+function anlParseMFCentralSummary(text){
+  var inv={name:'',pan:'',date:''};var funds=[];
+
+  // PAN and name
+  var panM=text.match(/PAN\s*[:\s]+([A-Z]{5}[0-9]{4}[A-Z])\s+([A-Z][A-Z\s]{4,50})/);
+  if(panM){
+    inv.pan=panM[1];
+    // Name — trim address that follows
+    var nm=panM[2].trim();
+    // Stop at first line that looks like address (numbers or lowercase)
+    inv.name=nm.split(/\s{2,}/)[0].trim();
+  }
+
+  // Date
+  var dt=text.match(/As on Date:\s*(\d{1,2}-[A-Za-z]+-\d{4})/i);
+  if(dt) inv.date=dt[1];
+
+  // Find data section — after column headers
+  var dataIdx=text.search(/Scheme Details\s+Folio No/i);
+  if(dataIdx<0) dataIdx=text.search(/Balance Units\s+NAV Date/i);
+  var dataText=dataIdx>0?text.substring(dataIdx):text;
+
+  // Anchor: each fund has DD-Mon-YYYY date followed by folio and NAV
+  // Pattern split: find everything between the end of one fund row and start of next
+  // Each fund block: {name} {invested} {market} {gain/loss} ({±%}) {units} {date} {folio} {nav}
+
+  var blockRe=new RegExp('([A-Za-z][\\s\\S]+?)\\s+([\\d,]+\\.\\d{2})\\s+([\\d,]+\\.\\d{2})\\s+[\\d,\\.\\(\\)\\+\\-]+\\s+\\([\\+\\-][\\d\\.]+%\\)\\s+([\\d,]+\\.\\d+)\\s+(\\d{2}-[A-Za-z]+-\\d{4})\\s+(\\d{6,15})\\s+([\\d\\.]+)','g');
+
+  var m;
+  while((m=blockRe.exec(dataText))!==null){
+    var fname=m[1].trim();
+    // Clean fund name — remove any preceding junk (page headers etc)
+    // Take last meaningful line of fund name
+    var lines=fname.split(/\s{3,}|\n/);
+    fname=lines[lines.length-1].trim().replace(/\s+/g,' ');
+    // Skip if name looks like a header
+    if(fname.match(/^(SoA|Demat|Page|Scheme|Balance|Invested|Market|NAV|MFCentral)/i)) continue;
+    // Must start with capital letter of a real fund name
+    if(!fname.match(/^[A-Z]/) || fname.length<5) continue;
+
+    var invested=parseFloat(m[2].replace(/,/g,''));
+    var value=parseFloat(m[3].replace(/,/g,''));
+    var units=parseFloat(m[4].replace(/,/g,''));
+    var nav=parseFloat(m[7]);
+    if(units===0||value===0) continue;
+
+    funds.push({
+      name:fname, folio:m[6].trim(),
+      units:units, nav:nav,
+      value:value, invested:invested,
+      gain:value-invested, flagged:false
+    });
+  }
+  // Dedup by folio+value combination
+  var seen={};
+  funds=funds.filter(function(f){
+    var key=f.folio+'|'+f.value;
+    if(seen[key]) return false;
+    seen[key]=true; return true;
+  });
   return{investor:inv,funds:funds};
 }
 
@@ -4510,7 +4578,7 @@ function anlShowVerification(){
 
   // Set badge
   var badge = document.getElementById('anl-cas-type-badge');
-  var typeLabels = {camscas:'CAMS CAS',kfincas:'KFin CAS',halfyearly:'Half-Yearly CAS',mfcentral:'MFCentral',cams:'CAMS',kfin:'KFintech',nsdl:'NSDL/CDSL'};
+  var typeLabels = {mfcentral_summary:'MFCentral Summary',camscas:'CAMS CAS',kfincas:'KFin CAS',halfyearly:'Half-Yearly CAS',mfcentral:'MFCentral',cams:'CAMS',kfin:'KFintech',nsdl:'NSDL/CDSL'};
   badge.textContent = typeLabels[ANL.casType] || ANL.casType.toUpperCase();
 
   // Set investor details
