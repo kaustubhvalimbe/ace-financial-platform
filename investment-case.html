@@ -4087,7 +4087,8 @@ function anlDetectType(text){
   var t = text.toUpperCase();
   // Half-Yearly CAMS CAS — tabular format with SeshPAN:
   if(t.includes('HALF YEARLY CONSOLIDATED') || t.includes('SESHPAN:') ||
-     t.includes('SUMMARY OF HOLDINGS AS ON'))
+     t.includes('SUMMARY OF HOLDINGS AS ON') || t.includes('SUMMARY OF TRANSACTED FOLIOS') ||
+     t.includes('FINANCIAL TRANSACTIONS DURING'))
     return 'halfyearly';
   // MFCentral = combined CAMS+KFintech (most common 2024+)
   if(t.includes('MFCENTRAL') || t.includes('MFCENTRALDETAILCAS') ||
@@ -4125,15 +4126,26 @@ function anlParseHalfYearlyCAS(text){
   if(dtM) inv.date = dtM[1];
 
   // Fund rows: {Folio} {CODE-FundName} {Units} {NAV} {MktValue} {CostValue} INF...
-  var fundRe = /(\d{7,8})\s+[A-Z0-9]{2,5}-((?:[A-Za-z][A-Za-z0-9\s\-\/\(\)\.]+?))\s+([\d,]+\.[\d]+)\s+([\d,]+\.[\d]+)\s+([\d,]+\.[\d]+)\s+([\d,]+\.[\d]+)\s+INF/g;
+  // Also try "Investor Name :" pattern for monthly CAS
+  if(!inv.name){
+    var nm2 = text.match(/Investor Name\s*:\s*([A-Z][A-Z\s]{5,50})/);
+    if(nm2) inv.name = nm2[1].trim();
+  }
+
+  // Fund rows — works for both Half-Yearly and Monthly CAS
+  // INF match for half-yearly, without INF for monthly summary
+  var fundRe = /(\d{7,8})\s+[A-Z0-9]{2,5}-((?:[A-Za-z][A-Za-z0-9\s\-\/\(\)\.]+?))\s+([\d,]+\.[\d]+)\s+([\d,]+\.[\d]+)\s+([\d,]+\.[\d]+)\s+([\d,]+\.[\d]+)/g;
   var m;
   while((m = fundRe.exec(text)) !== null){
+    var units    = parseFloat(m[3].replace(/,/g,''));
     var value    = parseFloat(m[5].replace(/,/g,''));
     var invested = parseFloat(m[6].replace(/,/g,''));
+    // Skip zero-unit (redeemed) funds
+    if(units === 0 || value === 0) continue;
     funds.push({
       folio:    m[1],
       name:     m[2].trim().replace(/\s+/g,' '),
-      units:    parseFloat(m[3].replace(/,/g,'')),
+      units:    units,
       nav:      parseFloat(m[4].replace(/,/g,'')),
       value:    value,
       invested: invested,
