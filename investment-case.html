@@ -5123,7 +5123,7 @@ function slGenerate(){
   var wa=(document.getElementById('v-wa')||{value:''}).value||'';
   var email=(document.getElementById('v-email')||{value:''}).value||'';
   var risk=(document.getElementById('v-risk')||{value:''}).value||'Moderate';
-  var today=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
+  var _d=new Date(),today=String(_d.getDate()).padStart(2,'0')+'/'+String(_d.getMonth()+1).padStart(2,'0')+'/'+_d.getFullYear();
 
   // Sync any typed-but-not-saved fund names from input fields
   SL_ROWS.forEach(function(row){
@@ -5214,9 +5214,9 @@ function slGenerate(){
     '<script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>'+
     '</body></html>';
 
-  var w=window.open('','_blank');
-  w.document.write(html);
-  w.document.close();
+  var blob=new Blob([html],{type:'text/html'});
+  var blobUrl=URL.createObjectURL(blob);
+  var w=window.open(blobUrl,'_blank');
 }
 
 </script>
