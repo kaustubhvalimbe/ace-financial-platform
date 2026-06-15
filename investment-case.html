@@ -4856,30 +4856,28 @@ function anlExtractAMC(fundName){
 
 <script>
 // ═══════════════════════════════════════════════════════════
-// SIP & LUMPSUM — NEW TABLE-BASED ENGINE
+// SIP & LUMPSUM — NEW TABLE-BASED ENGINE v2
 // ═══════════════════════════════════════════════════════════
 
 var SL_ROWS = [];
 var SL_NEXT_ID = 1;
 var SL_FUNDS_LOADED = false;
+var SL_ALL_FUNDS = [];
 
 // ── Navigation ─────────────────────────────────────────────
 function slGoToFunds(){
   var name = (document.getElementById('v-name')||{value:''}).value.trim();
   if(!name){ alert('Please enter investor name.'); return; }
-  // Toggle panels directly — avoids validateStep dependency
-  var s1 = document.getElementById('step1');
-  var s2 = document.getElementById('step2');
+  var s1=document.getElementById('step1'); var s2=document.getElementById('step2');
   if(s1) s1.classList.remove('show');
   if(s2) s2.classList.add('show');
   window.scrollTo({top:0,behavior:'smooth'});
   if(!SL_FUNDS_LOADED) slLoadFunds();
-  if(SL_ROWS.length === 0){ slAddRow(); slAddRow(); slAddRow(); }
+  if(SL_ROWS.length===0){ slAddRow(); slAddRow(); slAddRow(); }
 }
 
 function slBackToStep1(){
-  var s1 = document.getElementById('step1');
-  var s2 = document.getElementById('step2');
+  var s1=document.getElementById('step1'); var s2=document.getElementById('step2');
   if(s2) s2.classList.remove('show');
   if(s1) s1.classList.add('show');
   window.scrollTo({top:0,behavior:'smooth'});
@@ -4887,375 +4885,336 @@ function slBackToStep1(){
 
 // ── Load Funds ─────────────────────────────────────────────
 async function slLoadFunds(){
-  var st = document.getElementById('sl-fund-status');
-  if(st) st.textContent = 'Loading funds...';
-  try {
-    var r = await fetch('https://api.mfapi.in/mf');
-    var data = await r.json();
-    // Filter Growth only — no IDCW/Dividend
-    var seen = {};
-    SL_ALL_FUNDS = data.filter(function(f){
-      var n = (f.schemeName||'').toUpperCase();
-      if(n.includes('IDCW') || n.includes('DIVIDEND')) return false;
-      var key = f.schemeName + '|' + f.schemeCode;
+  var st=document.getElementById('sl-fund-status');
+  if(st) st.textContent='Loading funds...';
+  try{
+    var r=await fetch('https://api.mfapi.in/mf');
+    var data=await r.json();
+    var seen={};
+    SL_ALL_FUNDS=data.filter(function(f){
+      var n=(f.schemeName||'').toUpperCase();
+      if(n.includes('IDCW')||n.includes('DIVIDEND')) return false;
+      var key=f.schemeName+'|'+f.schemeCode;
       if(seen[key]) return false;
-      seen[key] = true;
-      return true;
-    }).map(function(f){ return {code:String(f.schemeCode), name:f.schemeName||''}; });
-    SL_FUNDS_LOADED = true;
-    if(st) st.textContent = '✅ ' + SL_ALL_FUNDS.length.toLocaleString('en-IN') + ' funds loaded';
-  } catch(e){
-    SL_FUNDS_LOADED = true;
-    if(st) st.textContent = '⚠️ Fund list unavailable — type name manually';
+      seen[key]=true; return true;
+    }).map(function(f){return{code:String(f.schemeCode),name:f.schemeName||''};});
+    SL_FUNDS_LOADED=true;
+    if(st) st.textContent='✅ '+SL_ALL_FUNDS.length.toLocaleString('en-IN')+' funds loaded';
+  }catch(e){
+    SL_FUNDS_LOADED=true;
+    if(st) st.textContent='⚠️ Fund list unavailable — type fund name manually';
   }
 }
 
-var SL_ALL_FUNDS = [];
-
-// ── Search ─────────────────────────────────────────────────
-function slSearch(q, rowId){
-  var dd = document.getElementById('sl-dd-'+rowId);
+// ── Fund Search ────────────────────────────────────────────
+function slSearch(q,rowId){
+  var dd=document.getElementById('sl-dd-'+rowId);
   if(!dd) return;
-  if(!q || q.length < 2){ dd.style.display='none'; return; }
-  var ql = q.toLowerCase();
-  var matches = SL_ALL_FUNDS.filter(function(f){
-    return f.name.toLowerCase().indexOf(ql) >= 0;
-  }).slice(0,30);
-  if(!matches.length){ dd.style.display='none'; return; }
-  dd.innerHTML = matches.map(function(f){
+  if(!q||q.length<2){dd.style.display='none';return;}
+  var ql=q.toLowerCase();
+  var matches=SL_ALL_FUNDS.filter(function(f){return f.name.toLowerCase().indexOf(ql)>=0;}).slice(0,30);
+  if(!matches.length){dd.style.display='none';return;}
+  dd.innerHTML=matches.map(function(f){
     return '<div style="padding:8px 12px;cursor:pointer;border-bottom:1px solid #f0eeff;font-size:11px;font-weight:600;color:#1a1240;" '+
       'data-name="'+f.name.replace(/"/g,'&quot;')+'" data-id="'+rowId+'" onmousedown="slPick(this)">'+
       f.name.substring(0,70)+'</div>';
   }).join('');
-  dd.style.display = 'block';
+  dd.style.display='block';
 }
 
 function slPick(el){
-  var name = el.getAttribute('data-name');
-  var id   = parseInt(el.getAttribute('data-id'));
-  var row  = SL_ROWS.find(function(r){ return r.id===id; });
-  if(row) row.fundName = name;
-  var inp = document.getElementById('sl-inp-'+id);
-  if(inp) inp.value = name;
-  var dd = document.getElementById('sl-dd-'+id);
-  if(dd) dd.style.display = 'none';
-  slCalcRow(id);
-  slUpdateTotals();
+  var name=el.getAttribute('data-name'),id=parseInt(el.getAttribute('data-id'));
+  var row=SL_ROWS.find(function(r){return r.id===id;});
+  if(row) row.fundName=name;
+  var inp=document.getElementById('sl-inp-'+id);
+  if(inp) inp.value=name;
+  var dd=document.getElementById('sl-dd-'+id);
+  if(dd) dd.style.display='none';
+  slCalcRow(id); slUpdateFooter();
 }
 
 function slHideDd(id){
-  setTimeout(function(){
-    var dd = document.getElementById('sl-dd-'+id);
-    if(dd) dd.style.display = 'none';
-  }, 200);
+  setTimeout(function(){var dd=document.getElementById('sl-dd-'+id);if(dd)dd.style.display='none';},200);
 }
 
-// ── Add / Remove Row ───────────────────────────────────────
+// ── Build ONE row HTML ─────────────────────────────────────
+function slBuildRowHTML(row, idx){
+  var n=row.years*12+row.months;
+  var bg=['#f0eeff','#eef7d6','#e0f2fe','#fff7ed','#f5f3ff'][idx%5];
+  var ret=row.returns>0?'₹'+slFmt(row.returns):'—';
+  var retColor=row.returns>0?'#16a34a':'#94a3b8';
+  var sBg=row.type==='S'?'var(--g1)':'#fff'; var sC=row.type==='S'?'#fff':'var(--g1)';
+  var lBg=row.type==='L'?'var(--p1)':'#fff'; var lC=row.type==='L'?'#fff':'var(--p1)';
+  var amtBg=row.type==='S'?'#eef7d6':'#f0eeff';
+  var amtBd=row.type==='S'?'#6aaa1e':'#afa9ec';
+  var amtC=row.type==='S'?'#2d6b0e':'var(--p1)';
+
+  return '<tr style="background:'+bg+';border-bottom:1px solid #e4e2f0;" id="sl-tr-'+row.id+'">'+
+    '<td style="padding:8px;text-align:center;font-size:12px;font-weight:800;color:var(--p1);" id="sl-srno-'+row.id+'">'+(idx+1)+'</td>'+
+    '<td style="padding:6px 8px;position:relative;">'+
+      '<input type="text" id="sl-inp-'+row.id+'" '+
+        'style="width:100%;padding:7px 10px;border:1.5px solid #e4e2f0;border-radius:7px;font-size:11px;font-family:var(--fh);outline:none;background:#fff;" '+
+        'placeholder="🔍 Search fund name..." value="'+row.fundName.replace(/"/g,'&quot;')+'" '+
+        'oninput="slSearch(this.value,'+row.id+')" onblur="slHideDd('+row.id+')">'+
+      '<div id="sl-dd-'+row.id+'" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--p1);border-top:none;border-radius:0 0 8px 8px;max-height:200px;overflow-y:auto;z-index:999;box-shadow:0 8px 20px rgba(60,49,151,.15);"></div>'+
+    '</td>'+
+    '<td style="padding:6px 8px;text-align:center;">'+
+      '<div style="display:flex;gap:3px;justify-content:center;">'+
+        '<button id="sl-sbtn-'+row.id+'" onclick="slSetType('+row.id+',\'S\')" style="padding:5px 8px;border-radius:5px;font-size:11px;font-weight:800;cursor:pointer;font-family:var(--fh);background:'+sBg+';color:'+sC+';border:1.5px solid var(--g1);">S</button>'+
+        '<button id="sl-lbtn-'+row.id+'" onclick="slSetType('+row.id+',\'L\')" style="padding:5px 8px;border-radius:5px;font-size:11px;font-weight:800;cursor:pointer;font-family:var(--fh);background:'+lBg+';color:'+lC+';border:1.5px solid var(--p1);">L</button>'+
+      '</div>'+
+    '</td>'+
+    '<td style="padding:6px 8px;">'+
+      '<input type="number" id="sl-amt-'+row.id+'" '+
+        'style="width:100%;padding:7px 8px;border:1.5px solid '+amtBd+';border-radius:7px;font-size:12px;font-weight:700;text-align:right;font-family:var(--fh);outline:none;background:'+amtBg+';color:'+amtC+';" '+
+        'placeholder="Amount" value="'+(row.amount||'')+'" '+
+        'oninput="slSetField('+row.id+',\'amount\',this.value)">'+
+    '</td>'+
+    '<td style="padding:6px 8px;">'+
+      '<input type="number" min="0" max="30" id="sl-yrs-'+row.id+'" '+
+        'style="width:100%;padding:7px 6px;border:1.5px solid #e4e2f0;border-radius:7px;font-size:12px;font-weight:700;text-align:center;font-family:var(--fh);outline:none;" '+
+        'value="'+(row.years||0)+'" oninput="slSetField('+row.id+',\'years\',this.value)">'+
+    '</td>'+
+    '<td style="padding:6px 8px;">'+
+      '<input type="number" min="0" max="11" id="sl-mo-'+row.id+'" '+
+        'style="width:100%;padding:7px 6px;border:1.5px solid #e4e2f0;border-radius:7px;font-size:12px;font-weight:700;text-align:center;font-family:var(--fh);outline:none;" '+
+        'value="'+(row.months||0)+'" oninput="slSetField('+row.id+',\'months\',this.value)">'+
+    '</td>'+
+    '<td style="padding:8px;text-align:center;"><span id="sl-tm-'+row.id+'" style="font-size:12px;font-weight:800;color:var(--p2);">'+n+'</span></td>'+
+    '<td style="padding:6px 8px;">'+
+      '<input type="number" min="1" max="30" step="0.5" id="sl-cagr-'+row.id+'" '+
+        'style="width:100%;padding:7px 6px;border:1.5px solid #7cc43a;border-radius:7px;font-size:12px;font-weight:700;text-align:center;font-family:var(--fh);outline:none;background:#eef7d6;color:#2d6b0e;" '+
+        'value="'+(row.cagr||12)+'" oninput="slSetField('+row.id+',\'cagr\',this.value)">'+
+    '</td>'+
+    '<td style="padding:8px;text-align:center;"><span style="font-size:12px;font-weight:800;color:var(--t4);">12</span></td>'+
+    '<td style="padding:8px;text-align:right;"><span id="sl-ret-'+row.id+'" style="font-size:13px;font-weight:900;color:'+retColor+';">'+ret+'</span></td>'+
+    '<td style="padding:6px;text-align:center;">'+
+      '<button onclick="slRemoveRow('+row.id+')" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:16px;font-weight:800;padding:4px;">✕</button>'+
+    '</td>'+
+  '</tr>';
+}
+
+// ── Add Row — APPEND ONLY, never rebuild existing rows ─────
 function slAddRow(){
-  var id = SL_NEXT_ID++;
-  SL_ROWS.push({ id:id, fundName:'', type:'S', amount:0, years:5, months:0, cagr:12, returns:0 });
-  slRenderRows();
+  if(SL_ROWS.length>=15){alert('Maximum 15 fund rows.');return;}
+  var id=SL_NEXT_ID++;
+  var newRow={id:id,fundName:'',type:'S',amount:0,years:5,months:0,cagr:12,returns:0};
+  SL_ROWS.push(newRow);
+  // Append only the new row — existing rows untouched
+  var tbody=document.getElementById('sl-tbody');
+  if(tbody){
+    var tr=document.createElement('tr');
+    tr.id='sl-tr-'+id;
+    tr.innerHTML=slBuildRowHTML(newRow, SL_ROWS.length-1).replace(/^<tr[^>]*>/,'').replace(/<\/tr>$/,'');
+    tbody.appendChild(tr);
+    // Update the style of the new tr
+    tr.style.background=['#f0eeff','#eef7d6','#e0f2fe','#fff7ed','#f5f3ff'][(SL_ROWS.length-1)%5];
+    tr.style.borderBottom='1px solid #e4e2f0';
+  }
+  slUpdateFooter();
   if(!SL_FUNDS_LOADED) slLoadFunds();
 }
 
+// ── Remove Row — re-render needed for Sr. No. renumbering ──
 function slRemoveRow(id){
-  SL_ROWS = SL_ROWS.filter(function(r){ return r.id !== id; });
-  slRenderRows();
-  slUpdateTotals();
+  SL_ROWS=SL_ROWS.filter(function(r){return r.id!==id;});
+  slFullRender(); // Re-render needed to fix Sr. No.
 }
 
-// ── Field Update ───────────────────────────────────────────
+// ── Full re-render (only on delete or initial load) ────────
+function slFullRender(){
+  var tbody=document.getElementById('sl-tbody');
+  if(!tbody) return;
+  tbody.innerHTML=SL_ROWS.map(function(row,idx){
+    return slBuildRowHTML(row,idx);
+  }).join('');
+  slUpdateFooter();
+}
+
+// ── Set Type — update only that row's buttons + amount style
 function slSetType(id, t){
-  var row = SL_ROWS.find(function(r){ return r.id===id; });
-  if(row){ row.type = t; slCalcRow(id); slUpdateTotals(); slRenderRows(); }
+  var row=SL_ROWS.find(function(r){return r.id===id;});
+  if(!row) return;
+  row.type=t;
+  // Update S/L buttons
+  var sBg=t==='S'?'var(--g1)':'#fff'; var sC=t==='S'?'#fff':'var(--g1)';
+  var lBg=t==='L'?'var(--p1)':'#fff'; var lC=t==='L'?'#fff':'var(--p1)';
+  var sbtn=document.getElementById('sl-sbtn-'+id);
+  var lbtn=document.getElementById('sl-lbtn-'+id);
+  if(sbtn){sbtn.style.background=sBg;sbtn.style.color=sC;}
+  if(lbtn){lbtn.style.background=lBg;lbtn.style.color=lC;}
+  // Update amount field style
+  var amtBg=t==='S'?'#eef7d6':'#f0eeff';
+  var amtBd=t==='S'?'#6aaa1e':'#afa9ec';
+  var amtC=t==='S'?'#2d6b0e':'var(--p1)';
+  var amtEl=document.getElementById('sl-amt-'+id);
+  if(amtEl){amtEl.style.background=amtBg;amtEl.style.borderColor=amtBd;amtEl.style.color=amtC;}
+  slCalcRow(id); slUpdateFooter();
 }
 
-function slSetField(id, field, val){
-  var row = SL_ROWS.find(function(r){ return r.id===id; });
+// ── Set Field ──────────────────────────────────────────────
+function slSetField(id,field,val){
+  var row=SL_ROWS.find(function(r){return r.id===id;});
   if(!row) return;
-  if(field==='years'||field==='months') row[field] = parseInt(val)||0;
-  else if(field==='cagr') row[field] = parseFloat(val)||12;
-  else if(field==='amount') row[field] = parseFloat(val)||0;
+  if(field==='years'||field==='months') row[field]=parseInt(val)||0;
+  else if(field==='cagr') row[field]=parseFloat(val)||12;
+  else if(field==='amount') row[field]=parseFloat(val)||0;
   slCalcRow(id);
-  slUpdateTotals();
-  // Update total months and returns display only
-  var tmEl = document.getElementById('sl-tm-'+id);
-  if(tmEl) tmEl.textContent = row.years*12 + row.months;
-  var retEl = document.getElementById('sl-ret-'+id);
-  if(retEl) retEl.textContent = row.returns > 0 ? '₹'+slFmt(row.returns) : '—';
+  var tmEl=document.getElementById('sl-tm-'+id);
+  if(tmEl) tmEl.textContent=row.years*12+row.months;
+  var retEl=document.getElementById('sl-ret-'+id);
+  if(retEl){
+    retEl.textContent=row.returns>0?'₹'+slFmt(row.returns):'—';
+    retEl.style.color=row.returns>0?'#16a34a':'#94a3b8';
+  }
+  slUpdateFooter();
 }
 
 // ── Calculate ──────────────────────────────────────────────
 function slCalcRow(id){
-  var row = SL_ROWS.find(function(r){ return r.id===id; });
+  var row=SL_ROWS.find(function(r){return r.id===id;});
   if(!row) return;
-  var n = row.years*12 + row.months;
-  var r = (row.cagr/100)/12;
-  if(row.type === 'S'){
-    if(!r) row.returns = row.amount * n;
-    else row.returns = row.amount * (Math.pow(1+r,n)-1)/r * (1+r);
+  var n=row.years*12+row.months;
+  var r=(row.cagr/100)/12;
+  if(row.type==='S'){
+    if(!r) row.returns=row.amount*n;
+    else row.returns=row.amount*(Math.pow(1+r,n)-1)/r*(1+r);
   } else {
-    row.returns = row.amount * Math.pow(1+r, n);
+    row.returns=row.amount*Math.pow(1+r,n);
   }
 }
 
+// ── Update Footer (Grand Total) ────────────────────────────
+function slUpdateFooter(){
+  var grandTotal=SL_ROWS.reduce(function(s,r){return s+r.returns;},0);
+  var totalInvested=SL_ROWS.reduce(function(s,r){
+    var n=r.years*12+r.months; return s+(r.type==='S'?r.amount*n:r.amount);
+  },0);
+  var totalGain=grandTotal-totalInvested;
+  var tfoot=document.getElementById('sl-tfoot');
+  if(tfoot){
+    tfoot.innerHTML='<tr style="background:var(--p1);color:#fff;">'+
+      '<td colspan="3" style="padding:10px 12px;font-size:12px;font-weight:800;">Grand Total ('+SL_ROWS.length+' rows)</td>'+
+      '<td style="padding:10px 8px;text-align:right;font-size:11px;font-weight:700;">Inv: ₹'+slFmt(totalInvested)+'</td>'+
+      '<td colspan="5" style="padding:10px 8px;text-align:right;font-size:11px;font-weight:700;">Gain: +₹'+slFmt(totalGain)+'</td>'+
+      '<td style="padding:10px 8px;text-align:right;font-size:14px;font-weight:900;">₹'+slFmt(grandTotal)+'</td>'+
+      '<td></td></tr>';
+  }
+  var el=document.getElementById('sl-totals');
+  if(el) el.textContent=SL_ROWS.length+' row(s) · Returns: ₹'+slFmt(grandTotal);
+  var btn=document.getElementById('sl-gen-btn');
+  var ok=SL_ROWS.some(function(r){return r.fundName&&r.amount>0&&r.returns>0;});
+  if(btn){btn.disabled=!ok;btn.style.opacity=ok?'1':'.4';btn.style.cursor=ok?'pointer':'not-allowed';}
+}
+
+// ── Helpers ────────────────────────────────────────────────
 function slFmt(n){
-  n = Math.round(n||0);
-  if(n>=10000000) return (n/10000000).toFixed(2)+' Cr';
-  if(n>=100000)   return (n/100000).toFixed(2)+' L';
-  if(n>=1000)     return (n/1000).toFixed(1)+' K';
+  n=Math.round(n||0);
+  if(n>=10000000)return(n/10000000).toFixed(2)+' Cr';
+  if(n>=100000)return(n/100000).toFixed(2)+' L';
+  if(n>=1000)return(n/1000).toFixed(1)+' K';
   return n.toLocaleString('en-IN');
 }
-
-function slFmtI(n){ return Math.round(n||0).toLocaleString('en-IN'); }
-
-// ── Update Totals ──────────────────────────────────────────
-function slUpdateTotals(){
-  var total = SL_ROWS.reduce(function(s,r){ return s+r.returns; },0);
-  var el = document.getElementById('sl-totals');
-  if(el) el.textContent = SL_ROWS.length + ' fund row(s) · Total Returns: ₹' + slFmt(total);
-  var btn = document.getElementById('sl-gen-btn');
-  var ok  = SL_ROWS.some(function(r){ return r.fundName && r.amount>0 && r.returns>0; });
-  if(btn){ btn.disabled=!ok; btn.style.opacity=ok?'1':'.4'; btn.style.cursor=ok?'pointer':'not-allowed'; }
-}
-
-// ── Render Rows ────────────────────────────────────────────
-function slRenderRows(){
-  var tbody = document.getElementById('sl-tbody');
-  var tfoot = document.getElementById('sl-tfoot');
-  if(!tbody) return;
-
-  var rowColors = ['#f0eeff','#eef7d6','#e0f2fe','#fff7ed','#f5f3ff'];
-
-  tbody.innerHTML = SL_ROWS.map(function(row, idx){
-    var n   = row.years*12 + row.months;
-    var bg  = rowColors[idx % rowColors.length];
-    var ret = row.returns > 0 ? '₹'+slFmt(row.returns) : '—';
-    var retColor = row.returns > 0 ? '#16a34a' : '#94a3b8';
-
-    return '<tr style="background:'+bg+';border-bottom:1px solid #e4e2f0;">' +
-
-      // Sr No
-      '<td style="padding:8px;text-align:center;font-size:12px;font-weight:800;color:var(--p1);">'+(idx+1)+'</td>' +
-
-      // Fund Name with search
-      '<td style="padding:6px 8px;position:relative;">' +
-        '<input type="text" id="sl-inp-'+row.id+'" '+
-          'style="width:100%;padding:7px 10px;border:1.5px solid #e4e2f0;border-radius:7px;font-size:11px;font-family:var(--fh);outline:none;background:#fff;" '+
-          'placeholder="🔍 Search fund..." value="'+row.fundName.replace(/"/g,'&quot;')+'" '+
-          'oninput="slSearch(this.value,'+row.id+')" onblur="slHideDd('+row.id+')">' +
-        '<div id="sl-dd-'+row.id+'" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--p1);border-top:none;border-radius:0 0 8px 8px;max-height:200px;overflow-y:auto;z-index:999;box-shadow:0 8px 20px rgba(60,49,151,.15);"></div>' +
-      '</td>' +
-
-      // S/L Toggle
-      '<td style="padding:6px 8px;text-align:center;">' +
-        '<div style="display:flex;gap:3px;justify-content:center;">' +
-          '<button onclick="slSetType('+row.id+',\'S\')" '+
-            'style="padding:5px 8px;border-radius:5px;font-size:11px;font-weight:800;cursor:pointer;font-family:var(--fh);'+
-            'background:'+(row.type==='S'?'var(--g1)':'#fff')+';color:'+(row.type==='S'?'#fff':'var(--g1)')+';border:1.5px solid var(--g1);">S</button>' +
-          '<button onclick="slSetType('+row.id+',\'L\')" '+
-            'style="padding:5px 8px;border-radius:5px;font-size:11px;font-weight:800;cursor:pointer;font-family:var(--fh);'+
-            'background:'+(row.type==='L'?'var(--p1)':'#fff')+';color:'+(row.type==='L'?'#fff':'var(--p1)')+';border:1.5px solid var(--p1);">L</button>' +
-        '</div>' +
-      '</td>' +
-
-      // Amount
-      '<td style="padding:6px 8px;">' +
-        '<input type="number" '+
-          'style="width:100%;padding:7px 8px;border:1.5px solid '+(row.type==='S'?'#6aaa1e':'#afa9ec')+';border-radius:7px;font-size:12px;font-weight:700;text-align:right;font-family:var(--fh);outline:none;background:'+(row.type==='S'?'#eef7d6':'#f0eeff')+';color:'+(row.type==='S'?'#2d6b0e':'var(--p1)')+';'+'" '+
-          'placeholder="Amount" value="'+(row.amount||'')+'" '+
-          'oninput="slSetField('+row.id+',\'amount\',this.value)">' +
-      '</td>' +
-
-      // Years
-      '<td style="padding:6px 8px;">' +
-        '<input type="number" min="0" max="30" '+
-          'style="width:100%;padding:7px 6px;border:1.5px solid #e4e2f0;border-radius:7px;font-size:12px;font-weight:700;text-align:center;font-family:var(--fh);outline:none;" '+
-          'value="'+(row.years||0)+'" oninput="slSetField('+row.id+',\'years\',this.value)">' +
-      '</td>' +
-
-      // Months
-      '<td style="padding:6px 8px;">' +
-        '<input type="number" min="0" max="11" '+
-          'style="width:100%;padding:7px 6px;border:1.5px solid #e4e2f0;border-radius:7px;font-size:12px;font-weight:700;text-align:center;font-family:var(--fh);outline:none;" '+
-          'value="'+(row.months||0)+'" oninput="slSetField('+row.id+',\'months\',this.value)">' +
-      '</td>' +
-
-      // Total Months (auto)
-      '<td style="padding:8px;text-align:center;">' +
-        '<span id="sl-tm-'+row.id+'" style="font-size:12px;font-weight:800;color:var(--p2);">'+n+'</span>' +
-      '</td>' +
-
-      // CAGR
-      '<td style="padding:6px 8px;">' +
-        '<input type="number" min="1" max="30" step="0.5" '+
-          'style="width:100%;padding:7px 6px;border:1.5px solid #7cc43a;border-radius:7px;font-size:12px;font-weight:700;text-align:center;font-family:var(--fh);outline:none;background:#eef7d6;color:#2d6b0e;" '+
-          'value="'+(row.cagr||12)+'" oninput="slSetField('+row.id+',\'cagr\',this.value)">' +
-      '</td>' +
-
-      // Compounding Factor (fixed = 12)
-      '<td style="padding:8px;text-align:center;">' +
-        '<span style="font-size:12px;font-weight:800;color:var(--t4);">12</span>' +
-      '</td>' +
-
-      // Returns
-      '<td style="padding:8px;text-align:right;">' +
-        '<span id="sl-ret-'+row.id+'" style="font-size:13px;font-weight:900;color:'+retColor+';">'+ret+'</span>' +
-      '</td>' +
-
-      // Delete
-      '<td style="padding:6px;text-align:center;">' +
-        '<button onclick="slRemoveRow('+row.id+')" '+
-          'style="background:none;border:none;color:#ccc;cursor:pointer;font-size:16px;font-weight:800;padding:4px;" title="Remove">✕</button>' +
-      '</td>' +
-    '</tr>';
-  }).join('');
-
-  // Grand Total footer
-  var grandTotal   = SL_ROWS.reduce(function(s,r){ return s+r.returns; },0);
-  var totalInvested = SL_ROWS.reduce(function(s,r){
-    var n = r.years*12+r.months;
-    return s + (r.type==='S' ? r.amount*n : r.amount);
-  },0);
-  var totalGain = grandTotal - totalInvested;
-
-  tfoot.innerHTML = '<tr style="background:var(--p1);color:#fff;">' +
-    '<td colspan="3" style="padding:10px 12px;font-size:12px;font-weight:800;">Grand Total (' + SL_ROWS.length + ' rows)</td>' +
-    '<td style="padding:10px 8px;text-align:right;font-size:11px;font-weight:700;">Inv: ₹'+slFmt(totalInvested)+'</td>' +
-    '<td colspan="5" style="padding:10px 8px;text-align:right;font-size:11px;font-weight:700;">Gain: +₹'+slFmt(totalGain)+'</td>' +
-    '<td style="padding:10px 8px;text-align:right;font-size:14px;font-weight:900;">₹'+slFmt(grandTotal)+'</td>' +
-    '<td></td></tr>';
-
-  slUpdateTotals();
-}
+function slFmtI(n){return Math.round(n||0).toLocaleString('en-IN');}
 
 // ── Generate Blueprint ─────────────────────────────────────
 function slGenerate(){
-  var name   = (document.getElementById('v-name')||{value:''}).value || 'Valued Investor';
-  var wa     = (document.getElementById('v-wa')||{value:''}).value || '';
-  var email  = (document.getElementById('v-email')||{value:''}).value || '';
-  var pan    = (document.getElementById('v-pan')||{value:''}).value || '';
-  var risk   = (document.getElementById('v-risk')||{value:''}).value || 'Moderate';
-  var today  = new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
+  var name=(document.getElementById('v-name')||{value:''}).value||'Valued Investor';
+  var wa=(document.getElementById('v-wa')||{value:''}).value||'';
+  var email=(document.getElementById('v-email')||{value:''}).value||'';
+  var risk=(document.getElementById('v-risk')||{value:''}).value||'Moderate';
+  var today=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
 
-  var validRows = SL_ROWS.filter(function(r){ return r.fundName && r.amount>0; });
-  if(!validRows.length){ alert('Please add at least one fund with amount.'); return; }
+  // Sync any typed-but-not-saved fund names from input fields
+  SL_ROWS.forEach(function(row){
+    var inp=document.getElementById('sl-inp-'+row.id);
+    if(inp&&inp.value&&!row.fundName) row.fundName=inp.value;
+    slCalcRow(row.id);
+  });
 
-  // Recalc all
-  validRows.forEach(function(r){ slCalcRow(r.id); });
+  var validRows=SL_ROWS.filter(function(r){return r.fundName&&r.amount>0;});
+  if(!validRows.length){alert('Please add at least one fund with amount.');return;}
 
-  var grandTotal    = validRows.reduce(function(s,r){ return s+r.returns; },0);
-  var totalInvested = validRows.reduce(function(s,r){
-    var n=r.years*12+r.months; return s+(r.type==='S'?r.amount*n:r.amount);
+  var grandTotal=validRows.reduce(function(s,r){return s+r.returns;},0);
+  var totalInvested=validRows.reduce(function(s,r){
+    var n=r.years*12+r.months;return s+(r.type==='S'?r.amount*n:r.amount);
   },0);
-  var totalGain = grandTotal - totalInvested;
-  var gainPct   = totalInvested>0 ? (totalGain/totalInvested*100).toFixed(1) : 0;
+  var totalGain=grandTotal-totalInvested;
+  var gainPct=totalInvested>0?(totalGain/totalInvested*100).toFixed(1):0;
 
-  // Build table rows
-  var tableRows = validRows.map(function(r,i){
-    var n   = r.years*12+r.months;
-    var bg  = i%2===0?'#ffffff':'#f9f8ff';
-    var typeColor = r.type==='S'?'#16a34a':'#3c3197';
-    var typeBg    = r.type==='S'?'#dcfce7':'#ede9fe';
-    return '<tr style="background:'+bg+';border-bottom:1px solid #e4e2f0;">' +
-      '<td style="padding:10px 8px;text-align:center;font-size:12px;font-weight:800;color:#3c3197;">'+(i+1)+'</td>' +
-      '<td style="padding:10px 12px;font-size:12px;font-weight:700;color:#000;max-width:250px;">'+r.fundName+'</td>' +
-      '<td style="padding:10px 8px;text-align:center;"><span style="background:'+typeBg+';color:'+typeColor+';padding:3px 10px;border-radius:12px;font-size:11px;font-weight:800;">'+(r.type==='S'?'SIP':'LUMP')+'</span></td>' +
-      '<td style="padding:10px 8px;text-align:right;font-size:12px;font-weight:700;color:#000;">₹'+slFmtI(r.amount)+'</td>' +
-      '<td style="padding:10px 8px;text-align:center;font-size:12px;font-weight:700;color:#000;">'+r.years+'</td>' +
-      '<td style="padding:10px 8px;text-align:center;font-size:12px;font-weight:700;color:#000;">'+r.months+'</td>' +
-      '<td style="padding:10px 8px;text-align:center;font-size:12px;font-weight:800;color:#3c3197;">'+n+'</td>' +
-      '<td style="padding:10px 8px;text-align:center;font-size:12px;font-weight:800;color:#2d6b0e;">'+r.cagr+'%</td>' +
-      '<td style="padding:10px 8px;text-align:center;font-size:12px;font-weight:700;color:#64748b;">12</td>' +
-      '<td style="padding:10px 8px;text-align:right;font-size:13px;font-weight:900;color:#16a34a;">₹'+slFmt(r.returns)+'</td>' +
+  var tableRows=validRows.map(function(r,i){
+    var n=r.years*12+r.months;
+    var bg=i%2===0?'#ffffff':'#f9f8ff';
+    var tBg=r.type==='S'?'#dcfce7':'#ede9fe';
+    var tC=r.type==='S'?'#16a34a':'#3c3197';
+    return '<tr style="background:'+bg+';border-bottom:1px solid #e4e2f0;">'+
+      '<td style="padding:10px 8px;text-align:center;font-size:12px;font-weight:800;color:#3c3197;">'+(i+1)+'</td>'+
+      '<td style="padding:10px 12px;font-size:12px;font-weight:700;color:#000;">'+r.fundName+'</td>'+
+      '<td style="padding:10px 8px;text-align:center;"><span style="background:'+tBg+';color:'+tC+';padding:3px 10px;border-radius:12px;font-size:11px;font-weight:800;">'+(r.type==='S'?'SIP':'LUMP')+'</span></td>'+
+      '<td style="padding:10px 8px;text-align:right;font-size:12px;font-weight:700;color:#000;">₹'+slFmtI(r.amount)+'</td>'+
+      '<td style="padding:10px 8px;text-align:center;font-size:12px;font-weight:700;color:#000;">'+r.years+'</td>'+
+      '<td style="padding:10px 8px;text-align:center;font-size:12px;font-weight:700;color:#000;">'+r.months+'</td>'+
+      '<td style="padding:10px 8px;text-align:center;font-size:12px;font-weight:800;color:#3c3197;">'+n+'</td>'+
+      '<td style="padding:10px 8px;text-align:center;font-size:12px;font-weight:800;color:#2d6b0e;">'+r.cagr+'%</td>'+
+      '<td style="padding:10px 8px;text-align:center;font-size:12px;font-weight:700;color:#64748b;">12</td>'+
+      '<td style="padding:10px 8px;text-align:right;font-size:13px;font-weight:900;color:#16a34a;">₹'+slFmt(r.returns)+'</td>'+
     '</tr>';
   }).join('');
 
-  var html = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">'+
+  var html='<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">'+
     '<title>Investment Blueprint — '+name+'</title>'+
     '<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">'+
-    '<style>'+
-    '*{box-sizing:border-box;margin:0;padding:0;}'+
-    'body{font-family:"Plus Jakarta Sans",sans-serif;background:#fff;color:#000;font-size:13px;padding:20px;}'+
-    '@page{margin:12mm 15mm;size:A4;}'+
-    '@media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}}'+
-    'table{width:100%;border-collapse:collapse;}'+
-    'th,td{border:1px solid #e4e2f0;}'+
-    '</style></head><body>'+
-
-    // Header
+    '<style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:"Plus Jakarta Sans",sans-serif;background:#fff;color:#000;font-size:13px;padding:20px;}@page{margin:12mm 15mm;size:A4;}@media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #e4e2f0;}</style>'+
+    '</head><body>'+
     '<div style="background:linear-gradient(135deg,#3c3197,#5247c8);border-radius:14px;padding:24px 28px;color:#fff;margin-bottom:20px;">'+
       '<div style="font-family:\'Playfair Display\',serif;font-size:24px;margin-bottom:4px;">✏️ My Investment Blueprint</div>'+
       '<div style="font-size:13px;opacity:.85;">Prepared for <strong>'+name+'</strong> &nbsp;·&nbsp; '+today+'</div>'+
-      (pan?'<div style="font-size:11px;opacity:.7;margin-top:2px;">PAN: '+pan+' &nbsp;·&nbsp; Risk Profile: '+risk+'</div>':'')+
+      '<div style="font-size:11px;opacity:.7;margin-top:2px;">Risk Profile: '+risk+'</div>'+
     '</div>'+
-
-    // Summary row
     '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">'+
-      '<div style="background:#f0eeff;border-radius:10px;padding:14px;border:1.5px solid #afa9ec;">'+
-        '<div style="font-size:10px;font-weight:800;color:#3c3197;text-transform:uppercase;margin-bottom:5px;">Total Funds</div>'+
-        '<div style="font-size:22px;font-weight:900;color:#3c3197;">'+validRows.length+'</div></div>'+
-      '<div style="background:#eef7d6;border-radius:10px;padding:14px;border:1.5px solid #7cc43a;">'+
-        '<div style="font-size:10px;font-weight:800;color:#2d6b0e;text-transform:uppercase;margin-bottom:5px;">Total Invested</div>'+
-        '<div style="font-size:22px;font-weight:900;color:#2d6b0e;">₹'+slFmt(totalInvested)+'</div></div>'+
-      '<div style="background:#f0eeff;border-radius:10px;padding:14px;border:1.5px solid #afa9ec;">'+
-        '<div style="font-size:10px;font-weight:800;color:#3c3197;text-transform:uppercase;margin-bottom:5px;">Wealth Gain</div>'+
-        '<div style="font-size:22px;font-weight:900;color:#16a34a;">+₹'+slFmt(totalGain)+'</div></div>'+
-      '<div style="background:linear-gradient(135deg,#3c3197,#5247c8);border-radius:10px;padding:14px;">'+
-        '<div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.8);text-transform:uppercase;margin-bottom:5px;">Expected Corpus</div>'+
-        '<div style="font-size:22px;font-weight:900;color:#fff;">₹'+slFmt(grandTotal)+'</div></div>'+
+      '<div style="background:#f0eeff;border-radius:10px;padding:14px;border:1.5px solid #afa9ec;"><div style="font-size:10px;font-weight:800;color:#3c3197;text-transform:uppercase;margin-bottom:5px;">Total Funds</div><div style="font-size:22px;font-weight:900;color:#3c3197;">'+validRows.length+'</div></div>'+
+      '<div style="background:#eef7d6;border-radius:10px;padding:14px;border:1.5px solid #7cc43a;"><div style="font-size:10px;font-weight:800;color:#2d6b0e;text-transform:uppercase;margin-bottom:5px;">Total Invested</div><div style="font-size:22px;font-weight:900;color:#2d6b0e;">₹'+slFmt(totalInvested)+'</div></div>'+
+      '<div style="background:#f0eeff;border-radius:10px;padding:14px;border:1.5px solid #afa9ec;"><div style="font-size:10px;font-weight:800;color:#3c3197;text-transform:uppercase;margin-bottom:5px;">Wealth Gain</div><div style="font-size:22px;font-weight:900;color:#16a34a;">+₹'+slFmt(totalGain)+'</div></div>'+
+      '<div style="background:linear-gradient(135deg,#3c3197,#5247c8);border-radius:10px;padding:14px;"><div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.8);text-transform:uppercase;margin-bottom:5px;">Expected Corpus</div><div style="font-size:22px;font-weight:900;color:#fff;">₹'+slFmt(grandTotal)+'</div></div>'+
     '</div>'+
-
-    // Main table
-    '<table>'+
-      '<thead>'+
-        '<tr style="background:#3c3197;color:#fff;">'+
-          '<th style="padding:10px 8px;font-size:11px;text-align:center;width:40px;">Sr</th>'+
-          '<th style="padding:10px 12px;font-size:11px;text-align:left;">Fund Name</th>'+
-          '<th style="padding:10px 8px;font-size:11px;text-align:center;width:60px;">S / L</th>'+
-          '<th style="padding:10px 8px;font-size:11px;text-align:right;width:100px;">Amount ₹</th>'+
-          '<th style="padding:10px 8px;font-size:11px;text-align:center;width:55px;">Years</th>'+
-          '<th style="padding:10px 8px;font-size:11px;text-align:center;width:55px;">Months</th>'+
-          '<th style="padding:10px 8px;font-size:11px;text-align:center;width:70px;">Total Mo.</th>'+
-          '<th style="padding:10px 8px;font-size:11px;text-align:center;width:65px;">CAGR %</th>'+
-          '<th style="padding:10px 8px;font-size:11px;text-align:center;width:55px;">Factor</th>'+
-          '<th style="padding:10px 8px;font-size:11px;text-align:right;width:110px;">Returns ₹</th>'+
-        '</tr>'+
-      '</thead>'+
-      '<tbody>'+tableRows+'</tbody>'+
-      '<tfoot>'+
-        '<tr style="background:#3c3197;color:#fff;">'+
-          '<td colspan="3" style="padding:12px;font-size:12px;font-weight:800;border-color:#5247c8;">Grand Total — '+validRows.length+' funds</td>'+
-          '<td style="padding:12px 8px;text-align:right;font-size:11px;font-weight:700;border-color:#5247c8;">₹'+slFmt(totalInvested)+'</td>'+
-          '<td colspan="4" style="padding:12px 8px;text-align:right;font-size:11px;font-weight:700;border-color:#5247c8;">Return: +'+gainPct+'%</td>'+
-          '<td style="border-color:#5247c8;"></td>'+
-          '<td style="padding:12px 8px;text-align:right;font-size:15px;font-weight:900;color:#a5f3a5;border-color:#5247c8;">₹'+slFmt(grandTotal)+'</td>'+
-        '</tr>'+
-      '</tfoot>'+
-    '</table>'+
-
-    // Footer
+    '<table><thead><tr style="background:#3c3197;color:#fff;">'+
+      '<th style="padding:10px 8px;font-size:11px;text-align:center;width:40px;">Sr</th>'+
+      '<th style="padding:10px 12px;font-size:11px;text-align:left;">Fund Name</th>'+
+      '<th style="padding:10px 8px;font-size:11px;text-align:center;width:60px;">S / L</th>'+
+      '<th style="padding:10px 8px;font-size:11px;text-align:right;width:100px;">Amount ₹</th>'+
+      '<th style="padding:10px 8px;font-size:11px;text-align:center;width:55px;">Years</th>'+
+      '<th style="padding:10px 8px;font-size:11px;text-align:center;width:55px;">Months</th>'+
+      '<th style="padding:10px 8px;font-size:11px;text-align:center;width:70px;">Total Mo.</th>'+
+      '<th style="padding:10px 8px;font-size:11px;text-align:center;width:65px;">CAGR %</th>'+
+      '<th style="padding:10px 8px;font-size:11px;text-align:center;width:55px;">Factor</th>'+
+      '<th style="padding:10px 8px;font-size:11px;text-align:right;width:110px;">Returns ₹</th>'+
+    '</tr></thead>'+
+    '<tbody>'+tableRows+'</tbody>'+
+    '<tfoot><tr style="background:#3c3197;color:#fff;">'+
+      '<td colspan="3" style="padding:12px;font-size:12px;font-weight:800;border-color:#5247c8;">Grand Total — '+validRows.length+' funds</td>'+
+      '<td style="padding:12px 8px;text-align:right;font-size:11px;font-weight:700;border-color:#5247c8;">₹'+slFmt(totalInvested)+'</td>'+
+      '<td colspan="4" style="padding:12px 8px;text-align:right;font-size:11px;font-weight:700;border-color:#5247c8;">Return: +'+gainPct+'%</td>'+
+      '<td style="border-color:#5247c8;"></td>'+
+      '<td style="padding:12px 8px;text-align:right;font-size:15px;font-weight:900;color:#a5f3a5;border-color:#5247c8;">₹'+slFmt(grandTotal)+'</td>'+
+    '</tr></tfoot></table>'+
     '<div style="margin-top:20px;background:#f0eeff;border-radius:10px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;">'+
       '<div><div style="font-size:13px;font-weight:800;color:#1a1240;">Prepared for: '+name+'</div>'+
-      (wa?'<div style="font-size:11px;color:#64748b;">WhatsApp: '+wa+'</div>':'')+
+      (wa?'<div style="font-size:11px;color:#64748b;margin-top:2px;">WhatsApp: '+wa+'</div>':'')+
       (email?'<div style="font-size:11px;color:#64748b;">Email: '+email+'</div>':'')+
       '</div>'+
       '<div style="text-align:right;"><div style="font-size:14px;font-weight:800;color:#3c3197;">Kaustubh Valimbe</div>'+
       '<div style="font-size:12px;color:#64748b;">AMFI Certified MFD</div>'+
       '<div style="font-size:11px;color:#94a3b8;">Ace Financial Services</div></div>'+
     '</div>'+
-
     '<div style="margin-top:14px;background:#f8fafc;border-radius:8px;padding:12px 16px;font-size:10px;color:#94a3b8;line-height:1.7;">'+
       '⚠️ <strong>Disclaimer:</strong> Mutual Fund investments are subject to market risks. Past performance is not indicative of future returns. '+
       'Returns shown are projections based on assumed CAGR — actual returns may vary. '+
       '<strong>Kaustubh Valimbe · AMFI Certified MFD · Ace Financial Services</strong>'+
     '</div>'+
+    '<script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>'+
+    '</body></html>';
 
-    '<script>'+
-    'window.onload=function(){setTimeout(function(){window.print();},600);};'+
-    '<\/script></body></html>';
-
-  var w = window.open('','_blank');
+  var w=window.open('','_blank');
   w.document.write(html);
   w.document.close();
 }
