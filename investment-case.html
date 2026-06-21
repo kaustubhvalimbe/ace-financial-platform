@@ -2855,7 +2855,7 @@ buildSteps();updHor();
 // ── STP MODE — INDEPENDENT FUNCTIONS ─────────────────────────
 // ── INIT ──────────────────────────────────────────────────────
 var STP_FREQ = 'weekly', STP_STYPE = 'fixed';
-var STP_FUNDS = [{id:1,label:'Fund 1',desc:'',splitPct:100,cagr:12,yr:5,mo:0}];
+var STP_FUNDS = [{id:1,label:'Fund 1',desc:'',fund:null,splitPct:100,cagr:12,yr:5,mo:0}];
 var STP_FID = 2;
 
 function stpInit(){
@@ -3029,22 +3029,29 @@ function stpGo(n){
 
 // ── FUND ROWS ──────────────────────────────────────────────────
 function stpBuildFunds(){
+  loadAMFIForCMB();
   var el = document.getElementById('stp-funds-area');
   el.innerHTML='';
   var ib=document.createElement('div');
   ib.className='ibox blue';
-  ib.innerHTML='<span style="font-size:18px;flex-shrink:0">ℹ️</span><div>No actual fund selected — named Fund 1, Fund 2 etc. Enter expected CAGR % and Period (Y &amp; M) from keyboard. Split % decides how each STP transfer is divided.</div>';
+  ib.innerHTML='<span style="font-size:18px;flex-shrink:0">ℹ️</span><div>Search and select the actual AMFI-registered fund for each row (optional — leave blank to keep a placeholder name like Fund 1, Fund 2). Enter expected CAGR % and Period (Y &amp; M) from keyboard. Split % decides how each STP transfer is divided.</div>';
   el.appendChild(ib);
 
   STP_FUNDS.forEach(function(f,i){
     var row=document.createElement('div');
-    row.style.cssText='display:grid;grid-template-columns:100px 1fr 110px 100px 130px 36px;gap:12px;align-items:center;padding:12px 16px;background:#fff;border:1.5px solid var(--bd);border-radius:10px;margin-bottom:10px;';
+    row.style.cssText='display:grid;grid-template-columns:100px 1fr 100px 100px 130px 36px;gap:12px;align-items:center;padding:12px 16px;background:#fff;border:1.5px solid var(--bd);border-radius:10px;margin-bottom:10px;';
     row.innerHTML=
       '<div><div style="padding:6px 10px;background:var(--p4);color:var(--p1);border-radius:7px;font-size:12px;font-weight:800;text-align:center;">'+f.label+'</div></div>'+
-      '<input class="inp" style="padding:8px;font-size:12px;" placeholder="Description (optional)" value="'+f.desc+'" oninput="STP_FUNDS['+i+'].desc=this.value">'+
+      '<div class="fund-search-wrap" id="stp-sw-'+i+'">'+
+        (f.fund
+          ? '<div class="fund-selected-name" onclick="stpClearFund('+i+')"><span>'+(f.fund.name.length>40?f.fund.name.substring(0,40)+'…':f.fund.name)+'</span><span class="change-btn">Change</span></div>'
+          : '<span class="fund-search-icon">🔍</span><input class="fund-search-inp" type="text" placeholder="Search AMFI fund name..." id="stp-si-'+i+'" value="'+f.desc+'" oninput="stpSearchFunds('+i+',this.value)" onfocus="stpShowDropdown('+i+')" autocomplete="off">'
+        )+
+        '<div class="fund-dropdown" id="stp-dd-'+i+'"></div>'+
+      '</div>'+
       '<div>'+
         '<div class="lbl" style="margin-bottom:4px">Split %</div>'+
-        '<input class="inp inp-p" style="padding:8px;font-size:13px;" type="number" placeholder="100" value="'+f.splitPct+'" min="1" max="100" oninput="STP_FUNDS['+i+'].splitPct=parseInt(this.value)||0">'+
+        '<input class="inp inp-p" id="stp-split-'+i+'" style="padding:8px;font-size:13px;" type="number" placeholder="100" value="'+f.splitPct+'" min="1" max="100" oninput="stpSplitChanged('+i+',this.value)">'+
       '</div>'+
       '<div>'+
         '<div class="lbl" style="margin-bottom:4px">CAGR %</div>'+
@@ -3067,10 +3074,73 @@ function stpBuildFunds(){
   el.appendChild(ab);
 }
 function stpAddFund(){
-  STP_FUNDS.push({id:STP_FID++,label:'Fund '+STP_FUNDS.length+1,desc:'',splitPct:Math.floor(100/STP_FUNDS.length+1),cagr:12,yr:5,mo:0});
+  var n = STP_FUNDS.length + 1;
+  STP_FUNDS.push({id:STP_FID++,label:'Fund '+n,desc:'',fund:null,splitPct:0,cagr:12,yr:5,mo:0});
+  var base = Math.floor(100/n), rem = 100 - base*n;
+  STP_FUNDS.forEach(function(f,i){ f.splitPct = base + (i < rem ? 1 : 0); });
   stpBuildFunds();
 }
-function stpRmFund(id){ FUNDS=STP_FUNDS.filter(function(f){return f.id!==id;}); stpBuildFunds(); }
+function stpRmFund(id){
+  STP_FUNDS=STP_FUNDS.filter(function(f){return f.id!==id;});
+  if(STP_FUNDS.length){
+    var n=STP_FUNDS.length, base=Math.floor(100/n), rem=100-base*n;
+    STP_FUNDS.forEach(function(f,i){ f.splitPct = base + (i<rem?1:0); });
+  }
+  stpBuildFunds();
+}
+function stpSplitChanged(idx, val){
+  var v = parseInt(val); if(isNaN(v)||v<0) v=0; if(v>100) v=100;
+  STP_FUNDS[idx].splitPct = v;
+  var others = [];
+  STP_FUNDS.forEach(function(f,i){ if(i!==idx) others.push(i); });
+  if(others.length){
+    var remaining = 100 - v;
+    var base = Math.floor(remaining / others.length);
+    var rem  = remaining - base*others.length;
+    others.forEach(function(i,k){
+      STP_FUNDS[i].splitPct = base + (k < rem ? 1 : 0);
+      var inp = document.getElementById('stp-split-'+i);
+      if(inp) inp.value = STP_FUNDS[i].splitPct;
+    });
+  }
+}
+
+// ── STP FUND SEARCH (reuses the AMFI dataset loaded for the Custom Blueprint builder) ──
+var stpSearchTimers = {};
+function stpShowDropdown(idx){
+  if(!CMB.loaded) loadAMFIForCMB();
+}
+function stpSearchFunds(idx, query){
+  clearTimeout(stpSearchTimers[idx]);
+  STP_FUNDS[idx].desc = query;
+  var dd = document.getElementById('stp-dd-'+idx);
+  if(!dd) return;
+  if(!query || query.length < 2){ dd.classList.remove('show'); return; }
+  dd.innerHTML = '<div class="fd-loading">🔍 Searching...</div>';
+  dd.classList.add('show');
+  stpSearchTimers[idx] = setTimeout(async function(){
+    if(!CMB.loaded) await loadAMFIForCMB();
+    var q = query.toLowerCase();
+    var results = CMB.allFunds.filter(function(f){ return f.name.toLowerCase().includes(q); }).slice(0,12);
+    if(results.length===0){ dd.innerHTML='<div class="fd-empty">No funds found. Try different keywords.</div>'; return; }
+    dd.innerHTML = results.map(function(f){
+      return '<div class="fd-item" onclick="stpSelectFund('+idx+','+f.code+',\''+f.name.replace(/'/g,"\\'")+'\',\''+(f.amc||'').replace(/'/g,"\\'")+'\')">'+
+        '<div class="fd-item-name">'+f.name+'</div>'+
+        '<div class="fd-item-amc">'+(f.amc||'')+'</div>'+
+      '</div>';
+    }).join('');
+  }, 350);
+}
+function stpSelectFund(idx, code, name, amc){
+  document.getElementById('stp-dd-'+idx)?.classList.remove('show');
+  STP_FUNDS[idx].fund = {code:code, name:name, amc:amc};
+  stpBuildFunds();
+}
+function stpClearFund(idx){
+  STP_FUNDS[idx].fund = null;
+  STP_FUNDS[idx].desc = '';
+  stpBuildFunds();
+}
 
 // ── SCHEDULE ──────────────────────────────────────────────────
 function stpBuildSchedule(){
@@ -3081,7 +3151,7 @@ function stpBuildSchedule(){
   var yr     = parseInt(document.getElementById('stp-v-yr').value)||5;
   var mo     = parseInt(document.getElementById('stp-v-mo').value)||0;
   var mR     = (lcagr/100)/12;
-  var dpi    = {daily:1, weekly:7, monthly:30.44, quarterly:91.31}[FREQ];
+  var dpi    = {daily:1, weekly:7, monthly:30.44, quarterly:91.31}[STP_FREQ];
 
   var result1 = stpComputeTransfers();
   var transfers = result1.transfers;
@@ -3166,8 +3236,8 @@ function stpBuildBlueprint(){
   var totM   = yr*12+mo;
   var startDt= document.getElementById('stp-v-start').value;
   var mR     = (lcagr/100)/12;
-  var dpi    = {daily:1, weekly:7, monthly:30.44, quarterly:91.31}[FREQ];
-  var freqLbl= {daily:'Daily',weekly:'Weekly',monthly:'Monthly',quarterly:'Quarterly'}[FREQ];
+  var dpi    = {daily:1, weekly:7, monthly:30.44, quarterly:91.31}[STP_FREQ];
+  var freqLbl= {daily:'Daily',weekly:'Weekly',monthly:'Monthly',quarterly:'Quarterly'}[STP_FREQ];
 
   var {transfers, remainingLiquid} = stpComputeTransfers();
   if(!transfers.length){ el.innerHTML='<div class="ibox red">Please complete all fields first.</div>'; return; }
@@ -3252,7 +3322,7 @@ function stpBuildBlueprint(){
     fc2.innerHTML=
       '<div class="fc"><div class="fc-hdr" style="background:'+clrs[fi%4]+'">'+
       '<div><div style="font-size:11px;opacity:.8;margin-bottom:2px">EQUITY TARGET · FUND '+(fi+1)+'</div>'+
-      '<div style="font-size:16px;font-weight:800">📈 '+f.label+(f.desc?' — '+f.desc:'')+'</div></div>'+
+      '<div style="font-size:16px;font-weight:800">📈 '+f.label+(f.fund?' — '+f.fund.name:(f.desc?' — '+f.desc:''))+'</div></div>'+
       '<div style="text-align:right"><div style="font-size:11px;opacity:.8">Expected CAGR</div><div style="font-size:19px;font-weight:800">'+f.cagr.toFixed(1)+'%</div></div>'+
       '</div><div class="fc-body"><div class="sg">'+
       '<div class="st"><div class="st-l">STP Split</div><div class="st-v">'+f.splitPct+'%</div></div>'+
@@ -3267,7 +3337,7 @@ function stpBuildBlueprint(){
       '<div style="background:#f8f7ff;border:1px solid var(--bd);border-radius:8px;padding:10px 14px;font-size:11px;color:var(--t2);margin-bottom:12px;line-height:1.8">'+
       '<strong>Date Logic:</strong><br>'+
       'Entry 1: ₹'+stpFmtI(Math.round(perAmt))+' on <strong>'+stpFmtD(firstXfer)+'</strong> → matures <strong>'+stpFmtD(firstMat)+'</strong> ('+fundM+' months)<br>'+
-      'Entry 2: ₹'+stpFmtI(Math.round(perAmt))+' on <strong>'+stpFmtD(stpGetTransferDate(document.getElementById("v-ft").value, STP_FREQ, 1))+'</strong> → matures <strong>'+stpFmtD(stpGetMaturityDate(stpGetTransferDate(document.getElementById("v-ft").value, STP_FREQ, 1), f.yr, f.mo))+'</strong> ('+fundM+' months)<br>'+
+      'Entry 2: ₹'+stpFmtI(Math.round(perAmt))+' on <strong>'+stpFmtD(stpGetTransferDate(document.getElementById("stp-v-ft").value, STP_FREQ, 1))+'</strong> → matures <strong>'+stpFmtD(stpGetMaturityDate(stpGetTransferDate(document.getElementById("stp-v-ft").value, STP_FREQ, 1), f.yr, f.mo))+'</strong> ('+fundM+' months)<br>'+
       '...<br>'+
       'Entry '+transfers.length+': ₹'+stpFmtI(Math.round(perAmt))+' on <strong>'+stpFmtD(lastXfer)+'</strong> → matures <strong>'+stpFmtD(lastMat)+'</strong> ('+fundM+' months)'+
       '</div>'+
