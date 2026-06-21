@@ -993,7 +993,7 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
     <div class="ptitle">Investor <em>Details</em></div>
     <div class="psub">Enter investor information — then add funds row by row in the next step.</div>
     <div class="inp-card">
-      <div class="inp-row" style="grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;">
+      <div class="inp-row" style="grid-template-columns:1fr 1fr 1fr;gap:16px;">
         <div class="inp-group">
           <div class="inp-label" style="font-size:13px;margin-bottom:8px;">Investor Name</div>
           <input class="inp-field" id="v-name" type="text" placeholder="Investor name..."
@@ -1008,16 +1008,6 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
           <div class="inp-label" style="font-size:13px;margin-bottom:8px;">Email Address</div>
           <input class="inp-field" id="v-email" type="email" placeholder="investor@email.com"
             style="font-size:14px;padding:13px 14px;height:50px;width:100%;">
-        </div>
-        <div class="inp-group">
-          <div class="inp-label" style="font-size:13px;margin-bottom:8px;">Risk Profile</div>
-          <select class="inp-field" id="v-risk"
-            style="font-size:14px;padding:13px 14px;height:50px;width:100%;">
-            <option value="Conservative">Conservative</option>
-            <option value="Moderate" selected>Moderate</option>
-            <option value="Aggressive">Aggressive</option>
-            <option value="Very Aggressive">Very Aggressive</option>
-          </select>
         </div>
       </div>
     </div>
@@ -1443,11 +1433,11 @@ function setMode(m){
 }
 
 // ══ STEPS ══
-const LBLS=["Investor Details","Plan Preference","Fund Selection (Cart)","Allocation",""];
+const LBLS=["Investor Details","Fund Selection (Cart)"];
 function buildSteps(){
   document.getElementById("steps-row").innerHTML=LBLS.map((l,i)=>{
     const n=i+1,cls=n===ST.step?"act":n<ST.step?"done":"",lc=n===ST.step?"act":"";
-    return `<div class="step"><div class="sn ${cls}" id="sn${n}">${n<ST.step?"✓":n}</div><div class="sl ${lc}">${l}</div></div>${n<5?`<div class="sline ${n<ST.step?"done":""}" id="ln${n}"></div>`:""}`;
+    return `<div class="step"><div class="sn ${cls}" id="sn${n}">${n<ST.step?"✓":n}</div><div class="sl ${lc}">${l}</div></div>${n<LBLS.length?`<div class="sline ${n<ST.step?"done":""}" id="ln${n}"></div>`:""}`;
   }).join("");
 }
 
@@ -1487,8 +1477,10 @@ function validateStep3(){if(ST.selClasses.length===0){alert("Please select at le
 
 // ══ STEP 1 ══
 function updHor(){
-  const y=parseInt(document.getElementById("v-yrs").value)||0;
-  const m=parseInt(document.getElementById("v-mos").value)||0;
+  const ey=document.getElementById("v-yrs"), em=document.getElementById("v-mos");
+  if(!ey||!em)return;
+  const y=parseInt(ey.value)||0;
+  const m=parseInt(em.value)||0;
   const el=document.getElementById("v-total");if(!el)return;
   el.textContent=y+"Y "+m+"M = "+(y*12+m)+" Months";
 }
@@ -2809,11 +2801,20 @@ function resetCMB() {
 // ── EXTEND setMode TO HANDLE CUSTOM ──────────────────────────────────
 const _origSetMode = setMode;
 setMode = function(m) {
+  // 'stp' and 'analyse' use their own full-screen sections (#stp-mode-section /
+  // #analyse-mode-section) which only the original setMode knows how to show —
+  // delegate to it instead of falling through to the wiz/custom-only logic below.
+  if(m === 'stp' || m === 'analyse') { _origSetMode(m); return; }
   // Hide/show sections
   const wizSec  = document.getElementById('wiz-section');
   const resSec  = document.getElementById('result-section');
   const cmbSec  = document.getElementById('custom-section');
   const cmbRes  = document.getElementById('cmb-result-section');
+  // Always close the stp/analyse full-screen sections when moving to sip/custom
+  const stpSec2 = document.getElementById('stp-mode-section');
+  const anaSec  = document.getElementById('analyse-mode-section');
+  if(stpSec2) stpSec2.style.display = 'none';
+  if(anaSec)  anaSec.style.display  = 'none';
 
   if(m === 'custom') {
     wizSec.style.display  = 'none';
@@ -2852,28 +2853,21 @@ restart = function() {
 buildSteps();updHor();
 
 // ── STP MODE — INDEPENDENT FUNCTIONS ─────────────────────────
-function stpInit(){
-  var today = new Date();
-  var ft = new Date(today); ft.setDate(ft.getDate()+7);
-  var vs = document.getElementById('stp-v-start');
-  var vft= document.getElementById('stp-v-ft');
-  if(vs && !vs.value) vs.value = stpFmt0(today);
-  if(vft && !vft.value) vft.value = stpFmt0(ft);
-  // Reset to step 1
-  document.querySelectorAll('.stp-sec').forEach(function(s){s.classList.remove('stp-show');});
-  var s1=document.getElementById('stp-sec1');
-  if(s1) s1.classList.add('stp-show');
-}
-
 // ── INIT ──────────────────────────────────────────────────────
-var STP_STP_FREQ = 'weekly', STP_STYPE = 'fixed';
-var STP_STP_FUNDS = [{id:1,label:'Fund 1',desc:'',splitPct:100,cagr:12,yr:5,mo:0}];
-var STP_STP_FID = 2;
+var STP_FREQ = 'weekly', STP_STYPE = 'fixed';
+var STP_FUNDS = [{id:1,label:'Fund 1',desc:'',splitPct:100,cagr:12,yr:5,mo:0}];
+var STP_FID = 2;
 
 function stpInit(){
   var t = new Date(), ft = new Date(t); ft.setDate(ft.getDate()+7);
-  document.getElementById('stp-v-start').value = stpFmt0(t);
-  document.getElementById('stp-v-ft').value = stpFmt0(ft);
+  var vs = document.getElementById('stp-v-start');
+  var vft = document.getElementById('stp-v-ft');
+  if(vs) vs.value = stpFmt0(t);
+  if(vft) vft.value = stpFmt0(ft);
+  // Reset to step 1 whenever STP mode is (re-)entered
+  document.querySelectorAll('.stp-sec').forEach(function(s){s.classList.remove('stp-show');});
+  var s1=document.getElementById('stp-sec1');
+  if(s1) s1.classList.add('stp-show');
   stpLiveCheck();
 };
 
@@ -2930,7 +2924,7 @@ function stpLumpFV(P, cagrPct, months){
 // ── CONTROLS ──────────────────────────────────────────────────
 function stpSetFreq(f, btn){
   STP_FREQ = f;
-  document.querySelectorAll('.fq').forEach(function(b){b.classList.remove('on');});
+  document.querySelectorAll('.stp-fq').forEach(function(b){b.classList.remove('on');});
   btn.classList.add('on');
   var lbl = {daily:'Days',weekly:'Weeks',monthly:'Months',quarterly:'Quarters'}[f];
   document.getElementById('stp-cnt-lbl').innerHTML =
@@ -2938,7 +2932,7 @@ function stpSetFreq(f, btn){
   stpLiveCheck();
 }
 function stpSetType(t){
-  STYPE=t;
+  STP_STYPE=t;
   document.getElementById('stp-tgl-f').classList.toggle('on',t==='fixed');
   document.getElementById('stp-tgl-x').classList.toggle('on',t==='flexi');
   document.getElementById('stp-amt-field').style.display = t==='fixed'?'':'none';
@@ -3029,7 +3023,7 @@ function stpGo(n){
   if(n===3) stpBuildSchedule();
   if(n===4) stpBuildBlueprint();
   document.querySelectorAll('.stp-sec').forEach(function(s){s.classList.remove('stp-show');});
-  document.getElementById('sec'+n).classList.add('stp-show');
+  document.getElementById('stp-sec'+n).classList.add('stp-show');
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -5042,6 +5036,7 @@ function slGoToFunds(){
   var s1=document.getElementById('step1'); var s2=document.getElementById('step2');
   if(s1) s1.classList.remove('show');
   if(s2) s2.classList.add('show');
+  ST.step=2; buildSteps();
   window.scrollTo({top:0,behavior:'smooth'});
   if(!SL_FUNDS_LOADED) slLoadFunds();
   if(SL_ROWS.length===0){ slAddRow(); slAddRow(); slAddRow(); }
@@ -5051,6 +5046,7 @@ function slBackToStep1(){
   var s1=document.getElementById('step1'); var s2=document.getElementById('step2');
   if(s2) s2.classList.remove('show');
   if(s1) s1.classList.add('show');
+  ST.step=1; buildSteps();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -5293,7 +5289,6 @@ function slGenerate(){
   var name=(document.getElementById('v-name')||{value:''}).value||'Valued Investor';
   var wa=(document.getElementById('v-wa')||{value:''}).value||'';
   var email=(document.getElementById('v-email')||{value:''}).value||'';
-  var risk=(document.getElementById('v-risk')||{value:''}).value||'Moderate';
   var _d=new Date(),today=String(_d.getDate()).padStart(2,'0')+'/'+String(_d.getMonth()+1).padStart(2,'0')+'/'+_d.getFullYear();
 
   // Sync any typed-but-not-saved fund names from input fields
@@ -5340,7 +5335,6 @@ function slGenerate(){
     '<div style="background:linear-gradient(135deg,#3c3197,#5247c8);border-radius:14px;padding:24px 28px;color:#fff;margin-bottom:20px;">'+
       '<div style="font-family:\'Playfair Display\',serif;font-size:24px;margin-bottom:4px;">✏️ My Investment Blueprint</div>'+
       '<div style="font-size:13px;opacity:.85;">Prepared for <strong>'+name+'</strong> &nbsp;·&nbsp; '+today+'</div>'+
-      '<div style="font-size:11px;opacity:.7;margin-top:2px;">Risk Profile: '+risk+'</div>'+
     '</div>'+
     '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">'+
       '<div style="background:#f0eeff;border-radius:10px;padding:14px;border:1.5px solid #afa9ec;"><div style="font-size:10px;font-weight:800;color:#3c3197;text-transform:uppercase;margin-bottom:5px;">Total Funds</div><div style="font-size:22px;font-weight:900;color:#3c3197;">'+validRows.length+'</div></div>'+

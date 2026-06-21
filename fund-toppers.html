@@ -581,11 +581,11 @@ function getSubCat(name) {
   if(u.includes('NIFTY SMALLCAP')||u.includes('NIFTY SMALL CAP')||u.includes('SMALLCAP 250')) return 'Nifty Smallcap 250';
   if(u.includes('NIFTY MIDCAP')||u.includes('NIFTY MID CAP')||u.includes('MIDCAP 150')) return 'Nifty Midcap 150';
   if(u.includes('NIFTY NEXT 50')||u.includes('NIFTY NEXT50')||u.includes('JUNIOR NIFTY')) return 'Nifty Next 50';
-  if(u.includes('NIFTY 50')||u.includes('NIFTY50')||(u.includes('NIFTY')&&u.includes('INDEX')&&!u.includes('MIDCAP')&&!u.includes('SMALL')&&!u.includes('NEXT'))) return 'Nifty 50';
+  if(u.includes('NIFTY 50')||u.includes('NIFTY50')) return 'Nifty 50';
   if(u.includes('SENSEX')||u.includes('BSE 30')||u.includes('BSE30')) return 'Sensex';
   if(u.includes('GOLD')&&(u.includes('ETF')||u.includes('FOF')||u.includes('FUND OF'))) return 'Gold ETF';
   if(u.includes('ETF')) return 'Sector ETF';
-  if(u.includes('INDEX FUND')||u.includes('INDEX PLAN')) return 'Nifty 50';
+  if(u.includes('INDEX FUND')||u.includes('INDEX PLAN')) return 'Sector ETF';
   // Gilt
   if(u.includes('GILT')&&(u.includes('10')||u.includes('CONSTANT'))) return 'Gilt 10Y Constant';
   if(u.includes('GILT')) return 'Gilt';
@@ -626,8 +626,10 @@ function getSubCat(name) {
   if(u.includes('MID CAP')||u.includes('MIDCAP')||u.includes('EMERGING BLUECHIP')) return 'Mid Cap';
   if(u.includes('DIVIDEND YIELD')||u.includes('DIVIDEND OPPORTUN')) return 'Dividend Yield';
   if(u.includes('VALUE')||u.includes('CONTRA')) return 'Value/Contra';
-  if(u.includes('THEMATIC')||u.includes('SECTOR')||u.includes('INFRA')||u.includes('PHARMA')||u.includes('BANKING')||u.includes('TECH')||u.includes('AUTO')||u.includes('DEFENCE')||u.includes('ENERGY')||u.includes('MANUFACT')||u.includes('DIGITAL')||u.includes('MNC')||u.includes('PSU')) return 'Thematic/Sectoral';
-  return 'Flexi Cap'; // default equity
+  if(u.includes('THEMATIC')||u.includes('SECTOR')||u.includes('INFRA')||u.includes('PHARMA')||u.includes('BANKING')||u.includes('TECH')||u.includes('AUTO')||u.includes('DEFENCE')||u.includes('ENERGY')||u.includes('MANUFACT')||u.includes('DIGITAL')||u.includes('MNC')||u.includes('PSU')||u.includes('FMCG')||u.includes('CONSUMPTION')||u.includes('CONSUMER')||u.includes('ESG')||u.includes('QUALITY')||u.includes('SPECIAL SITUATIONS')||u.includes('SPECIAL OPPORTUN')||u.includes('BUSINESS CYCLE')||u.includes('OPPORTUNIT')||u.includes('INNOVAT')||u.includes('HOUSING')||u.includes('REALTY')||u.includes('METAL')||u.includes('HEALTHCARE')||u.includes('FINANCIAL SERVICES')||u.includes('MOMENTUM')||u.includes('LOW VOL')||u.includes('ALPHA')||u.includes('EQUAL WEIGHT')) return 'Thematic/Sectoral';
+  // Funds that don't explicitly name a SEBI equity sub-category are not assumed to be Flexi Cap —
+  // routed to a non-displayed bucket so they never pollute a real category filter.
+  return 'Other Equity';
 }
 
 function xAMC(name) {
@@ -1192,8 +1194,9 @@ function renderNavChart(data, period){
   // Replace canvas with SVG
   var wrap = document.getElementById('nav-canvas');
   if(wrap){
-    var parent = wrap.parentElement;
-    parent.innerHTML = svg;
+    // Write SVG into nav-canvas itself — keeps element intact for re-renders
+    wrap.innerHTML = svg;
+    wrap.style.display = 'block';
   }
 
   // Stats + Full CAGR bar for all periods

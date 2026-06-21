@@ -777,7 +777,7 @@ function getSubCat(name,cat){
     if(u.includes('NIFTY NEXT 50')||u.includes('JUNIOR NIFTY')||u.includes('JR NIFTY')) return 'Nifty Next 50';
     if(u.includes('NIFTY 100')) return 'Nifty 100';
     if(u.includes('NIFTY 500')) return 'Nifty 500';
-    if(u.includes('NIFTY 50')||u.includes('NIFTY50')||u.includes('NIFTY INDEX')||(u.includes('NIFTY')&&!u.includes('MIDCAP')&&!u.includes('SMALL')&&!u.includes('100')&&!u.includes('500')&&!u.includes('NEXT'))) return 'Nifty 50';
+    if(u.includes('NIFTY 50')||u.includes('NIFTY50')||u.includes('NIFTY INDEX')) return 'Nifty 50';
     if(u.includes('SENSEX')||u.includes('BSE 30')||u.includes('BSE30')) return 'Sensex';
     if(u.includes('DEBT')||u.includes('BOND INDEX')||u.includes('GSEC')||u.includes('SDL')) return 'Debt Index';
     return 'Sector ETF';
