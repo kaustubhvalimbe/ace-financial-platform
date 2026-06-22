@@ -3319,205 +3319,217 @@ function stpBuildSchedule(){
 // ── BLUEPRINT ─────────────────────────────────────────────────
 
 function stpBuildBlueprint(){
-  var el=document.getElementById('stp-bp-area'); el.innerHTML='';
-  var name = document.getElementById('stp-v-name').value||'Valued Investor';
-  var today = stpFmtD(stpFmt0(new Date()));
+  var el = document.getElementById('stp-bp-area');
+  el.innerHTML = '';
+  try {
+    var name  = document.getElementById('stp-v-name').value || 'Valued Investor';
+    var today = stpFmtD(stpFmt0(new Date()));
 
-  // Grand totals across all cycles
-  var grandLump=0, grandXfer=0, grandEquity=0, grandInt=0;
+    var grandLump=0, grandXfer=0, grandEquity=0;
+    var efClrs = [
+      'linear-gradient(135deg,#167a12,#4aaa1e)',
+      'linear-gradient(135deg,#0e6b8a,#1a9cc7)',
+      'linear-gradient(135deg,#7a3b10,#c96e2a)',
+      'linear-gradient(135deg,#5c1a7a,#9b3dbf)'
+    ];
 
-  STP_CYCLES.forEach(function(cyc, ci){
-    var freqLbl={daily:'Daily',weekly:'Weekly',monthly:'Monthly',quarterly:'Quarterly'}[cyc.freq]||'Weekly';
-    var liq=cyc.liquid.amount||0, lcagr=cyc.liquid.cagr||7, mR=(lcagr/100)/12;
-    var dpi={daily:1,weekly:7,monthly:30.44,quarterly:91.31}[cyc.freq]||7;
-    grandLump += liq;
+    STP_CYCLES.forEach(function(cyc, ci){
+      var freqLbl = {daily:'Daily',weekly:'Weekly',monthly:'Monthly',quarterly:'Quarterly'}[cyc.freq] || 'Weekly';
+      var liq     = cyc.liquid.amount  || 0;
+      var lcagr   = cyc.liquid.cagr    || 7;
+      var mR      = (lcagr/100)/12;
+      var dpi     = {daily:1, weekly:7, monthly:30.44, quarterly:91.31}[cyc.freq] || 7;
+      var liqName = cyc.liquid.fund ? cyc.liquid.fund.name : 'Liquid Fund';
+      var label   = 'STP Cycle ' + (ci+1);
+      grandLump  += liq;
 
-    // ── Hero per cycle ──
-    var cycleCorpus=0, cycleXfer=0, cycleInt=0, cycleRemaining=liq;
-    cyc.equityFunds.forEach(function(ef){
-      var res=stpComputeCycleEF(cyc,ef);
-      var txTotal=res.transfers.reduce(function(s,t){return s+t.amount;},0);
-      var bal=liq, tInt=0;
-      res.transfers.forEach(function(t){ var i=bal*mR*(dpi/30.44); tInt+=i; bal=bal+i-t.amount; });
-      cycleXfer += txTotal; cycleInt += tInt;
-      var fundM=ef.yr*12+ef.mo||60;
-      res.transfers.forEach(function(t){cycleCorpus+=stpLumpFV(t.amount*(ef.amtPerXfer/Math.max(ef.amtPerXfer,1))*(ef.splitPct||100)/100, ef.cagr, fundM);});
-      // simpler per-ef corpus
-      var perFV=stpLumpFV(1,ef.cagr,ef.yr*12+ef.mo||60);
-      cycleCorpus = 0; // recalc below properly
-    });
-    // Proper corpus calc
-    cycleCorpus=0;
-    cyc.equityFunds.forEach(function(ef){
-      var res=stpComputeCycleEF(cyc,ef);
-      var fundM=ef.yr*12+ef.mo||60;
-      res.transfers.forEach(function(t){ cycleCorpus+=stpLumpFV(t.amount,ef.cagr,fundM); });
-      cycleXfer=res.transfers.reduce(function(s,t){return s+t.amount;},cycleXfer-res.transfers.reduce(function(s,t){return s+t.amount;},0));
-    });
-    // Recalc cleanly
-    cycleXfer=0; cycleCorpus=0; cycleInt=0;
-    cyc.equityFunds.forEach(function(ef){
-      var res=stpComputeCycleEF(cyc,ef);
-      var fundM=ef.yr*12+ef.mo||60;
-      var txTotal=res.transfers.reduce(function(s,t){return s+t.amount;},0);
-      cycleXfer+=txTotal;
-      res.transfers.forEach(function(t){cycleCorpus+=stpLumpFV(t.amount,ef.cagr,fundM);});
-    });
-    var bal=liq; cycleInt=0;
-    // Use first EF's transfer sequence to estimate liquid interest
-    var firstEF=cyc.equityFunds[0];
-    stpComputeCycleEF(cyc,firstEF).transfers.forEach(function(t){
-      var interest=bal*mR*(dpi/30.44); cycleInt+=interest; bal=bal+interest-t.amount;
-    });
-    cycleRemaining=Math.max(0,bal);
-    grandXfer+=cycleXfer; grandEquity+=cycleCorpus; grandInt+=cycleInt;
+      // ── Per-cycle totals ──────────────────────────────────────
+      var cycleXfer   = 0;
+      var cycleCorpus = 0;
+      var cycleInt    = 0;
+      var cycleRemaining = liq;
 
-    var liqName=cyc.liquid.fund?cyc.liquid.fund.name:'Liquid Fund';
-    var cycleLabel='STP Cycle '+(ci+1);
+      cyc.equityFunds.forEach(function(ef){
+        var res   = stpComputeCycleEF(cyc, ef);
+        var fundM = (ef.yr||0)*12 + (ef.mo||0) || 60;
+        res.transfers.forEach(function(t){
+          cycleXfer   += t.amount;
+          cycleCorpus += stpLumpFV(t.amount, ef.cagr||12, fundM);
+        });
+      });
 
-    // Cycle hero
-    var hero=document.createElement('div');
-    hero.className='stp-bp-hero';
-    hero.style.marginBottom='4px';
-    hero.innerHTML=
-      '<div style="font-size:10px;letter-spacing:.8px;opacity:.7;text-transform:uppercase;margin-bottom:4px">'+cycleLabel+'</div>'+
-      '<div class="stp-bp-title">STP Investment Blueprint</div>'+
-      '<div style="font-size:12px;opacity:.75;margin-bottom:16px">Prepared for <strong>'+name+'</strong> · '+today+' · '+freqLbl+' STP</div>'+
-      '<div class="stp-bp-grid">'+
-        '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Lumpsum Parked</div><div class="stp-bp-mc-v">₹'+stpFmtN(liq)+'</div></div>'+
-        '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Liquid Interest Est.</div><div class="stp-bp-mc-v" style="color:#a5f3a5">+₹'+stpFmtN(cycleInt)+'</div></div>'+
-        '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Total Equity Transfers</div><div class="stp-bp-mc-v">₹'+stpFmtN(cycleXfer)+'</div></div>'+
-        '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Total Equity Corpus</div><div class="stp-bp-mc-v">₹'+stpFmtN(cycleCorpus)+'</div></div>'+
-      '</div>';
-    el.appendChild(hero);
+      // Liquid interest estimated from first EF's transfer timeline
+      var firstEF = cyc.equityFunds[0];
+      var bal = liq;
+      stpComputeCycleEF(cyc, firstEF).transfers.forEach(function(t){
+        var interest = bal * mR * (dpi/30.44);
+        cycleInt += interest;
+        bal = bal + interest - t.amount;
+      });
+      cycleRemaining = Math.max(0, bal);
 
-    // Liquid fund card
-    var lc=document.createElement('div');
-    lc.innerHTML=
-      '<div class="stp-fc" style="margin-bottom:4px">'+
-        '<div class="stp-fc-hdr" style="background:linear-gradient(135deg,#5b2d9e,var(--p1,#3c3197))">'+
-          '<div><div style="font-size:10px;opacity:.8;margin-bottom:3px;letter-spacing:.5px">PARKING FUND — Decreasing · '+cycleLabel+'</div>'+
-          '<div style="font-size:16px;font-weight:800">🏦 '+liqName+'</div></div>'+
-          '<div style="text-align:right"><div style="font-size:10px;opacity:.8;margin-bottom:3px">CAGR while parked</div><div style="font-size:18px;font-weight:800">'+lcagr+'% p.a.</div></div>'+
-        '</div>'+
-        '<div class="stp-fc-body"><div class="stp-sg">'+
-          '<div class="stp-st"><div class="stp-st-l">Amount Parked</div><div class="stp-st-v">₹'+stpFmtI(liq)+'</div></div>'+
-          '<div class="stp-st"><div class="stp-st-l">Interest Earned (est.)</div><div class="stp-st-v" style="color:var(--g1,#6aaa1e)">+₹'+stpFmtI(Math.round(cycleInt))+'</div></div>'+
-          '<div class="stp-st"><div class="stp-st-l">Remaining in Liquid</div><div class="stp-st-v">₹'+stpFmtI(cycleRemaining)+'</div></div>'+
-        '</div></div>'+
-      '</div>';
-    el.appendChild(lc);
+      grandXfer   += cycleXfer;
+      grandEquity += cycleCorpus;
 
-    // Equity fund cards + maturity schedule per EF
-    var efClrs=['linear-gradient(135deg,#167a12,#4aaa1e)','linear-gradient(135deg,#0e6b8a,#1a9cc7)','linear-gradient(135deg,#7a3b10,#c96e2a)','linear-gradient(135deg,#5c1a7a,#9b3dbf)'];
-
-    cyc.equityFunds.forEach(function(ef, ei){
-      var res=stpComputeCycleEF(cyc,ef);
-      var transfers=res.transfers, remaining=res.remainingLiquid;
-      if(!transfers.length) return;
-      var fundM=ef.yr*12+ef.mo||60;
-      var efName=ef.fund?ef.fund.name:'Equity Fund '+(ei+1);
-      var invested=transfers.reduce(function(s,t){return s+t.amount;},0);
-      var corpus=transfers.reduce(function(s,t){return s+stpLumpFV(t.amount,ef.cagr,fundM);},0);
-      var gain=Math.max(0,corpus-invested);
-      var perFV=stpLumpFV(transfers[0].amount,ef.cagr,fundM);
-      var firstXfer=transfers[0].date, lastXfer=transfers[transfers.length-1].date;
-      var firstMat=stpGetMaturityDate(firstXfer,ef.yr,ef.mo), lastMat=stpGetMaturityDate(lastXfer,ef.yr,ef.mo);
-
-      var fc=document.createElement('div');
-      fc.innerHTML=
-        '<div class="stp-fc" style="margin-bottom:4px">'+
-          '<div class="stp-fc-hdr" style="background:'+efClrs[(ei)%4]+'">'+
-            '<div><div style="font-size:10px;opacity:.8;margin-bottom:3px;letter-spacing:.5px">EQUITY TARGET · '+cycleLabel+' · FUND '+(ei+1)+'</div>'+
-            '<div style="font-size:16px;font-weight:800">📈 '+efName+'</div></div>'+
-            '<div style="text-align:right"><div style="font-size:10px;opacity:.8;margin-bottom:3px">Expected CAGR</div><div style="font-size:18px;font-weight:800">'+ef.cagr.toFixed(1)+'%</div></div>'+
-          '</div>'+
-          '<div class="stp-fc-body">'+
-            '<div class="stp-sg">'+
-              '<div class="stp-st"><div class="stp-st-l">₹ per Transfer</div><div class="stp-st-v">₹'+stpFmtI(ef.amtPerXfer)+'</div></div>'+
-              '<div class="stp-st"><div class="stp-st-l">No. of Transfers</div><div class="stp-st-v">'+transfers.length+' ('+freqLbl+')</div></div>'+
-              '<div class="stp-st"><div class="stp-st-l">Total Invested</div><div class="stp-st-v">₹'+stpFmtI(Math.round(invested))+'</div></div>'+
-              '<div class="stp-st"><div class="stp-st-l">Period per Entry</div><div class="stp-st-v">'+ef.yr+'Y '+ef.mo+'M ('+fundM+' mo)</div></div>'+
-              '<div class="stp-st"><div class="stp-st-l">Expected Corpus</div><div class="stp-st-v" style="color:var(--g1,#6aaa1e)">₹'+stpFmtN(corpus)+'</div></div>'+
-              '<div class="stp-st"><div class="stp-st-l">Wealth Gain</div><div class="stp-st-v" style="color:var(--g1,#6aaa1e)">+₹'+stpFmtN(gain)+'</div></div>'+
-            '</div>'+
-            '<div style="background:var(--bg,#f7f6ff);border:1px solid var(--bd,#ddd);border-radius:8px;padding:10px 14px;font-size:11px;color:var(--t2);margin-bottom:12px;line-height:1.9">'+
-              '<strong>Date Logic:</strong><br>'+
-              'Entry 1: ₹'+stpFmtI(Math.round(transfers[0].amount))+' on <strong>'+stpFmtD(firstXfer)+'</strong> → matures <strong>'+stpFmtD(firstMat)+'</strong> ('+fundM+' months)<br>'+
-              (transfers.length>2?'...<br>':'')+
-              'Entry '+transfers.length+': ₹'+stpFmtI(Math.round(transfers[transfers.length-1].amount))+' on <strong>'+stpFmtD(lastXfer)+'</strong> → matures <strong>'+stpFmtD(lastMat)+'</strong> ('+fundM+' months)'+
-            '</div>'+
-            '<div class="stp-fbox">'+
-              '<strong>Formula per entry:</strong> FV = ₹'+stpFmtI(Math.round(transfers[0].amount))+' × (1 + ('+ef.cagr+'/100)/12)^'+fundM+
-              ' = <strong>₹'+stpFmtI(Math.round(perFV))+'</strong><br>'+
-              '<strong>Total corpus</strong> = '+transfers.length+' entries × ₹'+stpFmtI(Math.round(perFV))+' = <strong>₹'+stpFmtN(corpus)+'</strong>'+
-            '</div>'+
-          '</div>'+
+      // ── Hero ──────────────────────────────────────────────────
+      var hero = document.createElement('div');
+      hero.className = 'stp-bp-hero';
+      hero.style.marginBottom = '4px';
+      hero.innerHTML =
+        '<div style="font-size:10px;letter-spacing:.8px;opacity:.7;text-transform:uppercase;margin-bottom:4px">'+label+'</div>'+
+        '<div class="stp-bp-title">STP Investment Blueprint</div>'+
+        '<div style="font-size:12px;opacity:.75;margin-bottom:16px">Prepared for <strong>'+name+'</strong> &nbsp;·&nbsp; '+today+' &nbsp;·&nbsp; '+freqLbl+' STP</div>'+
+        '<div class="stp-bp-grid">'+
+          '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Lumpsum Parked</div><div class="stp-bp-mc-v">&#8377;'+stpFmtN(liq)+'</div></div>'+
+          '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Liquid Interest Est.</div><div class="stp-bp-mc-v" style="color:#a5f3a5">+&#8377;'+stpFmtN(cycleInt)+'</div></div>'+
+          '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Total Equity Transfers</div><div class="stp-bp-mc-v">&#8377;'+stpFmtN(cycleXfer)+'</div></div>'+
+          '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Total Equity Corpus</div><div class="stp-bp-mc-v">&#8377;'+stpFmtN(cycleCorpus)+'</div></div>'+
         '</div>';
-      el.appendChild(fc);
+      el.appendChild(hero);
 
-      // Maturity schedule table
-      var showAll=transfers.length<=20;
-      var dispXfers=showAll?transfers:transfers.slice(0,5).concat([null]).concat(transfers.slice(-5));
-      var mrows=dispXfers.map(function(t,i){
-        if(!t) return '<tr><td colspan="5" style="text-align:center;color:var(--t5);font-style:italic;padding:8px">… '+(transfers.length-10)+' more entries …</td></tr>';
-        var ai=showAll?i:(i<5?i:transfers.length-5+(i-6));
-        var matDate=stpGetMaturityDate(t.date,ef.yr,ef.mo);
-        var fv=stpLumpFV(t.amount,ef.cagr,fundM);
-        return '<tr>'+
-          '<td style="text-align:center;font-weight:800;color:var(--p1)">'+(ai+1)+'</td>'+
-          '<td>'+stpFmtD(t.date)+'</td>'+
-          '<td>₹'+stpFmtI(t.amount)+'</td>'+
-          '<td>'+stpFmtD(matDate)+'</td>'+
-          '<td class="stp-cgrn">₹'+stpFmtI(Math.round(fv))+'</td>'+
+      // ── Liquid Fund Card ──────────────────────────────────────
+      var lc = document.createElement('div');
+      lc.innerHTML =
+        '<div class="stp-fc" style="margin-bottom:4px">'+
+          '<div class="stp-fc-hdr" style="background:linear-gradient(135deg,#5b2d9e,var(--p1,#3c3197))">'+
+            '<div>'+
+              '<div style="font-size:10px;opacity:.8;margin-bottom:3px;letter-spacing:.5px">PARKING FUND &mdash; Decreasing &nbsp;·&nbsp; '+label+'</div>'+
+              '<div style="font-size:16px;font-weight:800">&#127974; '+liqName+'</div>'+
+            '</div>'+
+            '<div style="text-align:right">'+
+              '<div style="font-size:10px;opacity:.8;margin-bottom:3px">CAGR while parked</div>'+
+              '<div style="font-size:18px;font-weight:800">'+lcagr+'% p.a.</div>'+
+            '</div>'+
+          '</div>'+
+          '<div class="stp-fc-body"><div class="stp-sg">'+
+            '<div class="stp-st"><div class="stp-st-l">Amount Parked</div><div class="stp-st-v">&#8377;'+stpFmtI(liq)+'</div></div>'+
+            '<div class="stp-st"><div class="stp-st-l">Interest Earned (est.)</div><div class="stp-st-v" style="color:var(--g1,#6aaa1e)">+&#8377;'+stpFmtI(Math.round(cycleInt))+'</div></div>'+
+            '<div class="stp-st"><div class="stp-st-l">Remaining in Liquid</div><div class="stp-st-v">&#8377;'+stpFmtI(cycleRemaining)+'</div></div>'+
+          '</div></div>'+
+        '</div>';
+      el.appendChild(lc);
+
+      // ── Equity Fund Cards ─────────────────────────────────────
+      cyc.equityFunds.forEach(function(ef, ei){
+        var res       = stpComputeCycleEF(cyc, ef);
+        var transfers = res.transfers;
+        if(!transfers.length) return;
+
+        var fundM   = (ef.yr||0)*12 + (ef.mo||0) || 60;
+        var efName  = ef.fund ? ef.fund.name : ('Equity Fund '+(ei+1));
+        var invested = transfers.reduce(function(s,t){return s+t.amount;}, 0);
+        var corpus   = transfers.reduce(function(s,t){return s+stpLumpFV(t.amount, ef.cagr||12, fundM);}, 0);
+        var gain     = Math.max(0, corpus - invested);
+        var perFV    = stpLumpFV(transfers[0].amount, ef.cagr||12, fundM);
+        var firstMat = stpGetMaturityDate(transfers[0].date, ef.yr||0, ef.mo||0);
+        var lastMat  = stpGetMaturityDate(transfers[transfers.length-1].date, ef.yr||0, ef.mo||0);
+
+        var fc = document.createElement('div');
+        fc.innerHTML =
+          '<div class="stp-fc" style="margin-bottom:4px">'+
+            '<div class="stp-fc-hdr" style="background:'+efClrs[ei%4]+'">'+
+              '<div>'+
+                '<div style="font-size:10px;opacity:.8;margin-bottom:3px;letter-spacing:.5px">EQUITY TARGET &nbsp;·&nbsp; '+label+' &nbsp;·&nbsp; FUND '+(ei+1)+'</div>'+
+                '<div style="font-size:16px;font-weight:800">&#128200; '+efName+'</div>'+
+              '</div>'+
+              '<div style="text-align:right">'+
+                '<div style="font-size:10px;opacity:.8;margin-bottom:3px">Expected CAGR</div>'+
+                '<div style="font-size:18px;font-weight:800">'+(ef.cagr||12).toFixed(1)+'%</div>'+
+              '</div>'+
+            '</div>'+
+            '<div class="stp-fc-body">'+
+              '<div class="stp-sg">'+
+                '<div class="stp-st"><div class="stp-st-l">&#8377; per Transfer</div><div class="stp-st-v">&#8377;'+stpFmtI(ef.amtPerXfer||0)+'</div></div>'+
+                '<div class="stp-st"><div class="stp-st-l">No. of Transfers</div><div class="stp-st-v">'+transfers.length+' ('+freqLbl+')</div></div>'+
+                '<div class="stp-st"><div class="stp-st-l">Total Invested</div><div class="stp-st-v">&#8377;'+stpFmtI(Math.round(invested))+'</div></div>'+
+                '<div class="stp-st"><div class="stp-st-l">Period per Entry</div><div class="stp-st-v">'+(ef.yr||0)+'Y '+(ef.mo||0)+'M ('+fundM+' mo)</div></div>'+
+                '<div class="stp-st"><div class="stp-st-l">Expected Corpus</div><div class="stp-st-v" style="color:var(--g1,#6aaa1e)">&#8377;'+stpFmtN(corpus)+'</div></div>'+
+                '<div class="stp-st"><div class="stp-st-l">Wealth Gain</div><div class="stp-st-v" style="color:var(--g1,#6aaa1e)">+&#8377;'+stpFmtN(gain)+'</div></div>'+
+              '</div>'+
+              '<div style="background:var(--bg,#f7f6ff);border:1px solid var(--bd,#ddd);border-radius:8px;padding:10px 14px;font-size:11px;line-height:1.9;margin-bottom:12px">'+
+                '<strong>Date Logic:</strong><br>'+
+                'Entry 1: &#8377;'+stpFmtI(Math.round(transfers[0].amount))+' on <strong>'+stpFmtD(transfers[0].date)+'</strong> &rarr; matures <strong>'+stpFmtD(firstMat)+'</strong> ('+fundM+' months)<br>'+
+                (transfers.length>2?'&hellip;<br>':'')+
+                'Entry '+transfers.length+': &#8377;'+stpFmtI(Math.round(transfers[transfers.length-1].amount))+' on <strong>'+stpFmtD(transfers[transfers.length-1].date)+'</strong> &rarr; matures <strong>'+stpFmtD(lastMat)+'</strong> ('+fundM+' months)'+
+              '</div>'+
+              '<div class="stp-fbox">'+
+                '<strong>Formula per entry:</strong> FV = &#8377;'+stpFmtI(Math.round(transfers[0].amount))+' &times; (1 + ('+(ef.cagr||12)+'/100)/12)^'+fundM+
+                ' = <strong>&#8377;'+stpFmtI(Math.round(perFV))+'</strong><br>'+
+                '<strong>Total corpus</strong> = '+transfers.length+' entries &times; &#8377;'+stpFmtI(Math.round(perFV))+' = <strong>&#8377;'+stpFmtN(corpus)+'</strong>'+
+              '</div>'+
+            '</div>'+
+          '</div>';
+        el.appendChild(fc);
+
+        // ── Maturity Schedule Table ────────────────────────────
+        var showAll    = transfers.length <= 20;
+        var dispXfers  = showAll ? transfers : transfers.slice(0,5).concat([null]).concat(transfers.slice(-5));
+        var totalFV    = transfers.reduce(function(s,t){return s+stpLumpFV(t.amount,ef.cagr||12,fundM);},0);
+
+        var mrows = dispXfers.map(function(t, i){
+          if(!t) return '<tr><td colspan="5" style="text-align:center;color:var(--t5);font-style:italic;padding:8px">&hellip; '+(transfers.length-10)+' more entries &hellip;</td></tr>';
+          var ai      = showAll ? i : (i<5 ? i : transfers.length-5+(i-6));
+          var matDate = stpGetMaturityDate(t.date, ef.yr||0, ef.mo||0);
+          var fv      = stpLumpFV(t.amount, ef.cagr||12, fundM);
+          return '<tr>'+
+            '<td style="text-align:center;font-weight:800;color:var(--p1)">'+(ai+1)+'</td>'+
+            '<td>'+stpFmtD(t.date)+'</td>'+
+            '<td>&#8377;'+stpFmtI(t.amount)+'</td>'+
+            '<td>'+stpFmtD(matDate)+'</td>'+
+            '<td class="stp-cgrn">&#8377;'+stpFmtI(Math.round(fv))+'</td>'+
+          '</tr>';
+        }).join('');
+        mrows += '<tr>'+
+          '<td colspan="2" style="font-weight:800">GRAND TOTAL &mdash; '+transfers.length+' Entries</td>'+
+          '<td style="font-weight:800">&#8377;'+stpFmtI(Math.round(invested))+'</td>'+
+          '<td style="font-size:11px;color:var(--t4);font-style:italic">Each: own '+(ef.yr||0)+'Y '+(ef.mo||0)+'M cycle</td>'+
+          '<td class="stp-cgrn" style="font-size:14px">&#8377;'+stpFmtN(totalFV)+'</td>'+
         '</tr>';
-      }).join('');
-      var totalFVEF=transfers.reduce(function(s,t){return s+stpLumpFV(t.amount,ef.cagr,fundM);},0);
-      mrows+='<tr>'+
-        '<td colspan="2" style="font-weight:800;color:var(--t1)">GRAND TOTAL — '+transfers.length+' Entries</td>'+
-        '<td style="font-weight:800">₹'+stpFmtI(invested)+'</td>'+
-        '<td style="font-size:11px;color:var(--t4);font-style:italic">Each entry: own '+ef.yr+'Y '+ef.mo+'M cycle</td>'+
-        '<td class="stp-cgrn" style="font-size:14px">₹'+stpFmtN(totalFVEF)+'</td>'+
-      '</tr>';
-      var schedDiv=document.createElement('div');
-      schedDiv.style.cssText='margin-bottom:18px;';
-      schedDiv.innerHTML=
-        '<div style="font-family:var(--fp,serif);font-size:16px;font-weight:700;color:var(--p1);margin-bottom:4px">Transfer-wise Maturity Schedule</div>'+
-        '<div style="font-size:11px;color:var(--t4);margin-bottom:12px">'+efName+' · Each entry: own '+ef.yr+'Y '+ef.mo+'M from its transfer date</div>'+
-        '<div class="stp-tw"><table class="stp-t"><thead><tr>'+
-          '<th style="text-align:center">#</th>'+
-          '<th>Transfer Date</th><th>Amount ₹</th>'+
-          '<th>Maturity Date</th><th>Expected FV ₹</th>'+
-        '</tr></thead><tbody>'+mrows+'</tbody></table></div>';
-      el.appendChild(schedDiv);
+
+        var schedDiv = document.createElement('div');
+        schedDiv.style.marginBottom = '18px';
+        schedDiv.innerHTML =
+          '<div style="font-family:var(--fp,serif);font-size:16px;font-weight:700;color:var(--p1);margin-bottom:4px">Transfer-wise Maturity Schedule</div>'+
+          '<div style="font-size:11px;color:var(--t4);margin-bottom:12px">'+efName+' &nbsp;&middot;&nbsp; Each entry: own '+(ef.yr||0)+'Y '+(ef.mo||0)+'M from its transfer date</div>'+
+          '<div class="stp-tw"><table class="stp-t"><thead><tr>'+
+            '<th style="text-align:center">#</th>'+
+            '<th>Transfer Date</th><th>Amount &#8377;</th>'+
+            '<th>Maturity Date</th><th>Expected FV &#8377;</th>'+
+          '</tr></thead><tbody>'+mrows+'</tbody></table></div>';
+        el.appendChild(schedDiv);
+      });
+
+      // Cycle divider
+      if(ci < STP_CYCLES.length-1){
+        var div = document.createElement('div');
+        div.style.cssText = 'border-top:3px dashed var(--p3,#6257e0);margin:22px 0;';
+        el.appendChild(div);
+      }
     });
 
-    // Cycle divider
-    if(ci < STP_CYCLES.length-1){
-      var div=document.createElement('div');
-      div.style.cssText='border-top:3px dashed var(--p3,#6257e0);margin:22px 0;';
-      el.appendChild(div);
-    }
-  });
+    // ── Grand Total Summary ────────────────────────────────────
+    var grandGain = Math.max(0, grandEquity - grandXfer);
+    var summary   = document.createElement('div');
+    summary.style.cssText = 'background:linear-gradient(135deg,var(--p2,#2d2478),var(--p1,#3c3197));border-radius:14px;padding:22px 26px;margin-top:18px;';
+    summary.innerHTML =
+      '<div style="font-family:var(--fp,serif);font-size:22px;color:#fff;font-weight:700;margin-bottom:6px">&#128202; Grand Total Summary</div>'+
+      '<div style="font-size:11px;color:rgba(255,255,255,.7);margin-bottom:16px">'+STP_CYCLES.length+' STP Cycle'+(STP_CYCLES.length>1?'s':'')+' &nbsp;&middot;&nbsp; Prepared for '+name+'</div>'+
+      '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">'+
+        '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Total Lumpsum Parked</div><div class="stp-bp-mc-v">&#8377;'+stpFmtN(grandLump)+'</div></div>'+
+        '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Total Transferred</div><div class="stp-bp-mc-v">&#8377;'+stpFmtN(grandXfer)+'</div></div>'+
+        '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Total Equity Corpus</div><div class="stp-bp-mc-v" style="color:#a5f3a5">&#8377;'+stpFmtN(grandEquity)+'</div></div>'+
+        '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Total Wealth Gain</div><div class="stp-bp-mc-v" style="color:#a5f3a5">+&#8377;'+stpFmtN(grandGain)+'</div></div>'+
+      '</div>';
+    el.appendChild(summary);
 
-  // ── GRAND TOTAL SUMMARY ────────────────────────────────────────
-  var grandGain=Math.max(0,grandEquity-grandXfer);
-  var summaryBox=document.createElement('div');
-  summaryBox.style.cssText='background:linear-gradient(135deg,var(--p2,#2d2478),var(--p1,#3c3197));border-radius:14px;padding:22px 26px;margin-top:18px;';
-  summaryBox.innerHTML=
-    '<div style="font-family:var(--fp,serif);font-size:22px;color:#fff;font-weight:700;margin-bottom:6px">📊 Grand Total Summary</div>'+
-    '<div style="font-size:11px;color:rgba(255,255,255,.7);margin-bottom:16px">'+STP_CYCLES.length+' STP Cycle'+(STP_CYCLES.length>1?'s':'')+' · Prepared for '+name+'</div>'+
-    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">'+
-      '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Total Lumpsum Parked</div><div class="stp-bp-mc-v">₹'+stpFmtN(grandLump)+'</div></div>'+
-      '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Total Transferred</div><div class="stp-bp-mc-v">₹'+stpFmtN(grandXfer)+'</div></div>'+
-      '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Total Equity Corpus</div><div class="stp-bp-mc-v" style="color:#a5f3a5">₹'+stpFmtN(grandEquity)+'</div></div>'+
-      '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Total Wealth Gain</div><div class="stp-bp-mc-v" style="color:#a5f3a5">+₹'+stpFmtN(grandGain)+'</div></div>'+
-    '</div>';
-  el.appendChild(summaryBox);
+    // Disclaimer investor name
+    var disclaimerInv = document.getElementById('stp-discl-investor');
+    if(disclaimerInv){ disclaimerInv.style.display='block'; disclaimerInv.textContent='Prepared for: '+name; }
 
-  // Show investor name on disclaimer
-  var disclaimerInv=document.getElementById('stp-discl-investor');
-  if(disclaimerInv){ disclaimerInv.style.display='block'; disclaimerInv.textContent='Prepared for: '+name; }
+  } catch(err) {
+    el.innerHTML = '<div class="ibox red"><span style="font-size:20px;flex-shrink:0">&#10060;</span><div><strong>Blueprint Error:</strong> '+err.message+'<br><small style="opacity:.7">Please go back, check all cycle fields are filled, and try again.</small></div></div>';
+    console.error('stpBuildBlueprint error:', err);
+  }
 }
 
 
