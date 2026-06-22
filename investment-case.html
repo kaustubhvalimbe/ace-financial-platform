@@ -2853,22 +2853,37 @@ restart = function() {
 buildSteps();updHor();
 
 // ── STP MODE — INDEPENDENT FUNCTIONS ─────────────────────────
-// ── INIT ──────────────────────────────────────────────────────
-var STP_FREQ = 'weekly', STP_STYPE = 'fixed';
-var STP_FUNDS = [{id:1,label:'Fund 1',desc:'',fund:null,splitPct:100,cagr:12,yr:5,mo:0}];
-var STP_FID = 2;
+// ── DATA MODEL: Multi-Cycle ────────────────────────────────────
+// Each cycle = one Liquid Fund parking + N Equity Fund targets
+// Up to 5 cycles per STP plan.
+var STP_CYCLES = [];
+var STP_CYCLE_ID = 1;
+var STP_EF_ID = 1;
+
+function stpMakeCycle(){
+  return {
+    id: STP_CYCLE_ID++,
+    liquid: { fund:null, amount:0, cagr:7, startDate:'' },
+    freq: 'weekly',
+    equityFunds: [stpMakeEF()]
+  };
+}
+function stpMakeEF(){
+  return { id:STP_EF_ID++, fund:null, amtPerXfer:0, count:0, cagr:12, yr:5, mo:0 };
+}
 
 function stpInit(){
-  var t = new Date(), ft = new Date(t); ft.setDate(ft.getDate()+7);
-  var vs = document.getElementById('stp-v-start');
-  var vft = document.getElementById('stp-v-ft');
-  if(vs) vs.value = stpFmt0(t);
-  if(vft) vft.value = stpFmt0(ft);
-  // Reset to step 1 whenever STP mode is (re-)entered
+  // Start with one blank cycle
+  STP_CYCLES = [stpMakeCycle()];
+  // Set today's date on the first cycle
+  var today = stpFmt0(new Date());
+  STP_CYCLES[0].liquid.startDate = today;
+  // Reset to step 1
   document.querySelectorAll('.stp-sec').forEach(function(s){s.classList.remove('stp-show');});
   var s1=document.getElementById('stp-sec1');
   if(s1) s1.classList.add('stp-show');
-  stpLiveCheck();
+  // Build the cycle UI
+  stpBuildCycles();
 };
 
 // ── HELPERS ───────────────────────────────────────────────────
@@ -2922,528 +2937,588 @@ function stpLumpFV(P, cagrPct, months){
 }
 
 // ── CONTROLS ──────────────────────────────────────────────────
-function stpSetFreq(f, btn){
-  STP_FREQ = f;
-  document.querySelectorAll('.stp-fq').forEach(function(b){b.classList.remove('on');});
+function stpSetFreq(cid, f, btn){
+  var cyc = STP_CYCLES.find(function(c){ return c.id===cid; });
+  if(!cyc) return;
+  cyc.freq = f;
+  var row = btn.closest('.stp-freq-row');
+  if(row) row.querySelectorAll('.stp-fq').forEach(function(b){ b.classList.remove('on'); });
   btn.classList.add('on');
-  var lbl = {daily:'Days',weekly:'Weeks',monthly:'Months',quarterly:'Quarters'}[f];
-  document.getElementById('stp-cnt-lbl').innerHTML =
-    'No. of '+lbl+' <span style="color:var(--red);font-size:9px">(min 6)</span>';
-  stpLiveCheck();
+  stpRefreshUtil(cid);
 }
-function stpSetType(t){
-  STP_STYPE=t;
-  document.getElementById('stp-tgl-f').classList.toggle('on',t==='fixed');
-  document.getElementById('stp-tgl-x').classList.toggle('on',t==='flexi');
-  document.getElementById('stp-amt-field').style.display = t==='fixed'?'':'none';
-  stpLiveCheck();
-}
+function stpSetType(t){} // no-op — removed from new design
 
-// ── LIVE CHECK ────────────────────────────────────────────────
-function stpLiveCheck(){
-  var lump  = parseFloat(document.getElementById('stp-v-lump').value)||0;
-  var count = parseInt(document.getElementById('stp-v-count').value)||0;
-  var amt   = parseFloat(document.getElementById('stp-v-amt').value)||0;
-  var yr    = parseInt(document.getElementById('stp-v-yr').value)||0;
-  var mo    = parseInt(document.getElementById('stp-v-mo').value)||0;
-  var totM  = yr*12+mo;
+// ── LIVE CHECK (no-op — replaced by per-cycle stpRefreshUtil) ──
+function stpLiveCheck(){}
 
-  // Update months display
-  var md = document.getElementById('stp-v-totm');
-  md.textContent = totM > 0 ? totM+' months ('+yr+'Y '+mo+'M)' : '—';
-
-  var msg = '';
-  if(count > 0 && count < 6){
-    msg = '<div class="ibox red">❌ Minimum 6 transfers required</div>';
-  } else if(lump>0 && count>=6 && amt>=500 && STP_STYPE==='fixed'){
-    var total = amt*count;
-    if(Math.abs(total-lump)<1){
-      msg='<div class="ibox green">✅ ₹'+stpFmtI(amt)+' × '+count+' = ₹'+stpFmtI(lump)+' — full lumpsum transfers to equity</div>';
-    } else if(total > lump){
-      var full = Math.floor(lump/amt);
-      var rem  = lump - full*amt;
-      msg='<div class="ibox amber">⚠️ ₹'+stpFmtI(amt)+' × '+count+' = ₹'+stpFmtI(total)+' exceeds ₹'+stpFmtI(lump)+'<br>'+
-          '→ '+full+' full transfers'+(rem>=500?' + 1 partial of ₹'+stpFmtI(rem):' (₹'+stpFmtI(rem)+' below ₹500 min stays in Liquid)')+
-          '<br>→ Actual transfers: '+(full+(rem>=500?1:0))+' (not '+count+')</div>';
-    } else {
-      var stay = lump - total;
-      msg='<div class="ibox blue">ℹ️ ₹'+stpFmtI(amt)+' × '+count+' = ₹'+stpFmtI(total)+' — ₹'+stpFmtI(stay)+' stays in Liquid Fund after transfers</div>';
-    }
-  }
-  document.getElementById('stp-live-msg').innerHTML = msg;
+function stpRefreshUtil(cid){
+  var cyc = STP_CYCLES.find(function(c){ return c.id===cid; });
+  if(!cyc) return;
+  var totalOut = cyc.equityFunds.reduce(function(s,ef){ return s + (ef.amtPerXfer||0)*(ef.count||0); }, 0);
+  var liq = cyc.liquid.amount||0;
+  var bar = document.getElementById('stp-util-'+cid);
+  if(!bar) return;
+  var pct = liq>0 ? Math.min(100, Math.round(totalOut/liq*100)) : 0;
+  var ok  = liq>0 && Math.abs(totalOut - liq) <= liq*0.01;
+  var color = ok ? 'var(--g1,#6aaa1e)' : (totalOut > liq ? '#dc2626' : 'var(--p1,#3c3197)');
+  bar.innerHTML =
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'+
+      '<span style="font-size:11px;font-weight:700;color:var(--t2)">Utilization — Liquid vs Equity Transfers</span>'+
+      '<span style="font-size:12px;font-weight:800;color:'+color+'">₹'+stpFmtI(totalOut)+' / ₹'+stpFmtI(liq)+(ok?' ✅':totalOut>liq?' ⚠️ Over':'')+' ('+pct+'%)</span>'+
+    '</div>'+
+    '<div style="background:var(--g5,#f0eeff);border-radius:6px;height:8px;overflow:hidden">'+
+      '<div style="background:'+color+';height:100%;width:'+pct+'%;border-radius:6px;transition:width .3s"></div>'+
+    '</div>';
 }
 
-// ── COMPUTE ACTUAL TRANSFERS ──────────────────────────────────
-function stpComputeTransfers(){
-  var lump    = parseFloat(document.getElementById('stp-v-lump').value)||0;
-  var count   = parseInt(document.getElementById('stp-v-count').value)||0;
-  var amt     = parseFloat(document.getElementById('stp-v-amt').value)||0;
-  var firstDt = document.getElementById('stp-v-ft').value;
-  var minAmt  = 500;
-  var transfers = [], balance = lump, reason = '';
-
-  if(!lump)    { reason='Please enter Total Lumpsum amount.'; return {transfers:[],remainingLiquid:0,reason:reason}; }
-  if(count<6)  { reason='Minimum 6 transfers required.'; return {transfers:[],remainingLiquid:0,reason:reason}; }
-  if(!firstDt) { reason='Start date missing.'; return {transfers:[],remainingLiquid:0,reason:reason}; }
-  if(STP_STYPE==='fixed' && amt<500){ reason='Please enter Transfer Amount per instalment (minimum ₹500).'; return {transfers:[],remainingLiquid:0,reason:reason}; }
-
-  for(var i=0; i<count; i++){
-    if(balance <= 0) break;
-    var thisAmt;
-    if(STP_STYPE==='fixed'){
-      thisAmt = Math.min(amt, balance);
-      if(thisAmt < minAmt) break;
-    } else {
-      thisAmt = amt || Math.round(lump/count);
-      thisAmt = Math.min(thisAmt, balance);
-      if(thisAmt < minAmt) break;
-    }
+// ── COMPUTE TRANSFERS FOR ONE CYCLE+EQUITY-FUND PAIR ───────────
+function stpComputeCycleEF(cyc, ef){
+  var liq = cyc.liquid.amount||0;
+  var startDt = cyc.liquid.startDate;
+  if(!liq||!startDt||!ef.amtPerXfer||!ef.count) return {transfers:[],remainingLiquid:liq};
+  // First transfer = 1 frequency-period after start date
+  var freqDays = {daily:1, weekly:7, monthly:30, quarterly:91}[cyc.freq]||7;
+  var ftDate = addDays(startDt, freqDays);
+  var transfers=[], balance=liq;
+  for(var i=0;i<ef.count;i++){
+    if(balance<=0) break;
+    var thisAmt = Math.min(ef.amtPerXfer, balance);
+    if(thisAmt<500) break;
     transfers.push({
-      idx: i,
-      date: stpGetTransferDate(firstDt, STP_FREQ, i),
+      idx:i,
+      date: stpGetTransferDate(ftDate, cyc.freq, i),
       amount: thisAmt,
-      isPartial: (STP_STYPE==='fixed' && thisAmt < amt - 0.01)
+      isPartial: thisAmt < ef.amtPerXfer - 0.01
     });
     balance -= thisAmt;
   }
-  return { transfers:transfers, remainingLiquid: Math.max(0,balance), reason:'' };
+  return {transfers:transfers, remainingLiquid:Math.max(0,balance)};
+}
+
+// Legacy stpComputeTransfers — kept for backward compat with schedule/blueprint callers
+function stpComputeTransfers(){
+  var cyc = STP_CYCLES[0]; if(!cyc) return {transfers:[],remainingLiquid:0,reason:'No cycle'};
+  var ef  = cyc.equityFunds[0]; if(!ef) return {transfers:[],remainingLiquid:0,reason:'No equity fund'};
+  return stpComputeCycleEF(cyc, ef);
 }
 
 // ── NAVIGATION ────────────────────────────────────────────────
 function stpGo(n){
-  // Validate before going to schedule or blueprint
-  if(n===3 || n===4){
-    var r = stpComputeTransfers();
-    if(!r.transfers.length){
-      alert(r.reason || 'Please complete all fields in Section 1 before proceeding.\n\nChecklist:\n• Total Lumpsum ₹\n• No. of transfers (min 6)\n• Transfer Amount ₹ (min ₹500)\n• Period (Years/Months)');
-      return;
-    }
+  if(n===2){
+    // nothing to validate moving into cycle builder
   }
-  if(n===2) stpBuildFunds();
-  if(n===3) stpBuildSchedule();
+  if(n===3){
+    if(!stpGoValidate()) return;
+    stpBuildSchedule();
+  }
   if(n===4) stpBuildBlueprint();
   document.querySelectorAll('.stp-sec').forEach(function(s){s.classList.remove('stp-show');});
   document.getElementById('stp-sec'+n).classList.add('stp-show');
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ── FUND ROWS ──────────────────────────────────────────────────
-function stpBuildFunds(){
-  loadAMFIForCMB();
-  var el = document.getElementById('stp-funds-area');
-  el.innerHTML='';
-  var ib=document.createElement('div');
-  ib.className='ibox blue';
-  ib.innerHTML='<span style="font-size:18px;flex-shrink:0">ℹ️</span><div>Search and select the actual AMFI-registered fund for each row (optional — leave blank to keep a placeholder name like Fund 1, Fund 2). Enter expected CAGR % and Period (Y &amp; M) from keyboard. Split % decides how each STP transfer is divided.</div>';
-  el.appendChild(ib);
-
-  STP_FUNDS.forEach(function(f,i){
-    var row=document.createElement('div');
-    row.style.cssText='display:grid;grid-template-columns:100px 1fr 100px 100px 130px 36px;gap:12px;align-items:center;padding:12px 16px;background:#fff;border:1.5px solid var(--bd);border-radius:10px;margin-bottom:10px;';
-    row.innerHTML=
-      '<div><div style="padding:6px 10px;background:var(--p4);color:var(--p1);border-radius:7px;font-size:12px;font-weight:800;text-align:center;">'+f.label+'</div></div>'+
-      '<div class="fund-search-wrap" id="stp-sw-'+i+'">'+
-        (f.fund
-          ? '<div class="fund-selected-name" onclick="stpClearFund('+i+')"><span>'+(f.fund.name.length>40?f.fund.name.substring(0,40)+'…':f.fund.name)+'</span><span class="change-btn">Change</span></div>'
-          : '<span class="fund-search-icon">🔍</span><input class="fund-search-inp" type="text" placeholder="Search AMFI fund name..." id="stp-si-'+i+'" value="'+f.desc+'" oninput="stpSearchFunds('+i+',this.value)" onfocus="stpShowDropdown('+i+')" autocomplete="off">'
-        )+
-        '<div class="fund-dropdown" id="stp-dd-'+i+'"></div>'+
-      '</div>'+
-      '<div>'+
-        '<div class="lbl" style="margin-bottom:4px">Split %</div>'+
-        '<input class="inp inp-p" id="stp-split-'+i+'" style="padding:8px;font-size:13px;" type="number" placeholder="100" value="'+f.splitPct+'" min="1" max="100" oninput="stpSplitChanged('+i+',this.value)">'+
-      '</div>'+
-      '<div>'+
-        '<div class="lbl" style="margin-bottom:4px">CAGR %</div>'+
-        '<input class="inp inp-g" style="padding:8px;font-size:13px;" type="number" placeholder="12" value="'+f.cagr+'" min="1" max="50" oninput="STP_FUNDS['+i+'].cagr=parseFloat(this.value)||12">'+
-      '</div>'+
-      '<div>'+
-        '<div class="lbl" style="margin-bottom:4px">Period (Y / M)</div>'+
-        '<div style="display:flex;gap:6px">'+
-          '<input class="inp" style="padding:8px;width:56px;text-align:center;font-size:12px;" type="number" placeholder="Y" value="'+f.yr+'" oninput="STP_FUNDS['+i+'].yr=parseInt(this.value)||0">'+
-          '<input class="inp" style="padding:8px;width:56px;text-align:center;font-size:12px;" type="number" placeholder="M" value="'+f.mo+'" oninput="STP_FUNDS['+i+'].mo=parseInt(this.value)||0">'+
-        '</div>'+
-      '</div>'+
-      '<button onclick="stpRmFund('+f.id+')" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:16px;font-weight:800;" title="Remove">✕</button>';
-    el.appendChild(row);
-  });
-  var ab=document.createElement('button');
-  ab.style.cssText='width:100%;padding:12px;background:transparent;border:2px dashed #afa9ec;color:var(--p1);border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fh);margin-top:4px;';
-  ab.innerHTML='➕ Add Another Fund';
-  ab.onclick=stpAddFund;
-  el.appendChild(ab);
-}
-function stpAddFund(){
-  var n = STP_FUNDS.length + 1;
-  STP_FUNDS.push({id:STP_FID++,label:'Fund '+n,desc:'',fund:null,splitPct:0,cagr:12,yr:5,mo:0});
-  var base = Math.floor(100/n), rem = 100 - base*n;
-  STP_FUNDS.forEach(function(f,i){ f.splitPct = base + (i < rem ? 1 : 0); });
-  stpBuildFunds();
-}
-function stpRmFund(id){
-  STP_FUNDS=STP_FUNDS.filter(function(f){return f.id!==id;});
-  if(STP_FUNDS.length){
-    var n=STP_FUNDS.length, base=Math.floor(100/n), rem=100-base*n;
-    STP_FUNDS.forEach(function(f,i){ f.splitPct = base + (i<rem?1:0); });
-  }
-  stpBuildFunds();
-}
-function stpSplitChanged(idx, val){
-  var v = parseInt(val); if(isNaN(v)||v<0) v=0; if(v>100) v=100;
-  STP_FUNDS[idx].splitPct = v;
-  var others = [];
-  STP_FUNDS.forEach(function(f,i){ if(i!==idx) others.push(i); });
-  if(others.length){
-    var remaining = 100 - v;
-    var base = Math.floor(remaining / others.length);
-    var rem  = remaining - base*others.length;
-    others.forEach(function(i,k){
-      STP_FUNDS[i].splitPct = base + (k < rem ? 1 : 0);
-      var inp = document.getElementById('stp-split-'+i);
-      if(inp) inp.value = STP_FUNDS[i].splitPct;
+function stpGoValidate(){
+  var errors=[];
+  STP_CYCLES.forEach(function(cyc,ci){
+    var label='Cycle '+(ci+1)+': ';
+    if(!cyc.liquid.amount||cyc.liquid.amount<1000) errors.push(label+'Liquid Fund amount required (min ₹1,000).');
+    if(!cyc.liquid.cagr) errors.push(label+'Liquid CAGR required.');
+    if(!cyc.liquid.startDate) errors.push(label+'STP Start Date required.');
+    cyc.equityFunds.forEach(function(ef,ei){
+      var elbl=label+'Equity Fund '+(ei+1)+': ';
+      if(!ef.amtPerXfer||ef.amtPerXfer<500) errors.push(elbl+'Transfer amount required (min ₹500).');
+      if(!ef.count||ef.count<1) errors.push(elbl+'No. of Transfers required (min 1).');
     });
-  }
+  });
+  if(errors.length){ alert(errors.join('\n')); return false; }
+  return true;
 }
 
-// ── STP FUND SEARCH (reuses the AMFI dataset loaded for the Custom Blueprint builder) ──
-var stpSearchTimers = {};
-function stpShowDropdown(idx){
-  if(!CMB.loaded) loadAMFIForCMB();
-}
-function stpSearchFunds(idx, query){
-  clearTimeout(stpSearchTimers[idx]);
-  STP_FUNDS[idx].desc = query;
-  var dd = document.getElementById('stp-dd-'+idx);
-  if(!dd) return;
-  if(!query || query.length < 2){ dd.classList.remove('show'); return; }
-  dd.innerHTML = '<div class="fd-loading">🔍 Searching...</div>';
-  dd.classList.add('show');
-  stpSearchTimers[idx] = setTimeout(async function(){
-    if(!CMB.loaded) await loadAMFIForCMB();
-    var q = query.toLowerCase();
-    var results = CMB.allFunds.filter(function(f){ return f.name.toLowerCase().includes(q); }).slice(0,12);
-    if(results.length===0){ dd.innerHTML='<div class="fd-empty">No funds found. Try different keywords.</div>'; return; }
-    dd.innerHTML = results.map(function(f){
-      return '<div class="fd-item" onclick="stpSelectFund('+idx+','+f.code+',\''+f.name.replace(/'/g,"\\'")+'\',\''+(f.amc||'').replace(/'/g,"\\'")+'\')">'+
-        '<div class="fd-item-name">'+f.name+'</div>'+
-        '<div class="fd-item-amc">'+(f.amc||'')+'</div>'+
+// ── CYCLE BUILDER (Screen 2) ────────────────────────────────────
+var stpLiqTimers={}, stpEFTimers={};
+
+function stpBuildCycles(){
+  var area = document.getElementById('stp-cycles-area');
+  if(!area) return;
+  area.innerHTML='';
+  loadAMFIForCMB();
+  STP_CYCLES.forEach(function(cyc, ci){
+    var card = document.createElement('div');
+    card.id = 'stp-cyc-'+cyc.id;
+    card.style.cssText='background:#fff;border:2px solid var(--p3,#6257e0);border-radius:14px;overflow:visible;margin-bottom:22px;';
+
+    var hdr = '<div style="background:var(--p1,#3c3197);border-radius:12px 12px 0 0;padding:12px 18px;display:flex;justify-content:space-between;align-items:center">'+
+      '<div style="display:flex;align-items:center;gap:10px">'+
+        '<div style="background:#fff;color:var(--p1,#3c3197);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px">'+(ci+1)+'</div>'+
+        '<div style="color:#fff;font-size:15px;font-weight:800">STP Cycle '+(ci+1)+'</div>'+
+      '</div>'+
+      (STP_CYCLES.length>1 ? '<button onclick="stpRmCycle('+cyc.id+')" style="background:rgba(255,255,255,.18);border:none;color:#fff;border-radius:7px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer">✕ Remove</button>' : '')+
+    '</div>';
+
+    var liqDisplay = cyc.liquid.fund
+      ? '<div class="fund-selected-name" onclick="stpClearLiq('+cyc.id+')"><span>'+(cyc.liquid.fund.name.length>52?cyc.liquid.fund.name.substring(0,52)+'…':cyc.liquid.fund.name)+'</span><span class="change-btn">Change</span></div>'
+      : '<span class="fund-search-icon">🔍</span><input class="fund-search-inp" type="text" placeholder="Search liquid fund (e.g. ICICI Liquid)..." id="stp-liq-si-'+cyc.id+'" oninput="stpSearchLiq('+cyc.id+',this.value)" onfocus="if(!CMB.loaded)loadAMFIForCMB();" autocomplete="off">';
+
+    var liqSec =
+      '<div style="padding:16px 18px 0">'+
+        '<div style="font-size:10px;font-weight:800;color:var(--t4,#7a7898);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px">🏦 Liquid Fund (Parking)</div>'+
+        '<div style="display:grid;grid-template-columns:1fr 150px 120px 170px;gap:12px;align-items:start;margin-bottom:12px">'+
+          '<div class="stp-field"><div class="stp-lbl">Liquid Fund Name</div>'+
+            '<div class="fund-search-wrap" id="stp-liq-sw-'+cyc.id+'">'+liqDisplay+'<div class="fund-dropdown" id="stp-liq-dd-'+cyc.id+'"></div></div>'+
+          '</div>'+
+          '<div class="stp-field"><div class="stp-lbl">Amount Parked ₹</div>'+
+            '<input class="stp-inp stp-inp-p" type="number" placeholder="e.g. 300000" value="'+(cyc.liquid.amount||'')+'" min="1000" oninput="(function(v){var c=STP_CYCLES.find(function(c){return c.id==='+cyc.id+'});c.liquid.amount=parseFloat(v)||0;stpRefreshUtil('+cyc.id+');})(this.value)">'+
+          '</div>'+
+          '<div class="stp-field"><div class="stp-lbl">Liquid CAGR %</div>'+
+            '<input class="stp-inp stp-inp-g" type="number" placeholder="e.g. 7" value="'+(cyc.liquid.cagr||'')+'" min="1" max="20" oninput="STP_CYCLES.find(function(c){return c.id==='+cyc.id+'}).liquid.cagr=parseFloat(this.value)||7;">'+
+          '</div>'+
+          '<div class="stp-field"><div class="stp-lbl">STP Start Date</div>'+
+            '<input class="stp-inp" type="date" value="'+(cyc.liquid.startDate||'')+'" oninput="STP_CYCLES.find(function(c){return c.id==='+cyc.id+'}).liquid.startDate=this.value;">'+
+          '</div>'+
+        '</div>'+
+        '<div class="stp-field" style="margin-bottom:0"><div class="stp-lbl">Transfer Frequency</div>'+
+          '<div class="stp-freq-row">'+
+            ['daily','weekly','monthly','quarterly'].map(function(f){
+              return '<button class="stp-fq'+(cyc.freq===f?' on':'')+'" onclick="stpSetFreq('+cyc.id+',\''+f+'\',this)">'+f.charAt(0).toUpperCase()+f.slice(1)+'</button>';
+            }).join('')+
+          '</div>'+
+        '</div>'+
+      '</div>';
+
+    var efRows = cyc.equityFunds.map(function(ef, ei){
+      var efDisplay = ef.fund
+        ? '<div class="fund-selected-name" onclick="stpClearEF('+cyc.id+','+ef.id+')"><span>'+(ef.fund.name.length>48?ef.fund.name.substring(0,48)+'…':ef.fund.name)+'</span><span class="change-btn">Change</span></div>'
+        : '<span class="fund-search-icon">🔍</span><input class="fund-search-inp" type="text" placeholder="Search equity fund..." id="stp-ef-si-'+cyc.id+'-'+ef.id+'" oninput="stpSearchEF('+cyc.id+','+ef.id+',this.value)" onfocus="if(!CMB.loaded)loadAMFIForCMB();" autocomplete="off">';
+      return '<div style="background:var(--bg,#f7f6ff);border:1.5px solid var(--g4,#e4e2f0);border-radius:10px;padding:12px 14px;margin-bottom:10px">'+
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'+
+          '<span style="font-size:10px;font-weight:800;color:var(--p2,#2d2478);text-transform:uppercase;letter-spacing:.5px">📈 Equity Fund '+(ei+1)+'</span>'+
+          (cyc.equityFunds.length>1?'<button onclick="stpRmEF('+cyc.id+','+ef.id+')" style="background:none;border:none;color:#bbb;cursor:pointer;font-size:15px;font-weight:800">✕</button>':'')+
+        '</div>'+
+        '<div style="display:grid;grid-template-columns:1fr 140px 120px 110px 170px;gap:10px;align-items:start">'+
+          '<div class="stp-field"><div class="stp-lbl">Equity Fund Name</div>'+
+            '<div class="fund-search-wrap" id="stp-ef-sw-'+cyc.id+'-'+ef.id+'">'+efDisplay+'<div class="fund-dropdown" id="stp-ef-dd-'+cyc.id+'-'+ef.id+'"></div></div>'+
+          '</div>'+
+          '<div class="stp-field"><div class="stp-lbl">₹ per Transfer</div>'+
+            '<input class="stp-inp stp-inp-p" type="number" placeholder="e.g. 10000" value="'+(ef.amtPerXfer||'')+'" min="500" oninput="(function(v){var c=STP_CYCLES.find(function(c){return c.id==='+cyc.id+'});var e=c.equityFunds.find(function(e){return e.id==='+ef.id+'});e.amtPerXfer=parseFloat(v)||0;stpRefreshUtil('+cyc.id+');})(this.value)">'+
+          '</div>'+
+          '<div class="stp-field"><div class="stp-lbl">No. of Transfers</div>'+
+            '<input class="stp-inp stp-inp-p" type="number" placeholder="e.g. 15" value="'+(ef.count||'')+'" min="1" oninput="(function(v){var c=STP_CYCLES.find(function(c){return c.id==='+cyc.id+'});var e=c.equityFunds.find(function(e){return e.id==='+ef.id+'});e.count=parseInt(v)||0;stpRefreshUtil('+cyc.id+');})(this.value)">'+
+          '</div>'+
+          '<div class="stp-field"><div class="stp-lbl">CAGR %</div>'+
+            '<input class="stp-inp stp-inp-g" type="number" placeholder="12" value="'+(ef.cagr||12)+'" min="1" max="50" oninput="STP_CYCLES.find(function(c){return c.id==='+cyc.id+'}).equityFunds.find(function(e){return e.id==='+ef.id+'}).cagr=parseFloat(this.value)||12;">'+
+          '</div>'+
+          '<div class="stp-field"><div class="stp-lbl">Period (Y / M)</div>'+
+            '<div style="display:flex;gap:6px">'+
+              '<input class="stp-inp" style="width:62px;text-align:center" type="number" placeholder="Y" value="'+(ef.yr||'')+'" min="0" max="30" oninput="STP_CYCLES.find(function(c){return c.id==='+cyc.id+'}).equityFunds.find(function(e){return e.id==='+ef.id+'}).yr=parseInt(this.value)||0;">'+
+              '<input class="stp-inp" style="width:62px;text-align:center" type="number" placeholder="M" value="'+(ef.mo||'')+'" min="0" max="11" oninput="STP_CYCLES.find(function(c){return c.id==='+cyc.id+'}).equityFunds.find(function(e){return e.id==='+ef.id+'}).mo=parseInt(this.value)||0;">'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
       '</div>';
     }).join('');
-  }, 350);
-}
-function stpSelectFund(idx, code, name, amc){
-  document.getElementById('stp-dd-'+idx)?.classList.remove('show');
-  STP_FUNDS[idx].fund = {code:code, name:name, amc:amc};
-  stpBuildFunds();
-}
-function stpClearFund(idx){
-  STP_FUNDS[idx].fund = null;
-  STP_FUNDS[idx].desc = '';
-  stpBuildFunds();
-}
 
-// ── SCHEDULE ──────────────────────────────────────────────────
-function stpBuildSchedule(){
-  var el = document.getElementById('stp-sched-area');
-  el.innerHTML='';
-  var lump   = parseFloat(document.getElementById('stp-v-lump').value)||0;
-  var lcagr  = parseFloat(document.getElementById('stp-v-lcagr').value)||7;
-  var yr     = parseInt(document.getElementById('stp-v-yr').value)||5;
-  var mo     = parseInt(document.getElementById('stp-v-mo').value)||0;
-  var mR     = (lcagr/100)/12;
-  var dpi    = {daily:1, weekly:7, monthly:30.44, quarterly:91.31}[STP_FREQ];
+    var efSec =
+      '<div style="padding:16px 18px 0">'+
+        '<div style="font-size:10px;font-weight:800;color:var(--t4,#7a7898);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px">📈 Equity Funds (Transfer Targets)</div>'+
+        efRows+
+        '<button onclick="stpAddEF('+cyc.id+')" style="width:100%;padding:10px;background:transparent;border:2px dashed var(--p3,#6257e0);color:var(--p1,#3c3197);border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fh);margin-bottom:4px">➕ Add Equity Fund</button>'+
+      '</div>';
 
-  var result1 = stpComputeTransfers();
-  var transfers = result1.transfers;
-  var remainingLiquid = result1.remainingLiquid;
-  if(!transfers.length){
-    el.innerHTML='<div class="ibox red" style="font-size:13px;">'+
-      '<span style="font-size:20px;flex-shrink:0">❌</span>'+
-      '<div><strong>Please fix before proceeding:</strong><br>'+
-      (result1.reason||'Check all Section 1 fields are filled correctly.')+
-      '</div></div>';
-    return;
-  }
+    var utilBar =
+      '<div style="padding:12px 18px 16px"><div id="stp-util-'+cyc.id+'"></div></div>';
 
-  var totalXfer = transfers.reduce(function(s,t){return s+t.amount;},0);
-  var cls = remainingLiquid>0?'blue':(transfers.some(function(t){return t.isPartial;})?'amber':'green');
-  var summaryMsg = remainingLiquid>500 ?
-    'ℹ️ '+transfers.length+' transfers totalling ₹'+stpFmtI(totalXfer)+'. <strong>₹'+stpFmtI(remainingLiquid)+' stays in Liquid Fund</strong> after all transfers complete.' :
-    (transfers.some(function(t){return t.isPartial;}) ?
-    '⚠️ Last transfer is partial — transfer amount × count exceeded lumpsum.' :
-    '✅ All '+transfers.length+' transfers complete — full lumpsum transferred to equity.');
-
-  var ib2=document.createElement('div');
-  ib2.className='ibox '+cls;
-  ib2.innerHTML='<span style="flex-shrink:0;font-size:16px">'+(cls==='green'?'✅':cls==='amber'?'⚠️':'ℹ️')+'</span><div>'+summaryMsg+'</div>';
-  el.appendChild(ib2);
-
-  // Table with maturity dates
-  var tw = document.createElement('div'); tw.className='tw';
-  var balance=lump, totalInt=0, rows='';
-
-  transfers.forEach(function(t,i){
-    var mf = dpi/30.44;
-    var interest = balance * mR * mf;
-    var balBefore = balance + interest;
-    var balAfter  = balBefore - t.amount;
-    totalInt += interest;
-    balance = balAfter;
-
-    // Maturity date for THIS transfer = transfer date + yr years + mo months
-    var matDate = stpGetMaturityDate(t.date, yr, mo);
-    var pc = t.isPartial ? ' partial' : '';
-    var pn = t.isPartial ? ' <span style="font-size:10px;color:var(--amber)">(partial)</span>' : '';
-    rows += '<tr class="'+pc+'">'+
-      '<td style="text-align:center;font-weight:800;color:var(--p1);width:36px">'+(i+1)+'</td>'+
-      '<td>'+stpFmtD(t.date)+'</td>'+
-      '<td style="color:var(--p2);font-weight:700">'+stpFmtD(matDate)+'</td>'+
-      '<td class="cred">-₹'+stpFmtI(t.amount)+pn+'</td>'+
-      '<td>₹'+stpFmtI(Math.max(0,balBefore))+'</td>'+
-      '<td class="cgrn">+₹'+stpFmtI(Math.round(interest))+'</td>'+
-      '<td class="cpur">₹'+stpFmtI(Math.max(0,balAfter))+'</td>'+
-    '</tr>';
+    card.innerHTML = hdr + liqSec + '<div style="height:14px;border-top:1.5px dashed var(--g4,#e4e2f0);margin:14px 0 0"></div>' + efSec + utilBar;
+    area.appendChild(card);
+    setTimeout(function(){ stpRefreshUtil(cyc.id); }, 0);
   });
 
-  rows += '<tr>'+
-    '<td colspan="3" style="text-align:left">TOTALS</td>'+
-    '<td class="cred">-₹'+stpFmtI(totalXfer)+'</td>'+
-    '<td>—</td>'+
-    '<td class="cgrn">+₹'+stpFmtI(Math.round(totalInt))+'</td>'+
-    '<td class="cpur">₹'+stpFmtI(Math.max(0,remainingLiquid))+'</td>'+
-  '</tr>';
+  if(STP_CYCLES.length < 5){
+    var addBtn = document.createElement('button');
+    addBtn.style.cssText='width:100%;padding:14px;background:transparent;border:2.5px dashed var(--p1,#3c3197);color:var(--p1,#3c3197);border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--fh);';
+    addBtn.innerHTML='➕ Add Another STP Cycle ('+(STP_CYCLES.length)+' of 5 used)';
+    addBtn.onclick = stpAddCycle;
+    area.appendChild(addBtn);
+  } else {
+    var mx=document.createElement('div'); mx.className='ibox amber'; mx.textContent='Maximum 5 STP Cycles reached.'; area.appendChild(mx);
+  }
+}
 
-  tw.innerHTML='<table class="t"><thead><tr>'+
-    '<th style="text-align:center">#</th>'+
-    '<th>Transfer Date</th>'+
-    '<th>Maturity Date</th>'+
-    '<th>STP Amount ₹</th>'+
-    '<th>Liquid Before ₹</th>'+
-    '<th>Interest ₹</th>'+
-    '<th>Liquid After ₹</th>'+
-    '</tr></thead><tbody>'+rows+'</tbody></table>';
-  el.appendChild(tw);
+function stpAddCycle(){
+  if(STP_CYCLES.length>=5){ alert('Maximum 5 STP Cycles allowed.'); return; }
+  var nc=stpMakeCycle(); nc.liquid.startDate=stpFmt0(new Date()); STP_CYCLES.push(nc);
+  stpBuildCycles();
+  setTimeout(function(){ document.getElementById('stp-cyc-'+nc.id)?.scrollIntoView({behavior:'smooth',block:'start'}); }, 100);
+}
+function stpRmCycle(cid){
+  if(STP_CYCLES.length<=1){ alert('At least one STP Cycle is required.'); return; }
+  STP_CYCLES=STP_CYCLES.filter(function(c){ return c.id!==cid; }); stpBuildCycles();
+}
+function stpAddEF(cid){
+  var cyc=STP_CYCLES.find(function(c){ return c.id===cid; }); if(!cyc) return;
+  cyc.equityFunds.push(stpMakeEF()); stpBuildCycles();
+  setTimeout(function(){ stpRefreshUtil(cid); },50);
+}
+function stpRmEF(cid, efid){
+  var cyc=STP_CYCLES.find(function(c){ return c.id===cid; }); if(!cyc||cyc.equityFunds.length<=1) return;
+  cyc.equityFunds=cyc.equityFunds.filter(function(e){ return e.id!==efid; }); stpBuildCycles();
+  setTimeout(function(){ stpRefreshUtil(cid); },50);
+}
+
+// ── FUND SEARCH (Liquid + Equity) ──────────────────────────────
+function stpSearchLiq(cid,query){
+  clearTimeout(stpLiqTimers[cid]);
+  var dd=document.getElementById('stp-liq-dd-'+cid); if(!dd) return;
+  if(!query||query.length<2){ dd.classList.remove('show'); return; }
+  dd.innerHTML='<div class="fd-loading">🔍 Searching...</div>'; dd.classList.add('show');
+  stpLiqTimers[cid]=setTimeout(async function(){
+    if(!CMB.loaded) await loadAMFIForCMB();
+    var q=query.toLowerCase();
+    var res=CMB.allFunds.filter(function(f){ return f.name.toLowerCase().includes(q); }).slice(0,12);
+    if(!res.length){ dd.innerHTML='<div class="fd-empty">No funds found.</div>'; return; }
+    dd.innerHTML=res.map(function(f){
+      var safe_name=f.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      var safe_amc=(f.amc||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      return '<div class="fd-item" onclick="stpPickLiq('+cid+','+f.code+',\''+safe_name+'\',\''+safe_amc+'\')"><div class="fd-item-name">'+f.name+'</div><div class="fd-item-amc">'+(f.amc||'')+'</div></div>';
+    }).join('');
+  },350);
+}
+function stpPickLiq(cid,code,name,amc){
+  document.getElementById('stp-liq-dd-'+cid)?.classList.remove('show');
+  var cyc=STP_CYCLES.find(function(c){ return c.id===cid; });
+  if(cyc) cyc.liquid.fund={code:code,name:name,amc:amc};
+  stpBuildCycles();
+}
+function stpClearLiq(cid){
+  var cyc=STP_CYCLES.find(function(c){ return c.id===cid; });
+  if(cyc) cyc.liquid.fund=null; stpBuildCycles();
+}
+function stpSearchEF(cid,efid,query){
+  var key=cid+'-'+efid; clearTimeout(stpEFTimers[key]);
+  var dd=document.getElementById('stp-ef-dd-'+cid+'-'+efid); if(!dd) return;
+  if(!query||query.length<2){ dd.classList.remove('show'); return; }
+  dd.innerHTML='<div class="fd-loading">🔍 Searching...</div>'; dd.classList.add('show');
+  stpEFTimers[key]=setTimeout(async function(){
+    if(!CMB.loaded) await loadAMFIForCMB();
+    var q=query.toLowerCase();
+    var res=CMB.allFunds.filter(function(f){ return f.name.toLowerCase().includes(q); }).slice(0,12);
+    if(!res.length){ dd.innerHTML='<div class="fd-empty">No funds found.</div>'; return; }
+    dd.innerHTML=res.map(function(f){
+      var safe_name=f.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      var safe_amc=(f.amc||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      return '<div class="fd-item" onclick="stpPickEF('+cid+','+efid+','+f.code+',\''+safe_name+'\',\''+safe_amc+'\')"><div class="fd-item-name">'+f.name+'</div><div class="fd-item-amc">'+(f.amc||'')+'</div></div>';
+    }).join('');
+  },350);
+}
+function stpPickEF(cid,efid,code,name,amc){
+  document.getElementById('stp-ef-dd-'+cid+'-'+efid)?.classList.remove('show');
+  var cyc=STP_CYCLES.find(function(c){ return c.id===cid; }); if(!cyc) return;
+  var ef=cyc.equityFunds.find(function(e){ return e.id===efid; });
+  if(ef) ef.fund={code:code,name:name,amc:amc}; stpBuildCycles();
+}
+function stpClearEF(cid,efid){
+  var cyc=STP_CYCLES.find(function(c){ return c.id===cid; }); if(!cyc) return;
+  var ef=cyc.equityFunds.find(function(e){ return e.id===efid; });
+  if(ef) ef.fund=null; stpBuildCycles();
+}
+
+// ── SCHEDULE BUILDER (multi-cycle) ─────────────────────────────
+
+function stpBuildFunds(){ stpBuildCycles(); } // alias for backward compat
+
+// ── SCHEDULE BUILDER (multi-cycle) ─────────────────────────────
+function stpBuildSchedule(){
+  var el = document.getElementById('stp-sched-area'); el.innerHTML='';
+  var name = document.getElementById('stp-v-name').value||'Valued Investor';
+
+  STP_CYCLES.forEach(function(cyc, ci){
+    // Cycle header
+    var chdr = document.createElement('div');
+    chdr.style.cssText='background:var(--p1,#3c3197);color:#fff;border-radius:10px 10px 0 0;padding:10px 18px;display:flex;align-items:center;gap:10px;margin-top:'+(ci>0?'24px':'0');
+    chdr.innerHTML=
+      '<div style="background:#fff;color:var(--p1);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px">'+(ci+1)+'</div>'+
+      '<div>'+
+        '<div style="font-weight:800;font-size:14px">STP Cycle '+(ci+1)+''+
+          (cyc.liquid.fund?' — '+cyc.liquid.fund.name.substring(0,40):'')+
+        '</div>'+
+        '<div style="font-size:11px;opacity:.8">₹'+stpFmtI(cyc.liquid.amount)+' parked @ '+cyc.liquid.cagr+'% p.a. · '+
+          {daily:'Daily',weekly:'Weekly',monthly:'Monthly',quarterly:'Quarterly'}[cyc.freq]+' STP · Start '+stpFmtD(cyc.liquid.startDate)+
+        '</div>'+
+      '</div>';
+    el.appendChild(chdr);
+
+    var cycCard = document.createElement('div');
+    cycCard.style.cssText='border:1.5px solid var(--p3,#6257e0);border-top:none;border-radius:0 0 10px 10px;padding:14px;margin-bottom:4px;background:#fff;';
+
+    cyc.equityFunds.forEach(function(ef, ei){
+      var res = stpComputeCycleEF(cyc, ef);
+      var transfers = res.transfers, remaining = res.remainingLiquid;
+      var totalXfer = transfers.reduce(function(s,t){return s+t.amount;},0);
+      var lcagr=cyc.liquid.cagr, mR=(lcagr/100)/12;
+      var dpi={daily:1,weekly:7,monthly:30.44,quarterly:91.31}[cyc.freq];
+
+      var efName = ef.fund ? ef.fund.name : 'Equity Fund '+(ei+1);
+      var efHdr = document.createElement('div');
+      efHdr.style.cssText='background:linear-gradient(135deg,#167a12,#4aaa1e);color:#fff;border-radius:8px;padding:8px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center';
+      efHdr.innerHTML=
+        '<div style="font-weight:800;font-size:13px">📈 '+efName+'</div>'+
+        '<div style="font-size:11px;opacity:.9">₹'+stpFmtI(ef.amtPerXfer)+' × '+ef.count+' transfers · CAGR '+ef.cagr+'% · '+ef.yr+'Y '+ef.mo+'M</div>';
+      cycCard.appendChild(efHdr);
+
+      if(!transfers.length){
+        var err=document.createElement('div'); err.className='ibox red';
+        err.textContent='No transfers computed — check cycle '+( ci+1)+' equity fund '+(ei+1)+' fields.';
+        cycCard.appendChild(err); return;
+      }
+
+      var rows='', balance=cyc.liquid.amount, totalInt=0;
+      var showAll=transfers.length<=20;
+      var displayXfers=showAll?transfers:transfers.slice(0,5).concat([null]).concat(transfers.slice(-5));
+
+      displayXfers.forEach(function(t,i){
+        if(!t){
+          rows+='<tr><td colspan="7" style="text-align:center;color:var(--t5);font-style:italic;padding:8px">… '+(transfers.length-10)+' more entries …</td></tr>';
+          return;
+        }
+        var mf=dpi/30.44, interest=balance*mR*mf;
+        var balBefore=balance+interest, balAfter=balBefore-t.amount;
+        totalInt+=interest; balance=balAfter;
+        var matDate=stpGetMaturityDate(t.date, ef.yr, ef.mo);
+        var ai=showAll?i:(i<5?i:transfers.length-5+(i-6));
+        rows+='<tr>'+
+          '<td style="text-align:center;font-weight:800;color:var(--p1)">'+(ai+1)+'</td>'+
+          '<td>'+stpFmtD(t.date)+'</td>'+
+          '<td style="color:var(--p2,#2d2478);font-weight:700">'+stpFmtD(matDate)+'</td>'+
+          '<td class="stp-cred">-₹'+stpFmtI(t.amount)+'</td>'+
+          '<td>₹'+stpFmtI(Math.max(0,balBefore))+'</td>'+
+          '<td class="stp-cgrn">+₹'+stpFmtI(Math.round(interest))+'</td>'+
+          '<td class="stp-cpur">₹'+stpFmtI(Math.max(0,balAfter))+'</td>'+
+        '</tr>';
+      });
+      rows+='<tr>'+
+        '<td colspan="3" style="font-weight:800">TOTALS</td>'+
+        '<td class="stp-cred">-₹'+stpFmtI(totalXfer)+'</td>'+
+        '<td>—</td>'+
+        '<td class="stp-cgrn">+₹'+stpFmtI(Math.round(totalInt))+'</td>'+
+        '<td class="stp-cpur">₹'+stpFmtI(Math.max(0,remaining))+'</td>'+
+      '</tr>';
+
+      var tw=document.createElement('div'); tw.className='stp-tw'; tw.style.marginBottom='14px';
+      tw.innerHTML='<table class="stp-t"><thead><tr>'+
+        '<th style="text-align:center">#</th>'+
+        '<th>Transfer Date</th><th>Maturity Date</th>'+
+        '<th>STP Amount ₹</th><th>Liquid Before ₹</th>'+
+        '<th>Interest ₹</th><th>Liquid After ₹</th>'+
+      '</tr></thead><tbody>'+rows+'</tbody></table>';
+      cycCard.appendChild(tw);
+    });
+
+    el.appendChild(cycCard);
+  });
 }
 
 // ── BLUEPRINT ─────────────────────────────────────────────────
+
 function stpBuildBlueprint(){
   var el=document.getElementById('stp-bp-area'); el.innerHTML='';
-  var name   = document.getElementById('stp-v-name').value||'Valued Investor';
-  var lump   = parseFloat(document.getElementById('stp-v-lump').value)||0;
-  var lcagr  = parseFloat(document.getElementById('stp-v-lcagr').value)||7;
-  var yr     = parseInt(document.getElementById('stp-v-yr').value)||5;
-  var mo     = parseInt(document.getElementById('stp-v-mo').value)||0;
-  var totM   = yr*12+mo;
-  var startDt= document.getElementById('stp-v-start').value;
-  var mR     = (lcagr/100)/12;
-  var dpi    = {daily:1, weekly:7, monthly:30.44, quarterly:91.31}[STP_FREQ];
-  var freqLbl= {daily:'Daily',weekly:'Weekly',monthly:'Monthly',quarterly:'Quarterly'}[STP_FREQ];
+  var name = document.getElementById('stp-v-name').value||'Valued Investor';
+  var today = stpFmtD(stpFmt0(new Date()));
 
-  var {transfers, remainingLiquid} = stpComputeTransfers();
-  if(!transfers.length){ el.innerHTML='<div class="ibox red">Please complete all fields first.</div>'; return; }
+  // Grand totals across all cycles
+  var grandLump=0, grandXfer=0, grandEquity=0, grandInt=0;
 
-  var totalXfer = transfers.reduce(function(s,t){return s+t.amount;},0);
+  STP_CYCLES.forEach(function(cyc, ci){
+    var freqLbl={daily:'Daily',weekly:'Weekly',monthly:'Monthly',quarterly:'Quarterly'}[cyc.freq]||'Weekly';
+    var liq=cyc.liquid.amount||0, lcagr=cyc.liquid.cagr||7, mR=(lcagr/100)/12;
+    var dpi={daily:1,weekly:7,monthly:30.44,quarterly:91.31}[cyc.freq]||7;
+    grandLump += liq;
 
-  // ── LIQUID INTEREST ───────────────────────────────────────────
-  var balance=lump, totalInt=0;
-  transfers.forEach(function(t){
-    var mf=dpi/30.44;
-    var interest=balance*mR*mf;
-    totalInt+=interest;
-    balance=balance+interest-t.amount;
-  });
-
-  // ── EQUITY CORPUS (CORRECT: each transfer = own lumpsum, own period) ──
-  // Each transfer of amount A at its own date grows for EXACTLY totM months
-  // FV = A × (1 + r/12)^totM — SAME for every transfer (same period, same CAGR)
-  var fundCorpora = STP_FUNDS.map(function(){ return 0; });
-  var totalEquity = 0;
-
-  // For each fund, per-transfer FV
-  var perTransferFVs = [];
-  STP_FUNDS.forEach(function(f, fi){
-    var fundM = f.yr*12+f.mo || totM;
-    var perFV = stpLumpFV(1, f.cagr, fundM); // FV per ₹1
-    transfers.forEach(function(t, ti){
-      var principal = t.amount * (f.splitPct/100);
-      var fv = principal * perFV;
-      fundCorpora[fi] += fv;
-      totalEquity += fv;
+    // ── Hero per cycle ──
+    var cycleCorpus=0, cycleXfer=0, cycleInt=0, cycleRemaining=liq;
+    cyc.equityFunds.forEach(function(ef){
+      var res=stpComputeCycleEF(cyc,ef);
+      var txTotal=res.transfers.reduce(function(s,t){return s+t.amount;},0);
+      var bal=liq, tInt=0;
+      res.transfers.forEach(function(t){ var i=bal*mR*(dpi/30.44); tInt+=i; bal=bal+i-t.amount; });
+      cycleXfer += txTotal; cycleInt += tInt;
+      var fundM=ef.yr*12+ef.mo||60;
+      res.transfers.forEach(function(t){cycleCorpus+=stpLumpFV(t.amount*(ef.amtPerXfer/Math.max(ef.amtPerXfer,1))*(ef.splitPct||100)/100, ef.cagr, fundM);});
+      // simpler per-ef corpus
+      var perFV=stpLumpFV(1,ef.cagr,ef.yr*12+ef.mo||60);
+      cycleCorpus = 0; // recalc below properly
     });
-  });
+    // Proper corpus calc
+    cycleCorpus=0;
+    cyc.equityFunds.forEach(function(ef){
+      var res=stpComputeCycleEF(cyc,ef);
+      var fundM=ef.yr*12+ef.mo||60;
+      res.transfers.forEach(function(t){ cycleCorpus+=stpLumpFV(t.amount,ef.cagr,fundM); });
+      cycleXfer=res.transfers.reduce(function(s,t){return s+t.amount;},cycleXfer-res.transfers.reduce(function(s,t){return s+t.amount;},0));
+    });
+    // Recalc cleanly
+    cycleXfer=0; cycleCorpus=0; cycleInt=0;
+    cyc.equityFunds.forEach(function(ef){
+      var res=stpComputeCycleEF(cyc,ef);
+      var fundM=ef.yr*12+ef.mo||60;
+      var txTotal=res.transfers.reduce(function(s,t){return s+t.amount;},0);
+      cycleXfer+=txTotal;
+      res.transfers.forEach(function(t){cycleCorpus+=stpLumpFV(t.amount,ef.cagr,fundM);});
+    });
+    var bal=liq; cycleInt=0;
+    // Use first EF's transfer sequence to estimate liquid interest
+    var firstEF=cyc.equityFunds[0];
+    stpComputeCycleEF(cyc,firstEF).transfers.forEach(function(t){
+      var interest=bal*mR*(dpi/30.44); cycleInt+=interest; bal=bal+interest-t.amount;
+    });
+    cycleRemaining=Math.max(0,bal);
+    grandXfer+=cycleXfer; grandEquity+=cycleCorpus; grandInt+=cycleInt;
 
-  // ── HERO ──────────────────────────────────────────────────────
-  var hero=document.createElement('div'); hero.className='stp-bp-hero';
-  hero.innerHTML=
-    '<div class="stp-bp-title">STP Investment Blueprint</div>'+
-    '<div style="font-size:12px;opacity:.75;margin-bottom:16px;">Prepared for <strong>'+name+'</strong> &nbsp;·&nbsp; '+stpFmtD(startDt)+' &nbsp;·&nbsp; '+freqLbl+' STP</div>'+
-    '<div class="stp-bp-grid">'+
-    '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Lumpsum Parked</div><div class="stp-bp-mc-v">₹'+stpFmtN(lump)+'</div></div>'+
-    '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Liquid Interest Est.</div><div class="stp-bp-mc-v" style="color:#a5f3a5">+₹'+stpFmtN(totalInt)+'</div></div>'+
-    '<div class="stp-bp-mc"><div class="stp-bp-mc-l">STP Transfers</div><div class="stp-bp-mc-v">'+transfers.length+' × ₹'+stpFmtN(transfers[0].amount)+'</div></div>'+
-    '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Total Equity Corpus</div><div class="stp-bp-mc-v">₹'+stpFmtN(totalEquity)+'</div></div>'+
-    '</div>';
-  el.appendChild(hero);
+    var liqName=cyc.liquid.fund?cyc.liquid.fund.name:'Liquid Fund';
+    var cycleLabel='STP Cycle '+(ci+1);
 
-  // ── LIQUID CARD ────────────────────────────────────────────────
-  var lc=document.createElement('div');
-  lc.innerHTML=
-    '<div class="stp-fc">'+
-    '<div class="stp-fc-hdr" style="background:linear-gradient(135deg,#5b2d9e,var(--p1,#3c3197))">'+
-      '<div><div style="font-size:11px;opacity:.8;margin-bottom:3px;letter-spacing:.5px">PARKING FUND — Decreasing</div>'+
-      '<div style="font-size:17px;font-weight:800">🏦 Liquid Fund</div></div>'+
-      '<div style="text-align:right"><div style="font-size:11px;opacity:.8;margin-bottom:3px">CAGR while parked</div><div style="font-size:20px;font-weight:800">'+lcagr+'% p.a.</div></div>'+
-    '</div>'+
-    '<div class="stp-fc-body"><div class="stp-sg">'+
-      '<div class="stp-st"><div class="stp-st-l">Amount Parked</div><div class="stp-st-v">₹'+stpFmtI(lump)+'</div></div>'+
-      '<div class="stp-st"><div class="stp-st-l">Interest Earned (est.)</div><div class="stp-st-v" style="color:var(--g1,#6aaa1e)">+₹'+stpFmtI(Math.round(totalInt))+'</div></div>'+
-      '<div class="stp-st"><div class="stp-st-l">Remaining in Liquid</div><div class="stp-st-v" style="color:'+(remainingLiquid>0?'var(--p1,#3c3197)':'var(--t4,#7a7898)')+'">₹'+stpFmtI(Math.max(0,remainingLiquid))+'</div></div>'+
-    '</div>'+
-    (remainingLiquid>500?'<div class="ibox amber" style="margin-top:10px">⚠️ ₹'+stpFmtI(remainingLiquid)+' stays in Liquid Fund — continues to earn '+lcagr+'% p.a.</div>':'')+
-    '</div></div>';
-  el.appendChild(lc);
+    // Cycle hero
+    var hero=document.createElement('div');
+    hero.className='stp-bp-hero';
+    hero.style.marginBottom='4px';
+    hero.innerHTML=
+      '<div style="font-size:10px;letter-spacing:.8px;opacity:.7;text-transform:uppercase;margin-bottom:4px">'+cycleLabel+'</div>'+
+      '<div class="stp-bp-title">STP Investment Blueprint</div>'+
+      '<div style="font-size:12px;opacity:.75;margin-bottom:16px">Prepared for <strong>'+name+'</strong> · '+today+' · '+freqLbl+' STP</div>'+
+      '<div class="stp-bp-grid">'+
+        '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Lumpsum Parked</div><div class="stp-bp-mc-v">₹'+stpFmtN(liq)+'</div></div>'+
+        '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Liquid Interest Est.</div><div class="stp-bp-mc-v" style="color:#a5f3a5">+₹'+stpFmtN(cycleInt)+'</div></div>'+
+        '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Total Equity Transfers</div><div class="stp-bp-mc-v">₹'+stpFmtN(cycleXfer)+'</div></div>'+
+        '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Total Equity Corpus</div><div class="stp-bp-mc-v">₹'+stpFmtN(cycleCorpus)+'</div></div>'+
+      '</div>';
+    el.appendChild(hero);
 
-  // ── EQUITY FUND CARDS ──────────────────────────────────────────
-  var clrs=[
-    'linear-gradient(135deg,#167a12,#4aaa1e)',
-    'linear-gradient(135deg,#0e6b8a,#1a9cc7)',
-    'linear-gradient(135deg,#7a3b10,#c96e2a)',
-    'linear-gradient(135deg,#5c1a7a,#9b3dbf)'
-  ];
-
-  STP_FUNDS.forEach(function(f, fi){
-    var fundM   = f.yr*12+f.mo || totM;
-    var corpus  = fundCorpora[fi];
-    var invested= totalXfer*(f.splitPct/100);
-    var gain    = Math.max(0,corpus-invested);
-    var perAmt  = transfers[0].amount*(f.splitPct/100);
-    var perFV   = stpLumpFV(perAmt, f.cagr, fundM);
-
-    var firstXfer = transfers[0].date;
-    var lastXfer  = transfers[transfers.length-1].date;
-    var firstMat  = stpGetMaturityDate(firstXfer, f.yr, f.mo);
-    var lastMat   = stpGetMaturityDate(lastXfer, f.yr, f.mo);
-    var entry2Dt  = stpGetTransferDate(document.getElementById('stp-v-ft').value, STP_FREQ, 1);
-    var entry2Mat = stpGetMaturityDate(entry2Dt, f.yr, f.mo);
-    var fundName  = f.fund ? f.fund.name : (f.desc || f.label);
-
-    var fc2=document.createElement('div');
-    fc2.innerHTML=
-      '<div class="stp-fc">'+
-      '<div class="stp-fc-hdr" style="background:'+clrs[fi%4]+'">'+
-        '<div><div style="font-size:11px;opacity:.8;margin-bottom:3px;letter-spacing:.5px">EQUITY TARGET · FUND '+(fi+1)+'</div>'+
-        '<div style="font-size:17px;font-weight:800">📈 '+fundName+'</div></div>'+
-        '<div style="text-align:right"><div style="font-size:11px;opacity:.8;margin-bottom:3px">Expected CAGR</div><div style="font-size:20px;font-weight:800">'+f.cagr.toFixed(1)+'%</div></div>'+
-      '</div>'+
-      '<div class="stp-fc-body">'+
-        '<div class="stp-sg">'+
-          '<div class="stp-st"><div class="stp-st-l">STP Split</div><div class="stp-st-v">'+f.splitPct+'%</div></div>'+
-          '<div class="stp-st"><div class="stp-st-l">Total Invested</div><div class="stp-st-v">₹'+stpFmtI(Math.round(invested))+'</div></div>'+
-          '<div class="stp-st"><div class="stp-st-l">No. of Entries</div><div class="stp-st-v">'+transfers.length+' lumpsums</div></div>'+
-          '<div class="stp-st"><div class="stp-st-l">Period per Entry</div><div class="stp-st-v">'+f.yr+'Y '+f.mo+'M ('+fundM+' mo)</div></div>'+
-          '<div class="stp-st"><div class="stp-st-l">Expected Corpus</div><div class="stp-st-v" style="color:var(--g1,#6aaa1e)">₹'+stpFmtN(corpus)+'</div></div>'+
-          '<div class="stp-st"><div class="stp-st-l">Wealth Gain</div><div class="stp-st-v" style="color:var(--g1,#6aaa1e)">+₹'+stpFmtN(gain)+'</div></div>'+
+    // Liquid fund card
+    var lc=document.createElement('div');
+    lc.innerHTML=
+      '<div class="stp-fc" style="margin-bottom:4px">'+
+        '<div class="stp-fc-hdr" style="background:linear-gradient(135deg,#5b2d9e,var(--p1,#3c3197))">'+
+          '<div><div style="font-size:10px;opacity:.8;margin-bottom:3px;letter-spacing:.5px">PARKING FUND — Decreasing · '+cycleLabel+'</div>'+
+          '<div style="font-size:16px;font-weight:800">🏦 '+liqName+'</div></div>'+
+          '<div style="text-align:right"><div style="font-size:10px;opacity:.8;margin-bottom:3px">CAGR while parked</div><div style="font-size:18px;font-weight:800">'+lcagr+'% p.a.</div></div>'+
         '</div>'+
-        '<div style="background:var(--bg,#f7f6ff);border:1px solid var(--bd,#ddd);border-radius:8px;padding:10px 14px;font-size:11px;color:var(--t2,#3d3b5c);margin-bottom:12px;line-height:1.9">'+
-          '<strong>Date Logic:</strong><br>'+
-          'Entry 1: ₹'+stpFmtI(Math.round(perAmt))+' on <strong>'+stpFmtD(firstXfer)+'</strong> → matures <strong>'+stpFmtD(firstMat)+'</strong> ('+fundM+' months)<br>'+
-          'Entry 2: ₹'+stpFmtI(Math.round(perAmt))+' on <strong>'+stpFmtD(entry2Dt)+'</strong> → matures <strong>'+stpFmtD(entry2Mat)+'</strong> ('+fundM+' months)<br>'+
-          '...<br>'+
-          'Entry '+transfers.length+': ₹'+stpFmtI(Math.round(perAmt))+' on <strong>'+stpFmtD(lastXfer)+'</strong> → matures <strong>'+stpFmtD(lastMat)+'</strong> ('+fundM+' months)'+
-        '</div>'+
-        '<div class="stp-fbox">'+
-          '<strong>Formula per entry:</strong> FV = ₹'+stpFmtI(Math.round(perAmt))+' × (1 + ('+f.cagr+'/100)/12)^'+fundM+
-          ' = <strong>₹'+stpFmtI(Math.round(perFV))+'</strong><br>'+
-          '<strong>Total corpus</strong> = '+transfers.length+' entries × ₹'+stpFmtI(Math.round(perFV))+' = <strong>₹'+stpFmtN(corpus)+'</strong>'+
-        '</div>'+
-      '</div></div>';
-    el.appendChild(fc2);
-  });
+        '<div class="stp-fc-body"><div class="stp-sg">'+
+          '<div class="stp-st"><div class="stp-st-l">Amount Parked</div><div class="stp-st-v">₹'+stpFmtI(liq)+'</div></div>'+
+          '<div class="stp-st"><div class="stp-st-l">Interest Earned (est.)</div><div class="stp-st-v" style="color:var(--g1,#6aaa1e)">+₹'+stpFmtI(Math.round(cycleInt))+'</div></div>'+
+          '<div class="stp-st"><div class="stp-st-l">Remaining in Liquid</div><div class="stp-st-v">₹'+stpFmtI(cycleRemaining)+'</div></div>'+
+        '</div></div>'+
+      '</div>';
+    el.appendChild(lc);
 
-  // ── TRANSFER-WISE MATURITY SCHEDULE TABLE ─────────────────────
-  var totalAmt = transfers.reduce(function(s,t){return s+t.amount;},0);
-  var fund0    = STP_FUNDS[0];
-  var fundM0   = fund0.yr*12+fund0.mo||totM;
-  var totalFV  = transfers.reduce(function(s,t){return s+stpLumpFV(t.amount*(fund0.splitPct/100),fund0.cagr,fundM0);},0);
-  var showAll  = transfers.length <= 20;
-  var mrows    = '';
+    // Equity fund cards + maturity schedule per EF
+    var efClrs=['linear-gradient(135deg,#167a12,#4aaa1e)','linear-gradient(135deg,#0e6b8a,#1a9cc7)','linear-gradient(135deg,#7a3b10,#c96e2a)','linear-gradient(135deg,#5c1a7a,#9b3dbf)'];
 
-  var displayXfers = showAll ? transfers :
-    transfers.slice(0,5).concat([null]).concat(transfers.slice(-5));
+    cyc.equityFunds.forEach(function(ef, ei){
+      var res=stpComputeCycleEF(cyc,ef);
+      var transfers=res.transfers, remaining=res.remainingLiquid;
+      if(!transfers.length) return;
+      var fundM=ef.yr*12+ef.mo||60;
+      var efName=ef.fund?ef.fund.name:'Equity Fund '+(ei+1);
+      var invested=transfers.reduce(function(s,t){return s+t.amount;},0);
+      var corpus=transfers.reduce(function(s,t){return s+stpLumpFV(t.amount,ef.cagr,fundM);},0);
+      var gain=Math.max(0,corpus-invested);
+      var perFV=stpLumpFV(transfers[0].amount,ef.cagr,fundM);
+      var firstXfer=transfers[0].date, lastXfer=transfers[transfers.length-1].date;
+      var firstMat=stpGetMaturityDate(firstXfer,ef.yr,ef.mo), lastMat=stpGetMaturityDate(lastXfer,ef.yr,ef.mo);
 
-  displayXfers.forEach(function(t, i){
-    if(!t){
-      mrows += '<tr><td colspan="5" style="text-align:center;color:var(--t5);font-style:italic;padding:10px">… '+(transfers.length-10)+' more entries …</td></tr>';
-      return;
+      var fc=document.createElement('div');
+      fc.innerHTML=
+        '<div class="stp-fc" style="margin-bottom:4px">'+
+          '<div class="stp-fc-hdr" style="background:'+efClrs[(ei)%4]+'">'+
+            '<div><div style="font-size:10px;opacity:.8;margin-bottom:3px;letter-spacing:.5px">EQUITY TARGET · '+cycleLabel+' · FUND '+(ei+1)+'</div>'+
+            '<div style="font-size:16px;font-weight:800">📈 '+efName+'</div></div>'+
+            '<div style="text-align:right"><div style="font-size:10px;opacity:.8;margin-bottom:3px">Expected CAGR</div><div style="font-size:18px;font-weight:800">'+ef.cagr.toFixed(1)+'%</div></div>'+
+          '</div>'+
+          '<div class="stp-fc-body">'+
+            '<div class="stp-sg">'+
+              '<div class="stp-st"><div class="stp-st-l">₹ per Transfer</div><div class="stp-st-v">₹'+stpFmtI(ef.amtPerXfer)+'</div></div>'+
+              '<div class="stp-st"><div class="stp-st-l">No. of Transfers</div><div class="stp-st-v">'+transfers.length+' ('+freqLbl+')</div></div>'+
+              '<div class="stp-st"><div class="stp-st-l">Total Invested</div><div class="stp-st-v">₹'+stpFmtI(Math.round(invested))+'</div></div>'+
+              '<div class="stp-st"><div class="stp-st-l">Period per Entry</div><div class="stp-st-v">'+ef.yr+'Y '+ef.mo+'M ('+fundM+' mo)</div></div>'+
+              '<div class="stp-st"><div class="stp-st-l">Expected Corpus</div><div class="stp-st-v" style="color:var(--g1,#6aaa1e)">₹'+stpFmtN(corpus)+'</div></div>'+
+              '<div class="stp-st"><div class="stp-st-l">Wealth Gain</div><div class="stp-st-v" style="color:var(--g1,#6aaa1e)">+₹'+stpFmtN(gain)+'</div></div>'+
+            '</div>'+
+            '<div style="background:var(--bg,#f7f6ff);border:1px solid var(--bd,#ddd);border-radius:8px;padding:10px 14px;font-size:11px;color:var(--t2);margin-bottom:12px;line-height:1.9">'+
+              '<strong>Date Logic:</strong><br>'+
+              'Entry 1: ₹'+stpFmtI(Math.round(transfers[0].amount))+' on <strong>'+stpFmtD(firstXfer)+'</strong> → matures <strong>'+stpFmtD(firstMat)+'</strong> ('+fundM+' months)<br>'+
+              (transfers.length>2?'...<br>':'')+
+              'Entry '+transfers.length+': ₹'+stpFmtI(Math.round(transfers[transfers.length-1].amount))+' on <strong>'+stpFmtD(lastXfer)+'</strong> → matures <strong>'+stpFmtD(lastMat)+'</strong> ('+fundM+' months)'+
+            '</div>'+
+            '<div class="stp-fbox">'+
+              '<strong>Formula per entry:</strong> FV = ₹'+stpFmtI(Math.round(transfers[0].amount))+' × (1 + ('+ef.cagr+'/100)/12)^'+fundM+
+              ' = <strong>₹'+stpFmtI(Math.round(perFV))+'</strong><br>'+
+              '<strong>Total corpus</strong> = '+transfers.length+' entries × ₹'+stpFmtI(Math.round(perFV))+' = <strong>₹'+stpFmtN(corpus)+'</strong>'+
+            '</div>'+
+          '</div>'+
+        '</div>';
+      el.appendChild(fc);
+
+      // Maturity schedule table
+      var showAll=transfers.length<=20;
+      var dispXfers=showAll?transfers:transfers.slice(0,5).concat([null]).concat(transfers.slice(-5));
+      var mrows=dispXfers.map(function(t,i){
+        if(!t) return '<tr><td colspan="5" style="text-align:center;color:var(--t5);font-style:italic;padding:8px">… '+(transfers.length-10)+' more entries …</td></tr>';
+        var ai=showAll?i:(i<5?i:transfers.length-5+(i-6));
+        var matDate=stpGetMaturityDate(t.date,ef.yr,ef.mo);
+        var fv=stpLumpFV(t.amount,ef.cagr,fundM);
+        return '<tr>'+
+          '<td style="text-align:center;font-weight:800;color:var(--p1)">'+(ai+1)+'</td>'+
+          '<td>'+stpFmtD(t.date)+'</td>'+
+          '<td>₹'+stpFmtI(t.amount)+'</td>'+
+          '<td>'+stpFmtD(matDate)+'</td>'+
+          '<td class="stp-cgrn">₹'+stpFmtI(Math.round(fv))+'</td>'+
+        '</tr>';
+      }).join('');
+      var totalFVEF=transfers.reduce(function(s,t){return s+stpLumpFV(t.amount,ef.cagr,fundM);},0);
+      mrows+='<tr>'+
+        '<td colspan="2" style="font-weight:800;color:var(--t1)">GRAND TOTAL — '+transfers.length+' Entries</td>'+
+        '<td style="font-weight:800">₹'+stpFmtI(invested)+'</td>'+
+        '<td style="font-size:11px;color:var(--t4);font-style:italic">Each entry: own '+ef.yr+'Y '+ef.mo+'M cycle</td>'+
+        '<td class="stp-cgrn" style="font-size:14px">₹'+stpFmtN(totalFVEF)+'</td>'+
+      '</tr>';
+      var schedDiv=document.createElement('div');
+      schedDiv.style.cssText='margin-bottom:18px;';
+      schedDiv.innerHTML=
+        '<div style="font-family:var(--fp,serif);font-size:16px;font-weight:700;color:var(--p1);margin-bottom:4px">Transfer-wise Maturity Schedule</div>'+
+        '<div style="font-size:11px;color:var(--t4);margin-bottom:12px">'+efName+' · Each entry: own '+ef.yr+'Y '+ef.mo+'M from its transfer date</div>'+
+        '<div class="stp-tw"><table class="stp-t"><thead><tr>'+
+          '<th style="text-align:center">#</th>'+
+          '<th>Transfer Date</th><th>Amount ₹</th>'+
+          '<th>Maturity Date</th><th>Expected FV ₹</th>'+
+        '</tr></thead><tbody>'+mrows+'</tbody></table></div>';
+      el.appendChild(schedDiv);
+    });
+
+    // Cycle divider
+    if(ci < STP_CYCLES.length-1){
+      var div=document.createElement('div');
+      div.style.cssText='border-top:3px dashed var(--p3,#6257e0);margin:22px 0;';
+      el.appendChild(div);
     }
-    var ai = showAll ? i : (i<5 ? i : transfers.length-5+(i-6));
-    var perAmt  = t.amount*(fund0.splitPct/100);
-    var fv      = stpLumpFV(perAmt, fund0.cagr, fundM0);
-    var matDate = stpGetMaturityDate(t.date, fund0.yr, fund0.mo);
-    mrows += '<tr>'+
-      '<td style="text-align:center;font-weight:800;color:var(--p1,#3c3197)">'+(ai+1)+'</td>'+
-      '<td>'+stpFmtD(t.date)+'</td>'+
-      '<td>₹'+stpFmtI(t.amount)+'</td>'+
-      '<td>'+stpFmtD(matDate)+'</td>'+
-      '<td class="stp-cgrn">₹'+stpFmtI(Math.round(fv))+'</td>'+
-    '</tr>';
   });
 
-  var proj = document.createElement('div');
-  proj.className = 'card';
-  proj.style.marginTop = '18px';
-  proj.innerHTML =
-    '<div style="font-family:var(--fp,serif);font-size:20px;font-weight:700;color:var(--p1,#3c3197);margin-bottom:4px">Transfer-wise Maturity Schedule</div>'+
-    '<div style="font-size:12px;color:var(--t4,#7a7898);margin-bottom:16px">Each entry grows for its own '+fund0.yr+'Y '+fund0.mo+'M from its own transfer date</div>'+
-    '<div class="stp-tw"><table class="stp-t"><thead><tr>'+
-      '<th style="text-align:center">#</th>'+
-      '<th>Transfer Date</th>'+
-      '<th>Amount ₹</th>'+
-      '<th>Maturity Date</th>'+
-      '<th>Expected FV ₹</th>'+
-    '</tr></thead><tbody>'+mrows+
-    '<tr>'+
-      '<td colspan="2" style="font-weight:800;color:var(--t1);font-size:13px">GRAND TOTAL — '+transfers.length+' Entries</td>'+
-      '<td style="font-weight:800;color:var(--t1);font-size:13px">₹'+stpFmtI(totalAmt)+'</td>'+
-      '<td style="font-size:11px;color:var(--t4);font-style:italic">Each entry: own '+fund0.yr+'Y '+fund0.mo+'M cycle</td>'+
-      '<td class="stp-cgrn" style="font-size:15px">₹'+stpFmtN(totalFV)+'</td>'+
-    '</tr>'+
-    '</tbody></table></div>';
-  el.appendChild(proj);
-
-  // Show investor name on disclaimer
-  var stpNameEl = document.getElementById('stp-discl-investor');
-  if(stpNameEl){ stpNameEl.style.display='block'; stpNameEl.textContent='Prepared for: '+name; }
-
-  // ── GRAND TOTAL SUMMARY BOX ────────────────────────────────────
-  var totalFV2 = 0;
-  transfers.forEach(function(t){
-    STP_FUNDS.forEach(function(f){
-      var fundM = f.yr*12+f.mo||totM;
-      totalFV2 += stpLumpFV(t.amount*(f.splitPct/100), f.cagr, fundM);
-    });
-  });
-  var gain2 = Math.max(0, totalFV2 - totalAmt);
-
-  var summaryBox = document.createElement('div');
-  summaryBox.style.cssText = 'background:linear-gradient(135deg,var(--p2,#2d2478),var(--p1,#3c3197));border-radius:14px;padding:22px 26px;margin-top:18px;';
-  summaryBox.innerHTML =
-    '<div style="font-family:var(--fp,serif);font-size:22px;color:#fff;font-weight:700;margin-bottom:16px">📊 Grand Total Summary</div>'+
-    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">'+
-      '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Total Lumpsum Parked</div><div class="stp-bp-mc-v">₹'+stpFmtN(lump)+'</div></div>'+
-      '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Total Transferred ('+transfers.length+' entries)</div><div class="stp-bp-mc-v">₹'+stpFmtN(totalAmt)+'</div></div>'+
-      '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Total Equity Corpus</div><div class="stp-bp-mc-v" style="color:#a5f3a5">₹'+stpFmtN(totalFV2)+'</div></div>'+
-      '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Wealth Gain</div><div class="stp-bp-mc-v" style="color:#a5f3a5">+₹'+stpFmtN(gain2)+'</div></div>'+
-    '</div>'+
-    '<div style="margin-top:14px;font-size:11px;color:rgba(255,255,255,.75);line-height:1.8">'+
-      'Each of the '+transfers.length+' STP transfers is treated as an individual lumpsum entry. '+
-      'Every entry of ₹'+stpFmtI(Math.round(transfers[0].amount))+' grows for '+
-      STP_FUNDS[0].yr+'Y '+STP_FUNDS[0].mo+'M = '+(STP_FUNDS[0].yr*12+STP_FUNDS[0].mo)+' months at '+STP_FUNDS[0].cagr+'% CAGR from its own transfer date.'+
-      ' Total corpus = '+transfers.length+' × ₹'+stpFmtI(Math.round(totalFV2/transfers.length))+' = ₹'+stpFmtN(totalFV2)+'.'+
+  // ── GRAND TOTAL SUMMARY ────────────────────────────────────────
+  var grandGain=Math.max(0,grandEquity-grandXfer);
+  var summaryBox=document.createElement('div');
+  summaryBox.style.cssText='background:linear-gradient(135deg,var(--p2,#2d2478),var(--p1,#3c3197));border-radius:14px;padding:22px 26px;margin-top:18px;';
+  summaryBox.innerHTML=
+    '<div style="font-family:var(--fp,serif);font-size:22px;color:#fff;font-weight:700;margin-bottom:6px">📊 Grand Total Summary</div>'+
+    '<div style="font-size:11px;color:rgba(255,255,255,.7);margin-bottom:16px">'+STP_CYCLES.length+' STP Cycle'+(STP_CYCLES.length>1?'s':'')+' · Prepared for '+name+'</div>'+
+    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">'+
+      '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Total Lumpsum Parked</div><div class="stp-bp-mc-v">₹'+stpFmtN(grandLump)+'</div></div>'+
+      '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Total Transferred</div><div class="stp-bp-mc-v">₹'+stpFmtN(grandXfer)+'</div></div>'+
+      '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Total Equity Corpus</div><div class="stp-bp-mc-v" style="color:#a5f3a5">₹'+stpFmtN(grandEquity)+'</div></div>'+
+      '<div class="stp-bp-mc"><div class="stp-bp-mc-l">Total Wealth Gain</div><div class="stp-bp-mc-v" style="color:#a5f3a5">+₹'+stpFmtN(grandGain)+'</div></div>'+
     '</div>';
   el.appendChild(summaryBox);
-}
 
+  // Show investor name on disclaimer
+  var disclaimerInv=document.getElementById('stp-discl-investor');
+  if(disclaimerInv){ disclaimerInv.style.display='block'; disclaimerInv.textContent='Prepared for: '+name; }
+}
 
 
 
@@ -3600,112 +3675,45 @@ function anlPrintReport(){
   </div>
   <div style="max-width:960px;margin:0 auto;">
 
-  <!-- STEP 1: INVESTOR & SETUP -->
+  <!-- STEP 1: INVESTOR DETAILS -->
   <div class="stp-sec stp-show" id="stp-sec1">
     <div class="stp-step-hdr">
       <div class="stp-step-num">1</div>
       <div>
-        <div class="stp-step-title">Investor & STP Setup</div>
-        <div class="stp-step-sub">Each STP transfer starts its own investment cycle from its transfer date</div>
+        <div class="stp-step-title">Investor Details</div>
+        <div class="stp-step-sub">You can set up to 5 STP Cycles — each with its own Liquid Fund and one or more Equity Fund targets</div>
       </div>
     </div>
     <div class="stp-card">
-      <div class="stp-g3">
-        <div class="stp-field">
-          <div class="stp-lbl">Investor Name</div>
-          <input class="stp-inp" id="stp-v-name" type="text" placeholder="Type investor name...">
-        </div>
-        <div class="stp-field">
-          <div class="stp-lbl" style="color:var(--p1)">▣ Total Lumpsum to Park ₹</div>
-          <input class="stp-inp stp-inp-p" id="stp-v-lump" type="number" placeholder="e.g. 200000" min="1000" oninput="stpLiveCheck()">
-          <div class="stp-hint">Parked in Liquid Fund on start date</div>
-        </div>
-        <div class="stp-field">
-          <div class="stp-lbl">Liquid Fund CAGR % (expected)</div>
-          <input class="stp-inp stp-inp-g" id="stp-v-lcagr" type="number" placeholder="e.g. 5.5" min="1" max="20">
-          <div class="stp-hint">Typical liquid fund ~5–8% p.a. — enter from keyboard</div>
-        </div>
+      <div class="stp-field" style="max-width:420px">
+        <div class="stp-lbl">Investor Name</div>
+        <input class="stp-inp" id="stp-v-name" type="text" placeholder="Type investor name...">
       </div>
-      <div class="stp-g3">
-        <div class="stp-field">
-          <div class="stp-lbl">Investment Start Date</div>
-          <input class="stp-inp stp-inp-ro" id="stp-v-start" type="date" readonly>
-          <div class="stp-hint">Today — auto-filled</div>
-        </div>
-        <div class="stp-field">
-          <div class="stp-lbl" style="color:var(--p1)">First STP Transfer Date</div>
-          <input class="stp-inp stp-inp-ro" id="stp-v-ft" type="date" readonly>
-          <div class="stp-hint">7 days after start — auto-filled</div>
-        </div>
-        <div class="stp-field">
-          <div class="stp-lbl">STP Type</div>
-          <div class="stp-tgl-row">
-            <div class="stp-tgl on" id="stp-tgl-f" onclick="stpSetType('fixed')">
-              <div class="stp-tgl-t">Fixed</div><div class="stp-tgl-s">Same amount every transfer</div>
-            </div>
-            <div class="stp-tgl" id="stp-tgl-x" onclick="stpSetType('flexi')">
-              <div class="stp-tgl-t">Flexi</div><div class="stp-tgl-s">Different amount each time</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="stp-g3">
-        <div class="stp-field">
-          <div class="stp-lbl">Transfer Frequency</div>
-          <div class="stp-freq-row">
-            <button class="stp-fq" onclick="stpSetFreq('daily',this)">Daily</button>
-            <button class="stp-fq on" onclick="stpSetFreq('weekly',this)">Weekly</button>
-            <button class="stp-fq" onclick="stpSetFreq('monthly',this)">Monthly</button>
-            <button class="stp-fq" onclick="stpSetFreq('quarterly',this)">Quarterly</button>
-          </div>
-        </div>
-        <div class="stp-field">
-          <div class="stp-lbl" id="stp-cnt-lbl">No. of Weeks <span style="color:var(--red,#dc2626);font-size:9px">(min 6)</span></div>
-          <input class="stp-inp stp-inp-p" id="stp-v-count" type="number" placeholder="e.g. 20" min="6" oninput="stpLiveCheck()">
-          <div class="stp-hint">Total number of STP transfers</div>
-        </div>
-        <div class="stp-field" id="stp-amt-field">
-          <div class="stp-lbl">Transfer Amount ₹ <span style="color:var(--red,#dc2626);font-size:9px">(min ₹500)</span></div>
-          <input class="stp-inp stp-inp-p" id="stp-v-amt" type="number" placeholder="Enter amount" min="500" oninput="stpLiveCheck()">
-          <div class="stp-hint" id="stp-amt-hint">Investor's choice — minimum ₹500</div>
-        </div>
-      </div>
-      <div id="stp-live-msg"></div>
-      <div style="border-top:1.5px solid var(--g4,#e4e2f0);margin-top:16px;padding-top:16px">
-        <div style="font-size:12px;font-weight:700;color:var(--p2,#2d2478);margin-bottom:4px">Investment Period per Entry</div>
-        <div class="stp-hint" style="color:var(--p2,#2d2478);margin-bottom:12px">Each STP transfer starts its OWN cycle. Transfer 1 on Date X → matures X+5Y. Transfer 2 on X+1week → matures X+1week+5Y.</div>
-        <div class="stp-g3">
-          <div class="stp-field">
-            <div class="stp-lbl">Period — Years</div>
-            <input class="stp-inp stp-inp-p" id="stp-v-yr" type="number" placeholder="e.g. 5" min="0" max="50" value="5" oninput="stpLiveCheck()">
-          </div>
-          <div class="stp-field">
-            <div class="stp-lbl">Period — Months</div>
-            <input class="stp-inp stp-inp-p" id="stp-v-mo" type="number" placeholder="0" min="0" max="11" value="0" oninput="stpLiveCheck()">
-          </div>
-          <div class="stp-field">
-            <div class="stp-lbl">Total Months (auto)</div>
-            <div class="stp-inp stp-inp-ro" id="stp-v-totm" style="display:flex;align-items:center;font-size:16px;font-weight:800">60 months</div>
-            <div class="stp-hint">Each lumpsum entry grows for this many months from its transfer date</div>
-          </div>
+      <div class="ibox blue" style="margin-top:16px">
+        <span style="font-size:18px;flex-shrink:0">ℹ️</span>
+        <div>
+          <strong>How STP Cycles work:</strong><br>
+          Each cycle parks a lumpsum in a <strong>Liquid Fund</strong>, then systematically transfers to one or more <strong>Equity Funds</strong>.
+          Each equity transfer is an independent lumpsum entry that grows for its own period from its own transfer date.
+          Multiple cycles allow you to model different AMC strategies in a single plan.
         </div>
       </div>
     </div>
     <div class="stp-nav">
-      <button class="stp-btn-p" onclick="stpGo(2)">Next: Fund Configuration →</button>
+      <button class="stp-btn-p" onclick="stpGo(2)">Next: STP Cycles Setup →</button>
     </div>
   </div>
 
-  <!-- STEP 2: FUNDS -->
+  <!-- STEP 2: CYCLE BUILDER -->
   <div class="stp-sec" id="stp-sec2">
     <div class="stp-step-hdr">
       <div class="stp-step-num">2</div>
       <div>
-        <div class="stp-step-title">Equity Fund Configuration</div>
-        <div class="stp-step-sub">No actual fund selected. Named Fund 1, Fund 2 etc. CAGR & period from keyboard.</div>
+        <div class="stp-step-title">STP Cycles Setup</div>
+        <div class="stp-step-sub">Add up to 5 cycles · Each cycle = one Liquid Fund + one or more Equity Fund targets</div>
       </div>
     </div>
-    <div class="stp-card" id="stp-funds-area"></div>
+    <div id="stp-cycles-area"></div>
     <div class="stp-nav">
       <button class="stp-btn-b" onclick="stpGo(1)">← Back</button>
       <button class="stp-btn-p" onclick="stpGo(3)">Next: Transfer Schedule →</button>
