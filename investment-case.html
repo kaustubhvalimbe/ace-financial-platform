@@ -3005,7 +3005,7 @@ function stpComputeTransfers(){
 // ── NAVIGATION ────────────────────────────────────────────────
 function stpGo(n){
   if(n===2){
-    // nothing to validate moving into cycle builder
+    stpBuildCycles(); // always re-render cycle builder from current STP_CYCLES
   }
   if(n===3){
     if(!stpGoValidate()) return;
@@ -3322,6 +3322,26 @@ function stpBuildBlueprint(){
   var el = document.getElementById('stp-bp-area');
   el.innerHTML = '';
   try {
+    // ── Diagnostic check ──────────────────────────────────────
+    var hasData = STP_CYCLES.some(function(cyc){
+      return cyc.liquid.amount > 0 && cyc.equityFunds.some(function(ef){ return ef.amtPerXfer > 0 && ef.count > 0; });
+    });
+    if(!hasData){
+      el.innerHTML =
+        '<div class="ibox amber" style="font-size:13px">'+
+          '<span style="font-size:20px;flex-shrink:0">⚠️</span>'+
+          '<div><strong>No STP data found.</strong><br>'+
+          'Please go back to Step 2 and fill in:<br>'+
+          '• Liquid Fund Amount<br>'+
+          '• ₹ per Transfer and No. of Transfers for each equity fund<br>'+
+          '<small style="opacity:.7">Data check: '+STP_CYCLES.map(function(c,i){
+            return 'Cycle '+(i+1)+': lump=₹'+c.liquid.amount+', EFs=['+c.equityFunds.map(function(e){ return 'amt:'+e.amtPerXfer+' cnt:'+e.count; }).join(', ')+']';
+          }).join(' | ')+'</small>'+
+          '</div>'+
+        '</div>';
+      return;
+    }
+
     var name  = document.getElementById('stp-v-name').value || 'Valued Investor';
     var today = stpFmtD(stpFmt0(new Date()));
 
@@ -3413,7 +3433,13 @@ function stpBuildBlueprint(){
       cyc.equityFunds.forEach(function(ef, ei){
         var res       = stpComputeCycleEF(cyc, ef);
         var transfers = res.transfers;
-        if(!transfers.length) return;
+        if(!transfers.length){
+          var skip = document.createElement('div');
+          skip.className = 'ibox amber';
+          skip.innerHTML = '<span>⚠️</span><div>No transfers computed for <strong>'+efName+'</strong> — check ₹ per Transfer and No. of Transfers are filled.</div>';
+          el.appendChild(skip);
+          return;
+        }
 
         var fundM   = (ef.yr||0)*12 + (ef.mo||0) || 60;
         var efName  = ef.fund ? ef.fund.name : ('Equity Fund '+(ei+1));
