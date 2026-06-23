@@ -1012,22 +1012,24 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
         <div class="inp-group">
           <div class="inp-label" style="font-size:13px;margin-bottom:8px;">Investor Name</div>
           <input class="inp-field" id="v-name" type="text" placeholder="Investor name..."
-            style="font-size:14px;padding:13px 14px;height:50px;width:100%;">
+            style="font-size:14px;padding:13px 14px;height:50px;width:100%;" tabindex="1"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();slGoToFunds();}">
         </div>
         <div class="inp-group">
           <div class="inp-label" style="font-size:13px;margin-bottom:8px;">WhatsApp Number</div>
           <input class="inp-field" id="v-wa" type="tel" placeholder="9876543210"
-            style="font-size:14px;padding:13px 14px;height:50px;width:100%;">
+            style="font-size:14px;padding:13px 14px;height:50px;width:100%;" tabindex="2">
         </div>
         <div class="inp-group">
           <div class="inp-label" style="font-size:13px;margin-bottom:8px;">Email Address</div>
           <input class="inp-field" id="v-email" type="email" placeholder="investor@email.com"
-            style="font-size:14px;padding:13px 14px;height:50px;width:100%;">
+            style="font-size:14px;padding:13px 14px;height:50px;width:100%;" tabindex="3"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();slGoToFunds();}">
         </div>
       </div>
     </div>
     <div class="nav-btns">
-      <button class="btn-next" onclick="slGoToFunds()">Next: Select Funds →</button>
+      <button class="btn-next" onclick="slGoToFunds()" tabindex="4">Next: Select Funds →</button>
     </div>
   </div>
 
@@ -2397,7 +2399,7 @@ function addFundRow() {
     return;
   }
   const id = CMB.nextId++;
-  CMB.rows.push({id, fund:null, type:'sip', sipAmt:5000, lumpAmt:100000, stpAmt:5000, yrs:5, mos:0, cagr:12});
+  CMB.rows.push({id, fund:null, type:'sip', sipAmt:5000, lumpAmt:100000, stpAmt:5000, stpFreq:'weekly', stpTransfers:null, yrs:5, mos:0, cagr:12});
   renderRows();
   // Load AMFI funds if not loaded
   loadAMFIForCMB();
@@ -2459,7 +2461,19 @@ function renderRows() {
           ` : row.type==='stp' ? `
             <input class="row-inp" style="margin-bottom:4px" type="number" placeholder="Park in Liquid ₹" value="${row.lumpAmt}" min="100" step="1000"
               id="lmp-${row.id}" oninput="updateRowAmt(${row.id},'lumpAmt',this.value)">
-            <input class="row-inp" type="number" placeholder="Weekly STP ₹" value="${row.stpAmt}" min="100" step="100"
+            <div style="display:flex;gap:6px;margin-bottom:4px">
+              <select class="row-sel" style="flex:1;font-size:11px;padding:5px 7px;" id="stpfreq-${row.id}"
+                onchange="updateRowSTPFreq(${row.id},this.value)">
+                <option value="weekly"      ${(row.stpFreq||'weekly')==='weekly'      ?'selected':''}>Weekly</option>
+                <option value="fortnightly" ${(row.stpFreq||'weekly')==='fortnightly' ?'selected':''}>Fortnightly</option>
+                <option value="monthly"     ${(row.stpFreq||'weekly')==='monthly'     ?'selected':''}>Monthly</option>
+              </select>
+              <input class="row-inp" style="width:70px;font-size:12px;" type="number" placeholder="Xfers" min="1" step="1"
+                value="${row.stpTransfers||''}"
+                id="stpxfr-${row.id}" title="No. of Transfers"
+                oninput="updateRowAmt(${row.id},'stpTransfers',parseInt(this.value)||null)">
+            </div>
+            <input class="row-inp" type="number" placeholder="${(row.stpFreq||'weekly')==='monthly'?'Monthly':'Periodic'} STP ₹" value="${row.stpAmt}" min="100" step="100"
               id="stp-${row.id}" oninput="updateRowAmt(${row.id},'stpAmt',this.value)">
           ` : `
             <input class="row-inp" type="number"
@@ -2635,6 +2649,16 @@ function updateRowCAGR(id, val) {
   if(row) { row.cagr = parseFloat(val)||12; }
 }
 
+function updateRowSTPFreq(id, val) {
+  const row = CMB.rows.find(r=>r.id===id);
+  if(row) {
+    row.stpFreq = val;
+    // Update placeholder text on STP amount input
+    const stpInp = document.getElementById('stp-'+id);
+    if(stpInp) stpInp.placeholder = (val==='monthly'?'Monthly':'Periodic')+' STP ₹';
+  }
+}
+
 // Close dropdowns when clicking outside
 document.addEventListener('click', e => {
   if(!e.target.closest('.fund-search-wrap')) {
@@ -2677,7 +2701,10 @@ function calcRowValue(row) {
   if(row.type==='sip')  val = sipFV(row.sipAmt,  cagr, yrs);
   if(row.type==='lump') val = row.lumpAmt * Math.pow(1+cagr/12, row.yrs*12+row.mos);
   if(row.type==='both') val = sipFV(row.sipAmt, cagr, yrs) + row.lumpAmt * Math.pow(1+cagr/12, row.yrs*12+row.mos);
-  if(row.type==='stp')  val = sipFV(row.stpAmt*4.33, cagr, yrs) + row.lumpAmt*0.07*yrs; // stpAmt weekly, liq earnings
+  if(row.type==='stp') {
+    const freqMult = {weekly:4.33, fortnightly:2.17, monthly:1}[row.stpFreq||'weekly']||4.33;
+    val = sipFV(row.stpAmt * freqMult, cagr, yrs) + row.lumpAmt * 0.07 * yrs;
+  }
   return val;
 }
 
@@ -2742,7 +2769,12 @@ function generateCMB() {
     if(row.type==='sip')  amtDetail = `<div class="cfc-cell"><div class="cfc-lbl">Monthly SIP</div><div class="cfc-val pu">₹${fmt(row.sipAmt)}</div></div>`;
     if(row.type==='lump') amtDetail = `<div class="cfc-cell"><div class="cfc-lbl">Lumpsum</div><div class="cfc-val">₹${fmt(row.lumpAmt)}</div></div>`;
     if(row.type==='both') amtDetail = `<div class="cfc-cell"><div class="cfc-lbl">SIP + Lumpsum</div><div class="cfc-val pu">₹${fmt(row.sipAmt)}/mo + ₹${fmt(row.lumpAmt)}</div></div>`;
-    if(row.type==='stp')  amtDetail = `<div class="cfc-cell"><div class="cfc-lbl">Parked + STP</div><div class="cfc-val pu">₹${fmt(row.lumpAmt)} → ₹${fmt(row.stpAmt)}/wk</div></div>`;
+    if(row.type==='stp') {
+      const freqMap = {weekly:'Wkly',fortnightly:'Fort',monthly:'Mthly'};
+      const freqLbl = freqMap[row.stpFreq||'weekly']||'Wkly';
+      const xfrTxt  = row.stpTransfers ? ` · ${row.stpTransfers} xfrs` : '';
+      amtDetail = `<div class="cfc-cell"><div class="cfc-lbl">Parked + STP</div><div class="cfc-val pu">₹${fmt(row.lumpAmt)} → ₹${fmt(row.stpAmt)}/${freqLbl}${xfrTxt}</div></div>`;
+    }
 
     return `<div class="cmb-fund-card ci${i}">
       <div class="cfc-top">
@@ -5266,7 +5298,9 @@ function slBuildRowHTML(row, idx){
       '<input type="text" id="sl-inp-'+row.id+'" '+
         'style="width:100%;padding:7px 10px;border:1.5px solid #e4e2f0;border-radius:7px;font-size:11px;font-family:var(--fh);outline:none;background:#fff;" '+
         'placeholder="🔍 Search fund name..." value="'+row.fundName.replace(/"/g,'&quot;')+'" '+
-        'oninput="slSearch(this.value,'+row.id+')" onblur="slHideDd('+row.id+')">'+
+        'tabindex="'+(10+idx*6)+'" '+
+        'oninput="slSearch(this.value,'+row.id+')" onblur="slHideDd('+row.id+')" '+
+        'onkeydown="if(event.key===\'Tab\'&&!event.shiftKey){var a=document.getElementById(\'sl-amt-'+row.id+'\');if(a){event.preventDefault();a.focus();}}">'+
       '<div id="sl-dd-'+row.id+'" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--p1);border-top:none;border-radius:0 0 8px 8px;max-height:200px;overflow-y:auto;z-index:999;box-shadow:0 8px 20px rgba(60,49,151,.15);"></div>'+
     '</td>'+
     '<td style="padding:6px 8px;text-align:center;">'+
@@ -5279,22 +5313,26 @@ function slBuildRowHTML(row, idx){
       '<input type="number" id="sl-amt-'+row.id+'" '+
         'style="width:100%;padding:7px 8px;border:1.5px solid '+amtBd+';border-radius:7px;font-size:12px;font-weight:700;text-align:right;font-family:var(--fh);outline:none;background:'+amtBg+';color:'+amtC+';" '+
         'placeholder="Amount" value="'+(row.amount||'')+'" '+
+        'tabindex="'+(11+idx*6)+'" '+
         'oninput="slSetField('+row.id+',\'amount\',this.value)">'+
     '</td>'+
     '<td style="padding:6px 8px;">'+
       '<input type="number" min="0" max="30" id="sl-yrs-'+row.id+'" '+
         'style="width:100%;padding:7px 6px;border:1.5px solid #e4e2f0;border-radius:7px;font-size:12px;font-weight:700;text-align:center;font-family:var(--fh);outline:none;" '+
+        'tabindex="'+(12+idx*6)+'" '+
         'value="'+(row.years||0)+'" oninput="slSetField('+row.id+',\'years\',this.value)">'+
     '</td>'+
     '<td style="padding:6px 8px;">'+
       '<input type="number" min="0" max="11" id="sl-mo-'+row.id+'" '+
         'style="width:100%;padding:7px 6px;border:1.5px solid #e4e2f0;border-radius:7px;font-size:12px;font-weight:700;text-align:center;font-family:var(--fh);outline:none;" '+
+        'tabindex="'+(13+idx*6)+'" '+
         'value="'+(row.months||0)+'" oninput="slSetField('+row.id+',\'months\',this.value)">'+
     '</td>'+
     '<td style="padding:8px;text-align:center;"><span id="sl-tm-'+row.id+'" style="font-size:12px;font-weight:800;color:var(--p2);">'+n+'</span></td>'+
     '<td style="padding:6px 8px;">'+
       '<input type="number" min="1" max="30" step="0.5" id="sl-cagr-'+row.id+'" '+
         'style="width:100%;padding:7px 6px;border:1.5px solid #7cc43a;border-radius:7px;font-size:12px;font-weight:700;text-align:center;font-family:var(--fh);outline:none;background:#eef7d6;color:#2d6b0e;" '+
+        'tabindex="'+(14+idx*6)+'" '+
         'value="'+(row.cagr||12)+'" oninput="slSetField('+row.id+',\'cagr\',this.value)">'+
     '</td>'+
     '<td style="padding:8px;text-align:center;"><span style="font-size:12px;font-weight:800;color:var(--t4);">12</span></td>'+
