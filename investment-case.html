@@ -349,7 +349,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
 .cmb-sum-tbl tfoot td{background:linear-gradient(135deg,var(--g5),var(--p4));font-weight:900;font-family:var(--fm);color:var(--t1);border-top:2px solid var(--g4);}
 
 @media print {
-  nav,.mode-bar,.adv-bar,#wiz-section,.res-btns,.cmb-actions{display:none!important;}
+  nav,.mode-bar,.adv-bar,.res-btns,.cmb-actions{display:none!important;}
   body{background:#fff!important;}
   .result,.cmb-result-section>div{padding:0!important;}
   /* FUND NAMES: Bold Black — no faint colours in print */
@@ -743,23 +743,30 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
 .anl-section-hdr{font-family:var(--fp,'Playfair Display',serif);font-size:20px;color:var(--p1,#3c3197);margin-bottom:14px;}
 /* Report print styles */
 @media print{
-  /* ── HIDE EVERYTHING EXCEPT ACTIVE REPORT ── */
-  body > *:not(#analyse-mode-section):not(#stp-mode-section){ display:none!important; }
-  nav, .topbar, .mode-bar, #wiz-section, 
-  #cmb-mode-section,
+  /* ── HIDE NAVIGATION CHROME ONLY — let active mode section print ── */
+  nav, .topbar, .mode-bar, .adv-bar,
   .no-print, .anl-btn, .anl-btn-sec,
-  #anl-upload-card, #anl-verify-card { display:none!important; }
+  #anl-upload-card, #anl-verify-card,
+  .res-btns, .cmb-actions,
+  .mode-cards, #mb-sip, #mb-stp, #mb-analyse, #mb-custom, #mb-cmb
+  { display:none!important; }
+  body{ background:#fff!important; }
 
   /* ── STP BLUEPRINT PRINT ── */
-  #stp-mode-section{ display:block!important; position:static!important; overflow:visible!important; padding:0!important; background:#fff!important; }
-  /* Hide all STP steps except sec4 (blueprint) */
+  /* stp-mode-section is position:fixed by default — override so it prints inline */
+  #stp-mode-section{ position:static!important; overflow:visible!important; padding:0!important; background:#fff!important; }
+  /* Show only step 4 (blueprint), hide wizard steps */
   #stp-sec1, #stp-sec2, #stp-sec3 { display:none!important; }
   #stp-sec4 { display:block!important; }
-  /* Hide nav buttons in print */
-  #stp-sec4 .stp-nav, #stp-sec4 .stp-step-hdr .stp-step-num { display:none!important; }
+  #stp-sec4 .stp-nav { display:none!important; }
+  #stp-sec4 .stp-step-hdr .stp-step-num { display:none!important; }
+
+  /* ── REGULAR SIP BLUEPRINT PRINT ── */
+  #wiz-section .mode-bar, #wiz-section nav,
+  #wiz-section .adv-bar, #wiz-section .res-btns { display:none!important; }
 
   /* ── ANALYSE REPORT PRINT ── */
-  #analyse-mode-section{ display:block!important; padding:0!important; }
+  #analyse-mode-section{ padding:0!important; }
   #anl-report-output{ display:block!important; }
   #anl-report-body{ max-width:100%!important; margin:0!important; padding:0!important; }
 
