@@ -221,7 +221,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
 .fr-num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--p2);color:#fff;font-size:11px;font-weight:900;margin-bottom:10px;}
 .fr-remove{position:absolute;top:12px;right:12px;width:26px;height:26px;border-radius:50%;background:#fee2e2;border:none;color:var(--red);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
 .fr-remove:hover{background:var(--red);color:#fff;}
-.fr-grid{display:grid;grid-template-columns:2fr 1.2fr 1fr 1fr 1fr;gap:10px;align-items:start;}
+.fr-grid{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1.1fr) minmax(0,1.1fr) 100px 72px minmax(0,1.1fr);gap:10px;align-items:start;}
 
 /* FUND SEARCH */
 .fund-search-wrap{position:relative;}
@@ -253,10 +253,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
 .row-nav-info.show{display:block;}
 
 /* TENURE ROW */
-.tenure-wrap{display:flex;gap:5px;}
-.tenure-inp{flex:1;background:#fff;border:2px solid var(--g4);color:var(--t1);font-family:var(--fm);font-size:13px;font-weight:700;padding:8px 6px;border-radius:8px;text-align:center;}
+.tenure-wrap{display:flex;gap:4px;align-items:center;}
+.tenure-inp{width:44px;background:#fff;border:2px solid var(--g4);color:var(--t1);font-family:var(--fm);font-size:13px;font-weight:700;padding:8px 4px;border-radius:8px;text-align:center;}
 .tenure-inp:focus{outline:none;border-color:var(--p2);}
-.tenure-sep{font-size:11px;color:var(--t5);align-self:flex-end;padding-bottom:9px;font-weight:700;}
+.tenure-sep{font-size:11px;color:var(--t5);font-weight:700;padding:0 1px;}
 
 /* ADD ROW BUTTON */
 .cagr-inp-wrap{background:linear-gradient(135deg,var(--p4),var(--g5));border:1.5px solid #c4b5fd;border-radius:9px;padding:10px 12px;margin-top:8px;display:flex;align-items:center;gap:10px;}
@@ -2475,41 +2475,41 @@ function renderRows() {
         <div>
           <div class="row-lbl">Tenure</div>
           <div class="tenure-wrap">
-            <input class="tenure-inp" type="text" placeholder="Yrs"
+            <input class="tenure-inp" type="text" placeholder="Y"
               value="${row.yrs}" id="yrs-${row.id}"
               inputmode="numeric" maxlength="2"
               oninput="updateRowTenure(${row.id},'yrs',parseInt(this.value.replace(/[^0-9]/g,''))||0)"
               onkeypress="return /[0-9]/.test(event.key)"
-              onpaste="return false"
-              style="text-align:center;">
+              onpaste="return false">
             <div class="tenure-sep">Y</div>
-            <input class="tenure-inp" type="text" placeholder="Mos"
+            <input class="tenure-inp" type="text" placeholder="M"
               value="${row.mos}" id="mos-${row.id}"
               inputmode="numeric" maxlength="2"
               oninput="updateRowTenure(${row.id},'mos',Math.min(parseInt(this.value.replace(/[^0-9]/g,''))||0,11))"
               onkeypress="return /[0-9]/.test(event.key)"
-              onpaste="return false"
-              style="text-align:center;">
+              onpaste="return false">
             <div class="tenure-sep">M</div>
           </div>
-          <div style="font-size:9px;color:var(--t5);margin-top:3px;font-family:var(--fm)">${((row.yrs||0)*12+(row.mos||0))} months total</div>
+          <div style="font-size:9px;color:var(--t5);margin-top:3px;font-family:var(--fm)">${((row.yrs||0)*12+(row.mos||0))}mo</div>
         </div>
 
-        <!-- EXPECTED CAGR + RETURN PREVIEW -->
+        <!-- CAGR % -->
         <div>
-          <div class="row-lbl">Your CAGR % & Expected Value</div>
-          <div style="display:flex;gap:6px;margin-bottom:6px;align-items:center;">
-            <input class="cagr-inp" type="text" id="cagr-row-${row.id}"
-              value="${row.cagr||12}"
-              inputmode="decimal" placeholder="12"
-              title="Enter your expected CAGR"
-              oninput="validateCAGR(this);updateRowCAGR(${row.id},this.value)"
-              onkeydown="allowNumKeys(event,true)"
-              style="width:64px;font-size:14px;">
-            <div style="font-size:10px;color:var(--t4);line-height:1.4;flex:1;">Enter expected % p.a.<br><span style="color:var(--p2);font-weight:700">Conservative = realistic</span></div>
-          </div>
-          <div style="background:var(--g5);border:1.5px solid var(--g4);border-radius:8px;padding:8px;text-align:center;">
-            <div style="font-family:var(--fm);font-size:16px;font-weight:800;color:var(--g1)">
+          <div class="row-lbl">CAGR %</div>
+          <input class="cagr-inp" type="text" id="cagr-row-${row.id}"
+            value="${row.cagr||12}"
+            inputmode="decimal" placeholder="12"
+            title="Enter your expected CAGR"
+            oninput="validateCAGR(this);updateRowCAGR(${row.id},this.value)"
+            onkeydown="allowNumKeys(event,true)"
+            style="width:100%;font-size:15px;display:block;">
+        </div>
+
+        <!-- EXPECTED VALUE -->
+        <div>
+          <div class="row-lbl">Expected Value</div>
+          <div style="background:var(--g5);border:1.5px solid var(--g4);border-radius:8px;padding:8px 10px;text-align:center;">
+            <div style="font-family:var(--fm);font-size:15px;font-weight:800;color:var(--g1)">
               ${row.fund ? '₹'+fmt(calcRowValue(row)) : '—'}
             </div>
             <div style="font-size:9px;color:var(--t5);margin-top:2px">
