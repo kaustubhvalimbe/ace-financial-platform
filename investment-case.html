@@ -1127,7 +1127,7 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
   <div class="frc-grid" id="frc-grid"></div>
   <div class="ptw"><div class="sec-hdr">Projected Wealth Growth</div><div style="overflow-x:auto"><table class="ptbl"><thead><tr id="proj-hdr"></tr></thead><tbody id="proj-body"></tbody></table></div></div>
   <div class="res-btns">
-    <button class="rbtn p" onclick="window.print()">📄 Print Blueprint</button>
+    <button class="rbtn p" onclick="acePrint('result-section')">📄 Print Blueprint</button>
     <button class="rbtn g" onclick="restart()">🔄 New Case</button>
     <a href="fund-discovery-v2.html" class="rbtn o">🔍 Explore Funds</a>
   </div>
@@ -1242,7 +1242,7 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
 
     <!-- ACTIONS -->
     <div class="res-btns">
-      <button class="rbtn p" onclick="window.print()">📄 Print / Save PDF</button>
+      <button class="rbtn p" onclick="acePrint('cmb-result-section')">📄 Print / Save PDF</button>
       <button class="rbtn g" onclick="backToCMB()">✏️ Edit Blueprint</button>
       <button class="rbtn g" onclick="restart()">🔄 New Case</button>
       <a href="fund-discovery-v2.html" class="rbtn o">🔍 Explore Funds</a>
@@ -3825,7 +3825,7 @@ function anlPrintReport(){
     </div>
     <div class="stp-nav">
       <button class="stp-btn-b" onclick="stpGo(3)">← Back</button>
-      <button class="stp-btn-p" onclick="window.print()">🖨️ Print Blueprint</button>
+      <button class="stp-btn-p" onclick="acePrint('stp-bp-area')">🖨️ Print Blueprint</button>
     </div>
   </div>
 
@@ -3979,7 +3979,7 @@ function cmbGenerate(){
     '<div style="font-family:var(--fp,serif);font-size:22px;color:#fff;margin-bottom:16px">\ud83d\udcca Grand Total</div>'+
     '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">'+mc('Total Invested','\u20b9'+cmbN(tInv))+mc('Monthly SIP','\u20b9'+cmbN(tSIP)+'/mo')+mc('Expected Corpus','\u20b9'+cmbN(tFV),'#a5f3a5')+mc('Wealth Gain','+\u20b9'+cmbN(Math.max(0,tFV-tInv)),'#a5f3a5')+'</div></div>'+
   '<div style="background:#e4e2f0;border-radius:10px;padding:14px 18px;font-size:10px;color:#7a7898;line-height:1.7;margin-top:16px">\u26a0\ufe0f <strong>AMFI Disclaimer:</strong> Mutual Fund investments are subject to market risks. Past performance is not indicative of future returns. <strong>Kaustubh Valimbe \xb7 AMFI Certified MFD</strong></div>'+
-  '<div style="margin-top:16px;display:flex;gap:12px;"><button onclick="cmbGenerate()" style="padding:12px 22px;background:#f0eeff;color:#3c3197;border:1.5px solid #3c3197;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fh);">\u21ba Recalculate</button><button onclick="window.print()" style="padding:12px 26px;background:#3c3197;color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--fh);">\ud83d\uddb6\ufe0f Print My Blueprint</button></div>';
+  '<div style="margin-top:16px;display:flex;gap:12px;"><button onclick="cmbGenerate()" style="padding:12px 22px;background:#f0eeff;color:#3c3197;border:1.5px solid #3c3197;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fh);">\u21ba Recalculate</button><button onclick="acePrint(&apos;cmb-result-section&apos;)" style="padding:12px 26px;background:#3c3197;color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--fh);">\ud83d\uddb6\ufe0f Print My Blueprint</button></div>';
   out.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function cmbInit(){
@@ -5428,7 +5428,36 @@ function slFmt(n){
 }
 function slFmtI(n){return Math.round(n||0).toLocaleString('en-IN');}
 
-// ── Generate Blueprint ─────────────────────────────────────
+// ── RELIABLE PRINT: Opens a clean window with just the blueprint content ──────
+function acePrint(containerId) {
+  var el = document.getElementById(containerId);
+  if (!el || el.innerHTML.trim().length < 100) {
+    alert('Please generate the Blueprint first, then click Print.');
+    return;
+  }
+
+  // Collect all <style> blocks from this page (includes all CSS variables & classes)
+  var css = '';
+  document.querySelectorAll('style').forEach(function(s) { css += s.textContent; });
+
+  var html =
+    '<!DOCTYPE html><html lang="en"><head>' +
+    '<meta charset="UTF-8">' +
+    '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+    '<title>Ace Financial Services \u00b7 Blueprint</title>' +
+    '<style>' + css + '</style>' +
+    '</head><body style="background:#fff;padding:12px 20px;">' +
+    el.innerHTML +
+    '</body></html>';
+
+  var w = window.open('', '_blank', 'width=960,height=800');
+  if (!w) { alert('Please allow pop-ups for this site, then try again.'); return; }
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+  setTimeout(function() { w.print(); }, 900);
+}
+// ── Generate Blueprint ─────────────────────────────────
 function slGenerate(){
   var name=(document.getElementById('v-name')||{value:''}).value||'Valued Investor';
   var wa=(document.getElementById('v-wa')||{value:''}).value||'';
