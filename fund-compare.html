@@ -253,6 +253,13 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
     <div id="cmp-result"><div class="loading">Loading comparison...</div></div>
     <div class="note" style="margin:12px;">✅ <strong style="color:var(--g1)">Best value</strong> highlighted green · Returns loaded from AMFI NAV data on demand</div>
   </div>
+
+  <!-- Print Bar — shown after comparison is built -->
+  <div id="print-bar" style="display:none;justify-content:center;gap:16px;margin:16px 0 8px;">
+    <button onclick="acePrint('cmp-result')" style="background:linear-gradient(135deg,#3c3197,#5a8a10);color:#fff;border:none;padding:12px 32px;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(60,49,151,.3);">
+      🖨️ Print / Save as PDF
+    </button>
+  </div>
 </div>
 <div class="adv-bar">
   <div class="adv-info">
@@ -476,6 +483,40 @@ function renderTable(funds) {
   html+=buildRow('Tax Benefit 80C', funds.map(function(f){return f.name.toUpperCase().includes('ELSS')||f.name.toUpperCase().includes('TAX')? '✅ Yes':'❌ No';}));
   html+='</tbody></table>';
   document.getElementById('cmp-result').innerHTML = html;
+  // Show print button after comparison is built
+  document.getElementById('print-bar').style.display = 'flex';
+}
+
+// ── PRINT ─────────────────────────────────────────────
+function acePrint(containerId) {
+  var content = document.getElementById(containerId).innerHTML;
+  var styles = '';
+  var styleSheets = document.styleSheets;
+  try {
+    for (var i = 0; i < styleSheets.length; i++) {
+      try {
+        var rules = styleSheets[i].cssRules || styleSheets[i].rules;
+        if (rules) {
+          for (var j = 0; j < rules.length; j++) {
+            styles += rules[j].cssText + '\n';
+          }
+        }
+      } catch(e) {}
+    }
+  } catch(e) {}
+  var win = window.open('', '_blank', 'width=900,height=700');
+  win.document.write(
+    '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
+    '<title>Ace Financial Services — Fund Comparison</title>' +
+    '<style>' + styles + '</style>' +
+    '<style>body{background:#fff!important;padding:20px;}' +
+    '.compare-table table{width:100%;border-collapse:collapse;}' +
+    '</style></head><body>' +
+    content +
+    '<script>window.onload=function(){window.print();}<\/script>' +
+    '</body></html>'
+  );
+  win.document.close();
 }
 
 // ── INIT ──────────────────────────────────────────────
