@@ -5265,10 +5265,29 @@ function slSearch(q,rowId){
   dd.style.display='block';
 }
 
+function slLookupRealCAGR(fundName){
+  if(!fundName) return {c3y:null,c5y:null};
+  var nameLc=fundName.toLowerCase();
+  var cats=Object.keys(FDB);
+  for(var i=0;i<cats.length;i++){
+    var list=FDB[cats[i]].funds||[];
+    for(var j=0;j<list.length;j++){
+      var fn=(list[j].n||'').toLowerCase();
+      if(fn===nameLc || nameLc.indexOf(fn)>=0 || fn.indexOf(nameLc)>=0){
+        return {c3y:list[j].c3y, c5y:list[j].c5y};
+      }
+    }
+  }
+  return {c3y:null,c5y:null};
+}
 function slPick(el){
   var name=el.getAttribute('data-name'),id=parseInt(el.getAttribute('data-id'));
   var row=SL_ROWS.find(function(r){return r.id===id;});
-  if(row) row.fundName=name;
+  if(row){
+    row.fundName=name;
+    var real=slLookupRealCAGR(name);
+    row.realC3y=real.c3y; row.realC5y=real.c5y;
+  }
   var inp=document.getElementById('sl-inp-'+id);
   if(inp) inp.value=name;
   var dd=document.getElementById('sl-dd-'+id);
@@ -5506,6 +5525,10 @@ function slGenerate(){
   SL_ROWS.forEach(function(row){
     var inp=document.getElementById('sl-inp-'+row.id);
     if(inp&&inp.value&&!row.fundName) row.fundName=inp.value;
+    if(row.fundName && row.realC3y===undefined){
+      var real=slLookupRealCAGR(row.fundName);
+      row.realC3y=real.c3y; row.realC5y=real.c5y;
+    }
     slCalcRow(row.id);
   });
 
@@ -5524,6 +5547,8 @@ function slGenerate(){
     var bg=i%2===0?'#ffffff':'#f9f8ff';
     var tBg=r.type==='S'?'#dcfce7':'#ede9fe';
     var tC=r.type==='S'?'#16a34a':'#3c3197';
+    var c3yTxt=(r.realC3y!==null&&r.realC3y!==undefined&&r.realC3y>0)?r.realC3y+'%':'—';
+    var c5yTxt=(r.realC5y!==null&&r.realC5y!==undefined&&r.realC5y>0)?r.realC5y+'%':'—';
     return '<tr style="background:'+bg+';border-bottom:1px solid #e4e2f0;">'+
       '<td style="padding:10px 8px;text-align:center;font-size:12px;font-weight:800;color:#3c3197;">'+(i+1)+'</td>'+
       '<td style="padding:10px 12px;font-size:12px;font-weight:700;color:#000;">'+r.fundName+'</td>'+
@@ -5533,6 +5558,8 @@ function slGenerate(){
       '<td style="padding:10px 8px;text-align:center;font-size:12px;font-weight:700;color:#000;">'+r.months+'</td>'+
       '<td style="padding:10px 8px;text-align:center;font-size:12px;font-weight:800;color:#3c3197;">'+n+'</td>'+
       '<td style="padding:10px 8px;text-align:center;font-size:12px;font-weight:800;color:#2d6b0e;">'+r.cagr+'%</td>'+
+      '<td style="padding:10px 8px;text-align:center;font-size:11px;font-weight:800;color:#0e6b8a;">'+c3yTxt+'</td>'+
+      '<td style="padding:10px 8px;text-align:center;font-size:11px;font-weight:800;color:#0e6b8a;">'+c5yTxt+'</td>'+
       '<td style="padding:10px 8px;text-align:center;font-size:12px;font-weight:700;color:#64748b;">12</td>'+
       '<td style="padding:10px 8px;text-align:right;font-size:13px;font-weight:900;color:#16a34a;">₹'+slFmt(r.returns)+'</td>'+
     '</tr>';
@@ -5561,7 +5588,9 @@ function slGenerate(){
       '<th style="padding:10px 8px;font-size:11px;text-align:center;width:55px;">Years</th>'+
       '<th style="padding:10px 8px;font-size:11px;text-align:center;width:55px;">Months</th>'+
       '<th style="padding:10px 8px;font-size:11px;text-align:center;width:70px;">Total Mo.</th>'+
-      '<th style="padding:10px 8px;font-size:11px;text-align:center;width:65px;">CAGR %</th>'+
+      '<th style="padding:10px 8px;font-size:11px;text-align:center;width:65px;">CAGR % (Assumed)</th>'+
+      '<th style="padding:10px 8px;font-size:11px;text-align:center;width:55px;">3Y CAGR</th>'+
+      '<th style="padding:10px 8px;font-size:11px;text-align:center;width:55px;">5Y CAGR</th>'+
       '<th style="padding:10px 8px;font-size:11px;text-align:center;width:55px;">Factor</th>'+
       '<th style="padding:10px 8px;font-size:11px;text-align:right;width:110px;">Returns ₹</th>'+
     '</tr></thead>'+
@@ -5569,8 +5598,7 @@ function slGenerate(){
     '<tfoot><tr style="background:#3c3197;color:#fff;">'+
       '<td colspan="3" style="padding:12px;font-size:12px;font-weight:800;border-color:#5247c8;">Grand Total — '+validRows.length+' funds</td>'+
       '<td style="padding:12px 8px;text-align:right;font-size:11px;font-weight:700;border-color:#5247c8;">₹'+slFmt(totalInvested)+'</td>'+
-      '<td colspan="4" style="padding:12px 8px;text-align:right;font-size:11px;font-weight:700;border-color:#5247c8;">Return: +'+gainPct+'%</td>'+
-      '<td style="border-color:#5247c8;"></td>'+
+      '<td colspan="6" style="padding:12px 8px;text-align:right;font-size:11px;font-weight:700;border-color:#5247c8;">Return: +'+gainPct+'%</td>'+
       '<td style="padding:12px 8px;text-align:right;font-size:15px;font-weight:900;color:#a5f3a5;border-color:#5247c8;">₹'+slFmt(grandTotal)+'</td>'+
     '</tr></tfoot></table>'+
     '<div style="margin-top:20px;background:#f0eeff;border-radius:10px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;">'+
