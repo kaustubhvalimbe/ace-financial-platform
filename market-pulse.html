@@ -367,6 +367,28 @@ function getSubCat(name){
   return 'Other Equity';
 }
 
+// Granular sector, used ONLY to pick a benchmark for funds already bucketed
+// as 'Thematic/Sectoral' above. Does not change the filter-button grouping.
+function getSectorDetail(name){
+  var u=name.toUpperCase();
+  if(u.includes('PHARMA')||u.includes('HEALTHCARE'))return 'Pharma';
+  if(u.includes('AUTO'))return 'Auto';
+  if(u.includes('FMCG')||u.includes('CONSUMPTION')||u.includes('CONSUMER'))return 'FMCG';
+  if(u.includes('BANKING')&&u.includes('PSU'))return 'Financial Services';
+  if(u.includes('BANKING')||u.includes('FINANCIAL SERVICES'))return 'Financial Services';
+  if(u.includes('METAL'))return 'Metal';
+  if(u.includes('ENERGY'))return 'Energy';
+  if(u.includes('REALTY')||u.includes('HOUSING'))return 'Realty';
+  if(u.includes('TECH')||u.includes('DIGITAL'))return 'IT';
+  if(u.includes('INFRA'))return 'Nifty100'; // no live infra index tracked yet
+  if(u.includes('PSU'))return 'Nifty100'; // no live PSU-bank index tracked yet
+  if(u.includes('DEFENCE')||u.includes('MANUFACT')||u.includes('MNC'))return 'Nifty100';
+  // Strategy/factor funds (Quality, Momentum, Alpha, ESG, Equal Weight, Special
+  // Situations, Business Cycle, Opportunities, Innovation) — no dedicated sector
+  // index, so benchmark against the broad Nifty 100 rather than plain Nifty 50.
+  return 'Nifty100';
+}
+
 // ── FETCH AMFI FUND LIST ──────────────────────────────────────
 async function fetchMFAPI(){
   try{var r=await fetch('https://api.mfapi.in/mf',{mode:'cors',headers:{'Accept':'application/json'}});if(r.ok){var d=await r.json();if(Array.isArray(d)&&d.length>100)return d;}}catch(e){}
@@ -412,13 +434,20 @@ async function loadAMFIFunds(){
 }
 
 // ── INDEX FETCH ───────────────────────────────────────────────
-var INDICES=[
+// DISPLAY_INDICES: shown as tiles in the sticky top bar.
+var DISPLAY_INDICES=[
   {sym:"^BSESN",v:"sv",c:"sc"},
   {sym:"^NSEI",v:"nv",c:"nc"},
   {sym:"^NSEBANK",v:"bv",c:"bc"},
   {sym:"NIFTY_MID_100.NS",v:"mv",c:"mc2"},
   {sym:"NIFTY_SMLCAP_100.NS",v:"smv",c:"smc"},
   {sym:"^CNXIT",v:"itv",c:"itc"},
+];
+// BENCHMARK_INDICES: fetched silently in the background purely to feed
+// indexPctMap for category/sector benchmarking — no sticky-bar tile.
+var BENCHMARK_INDICES=[
+  {sym:"^CNXPHARMA"}, {sym:"^CNXAUTO"}, {sym:"^CNXFMCG"}, {sym:"^CNXMETAL"},
+  {sym:"^CNXENERGY"}, {sym:"^CNXFIN"}, {sym:"^CNXREALTY"}, {sym:"^CNX100"}, {sym:"^CRSLDX"}
 ];
 
 async function fetchIndex(sym){
@@ -443,22 +472,39 @@ var BENCHMARK_MAP = {
   'Nifty 50':'^NSEI', 'Nifty Next 50':'^NSEI', 'Sensex':'^BSESN',
   'Mid Cap':'NIFTY_MID_100.NS', 'Nifty Midcap 150':'NIFTY_MID_100.NS',
   'Small Cap':'NIFTY_SMLCAP_100.NS', 'Nifty Smallcap 250':'NIFTY_SMLCAP_100.NS',
-  'Thematic/Sectoral':'^CNXIT',
   'Balanced Advantage':'^NSEI', 'Aggressive Hybrid':'^NSEI', 'Multi Asset':'^NSEI', 'Arbitrage':'^NSEI'
+  // Note: 'Thematic/Sectoral' is intentionally absent — it's resolved per-fund
+  // via getSectorDetail() + SECTOR_BENCHMARK_MAP below, since that bucket
+  // covers many different actual sectors (Pharma, Auto, Banking, etc.).
 };
 var BENCHMARK_LABEL = {
   '^NSEI':'Nifty 50', '^BSESN':'Sensex', '^NSEBANK':'Bank Nifty',
-  'NIFTY_MID_100.NS':'Nifty Midcap 100', 'NIFTY_SMLCAP_100.NS':'Nifty Smallcap 100', '^CNXIT':'Nifty IT'
+  'NIFTY_MID_100.NS':'Nifty Midcap 100', 'NIFTY_SMLCAP_100.NS':'Nifty Smallcap 100', '^CNXIT':'Nifty IT',
+  '^CNXPHARMA':'Nifty Pharma', '^CNXAUTO':'Nifty Auto', '^CNXFMCG':'Nifty FMCG', '^CNXMETAL':'Nifty Metal',
+  '^CNXENERGY':'Nifty Energy', '^CNXFIN':'Nifty Financial Services', '^CNXREALTY':'Nifty Realty',
+  '^CNX100':'Nifty 100', '^CRSLDX':'Nifty 500'
 };
-function benchmarkSymFor(subcat){ return BENCHMARK_MAP[subcat] || '^NSEI'; }
-function benchmarkPctFor(subcat){
-  var sym = benchmarkSymFor(subcat);
+// Granular sector label (from getSectorDetail) -> index symbol
+var SECTOR_BENCHMARK_MAP = {
+  'Pharma':'^CNXPHARMA', 'Auto':'^CNXAUTO', 'FMCG':'^CNXFMCG', 'Metal':'^CNXMETAL',
+  'Energy':'^CNXENERGY', 'Financial Services':'^CNXFIN', 'Realty':'^CNXREALTY',
+  'IT':'^CNXIT', 'Nifty100':'^CNX100'
+};
+function benchmarkSymFor(f){
+  if(f.subcat==='Thematic/Sectoral'){
+    var detail=getSectorDetail(f.name);
+    return SECTOR_BENCHMARK_MAP[detail] || '^NSEI';
+  }
+  return BENCHMARK_MAP[f.subcat] || '^NSEI';
+}
+function benchmarkPctFor(f){
+  var sym = benchmarkSymFor(f);
   return (indexPctMap[sym]!==undefined) ? indexPctMap[sym] : niftyPct;
 }
 
 async function loadIndices(){
-  for(var i=0;i<INDICES.length;i++){
-    var idx=INDICES[i];var data=await fetchIndex(idx.sym);if(!data)continue;
+  for(var i=0;i<DISPLAY_INDICES.length;i++){
+    var idx=DISPLAY_INDICES[i];var data=await fetchIndex(idx.sym);if(!data)continue;
     var up=data.chg>=0;
     var vEl=document.getElementById(idx.v);
     var cEl=document.getElementById(idx.c);
@@ -467,6 +513,12 @@ async function loadIndices(){
     indexPctMap[idx.sym]=data.pct;
     if(idx.sym==='^NSEI')niftyPct=data.pct;
   }
+  // Sector/benchmark-only indices — fetched in parallel, no DOM tile.
+  await Promise.all(BENCHMARK_INDICES.map(function(idx){
+    return fetchIndex(idx.sym).then(function(data){
+      if(data) indexPctMap[idx.sym]=data.pct;
+    });
+  }));
   var now=new Date();
   var tt=document.getElementById('tt');if(tt)tt.textContent=now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})+' IST';
   var pd=document.getElementById('pulse-date');if(pd)pd.textContent=now.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
@@ -498,10 +550,10 @@ function getCurrentFunds(){
 }
 
 // ── FORMAT ────────────────────────────────────────────────────
-function vsBenchmark(subcat, pct){
-  var bPct = benchmarkPctFor(subcat);
-  var bLabel = BENCHMARK_LABEL[benchmarkSymFor(subcat)] || 'Nifty 50';
-  if(indexPctMap[benchmarkSymFor(subcat)]===undefined && niftyPct===0) return '<span class="vs-neu">—</span>';
+function vsBenchmark(f, pct){
+  var bPct = benchmarkPctFor(f);
+  var bLabel = BENCHMARK_LABEL[benchmarkSymFor(f)] || 'Nifty 50';
+  if(indexPctMap[benchmarkSymFor(f)]===undefined && niftyPct===0) return '<span class="vs-neu">—</span>';
   var diff=pct-bPct;
   if(Math.abs(diff)<0.05)return '<span class="vs-neu">≈ '+bLabel+'</span>';
   if(diff>0)return '<span class="vs-out">▲ +'+ diff.toFixed(2)+'% vs '+bLabel+'</span>';
@@ -529,7 +581,7 @@ function fundRow(f,data){
     +'<td class="nav-v">&#8377;'+data.nav.toFixed(4)+'</td>'
     +'<td class="'+(up?'chg-up':'chg-dn')+'">'+(up?'+':'')+data.chg.toFixed(4)+'</td>'
     +'<td><span class="'+(up?'badge-up':'badge-dn')+'">'+(up?'+':'')+data.pct.toFixed(2)+'%</span></td>'
-    +'<td>'+vsBenchmark(f.subcat, data.pct)+'</td>'
+    +'<td>'+vsBenchmark(f, data.pct)+'</td>'
     +'</tr>';
 }
 
@@ -602,7 +654,7 @@ function buildBeaterReport(upFunds,dnFunds){
 
   var beat=[], lag=[];
   all.forEach(function(r){
-    var bPct=benchmarkPctFor(r.f.subcat);
+    var bPct=benchmarkPctFor(r.f);
     if(r.data.pct - bPct > 0.001) beat.push(r); else lag.push(r);
   });
 
@@ -612,16 +664,16 @@ function buildBeaterReport(upFunds,dnFunds){
 
   if(beat.length>0){
     var topBeat=beat.slice().sort(function(a,b){
-      return (b.data.pct-benchmarkPctFor(b.f.subcat)) - (a.data.pct-benchmarkPctFor(a.f.subcat));
+      return (b.data.pct-benchmarkPctFor(b.f)) - (a.data.pct-benchmarkPctFor(a.f));
     })[0];
-    var margin=(topBeat.data.pct-benchmarkPctFor(topBeat.f.subcat)).toFixed(2);
+    var margin=(topBeat.data.pct-benchmarkPctFor(topBeat.f)).toFixed(2);
     lines.push({icon:'🥇',text:'Biggest outperformer: <strong>'+shortName(topBeat.f.name)+'</strong> — beat its benchmark by '+margin+'%'});
   }
   if(lag.length>0){
     var topLag=lag.slice().sort(function(a,b){
-      return (a.data.pct-benchmarkPctFor(a.f.subcat)) - (b.data.pct-benchmarkPctFor(b.f.subcat));
+      return (a.data.pct-benchmarkPctFor(a.f)) - (b.data.pct-benchmarkPctFor(b.f));
     })[0];
-    var margin2=(topLag.data.pct-benchmarkPctFor(topLag.f.subcat)).toFixed(2);
+    var margin2=(topLag.data.pct-benchmarkPctFor(topLag.f)).toFixed(2);
     lines.push({icon:'⚠️',text:'Widest underperformer: <strong>'+shortName(topLag.f.name)+'</strong> — trailed its benchmark by '+margin2+'%'});
   }
 
