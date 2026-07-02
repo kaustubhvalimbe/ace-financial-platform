@@ -249,6 +249,12 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);}
       <div id="insight-content"></div>
     </div>
 
+    <!-- BENCHMARK BEATER REPORT -->
+    <div class="insight" id="beater-box" style="display:none;border-color:#6aaa1e;background:#f4fbea;">
+      <div class="insight-title">🏆 Benchmark Beater Report</div>
+      <div id="beater-content"></div>
+    </div>
+
     <!-- NAVs UP -->
     <div class="fund-section">
       <div class="tbl-hdr-up">
@@ -257,7 +263,7 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);}
       </div>
       <table class="fund-tbl">
         <thead><tr>
-          <th>Fund Name</th><th>NAV</th><th>Change</th><th>Change %</th><th>vs Nifty</th>
+          <th>Fund Name</th><th>NAV</th><th>Change</th><th>Change %</th><th>vs Benchmark</th>
         </tr></thead>
         <tbody id="up-body"><tr class="loading-row"><td colspan="5"><span class="spinner"></span>Loading funds from AMFI...</td></tr></tbody>
       </table>
@@ -271,7 +277,7 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);}
       </div>
       <table class="fund-tbl">
         <thead><tr>
-          <th>Fund Name</th><th>NAV</th><th>Change</th><th>Change %</th><th>vs Nifty</th>
+          <th>Fund Name</th><th>NAV</th><th>Change</th><th>Change %</th><th>vs Benchmark</th>
         </tr></thead>
         <tbody id="dn-body"><tr class="loading-row"><td colspan="5"><span class="spinner"></span>Loading funds from AMFI...</td></tr></tbody>
       </table>
@@ -427,6 +433,29 @@ async function fetchIndex(sym){
   }catch(e){return null;}
 }
 
+var indexPctMap = {}; // sym -> pct change today, e.g. indexPctMap['^NSEI']
+
+// Maps each fund subcategory to the closest live benchmark index symbol.
+// Falls back to Nifty 50 where no closer index is tracked live.
+var BENCHMARK_MAP = {
+  'Large Cap':'^NSEI', 'Large & MidCap':'^NSEI', 'Flexi Cap':'^NSEI', 'Multi Cap':'^NSEI',
+  'Focused':'^NSEI', 'Value/Contra':'^NSEI', 'Dividend Yield':'^NSEI', 'ELSS Flexi Cap':'^NSEI',
+  'Nifty 50':'^NSEI', 'Nifty Next 50':'^NSEI', 'Sensex':'^BSESN',
+  'Mid Cap':'NIFTY_MID_100.NS', 'Nifty Midcap 150':'NIFTY_MID_100.NS',
+  'Small Cap':'NIFTY_SMLCAP_100.NS', 'Nifty Smallcap 250':'NIFTY_SMLCAP_100.NS',
+  'Thematic/Sectoral':'^CNXIT',
+  'Balanced Advantage':'^NSEI', 'Aggressive Hybrid':'^NSEI', 'Multi Asset':'^NSEI', 'Arbitrage':'^NSEI'
+};
+var BENCHMARK_LABEL = {
+  '^NSEI':'Nifty 50', '^BSESN':'Sensex', '^NSEBANK':'Bank Nifty',
+  'NIFTY_MID_100.NS':'Nifty Midcap 100', 'NIFTY_SMLCAP_100.NS':'Nifty Smallcap 100', '^CNXIT':'Nifty IT'
+};
+function benchmarkSymFor(subcat){ return BENCHMARK_MAP[subcat] || '^NSEI'; }
+function benchmarkPctFor(subcat){
+  var sym = benchmarkSymFor(subcat);
+  return (indexPctMap[sym]!==undefined) ? indexPctMap[sym] : niftyPct;
+}
+
 async function loadIndices(){
   for(var i=0;i<INDICES.length;i++){
     var idx=INDICES[i];var data=await fetchIndex(idx.sym);if(!data)continue;
@@ -435,6 +464,7 @@ async function loadIndices(){
     var cEl=document.getElementById(idx.c);
     if(vEl)vEl.textContent=data.val.toLocaleString('en-IN',{maximumFractionDigits:2});
     if(cEl){cEl.textContent=(up?'+':'')+data.chg.toFixed(2)+' ('+(up?'+':'')+data.pct.toFixed(2)+'%)';cEl.className='idx-chg-sm '+(up?'up':'dn');}
+    indexPctMap[idx.sym]=data.pct;
     if(idx.sym==='^NSEI')niftyPct=data.pct;
   }
   var now=new Date();
@@ -468,6 +498,16 @@ function getCurrentFunds(){
 }
 
 // ── FORMAT ────────────────────────────────────────────────────
+function vsBenchmark(subcat, pct){
+  var bPct = benchmarkPctFor(subcat);
+  var bLabel = BENCHMARK_LABEL[benchmarkSymFor(subcat)] || 'Nifty 50';
+  if(indexPctMap[benchmarkSymFor(subcat)]===undefined && niftyPct===0) return '<span class="vs-neu">—</span>';
+  var diff=pct-bPct;
+  if(Math.abs(diff)<0.05)return '<span class="vs-neu">≈ '+bLabel+'</span>';
+  if(diff>0)return '<span class="vs-out">▲ +'+ diff.toFixed(2)+'% vs '+bLabel+'</span>';
+  return '<span class="vs-und">▼ '+ diff.toFixed(2)+'% vs '+bLabel+'</span>';
+}
+// Kept for any legacy callers — now routes through category-aware logic
 function vsNifty(pct){
   if(niftyPct===0)return '<span class="vs-neu">—</span>';
   var diff=pct-niftyPct;
@@ -489,7 +529,7 @@ function fundRow(f,data){
     +'<td class="nav-v">&#8377;'+data.nav.toFixed(4)+'</td>'
     +'<td class="'+(up?'chg-up':'chg-dn')+'">'+(up?'+':'')+data.chg.toFixed(4)+'</td>'
     +'<td><span class="'+(up?'badge-up':'badge-dn')+'">'+(up?'+':'')+data.pct.toFixed(2)+'%</span></td>'
-    +'<td>'+vsNifty(data.pct)+'</td>'
+    +'<td>'+vsBenchmark(f.subcat, data.pct)+'</td>'
     +'</tr>';
 }
 
@@ -550,6 +590,45 @@ async function renderFunds(){
   }
 
   buildInsight(upFunds,dnFunds);
+  buildBeaterReport(upFunds,dnFunds);
+}
+
+// ── BENCHMARK BEATER REPORT ───────────────────────────────────
+function buildBeaterReport(upFunds,dnFunds){
+  var box=document.getElementById('beater-box');
+  var content=document.getElementById('beater-content');
+  var all=upFunds.concat(dnFunds);
+  if(!all.length){ box.style.display='none'; return; }
+
+  var beat=[], lag=[];
+  all.forEach(function(r){
+    var bPct=benchmarkPctFor(r.f.subcat);
+    if(r.data.pct - bPct > 0.001) beat.push(r); else lag.push(r);
+  });
+
+  var pct = Math.round((beat.length/all.length)*100);
+  var lines=[];
+  lines.push({icon:'📊',text:'<strong>'+beat.length+' of '+all.length+' funds</strong> ('+pct+'%) beat their category benchmark today.'});
+
+  if(beat.length>0){
+    var topBeat=beat.slice().sort(function(a,b){
+      return (b.data.pct-benchmarkPctFor(b.f.subcat)) - (a.data.pct-benchmarkPctFor(a.f.subcat));
+    })[0];
+    var margin=(topBeat.data.pct-benchmarkPctFor(topBeat.f.subcat)).toFixed(2);
+    lines.push({icon:'🥇',text:'Biggest outperformer: <strong>'+shortName(topBeat.f.name)+'</strong> — beat its benchmark by '+margin+'%'});
+  }
+  if(lag.length>0){
+    var topLag=lag.slice().sort(function(a,b){
+      return (a.data.pct-benchmarkPctFor(a.f.subcat)) - (b.data.pct-benchmarkPctFor(b.f.subcat));
+    })[0];
+    var margin2=(topLag.data.pct-benchmarkPctFor(topLag.f.subcat)).toFixed(2);
+    lines.push({icon:'⚠️',text:'Widest underperformer: <strong>'+shortName(topLag.f.name)+'</strong> — trailed its benchmark by '+margin2+'%'});
+  }
+
+  content.innerHTML=lines.map(function(l){
+    return '<div class="insight-row"><span class="insight-icon">'+l.icon+'</span><span>'+l.text+'</span></div>';
+  }).join('');
+  box.style.display='block';
 }
 
 // ── INSIGHT ───────────────────────────────────────────────────
