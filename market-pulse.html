@@ -24,12 +24,14 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);}
 .topnav-links{display:flex;gap:4px;}
 .topnav-links a{color:rgba(255,255,255,.75);font-size:12px;font-weight:600;text-decoration:none;padding:5px 11px;border-radius:7px;}
 .topnav-links a:hover,.topnav-links a.on{background:rgba(255,255,255,.15);color:#fff;}
-
-/* HERO */
-.hero{background:linear-gradient(135deg,#1a0e5e,#2d2478,#3c3197);padding:22px 20px;text-align:center;}
-.hero h1{font-family:var(--fp);font-size:22px;color:#fff;margin-bottom:4px;}
-.hero p{color:rgba(255,255,255,.75);font-size:12px;}
-.hero-date{display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:3px 14px;color:#fff;font-size:11px;font-weight:700;margin-top:8px;}
+.mob-menu-btn{display:none;background:none;border:none;font-size:22px;cursor:pointer;color:#fff;padding:4px 8px;align-items:center;}
+.mob-nav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199;}
+.mob-nav-overlay.open{display:block;}
+.mob-nav-drawer{position:fixed;top:0;left:-280px;width:280px;height:100vh;background:#fff;z-index:200;transition:left .3s ease;overflow-y:auto;box-shadow:4px 0 20px rgba(0,0,0,.15);padding:20px 0;}
+.mob-nav-drawer.open{left:0;}
+.mob-nav-drawer .mnd-brand{padding:0 20px 16px;border-bottom:1px solid #e5e7eb;margin-bottom:8px;}
+.mob-nav-drawer a{display:flex;align-items:center;gap:10px;padding:13px 20px;font-size:14px;font-weight:600;color:#4a4a6a;text-decoration:none;border-left:3px solid transparent;}
+.mob-nav-drawer a:hover,.mob-nav-drawer a.on{background:#f0effe;color:#3c3197;border-left-color:#3c3197;}
 
 /* INDEX BAR */
 .idx-bar{background:var(--p2);padding:10px 20px;display:flex;gap:20px;overflow-x:auto;flex-wrap:nowrap;border-bottom:2px solid rgba(255,255,255,.1);}
@@ -43,6 +45,12 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);}
 .idx-chg-sm.dn{color:#fca5a5;}
 .idx-chg-sm.neu{color:rgba(255,255,255,.5);}
 .idx-divider{width:1px;background:rgba(255,255,255,.15);flex-shrink:0;}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#1a0e5e,#2d2478,#3c3197);padding:22px 20px;text-align:center;}
+.hero h1{font-family:var(--fp);font-size:22px;color:#fff;margin-bottom:4px;}
+.hero p{color:rgba(255,255,255,.75);font-size:12px;}
+.hero-date{display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:3px 14px;color:#fff;font-size:11px;font-weight:700;margin-top:8px;}
 
 /* LAYOUT */
 .layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 160px);}
@@ -69,7 +77,7 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);}
 
 /* RIGHT PANEL */
 .right{padding:18px 20px;}
-.right-title{font-family:var(--fp);font-size:18px;color:var(--p1);margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+.right-title{font-family:var(--fp);font-size:18px;color:var(--p1);margin-bottom:4px;}
 .right-sub{font-size:11px;color:var(--t4);margin-bottom:16px;}
 .timestamp{font-size:11px;color:var(--t5);text-align:right;margin-bottom:12px;}
 
@@ -93,7 +101,7 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);}
 .fund-tbl tr:last-child td{border-bottom:none;}
 .fund-tbl tr:hover{background:var(--p4);}
 .fund-tbl tr:nth-child(even){background:#fafaff;}
-.fn{font-weight:700;color:var(--t1);}
+.fn{font-weight:700;color:var(--t1);font-size:12px;}
 .fc{font-size:10px;color:var(--t4);margin-top:2px;}
 .chg-up{color:#16a34a;font-weight:800;}
 .chg-dn{color:#dc2626;font-weight:800;}
@@ -106,10 +114,13 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);}
 .loading-row td{text-align:center;color:var(--t5);font-size:12px;padding:20px;}
 .empty-row td{text-align:center;color:var(--t4);font-size:12px;padding:20px;}
 
+/* PROGRESS */
+.progress-bar{width:100%;height:4px;background:var(--bd);border-radius:2px;margin:10px 0;}
+.progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--p1),var(--g1));transition:width .3s;}
+
 /* DISCLAIMER */
 .disclaimer{font-size:10px;color:var(--t5);text-align:center;padding:14px 20px;border-top:1px solid var(--bd);margin-top:6px;}
 
-/* SPINNER */
 @keyframes spin{to{transform:rotate(360deg);}}
 .spinner{width:18px;height:18px;border:2.5px solid var(--p4);border-top-color:var(--p1);border-radius:50%;animation:spin .8s linear infinite;display:inline-block;vertical-align:middle;margin-right:6px;}
 
@@ -117,17 +128,9 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);}
   .layout{grid-template-columns:1fr;}
   .left{position:static;height:auto;border-right:none;border-bottom:2px solid var(--bd);}
   .topnav-links{display:none!important;}
-  .fund-tbl th:nth-child(5),.fund-tbl td:nth-child(5){display:none;}
   .mob-menu-btn{display:flex!important;}
+  .fund-tbl th:nth-child(5),.fund-tbl td:nth-child(5){display:none;}
 }
-.mob-menu-btn{display:none;background:none;border:none;font-size:22px;cursor:pointer;color:#fff;padding:4px 8px;align-items:center;}
-.mob-nav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199;}
-.mob-nav-overlay.open{display:block;}
-.mob-nav-drawer{position:fixed;top:0;left:-280px;width:280px;height:100vh;background:#fff;z-index:200;transition:left .3s ease;overflow-y:auto;box-shadow:4px 0 20px rgba(0,0,0,.15);padding:20px 0;}
-.mob-nav-drawer.open{left:0;}
-.mob-nav-drawer .mnd-brand{padding:0 20px 16px;border-bottom:1px solid #e5e7eb;margin-bottom:8px;}
-.mob-nav-drawer a{display:flex;align-items:center;gap:10px;padding:13px 20px;font-size:14px;font-weight:600;color:#4a4a6a;text-decoration:none;border-left:3px solid transparent;}
-.mob-nav-drawer a:hover,.mob-nav-drawer a.on{background:#f0effe;color:#3c3197;border-left-color:#3c3197;}
 </style>
 </head>
 <body>
@@ -147,7 +150,7 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);}
 </nav>
 
 <!-- INDEX BAR -->
-<div class="idx-bar" id="idx-bar">
+<div class="idx-bar">
   <div class="idx-item"><div class="idx-name-sm">Sensex</div><div class="idx-val-sm" id="sv">--</div><div class="idx-chg-sm neu" id="sc">Loading...</div></div>
   <div class="idx-divider"></div>
   <div class="idx-item"><div class="idx-name-sm">Nifty 50</div><div class="idx-val-sm" id="nv">--</div><div class="idx-chg-sm neu" id="nc">--</div></div>
@@ -160,13 +163,13 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);}
   <div class="idx-divider"></div>
   <div class="idx-item"><div class="idx-name-sm">Nifty IT</div><div class="idx-val-sm" id="itv">--</div><div class="idx-chg-sm neu" id="itc">--</div></div>
   <div class="idx-divider"></div>
-  <div class="idx-item" style="min-width:140px;"><div class="idx-name-sm">Updated</div><div class="idx-val-sm" style="font-size:11px;" id="tt">--</div><div class="idx-chg-sm neu" id="mkt-status">Live</div></div>
+  <div class="idx-item" style="min-width:130px;"><div class="idx-name-sm">Updated</div><div class="idx-val-sm" style="font-size:11px;" id="tt">--</div><div class="idx-chg-sm neu" id="mkt-status">Live</div></div>
 </div>
 
 <!-- HERO -->
 <div class="hero">
   <h1>📊 Market Pulse</h1>
-  <p>Yesterday's index closing vs today's NAV movement — track what moved and what didn't</p>
+  <p>Today's NAV movement vs Market — track which funds rose and which fell</p>
   <div class="hero-date" id="pulse-date">Loading date...</div>
 </div>
 
@@ -189,38 +192,55 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);}
     <!-- Category -->
     <div class="sec">
       <div class="sec-title">Fund Category</div>
-      <button class="all-btn on" id="btn-all" onclick="setCat('All',this)">🔁 All Categories</button>
+      <button class="all-btn on" id="btn-all" onclick="setCat('All',this)">🔁 All Equity Categories</button>
       <div class="cat-group">
         <div class="cat-group-title">📈 Equity</div>
         <div class="sub-btns">
           <button class="sbtn" onclick="setCat('Large Cap',this)">Large Cap</button>
-          <button class="sbtn" onclick="setCat('Large &amp; Mid Cap',this)">Large &amp; Mid Cap</button>
+          <button class="sbtn" onclick="setCat('Large & MidCap',this)">Large &amp; Mid Cap</button>
           <button class="sbtn" onclick="setCat('Mid Cap',this)">Mid Cap</button>
           <button class="sbtn" onclick="setCat('Small Cap',this)">Small Cap</button>
           <button class="sbtn" onclick="setCat('Flexi Cap',this)">Flexi Cap</button>
           <button class="sbtn" onclick="setCat('Multi Cap',this)">Multi Cap</button>
+          <button class="sbtn" onclick="setCat('Focused',this)">Focused</button>
+          <button class="sbtn" onclick="setCat('Value/Contra',this)">Value / Contra</button>
+          <button class="sbtn" onclick="setCat('Dividend Yield',this)">Dividend Yield</button>
+          <button class="sbtn" onclick="setCat('Thematic/Sectoral',this)">Thematic / Sectoral</button>
         </div>
       </div>
       <div class="cat-group" style="margin-top:8px;">
         <div class="cat-group-title">🛡️ ELSS &amp; Index</div>
         <div class="sub-btns">
-          <button class="sbtn" onclick="setCat('ELSS',this)">ELSS (Tax Saving)</button>
-          <button class="sbtn" onclick="setCat('Index / ETF',this)">Index / ETF</button>
+          <button class="sbtn" onclick="setCat('ELSS Flexi Cap',this)">ELSS (Tax Saving)</button>
+          <button class="sbtn" onclick="setCat('Nifty 50',this)">Nifty 50 Index</button>
+          <button class="sbtn" onclick="setCat('Nifty Next 50',this)">Nifty Next 50</button>
+          <button class="sbtn" onclick="setCat('Nifty Midcap 150',this)">Nifty Midcap 150</button>
+          <button class="sbtn" onclick="setCat('Nifty Smallcap 250',this)">Nifty Smallcap 250</button>
         </div>
       </div>
       <div class="cat-group" style="margin-top:8px;">
         <div class="cat-group-title">⚖️ Hybrid</div>
         <div class="sub-btns">
-          <button class="sbtn" onclick="setCat('Hybrid / Balanced',this)">Hybrid / Balanced</button>
+          <button class="sbtn" onclick="setCat('Balanced Advantage',this)">Balanced Advantage</button>
+          <button class="sbtn" onclick="setCat('Aggressive Hybrid',this)">Aggressive Hybrid</button>
+          <button class="sbtn" onclick="setCat('Multi Asset',this)">Multi Asset</button>
+          <button class="sbtn" onclick="setCat('Arbitrage',this)">Arbitrage</button>
         </div>
       </div>
+    </div>
+
+    <!-- Status -->
+    <div class="sec" id="load-status-sec" style="display:none;">
+      <div class="sec-title">Loading Status</div>
+      <div id="load-status-text" style="font-size:11px;color:var(--t4);"></div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
     </div>
   </div>
 
   <!-- RIGHT PANEL -->
   <div class="right">
-    <div class="right-title" id="right-title">📊 All Categories</div>
-    <div class="right-sub" id="right-sub">Showing all fund categories · Direct Plans · NAV movement today</div>
+    <div class="right-title" id="right-title">📊 All Equity Categories</div>
+    <div class="right-sub" id="right-sub">Showing all equity categories · Direct Plans · NAV movement today</div>
     <div class="timestamp" id="last-updated"></div>
 
     <!-- INSIGHT -->
@@ -237,13 +257,9 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);}
       </div>
       <table class="fund-tbl">
         <thead><tr>
-          <th>Fund Name</th>
-          <th>NAV</th>
-          <th>Change</th>
-          <th>Change %</th>
-          <th>vs Nifty</th>
+          <th>Fund Name</th><th>NAV</th><th>Change</th><th>Change %</th><th>vs Nifty</th>
         </tr></thead>
-        <tbody id="up-body"><tr class="loading-row"><td colspan="5"><span class="spinner"></span>Fetching NAVs...</td></tr></tbody>
+        <tbody id="up-body"><tr class="loading-row"><td colspan="5"><span class="spinner"></span>Loading funds from AMFI...</td></tr></tbody>
       </table>
     </div>
 
@@ -255,13 +271,9 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);}
       </div>
       <table class="fund-tbl">
         <thead><tr>
-          <th>Fund Name</th>
-          <th>NAV</th>
-          <th>Change</th>
-          <th>Change %</th>
-          <th>vs Nifty</th>
+          <th>Fund Name</th><th>NAV</th><th>Change</th><th>Change %</th><th>vs Nifty</th>
         </tr></thead>
-        <tbody id="dn-body"><tr class="loading-row"><td colspan="5"><span class="spinner"></span>Fetching NAVs...</td></tr></tbody>
+        <tbody id="dn-body"><tr class="loading-row"><td colspan="5"><span class="spinner"></span>Loading funds from AMFI...</td></tr></tbody>
       </table>
     </div>
 
@@ -273,268 +285,352 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);}
 </div>
 
 <script>
-var FUNDS_BY_CAT = {"Large Cap": {"direct": {"HDFC Top 100 - Direct": "118989", "SBI Bluechip - Direct": "119553", "Axis Bluechip - Direct": "120465", "ICICI Pru Bluechip - Direct": "120586", "Kotak Bluechip - Direct": "120255", "Mirae Asset Large Cap - Direct": "118834", "Nippon India Large Cap - Direct": "118701", "Canara Robeco Bluechip - Direct": "102885"}, "regular": {"HDFC Top 100": "100010", "SBI Bluechip": "119022", "Axis Bluechip": "120463", "ICICI Pru Bluechip": "120584", "Kotak Bluechip": "120254", "Mirae Asset Large Cap": "118700", "Nippon India Large Cap": "118700", "Canara Robeco Bluechip": "100076"}}, "Large & Mid Cap": {"direct": {"Mirae Asset Large & Midcap - Direct": "118836", "Kotak Equity Opp - Direct": "120252", "Canara Robeco Emerg Equities - Direct": "102881", "Axis Growth Opp - Direct": "145552"}, "regular": {"Mirae Asset Large & Midcap": "118700", "Kotak Equity Opp": "120251", "Canara Robeco Emerg Equities": "100070"}}, "Mid Cap": {"direct": {"HDFC Mid Cap Opp - Direct": "118990", "Nippon India Mid Cap - Direct": "118702", "Axis Midcap - Direct": "120468", "Kotak Emerging Equity - Direct": "136118", "Motilal Oswal Midcap - Direct": "120847", "SBI Magnum Midcap - Direct": "119290", "Edelweiss Midcap - Direct": "135782"}, "regular": {"HDFC Mid Cap Opp": "118989", "Nippon India Mid Cap": "118700", "Axis Midcap": "120466", "Kotak Emerging Equity": "136117", "Motilal Oswal Midcap": "120847", "SBI Magnum Midcap": "102389"}}, "Small Cap": {"direct": {"SBI Small Cap - Direct": "114959", "Nippon India Small Cap - Direct": "118778", "HDFC Small Cap - Direct": "100032", "Axis Small Cap - Direct": "125355", "Quant Small Cap - Direct": "120845", "Kotak Small Cap - Direct": "120261"}, "regular": {"SBI Small Cap": "114960", "Nippon India Small Cap": "118700", "HDFC Small Cap": "100032", "Axis Small Cap": "125353", "Kotak Small Cap": "120260"}}, "Flexi Cap": {"direct": {"HDFC Flexi Cap - Direct": "118989", "DSP Flexi Cap - Direct": "119206", "PPFAS Flexi Cap - Direct": "122639", "Motilal Oswal Flexi Cap - Direct": "120828", "Axis Flexi Cap - Direct": "125354", "Aditya Birla Flexi Cap - Direct": "119598", "Nippon India Flexi Cap - Direct": "118704"}, "regular": {"HDFC Flexi Cap": "100010", "DSP Flexi Cap": "119205", "PPFAS Flexi Cap": "122638", "Motilal Oswal Flexi Cap": "120827", "Axis Flexi Cap": "125352", "Nippon India Flexi Cap": "118703"}}, "Multi Cap": {"direct": {"Nippon India Multi Cap - Direct": "118706", "Kotak Multicap - Direct": "120257", "HDFC Multi Cap - Direct": "100007", "Quant Multi Cap - Direct": "125497"}, "regular": {"Nippon India Multi Cap": "118705", "Kotak Multicap": "120256"}}, "ELSS": {"direct": {"Axis Long Term Equity - Direct": "120503", "SBI Long Term Equity - Direct": "103504", "Mirae Asset ELSS - Direct": "145552", "Kotak ELSS - Direct": "120258", "DSP ELSS - Direct": "119208"}, "regular": {"Axis Long Term Equity": "120501", "SBI Long Term Equity": "103503", "Kotak ELSS": "120257", "DSP ELSS": "119207"}}, "Index / ETF": {"direct": {"UTI Nifty 50 Index - Direct": "120716", "Motilal Oswal Nifty 50 - Direct": "120503", "HDFC Nifty 50 Index - Direct": "120716", "ICICI Pru Nifty Index - Direct": "120586", "Nippon India Nifty Bees": "118700"}, "regular": {"UTI Nifty 50 Index": "120715", "HDFC Nifty 50 Index": "120715"}}, "Hybrid / Balanced": {"direct": {"HDFC Balanced Adv - Direct": "100019", "ICICI Pru Balanced Adv - Direct": "120586", "Kotak Balanced Adv - Direct": "120256", "SBI Equity Hybrid - Direct": "119291", "Mirae Asset Hybrid Equity - Direct": "135802"}, "regular": {"HDFC Balanced Adv": "100019", "ICICI Pru Balanced Adv": "120584", "Kotak Balanced Adv": "120255", "SBI Equity Hybrid": "119022"}}};
-
-// State
+// ── STATE ─────────────────────────────────────────────────────
 var STATE = { plan: 'direct', cat: 'All' };
-var allNavData = {}; // cache: fundName -> {nav,chg,pct,date}
 var niftyPct = 0;
+var allFunds = [];   // full AMFI list after filtering
+var loaded = false;  // AMFI list loaded?
+var navCache = {};   // code → {nav, chg, pct}
+
+// ── EQUITY CATEGORIES FOR FILTER ─────────────────────────────
+var EQUITY_CATS = ['Large Cap','Large & MidCap','Mid Cap','Small Cap','Flexi Cap',
+  'Multi Cap','Focused','Value/Contra','Dividend Yield','Thematic/Sectoral',
+  'ELSS Flexi Cap','Nifty 50','Nifty Next 50','Nifty Midcap 150','Nifty Smallcap 250',
+  'Balanced Advantage','Aggressive Hybrid','Multi Asset','Arbitrage'];
+
+// ── ACTIVE AMCs ───────────────────────────────────────────────
+var ACTIVE_AMCS=["360 ONE","IIFL","ADITYA BIRLA SUN LIFE","ALPHAGREP","ANGEL ONE","ASK ",
+  "BANDHAN","IDFC","CHOICE","DSP","FRANKLIN TEMPLETON","FRANKLIN INDIA","HDFC","HELIOS",
+  "HSBC","ICICI PRUDENTIAL","IL&FS","JIO BLACKROCK","KOTAK","MAHINDRA MANULIFE","NAVI",
+  "ESSEL","PARAG PARIKH","PPFAS","SBI","SHRIRAM","TATA","UNIFI","UNION","WHITEOAK",
+  "WHITE OAK","ZERODHA","ABAKKUS","AXIS","BAJAJ FINSERV","BANK OF INDIA","BARODA BNP PARIBAS",
+  "BARODA","CANARA ROBECO","CAPITALMIND","EDELWEISS","GROWW","INDIABULLS","INVESCO","ITI ",
+  "JM FINANCIAL","JM ","LAKSHYA","LIC","IDBI MF","MIRAE ASSET","MONARCH","MOTILAL OSWAL",
+  "NIPPON INDIA","NIPPON ","NJ ","OLD BRIDGE","PGIM INDIA","QUANT","QUANTUM","SAMCO",
+  "SUNDARAM","TAURUS","THE WEALTH COMPANY","TRUST MUTUAL","UTI"];
+
+function isActiveAMC(n){var u=n.toUpperCase();for(var i=0;i<ACTIVE_AMCS.length;i++){if(u.indexOf(ACTIVE_AMCS[i])>=0)return true;}return false;}
+
+// ── SUBCATEGORY DETECTION (from fund-toppers) ─────────────────
+function getSubCat(name){
+  var u=name.toUpperCase();
+  if(u.includes('ELSS')||u.includes('TAX SAVER')||u.includes('TAX SAVING'))return 'ELSS Flexi Cap';
+  if(u.includes('NIFTY SMALLCAP')||u.includes('NIFTY SMALL CAP')||u.includes('SMALLCAP 250'))return 'Nifty Smallcap 250';
+  if(u.includes('NIFTY MIDCAP')||u.includes('NIFTY MID CAP')||u.includes('MIDCAP 150'))return 'Nifty Midcap 150';
+  if(u.includes('NIFTY NEXT 50')||u.includes('NIFTY NEXT50')||u.includes('JUNIOR NIFTY'))return 'Nifty Next 50';
+  if(u.includes('NIFTY 50')||u.includes('NIFTY50'))return 'Nifty 50';
+  if(u.includes('SENSEX')||u.includes('BSE 30')||u.includes('BSE30'))return 'Sensex';
+  if(u.includes('GOLD')&&(u.includes('ETF')||u.includes('FOF')||u.includes('FUND OF')))return 'Gold ETF';
+  if(u.includes('ETF'))return 'Sector ETF';
+  if(u.includes('INDEX FUND')||u.includes('INDEX PLAN'))return 'Sector ETF';
+  if(u.includes('GILT')&&(u.includes('10')||u.includes('CONSTANT')))return 'Gilt 10Y Constant';
+  if(u.includes('GILT'))return 'Gilt';
+  if(u.includes('INTERNATIONAL')||u.includes('OVERSEAS')||u.includes('NASDAQ')||u.includes('GLOBAL')||u.includes('US ')||u.includes('JAPAN'))return 'International FoF';
+  if(u.includes('GOLD')&&u.includes('FUND OF'))return 'Gold FoF';
+  if(u.includes('FUND OF FUND')||u.includes('FOF'))return 'Domestic FoF';
+  if(u.includes('OVERNIGHT'))return 'Overnight';
+  if(u.includes('LIQUID'))return 'Liquid';
+  if(u.includes('ULTRA SHORT'))return 'Ultra Short Duration';
+  if(u.includes('LOW DURATION'))return 'Low Duration';
+  if(u.includes('MONEY MARKET'))return 'Ultra Short Duration';
+  if(u.includes('SHORT DURATION')||u.includes('SHORT TERM'))return 'Short Duration';
+  if(u.includes('MEDIUM DURATION')||u.includes('MEDIUM TERM'))return 'Medium Duration';
+  if(u.includes('LONG DURATION')||u.includes('LONG TERM DEBT'))return 'Long Duration';
+  if(u.includes('CORPORATE BOND')||u.includes('CORP BOND'))return 'Corporate Bond';
+  if(u.includes('BANKING AND PSU')||u.includes('BANKING & PSU')||u.includes('BANK & PSU'))return 'Banking & PSU';
+  if(u.includes('DYNAMIC BOND'))return 'Dynamic Bond';
+  if(u.includes('CREDIT RISK'))return 'Credit Risk';
+  if(u.includes('DEBT')||u.includes('INCOME')||u.includes('BOND')&&!u.includes('EQUITY'))return 'Short Duration';
+  if(u.includes('ARBITRAGE'))return 'Arbitrage';
+  if(u.includes('BALANCED ADVANTAGE')||u.includes('BAF')||u.includes('DYNAMIC ASSET'))return 'Balanced Advantage';
+  if(u.includes('AGGRESSIVE')||u.includes('EQUITY & DEBT')||u.includes('EQUITY AND DEBT'))return 'Aggressive Hybrid';
+  if(u.includes('CONSERVATIVE'))return 'Conservative Hybrid';
+  if(u.includes('MULTI ASSET')||u.includes('MULTIASSET'))return 'Multi Asset';
+  if(u.includes('EQUITY SAVINGS'))return 'Equity Savings';
+  if(u.includes('HYBRID')||u.includes('BALANCED'))return 'Aggressive Hybrid';
+  if(u.includes('LARGE AND MID')||u.includes('LARGE & MID')||u.includes('LARGECAP AND MID'))return 'Large & MidCap';
+  if(u.includes('FOCUSED')||u.includes('FOCUS')||u.includes('CONCENTRATED'))return 'Focused';
+  if(u.includes('LARGE CAP')||u.includes('LARGECAP')||u.includes('LARGE-CAP'))return 'Large Cap';
+  if(u.includes('MULTI CAP')||u.includes('MULTICAP'))return 'Multi Cap';
+  if(u.includes('FLEXI CAP')||u.includes('FLEXICAP')||u.includes('FLEXI-CAP'))return 'Flexi Cap';
+  if(u.includes('SMALL CAP')||u.includes('SMALLCAP'))return 'Small Cap';
+  if(u.includes('MID CAP')||u.includes('MIDCAP')||u.includes('EMERGING BLUECHIP'))return 'Mid Cap';
+  if(u.includes('DIVIDEND YIELD')||u.includes('DIVIDEND OPPORTUN'))return 'Dividend Yield';
+  if(u.includes('VALUE')||u.includes('CONTRA'))return 'Value/Contra';
+  if(u.includes('THEMATIC')||u.includes('SECTOR')||u.includes('INFRA')||u.includes('PHARMA')||u.includes('BANKING')||u.includes('TECH')||u.includes('AUTO')||u.includes('DEFENCE')||u.includes('ENERGY')||u.includes('MANUFACT')||u.includes('DIGITAL')||u.includes('MNC')||u.includes('PSU')||u.includes('FMCG')||u.includes('CONSUMPTION')||u.includes('CONSUMER')||u.includes('ESG')||u.includes('QUALITY')||u.includes('SPECIAL SITUATIONS')||u.includes('SPECIAL OPPORTUN')||u.includes('BUSINESS CYCLE')||u.includes('OPPORTUNIT')||u.includes('INNOVAT')||u.includes('HOUSING')||u.includes('REALTY')||u.includes('METAL')||u.includes('HEALTHCARE')||u.includes('FINANCIAL SERVICES')||u.includes('MOMENTUM')||u.includes('LOW VOL')||u.includes('ALPHA')||u.includes('EQUAL WEIGHT'))return 'Thematic/Sectoral';
+  return 'Other Equity';
+}
+
+// ── FETCH AMFI FUND LIST ──────────────────────────────────────
+async function fetchMFAPI(){
+  try{var r=await fetch('https://api.mfapi.in/mf',{mode:'cors',headers:{'Accept':'application/json'}});if(r.ok){var d=await r.json();if(Array.isArray(d)&&d.length>100)return d;}}catch(e){}
+  try{var r2=await fetch('https://api.allorigins.win/raw?url=https%3A%2F%2Fapi.mfapi.in%2Fmf');if(r2.ok){var d2=await r2.json();if(Array.isArray(d2)&&d2.length>100)return d2;}}catch(e){}
+  try{var r3=await fetch('https://corsproxy.io/?https://api.mfapi.in/mf');if(r3.ok){var d3=await r3.json();if(Array.isArray(d3)&&d3.length>100)return d3;}}catch(e){}
+  return null;
+}
+
+async function loadAMFIFunds(){
+  if(loaded) return;
+  var statusSec=document.getElementById('load-status-sec');
+  var statusTxt=document.getElementById('load-status-text');
+  if(statusSec) statusSec.style.display='block';
+  if(statusTxt) statusTxt.textContent='Fetching fund list from AMFI...';
+  var data=await fetchMFAPI();
+  if(!data){if(statusTxt)statusTxt.textContent='Failed to load fund list. Please refresh.';return;}
+  allFunds=[];
+  for(var i=0;i<data.length;i++){
+    var n=data[i].schemeName; if(!n||n.length<5) continue;
+    var u=n.toUpperCase();
+    if(u.includes('IDCW')||u.includes('DIVIDEND'))continue;
+    if(u.includes('INSTITUTIONAL'))continue;
+    if(u.includes('FMP')||u.includes('FIXED MATURITY'))continue;
+    if(u.includes('CAPITAL PROTECTION')||u.includes('CAPITAL GUARANTEE'))continue;
+    if(u.includes('CLOSE ENDED')||u.includes('CLOSED END'))continue;
+    if(u.includes('SERIES ')||u.includes('SERIES-'))continue;
+    if(u.includes('- OPTION I ')||u.includes('- OPTION II')||u.includes('- OPTION III'))continue;
+    if(u.includes('- PLAN A')||u.includes('- PLAN B')||u.includes('- PLAN C'))continue;
+    if(!isActiveAMC(n))continue;
+    var sc=getSubCat(n);
+    if(EQUITY_CATS.indexOf(sc)<0)continue;  // only equity categories
+    allFunds.push({
+      code:String(data[i].schemeCode),
+      name:n,
+      plan:u.includes('DIRECT')?'direct':'regular',
+      subcat:sc
+    });
+  }
+  loaded=true;
+  if(statusTxt)statusTxt.textContent='Loaded '+allFunds.length+' equity funds.';
+  if(statusSec)setTimeout(function(){statusSec.style.display='none';},3000);
+  return true;
+}
 
 // ── INDEX FETCH ───────────────────────────────────────────────
-var INDICES = [
-  {sym:"^BSESN",   v:"sv", c:"sc"},
-  {sym:"^NSEI",    v:"nv", c:"nc"},
-  {sym:"^NSEBANK", v:"bv", c:"bc"},
-  {sym:"NIFTY_MID_100.NS", v:"mv", c:"mc2"},
-  {sym:"NIFTY_SMLCAP_100.NS", v:"smv", c:"smc"},
-  {sym:"^CNXIT",   v:"itv", c:"itc"},
+var INDICES=[
+  {sym:"^BSESN",v:"sv",c:"sc"},
+  {sym:"^NSEI",v:"nv",c:"nc"},
+  {sym:"^NSEBANK",v:"bv",c:"bc"},
+  {sym:"NIFTY_MID_100.NS",v:"mv",c:"mc2"},
+  {sym:"NIFTY_SMLCAP_100.NS",v:"smv",c:"smc"},
+  {sym:"^CNXIT",v:"itv",c:"itc"},
 ];
 
 async function fetchIndex(sym){
-  try {
-    var url = "https://api.allorigins.win/raw?url="+encodeURIComponent(
+  try{
+    var url="https://api.allorigins.win/raw?url="+encodeURIComponent(
       "https://query1.finance.yahoo.com/v8/finance/chart/"+sym+"?interval=1d&range=2d");
-    var r = await fetch(url);
-    var d = await r.json();
-    var res = d.chart && d.chart.result && d.chart.result[0];
-    if(!res) return null;
-    var cur  = res.meta.regularMarketPrice;
-    var prev = res.meta.previousClose || res.meta.chartPreviousClose || cur;
-    var chg  = cur - prev;
-    var pct  = prev>0 ? (chg/prev)*100 : 0;
-    return {val:cur, chg:chg, pct:pct};
-  } catch(e){ return null; }
+    var r=await fetch(url);var d=await r.json();
+    var res=d.chart&&d.chart.result&&d.chart.result[0];if(!res)return null;
+    var cur=res.meta.regularMarketPrice;
+    var prev=res.meta.previousClose||res.meta.chartPreviousClose||cur;
+    return{val:cur,chg:cur-prev,pct:prev>0?((cur-prev)/prev)*100:0};
+  }catch(e){return null;}
 }
 
 async function loadIndices(){
   for(var i=0;i<INDICES.length;i++){
-    var idx = INDICES[i];
-    var data = await fetchIndex(idx.sym);
-    if(!data) continue;
-    var up = data.chg >= 0;
-    var vEl = document.getElementById(idx.v);
-    var cEl = document.getElementById(idx.c);
-    if(vEl) vEl.textContent = data.val.toLocaleString("en-IN",{maximumFractionDigits:2});
-    if(cEl){
-      cEl.textContent = (up?"+":"")+data.chg.toFixed(2)+" ("+(up?"+":"")+data.pct.toFixed(2)+"%)";
-      cEl.className = "idx-chg-sm "+(up?"up":"dn");
-    }
-    if(idx.sym === "^NSEI") niftyPct = data.pct;
+    var idx=INDICES[i];var data=await fetchIndex(idx.sym);if(!data)continue;
+    var up=data.chg>=0;
+    var vEl=document.getElementById(idx.v);
+    var cEl=document.getElementById(idx.c);
+    if(vEl)vEl.textContent=data.val.toLocaleString('en-IN',{maximumFractionDigits:2});
+    if(cEl){cEl.textContent=(up?'+':'')+data.chg.toFixed(2)+' ('+(up?'+':'')+data.pct.toFixed(2)+'%)';cEl.className='idx-chg-sm '+(up?'up':'dn');}
+    if(idx.sym==='^NSEI')niftyPct=data.pct;
   }
-  var now = new Date();
-  var el = document.getElementById("tt");
-  if(el) el.textContent = now.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"})+" IST";
-  var pd = document.getElementById("pulse-date");
-  if(pd) pd.textContent = now.toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
-  var lu = document.getElementById("last-updated");
-  if(lu) lu.textContent = "NAVs & Index updated: "+now.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"})+" IST";
+  var now=new Date();
+  var tt=document.getElementById('tt');if(tt)tt.textContent=now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})+' IST';
+  var pd=document.getElementById('pulse-date');if(pd)pd.textContent=now.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  var lu=document.getElementById('last-updated');if(lu)lu.textContent='NAVs & Index updated: '+now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})+' IST';
 }
 
-// ── NAV FETCH ────────────────────────────────────────────────
+// ── NAV FETCH ─────────────────────────────────────────────────
 async function fetchNAV(code){
-  try {
-    var r = await fetch("https://api.mfapi.in/mf/"+code);
-    var d = await r.json();
-    if(!d.data || d.data.length < 2) return null;
-    var n1 = parseFloat(d.data[0].nav);
-    var n2 = parseFloat(d.data[1].nav);
-    if(!n1 || !n2 || n2===0) return null;
-    var chg = n1-n2;
-    var pct = (chg/n2)*100;
-    return {nav:n1, prev:n2, chg:chg, pct:pct, date:d.data[0].date};
-  } catch(e){ return null; }
+  if(navCache[code])return navCache[code];
+  try{
+    var r=await fetch('https://api.mfapi.in/mf/'+code);
+    var d=await r.json();
+    if(!d.data||d.data.length<2)return null;
+    var n1=parseFloat(d.data[0].nav),n2=parseFloat(d.data[1].nav);
+    if(!n1||!n2||n2===0)return null;
+    var result={nav:n1,prev:n2,chg:n1-n2,pct:((n1-n2)/n2)*100,date:d.data[0].date};
+    navCache[code]=result;
+    return result;
+  }catch(e){return null;}
 }
 
 // ── GET CURRENT FUND LIST ─────────────────────────────────────
 function getCurrentFunds(){
-  var result = {};
-  var cats = STATE.cat === 'All' ? Object.keys(FUNDS_BY_CAT) : [STATE.cat];
-  cats.forEach(function(cat){
-    if(!FUNDS_BY_CAT[cat]) return;
-    var planFunds = FUNDS_BY_CAT[cat][STATE.plan] || {};
-    Object.keys(planFunds).forEach(function(name){
-      result[name] = {code: planFunds[name], cat: cat};
-    });
+  return allFunds.filter(function(f){
+    if(f.plan!==STATE.plan)return false;
+    if(STATE.cat==='All')return true;
+    return f.subcat===STATE.cat;
   });
-  return result;
 }
 
-// ── RENDER TABLES ─────────────────────────────────────────────
+// ── FORMAT ────────────────────────────────────────────────────
 function vsNifty(pct){
-  if(niftyPct === 0) return '<span class="vs-neu">—</span>';
-  var diff = pct - niftyPct;
-  if(Math.abs(diff) < 0.05) return '<span class="vs-neu">≈ In line</span>';
-  if(diff > 0) return '<span class="vs-out">▲ +'+ diff.toFixed(2)+'%</span>';
+  if(niftyPct===0)return '<span class="vs-neu">—</span>';
+  var diff=pct-niftyPct;
+  if(Math.abs(diff)<0.05)return '<span class="vs-neu">≈ In line</span>';
+  if(diff>0)return '<span class="vs-out">▲ +'+ diff.toFixed(2)+'%</span>';
   return '<span class="vs-und">▼ '+ diff.toFixed(2)+'%</span>';
 }
 
-function fundRow(name, cat, data){
-  var up = data.chg >= 0;
-  var dispName = name.replace(/ - Direct$/i,'').replace(/ - Regular$/i,'');
-  return '<tr>'+
-    '<td><div class="fn">'+dispName+'</div><div class="fc">'+cat+'</div></td>'+
-    '<td class="nav-v">&#8377;'+data.nav.toFixed(4)+'</td>'+
-    '<td class="'+(up?'chg-up':'chg-dn')+'">'+(up?'+':'')+data.chg.toFixed(4)+'</td>'+
-    '<td><span class="'+(up?'badge-up':'badge-dn')+'">'+(up?'+':'')+data.pct.toFixed(2)+'%</span></td>'+
-    '<td>'+vsNifty(data.pct)+'</td>'+
-    '</tr>';
+function shortName(name){
+  return name.replace(/ - Direct Plan - Growth/gi,'').replace(/ - Direct Plan/gi,'')
+    .replace(/ - Regular Plan - Growth/gi,'').replace(/ - Regular Plan/gi,'')
+    .replace(/ - Growth/gi,'').replace(/ \(G\)/gi,'');
 }
 
-function buildInsight(upFunds, dnFunds){
-  var box = document.getElementById("insight-box");
-  var content = document.getElementById("insight-content");
-  var lines = [];
-  var mktUp = niftyPct >= 0;
-  var mktDir = mktUp ? "up "+niftyPct.toFixed(2)+"%" : "down "+Math.abs(niftyPct).toFixed(2)+"%";
-  lines.push({icon:"📊", text:"Nifty 50 is <strong>"+mktDir+"</strong> today."});
-  if(!mktUp && upFunds.length>0){
-    var names = upFunds.slice(0,2).map(function(f){return "<strong>"+f.name.replace(/ - Direct$/i,'')+"</strong> (+"+f.data.pct.toFixed(2)+"%)";}).join(", ");
-    lines.push({icon:"🛡️", text:"Market fell but these funds stayed resilient: "+names});
-  }
-  if(mktUp && dnFunds.length>0){
-    lines.push({icon:"⚠️", text:dnFunds.length+" fund(s) fell even on a positive market day — worth monitoring."});
-  }
-  if(upFunds.length>0){
-    var top = upFunds[0];
-    lines.push({icon:"🏆", text:"Best performer: <strong>"+top.name.replace(/ - Direct$/i,'')+"</strong> +"+ top.data.pct.toFixed(2)+"% (NAV ₹"+top.data.nav.toFixed(2)+")"});
-  }
-  if(dnFunds.length>0){
-    var bot = dnFunds[0];
-    lines.push({icon:"📉", text:"Most impacted: <strong>"+bot.name.replace(/ - Direct$/i,'')+"</strong> "+bot.data.pct.toFixed(2)+"% (NAV ₹"+bot.data.nav.toFixed(2)+")"});
-  }
-  content.innerHTML = lines.map(function(l){
-    return '<div class="insight-row"><span class="insight-icon">'+l.icon+'</span><span>'+l.text+'</span></div>';
-  }).join("");
-  box.style.display="block";
+function fundRow(f,data){
+  var up=data.chg>=0;
+  return '<tr>'
+    +'<td><div class="fn">'+shortName(f.name)+'</div><div class="fc">'+f.subcat+'</div></td>'
+    +'<td class="nav-v">&#8377;'+data.nav.toFixed(4)+'</td>'
+    +'<td class="'+(up?'chg-up':'chg-dn')+'">'+(up?'+':'')+data.chg.toFixed(4)+'</td>'
+    +'<td><span class="'+(up?'badge-up':'badge-dn')+'">'+(up?'+':'')+data.pct.toFixed(2)+'%</span></td>'
+    +'<td>'+vsNifty(data.pct)+'</td>'
+    +'</tr>';
 }
 
+// ── RENDER FUNDS ──────────────────────────────────────────────
 async function renderFunds(){
-  document.getElementById("up-body").innerHTML = '<tr class="loading-row"><td colspan="5"><span class="spinner"></span>Fetching NAVs...</td></tr>';
-  document.getElementById("dn-body").innerHTML = '<tr class="loading-row"><td colspan="5"><span class="spinner"></span>Fetching NAVs...</td></tr>';
-  document.getElementById("up-count").textContent = "Loading...";
-  document.getElementById("dn-count").textContent = "Loading...";
+  document.getElementById('up-body').innerHTML='<tr class="loading-row"><td colspan="5"><span class="spinner"></span>Fetching NAVs...</td></tr>';
+  document.getElementById('dn-body').innerHTML='<tr class="loading-row"><td colspan="5"><span class="spinner"></span>Fetching NAVs...</td></tr>';
+  document.getElementById('up-count').textContent='Loading...';
+  document.getElementById('dn-count').textContent='Loading...';
 
-  var funds = getCurrentFunds();
-  var names = Object.keys(funds);
-  var upFunds = [], dnFunds = [];
+  if(!loaded){
+    await loadAMFIFunds();
+  }
 
-  // Fetch in batches of 5
-  for(var i=0;i<names.length;i+=5){
-    var batch = names.slice(i,i+5);
-    var results = await Promise.all(batch.map(function(name){
-      var code = funds[name].code;
-      var cat  = funds[name].cat;
-      // Use cache if available
-      if(allNavData[name]){
-        return Promise.resolve({name:name, cat:cat, data:allNavData[name]});
-      }
-      return fetchNAV(code).then(function(data){
-        if(data) allNavData[name] = data;
-        return {name:name, cat:cat, data:data};
-      });
+  var funds=getCurrentFunds();
+  if(!funds.length){
+    document.getElementById('up-body').innerHTML='<tr class="empty-row"><td colspan="5">No funds found for this selection</td></tr>';
+    document.getElementById('dn-body').innerHTML='<tr class="empty-row"><td colspan="5">No funds found for this selection</td></tr>';
+    document.getElementById('up-count').textContent='0';
+    document.getElementById('dn-count').textContent='0';
+    return;
+  }
+
+  var upFunds=[],dnFunds=[];
+  // Batch fetch NAVs
+  var BATCH=8;
+  for(var i=0;i<funds.length;i+=BATCH){
+    var batch=funds.slice(i,i+BATCH);
+    var results=await Promise.all(batch.map(function(f){
+      return fetchNAV(f.code).then(function(data){return{f:f,data:data};});
     }));
     results.forEach(function(r){
-      if(!r.data) return;
-      if(r.data.chg >= 0) upFunds.push(r);
+      if(!r.data)return;
+      if(r.data.chg>=0)upFunds.push(r);
       else dnFunds.push(r);
     });
   }
 
-  upFunds.sort(function(a,b){return b.data.pct - a.data.pct;});
-  dnFunds.sort(function(a,b){return a.data.pct - b.data.pct;});
+  upFunds.sort(function(a,b){return b.data.pct-a.data.pct;});
+  dnFunds.sort(function(a,b){return a.data.pct-b.data.pct;});
 
-  var upBody = document.getElementById("up-body");
+  var upBody=document.getElementById('up-body');
   if(upFunds.length>0){
-    upBody.innerHTML = upFunds.map(function(f){return fundRow(f.name,f.cat,f.data);}).join("");
-    document.getElementById("up-count").textContent = upFunds.length+" funds rising";
-  } else {
-    upBody.innerHTML = '<tr class="empty-row"><td colspan="5">No rising funds in this selection</td></tr>';
-    document.getElementById("up-count").textContent = "0";
+    upBody.innerHTML=upFunds.map(function(r){return fundRow(r.f,r.data);}).join('');
+    document.getElementById('up-count').textContent=upFunds.length+' funds rising';
+  }else{
+    upBody.innerHTML='<tr class="empty-row"><td colspan="5">No rising funds in this selection today</td></tr>';
+    document.getElementById('up-count').textContent='0';
   }
 
-  var dnBody = document.getElementById("dn-body");
+  var dnBody=document.getElementById('dn-body');
   if(dnFunds.length>0){
-    dnBody.innerHTML = dnFunds.map(function(f){return fundRow(f.name,f.cat,f.data);}).join("");
-    document.getElementById("dn-count").textContent = dnFunds.length+" funds declining";
-  } else {
-    dnBody.innerHTML = '<tr class="empty-row"><td colspan="5">No declining funds in this selection</td></tr>';
-    document.getElementById("dn-count").textContent = "0";
+    dnBody.innerHTML=dnFunds.map(function(r){return fundRow(r.f,r.data);}).join('');
+    document.getElementById('dn-count').textContent=dnFunds.length+' funds declining';
+  }else{
+    dnBody.innerHTML='<tr class="empty-row"><td colspan="5">No declining funds in this selection today</td></tr>';
+    document.getElementById('dn-count').textContent='0';
   }
 
-  buildInsight(upFunds, dnFunds);
+  buildInsight(upFunds,dnFunds);
+}
+
+// ── INSIGHT ───────────────────────────────────────────────────
+function buildInsight(upFunds,dnFunds){
+  var box=document.getElementById('insight-box');
+  var content=document.getElementById('insight-content');
+  var lines=[];
+  var mktUp=niftyPct>=0;
+  var mktDir=mktUp?'up '+niftyPct.toFixed(2)+'%':'down '+Math.abs(niftyPct).toFixed(2)+'%';
+  lines.push({icon:'📊',text:'Nifty 50 is <strong>'+mktDir+'</strong> today.'});
+  if(!mktUp&&upFunds.length>0){
+    var names=upFunds.slice(0,2).map(function(r){return'<strong>'+shortName(r.f.name)+'</strong> (+'+r.data.pct.toFixed(2)+'%)';}).join(', ');
+    lines.push({icon:'🛡️',text:'Market fell but these funds stayed resilient: '+names});
+  }
+  if(mktUp&&dnFunds.length>0){
+    lines.push({icon:'⚠️',text:dnFunds.length+' fund(s) fell even on a positive market day — worth monitoring.'});
+  }
+  if(upFunds.length>0){
+    var top=upFunds[0];
+    lines.push({icon:'🏆',text:'Best performer: <strong>'+shortName(top.f.name)+'</strong> +'+top.data.pct.toFixed(2)+'% (NAV ₹'+top.data.nav.toFixed(2)+')'});
+  }
+  if(dnFunds.length>0){
+    var bot=dnFunds[0];
+    lines.push({icon:'📉',text:'Most impacted: <strong>'+shortName(bot.f.name)+'</strong> '+bot.data.pct.toFixed(2)+'% (NAV ₹'+bot.data.nav.toFixed(2)+')'});
+  }
+  content.innerHTML=lines.map(function(l){
+    return'<div class="insight-row"><span class="insight-icon">'+l.icon+'</span><span>'+l.text+'</span></div>';
+  }).join('');
+  box.style.display='block';
 }
 
 // ── FILTER CONTROLS ───────────────────────────────────────────
-function setPlan(plan, el){
-  STATE.plan = plan;
-  allNavData = {}; // clear cache — plan changed
+function setPlan(plan,el){
+  STATE.plan=plan;
   document.querySelectorAll('.nbtn').forEach(function(b){b.classList.remove('on');});
   el.classList.add('on');
   updateSubTitle();
   renderFunds();
 }
 
-function setCat(cat, el){
-  STATE.cat = cat;
+function setCat(cat,el){
+  STATE.cat=cat;
   document.querySelectorAll('.sbtn').forEach(function(b){b.classList.remove('on');});
   document.getElementById('btn-all').classList.remove('on');
   el.classList.add('on');
-  var titleEl = document.getElementById('right-title');
-  titleEl.textContent = '📊 '+(cat==='All'?'All Categories':cat);
+  document.getElementById('right-title').textContent='📊 '+(cat==='All'?'All Equity Categories':cat);
   updateSubTitle();
   renderFunds();
 }
 
 function updateSubTitle(){
-  var sub = document.getElementById('right-sub');
-  var planLabel = STATE.plan==='direct' ? 'Direct Plans' : 'Regular Plans';
-  var catLabel  = STATE.cat==='All' ? 'All Categories' : STATE.cat;
-  sub.textContent = 'Showing '+catLabel+' · '+planLabel+' · NAV movement today';
+  var planLabel=STATE.plan==='direct'?'Direct Plans':'Regular Plans';
+  var catLabel=STATE.cat==='All'?'All Equity Categories':STATE.cat;
+  document.getElementById('right-sub').textContent='Showing '+catLabel+' · '+planLabel+' · NAV movement today';
 }
 
 // ── INIT ──────────────────────────────────────────────────────
 async function init(){
-  try {
-    await loadIndices();
-    await renderFunds();
-  } catch(e){
-    console.error("Market Pulse error:", e);
-  }
+  try{await loadIndices();}catch(e){}
+  try{await renderFunds();}catch(e){console.error(e);}
 }
 
-// ── MOBILE HAMBURGER ─────────────────────────────────────────
+init();
+
+// ── MOBILE HAMBURGER ──────────────────────────────────────────
 (function(){
-  var nav = document.querySelector('.topnav');
-  if(!nav) return;
-  var overlay = document.createElement('div');
-  overlay.className = 'mob-nav-overlay';
-  document.body.appendChild(overlay);
-  var drawer = document.createElement('div');
-  drawer.className = 'mob-nav-drawer';
-  var brand = document.createElement('div');
-  brand.className = 'mnd-brand';
-  brand.innerHTML = '<div style="font-family:serif;font-size:15px;font-weight:900;color:#3c3197;">Ace Financial <span style="color:#5a8a10;">Services</span></div><div style="font-size:10px;color:#9ca3af;margin-top:2px;">SEBI ARN · AMFI Registered MFD</div>';
+  var nav=document.querySelector('.topnav');if(!nav)return;
+  var overlay=document.createElement('div');overlay.className='mob-nav-overlay';document.body.appendChild(overlay);
+  var drawer=document.createElement('div');drawer.className='mob-nav-drawer';
+  var brand=document.createElement('div');brand.className='mnd-brand';
+  brand.innerHTML='<div style="font-family:serif;font-size:15px;font-weight:900;color:#3c3197;">Ace Financial <span style="color:#5a8a10;">Services</span></div><div style="font-size:10px;color:#9ca3af;margin-top:2px;">SEBI ARN · AMFI Registered MFD</div>';
   drawer.appendChild(brand);
-  var navLinks = document.getElementById('mp-nav-links');
-  if(navLinks){
-    navLinks.querySelectorAll('a').forEach(function(link){
-      var a = document.createElement('a');
-      a.href = link.href;
-      a.innerHTML = link.innerHTML;
-      if(link.classList.contains('on')) a.classList.add('on');
-      drawer.appendChild(a);
-    });
-  }
+  var navLinks=document.getElementById('mp-nav-links');
+  if(navLinks){navLinks.querySelectorAll('a').forEach(function(link){var a=document.createElement('a');a.href=link.href;a.innerHTML=link.innerHTML;if(link.classList.contains('on'))a.classList.add('on');drawer.appendChild(a);});}
   document.body.appendChild(drawer);
-  var btn = document.createElement('button');
-  btn.className = 'mob-menu-btn';
-  btn.innerHTML = '☰';
-  nav.appendChild(btn);
-  function open(){ drawer.classList.add('open'); overlay.classList.add('open'); btn.innerHTML='✕'; }
-  function close(){ drawer.classList.remove('open'); overlay.classList.remove('open'); btn.innerHTML='☰'; }
-  btn.addEventListener('click', function(){ drawer.classList.contains('open') ? close() : open(); });
-  overlay.addEventListener('click', close);
-  document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
+  var btn=document.createElement('button');btn.className='mob-menu-btn';btn.innerHTML='☰';nav.appendChild(btn);
+  function open(){drawer.classList.add('open');overlay.classList.add('open');btn.innerHTML='✕';}
+  function close(){drawer.classList.remove('open');overlay.classList.remove('open');btn.innerHTML='☰';}
+  btn.addEventListener('click',function(){drawer.classList.contains('open')?close():open();});
+  overlay.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
 })();
 </script>
 </body>
