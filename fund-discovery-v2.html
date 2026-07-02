@@ -878,9 +878,9 @@ function setPb(pct,show){const w=document.getElementById('pb-wrap');w.style.disp
 
 // ── LOAD DATA ─────────────────────────────────────────────
 async function fetchMFAPI() {
-  // Level 1: Direct
+  // Level 1: Direct — plain fetch, no options object (this is the pattern proven working in Investment Engine)
   try {
-    var r = await fetch('https://api.mfapi.in/mf', {mode:'cors',headers:{'Accept':'application/json'}});
+    var r = await fetch('https://api.mfapi.in/mf');
     if(r.ok) { var d = await r.json(); if(Array.isArray(d) && d.length>100) return d; }
   } catch(e) {}
   // Level 2: allorigins

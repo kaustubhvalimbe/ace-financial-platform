@@ -605,7 +605,25 @@ async function loadMFList(){
 }
 
 async function fetchMFAPI(){
-  try{var r=await fetch('https://api.mfapi.in/mf',{mode:'cors',headers:{'Accept':'application/json'}});if(r.ok){var d=await r.json();if(Array.isArray(d)&&d.length>100)return d;}}catch(e){}
+  // Primary: plain direct fetch — this is the exact pattern proven working in Investment Engine (slLoadFunds).
+  // Deliberately no {mode:'cors', headers:...} options object — that variant is what was failing here and in Fund Discovery.
+  try{
+    var r = await fetch('https://api.mfapi.in/mf');
+    if(r.ok){
+      var d = await r.json();
+      if(Array.isArray(d) && d.length>100){
+        var seen = {};
+        return d.filter(function(f){
+          var n = (f.schemeName||'').toUpperCase();
+          if(n.includes('IDCW')||n.includes('DIVIDEND')) return false; // match Investment Engine's cleaner result set
+          var key = f.schemeName+'|'+f.schemeCode;
+          if(seen[key]) return false;
+          seen[key] = true; return true;
+        });
+      }
+    }
+  }catch(e){}
+  // Backups only, in case the direct call is ever blocked from a specific network
   try{var r2=await fetch('https://api.allorigins.win/raw?url=https%3A%2F%2Fapi.mfapi.in%2Fmf');if(r2.ok){var d2=await r2.json();if(Array.isArray(d2)&&d2.length>100)return d2;}}catch(e){}
   try{var r3=await fetch('https://corsproxy.io/?url=https%3A%2F%2Fapi.mfapi.in%2Fmf');if(r3.ok){var d3=await r3.json();if(Array.isArray(d3)&&d3.length>100)return d3;}}catch(e){}
   return [];
