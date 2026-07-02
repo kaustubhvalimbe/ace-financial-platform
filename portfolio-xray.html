@@ -388,13 +388,14 @@ async function anlAssess(){
     // Extract text from all pages
     anlSetStatus('info', 'Extracting text from ' + ANL.pdfDoc.numPages + ' pages...');
     var fullText = '';
+    ANL.rawText = ''; // reset so a failed run doesn't carry over stale text from a prior file
     for(var p = 1; p <= ANL.pdfDoc.numPages; p++){
       var page    = await ANL.pdfDoc.getPage(p);
       var content = await page.getTextContent();
       var pageText = content.items.map(function(i){ return i.str; }).join(' ');
       fullText += pageText + '\n';
+      ANL.rawText = fullText; // save progress after every page so a mid-extraction failure still has partial text for the report
     }
-    ANL.rawText = fullText;
 
     // Detect CAS type
     ANL.casType = anlDetectType(fullText);
@@ -441,6 +442,12 @@ async function anlAssess(){
     btn.disabled = false;
     anlSetStatus('err', 'Could not read this PDF: ' + (err.message||'Unknown error') +
       '. If password protected, please enter password and try again.');
+    // Prepend a diagnostic header so "Report This Issue" has something useful
+    // to send even when text extraction failed partway through (or before it started).
+    var diag = '[EXTRACTION FAILED]\nError: ' + (err && err.message ? err.message : String(err)) +
+      '\nPages extracted before failure: ' + ((ANL.rawText||'').length ? 'partial text below' : 'none (failed before any page extracted)') +
+      '\n\n----- RAW TEXT (if any) BELOW -----\n\n';
+    ANL.rawText = diag + (ANL.rawText || '');
     console.error(err);
   }
 }
