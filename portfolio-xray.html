@@ -1541,6 +1541,43 @@ function xrayGenerate(){
   }
   html += '</div>';
 
+  // Stock Concentration Alert — stocks held across 3+ funds with meaningful effective exposure
+  var stockAlerts = stocks.filter(function(s){ return s.funds.length>=3 && s.totalEffPct>3; })
+    .sort(function(a,b){return b.totalEffPct-a.totalEffPct;});
+  if(stockAlerts.length>0){
+    html += '<div class="card"><div class="report-hdr">&#128681; Stock Concentration Alert</div>'
+      + '<div style="font-size:12px;color:var(--t4);margin-bottom:14px;">Stocks you\'re exposed to through 3 or more funds, with meaningful combined weight. Owning several funds doesn\'t always mean real diversification.</div>';
+    stockAlerts.forEach(function(s){
+      html += '<div class="alert-box alert-warn">&#9888;&#65039; <div><strong>'+s.name+'</strong> — '+fmtP(s.totalEffPct)+' effective exposure across '+s.funds.length+' funds ('
+        + s.funds.slice(0,4).map(function(f){return f.fname.substring(0,26);}).join(', ')+(s.funds.length>4?' &amp; '+(s.funds.length-4)+' more':'')+').</div></div>';
+    });
+    html += '</div>';
+  }
+
+  // AMC Concentration Risk — % of portfolio value with each AMC
+  var amcMap = {};
+  funds.forEach(function(f){
+    var amc = anlExtractAMC(f.name);
+    amcMap[amc] = (amcMap[amc]||0) + (f.value||0);
+  });
+  var amcList = Object.keys(amcMap).map(function(k){
+    return {name:k, value:amcMap[k], pct: totalValue>0 ? (amcMap[k]/totalValue*100) : 0};
+  }).sort(function(a,b){return b.pct-a.pct;});
+  html += '<div class="card"><div class="report-hdr">&#127974; AMC Concentration Risk</div>'
+    + '<div style="font-size:12px;color:var(--t4);margin-bottom:14px;">How much of your portfolio sits with each fund house. Diversification isn\'t just about stocks — it\'s about AMC risk too.</div>';
+  amcList.forEach(function(a){
+    var barColor = a.pct>40 ? '#dc2626' : (a.pct>25 ? '#e65c00' : 'var(--p1)');
+    html += '<div class="sector-bar-row">'
+      + '<div class="sector-bar-lbl">'+a.name+'</div>'
+      + '<div class="sector-bar-track"><div class="sector-bar-fill" style="width:'+Math.min(100,a.pct).toFixed(1)+'%;background:'+barColor+'"></div></div>'
+      + '<div class="sector-bar-val">'+fmtP(a.pct)+'</div>'
+      + '</div>';
+  });
+  if(amcList.length>0 && amcList[0].pct>40){
+    html += '<div class="alert-box alert-warn" style="margin-top:10px;">&#9888;&#65039; <div><strong>High AMC Concentration:</strong> '+fmtP(amcList[0].pct)+' of your portfolio is with '+amcList[0].name+' MF. Post-Franklin Templeton, spreading across AMCs is worth considering.</div></div>';
+  }
+  html += '</div>';
+
   // Sector exposure
   html += '<div class="card"><div class="report-hdr">Sector Exposure</div>';
   sectors.forEach(function(s){
