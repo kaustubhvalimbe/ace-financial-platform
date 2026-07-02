@@ -211,6 +211,7 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);min-height:100vh
   <div class="card">
     <div class="card-title">Select 2–4 Funds to Compare</div>
     <div class="card-sub">Search by fund name — pulled live from the AMFI scheme list</div>
+    <div id="mf-status" style="font-size:12px;font-weight:700;margin-bottom:12px;"></div>
     <div class="cmp-slot-grid" id="cmp-slots"></div>
     <div style="margin-top:18px;">
       <button class="btn-g" id="cmp-btn" onclick="compareNow()" disabled>📊 Compare Now</button>
@@ -549,6 +550,7 @@ function switchTab(name){
 // ═══════════════════════════════════════════════════════════════
 var MF_LIST = [];
 var MF_LOADING = false;
+var MF_LOAD_FAILED = false;
 var CMP_SLOTS = [null, null, null, null];
 var navCache = {};
 
@@ -570,26 +572,42 @@ function initCmpSlots(){
   }
 }
 initCmpSlots();
+loadMFList(); // start loading immediately on page load, don't wait for tab switch
+
+function setMfStatus(text, color){
+  var el = document.getElementById('mf-status');
+  if(el){ el.textContent = text; el.style.color = color; }
+}
 
 async function loadMFList(){
   if(MF_LOADING || MF_LIST.length) return;
   MF_LOADING = true;
-  for(var i=0;i<4;i++){
-    var inp = document.getElementById('cmp-inp-'+i);
-    if(inp && !CMP_SLOTS[i]) inp.placeholder = 'Loading fund list...';
-  }
+  MF_LOAD_FAILED = false;
+  setMfStatus('⏳ Loading AMFI fund list...', 'var(--t4)');
   MF_LIST = await fetchMFAPI();
   MF_LOADING = false;
-  for(var j=0;j<4;j++){
-    var inp2 = document.getElementById('cmp-inp-'+j);
-    if(inp2 && !CMP_SLOTS[j]) inp2.placeholder = '🔍 Search fund name...';
+  if(MF_LIST.length){
+    setMfStatus('✅ Fund list loaded (' + MF_LIST.length + ' schemes)', 'var(--g2)');
+  } else {
+    MF_LOAD_FAILED = true;
+    setMfStatus('⚠️ Could not load the fund list — check your internet connection, then ', '#991b1b');
+    var el = document.getElementById('mf-status');
+    if(el){
+      var retryBtn = document.createElement('a');
+      retryBtn.href = 'javascript:void(0)';
+      retryBtn.textContent = 'tap here to retry';
+      retryBtn.style.cssText = 'color:#3c3197;text-decoration:underline;font-weight:800;';
+      retryBtn.onclick = function(){ loadMFList(); };
+      el.appendChild(retryBtn);
+      el.appendChild(document.createTextNode('.'));
+    }
   }
 }
 
 async function fetchMFAPI(){
   try{var r=await fetch('https://api.mfapi.in/mf',{mode:'cors',headers:{'Accept':'application/json'}});if(r.ok){var d=await r.json();if(Array.isArray(d)&&d.length>100)return d;}}catch(e){}
   try{var r2=await fetch('https://api.allorigins.win/raw?url=https%3A%2F%2Fapi.mfapi.in%2Fmf');if(r2.ok){var d2=await r2.json();if(Array.isArray(d2)&&d2.length>100)return d2;}}catch(e){}
-  try{var r3=await fetch('https://corsproxy.io/?https://api.mfapi.in/mf');if(r3.ok){var d3=await r3.json();if(Array.isArray(d3)&&d3.length>100)return d3;}}catch(e){}
+  try{var r3=await fetch('https://corsproxy.io/?url=https%3A%2F%2Fapi.mfapi.in%2Fmf');if(r3.ok){var d3=await r3.json();if(Array.isArray(d3)&&d3.length>100)return d3;}}catch(e){}
   return [];
 }
 
@@ -597,7 +615,15 @@ function jsEsc(s){ return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 
 function searchCmp(idx, query){
   var dd = document.getElementById('cmp-dd-'+idx);
-  if(!query || query.length<3 || !MF_LIST.length){ dd.style.display='none'; return; }
+  if(!query || query.length<3){ dd.style.display='none'; return; }
+  if(MF_LOADING){
+    dd.innerHTML='<div class="cmp-dd-item" style="color:var(--t4);">⏳ Still loading fund list, try again in a moment...</div>';
+    dd.style.display='block'; return;
+  }
+  if(MF_LOAD_FAILED || !MF_LIST.length){
+    dd.innerHTML='<div class="cmp-dd-item" style="color:#991b1b;">⚠️ Fund list failed to load — see retry link above</div>';
+    dd.style.display='block'; return;
+  }
   var q = query.toUpperCase();
   var matches = MF_LIST.filter(function(f){ return f.schemeName && f.schemeName.toUpperCase().includes(q); }).slice(0,8);
   if(!matches.length){ dd.innerHTML='<div class="cmp-dd-item" style="color:var(--t4);">No matches</div>'; dd.style.display='block'; return; }
