@@ -119,9 +119,10 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);min-height:100vh
   <!-- STEP 1: CURRENT PORTFOLIO -->
   <div class="card">
     <div class="card-title">Step 1 — Current Portfolio Snapshot</div>
-    <div class="card-sub">Enter the client's existing holdings by category and AMC (approximate allocation % is fine — this doesn't need to be exact)</div>
+    <div class="card-sub">Summarize the client's <em>existing</em> portfolio by category — not fund by fund. "% of Portfolio" means what share of their total invested money sits in that category + AMC combination.<br><br>
+    <strong>Example:</strong> Client has ₹10,00,000 invested. ₹3,00,000 is in an HDFC Large Cap fund → one row: <em>Large Cap · HDFC Mutual Fund · 30%</em>. Rows should roughly add up to 100% (see running total below).</div>
     <div class="hold-row-hdr">
-      <div>Category</div><div>AMC</div><div>Alloc %</div><div></div>
+      <div>Category</div><div>AMC</div><div>% of Portfolio</div><div></div>
     </div>
     <div id="hold-rows"></div>
     <div class="hold-total-row">
@@ -135,19 +136,22 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);min-height:100vh
   <!-- STEP 2: NEW FUND -->
   <div class="card">
     <div class="card-title">Step 2 — New Fund / NFO Being Considered</div>
-    <div class="card-sub">Enter the details of the fund you're evaluating</div>
+    <div class="card-sub">Search the scheme name — AMC and Category will auto-fill from the AMFI fund list. Both stay editable in case the auto-detection guesses wrong.</div>
     <div class="form-grid">
-      <div class="full">
+      <div class="full" style="position:relative;">
         <label>Scheme Name</label>
-        <input type="text" id="nf-name" placeholder="e.g. XYZ Mutual Fund — Business Cycle Fund">
+        <input type="text" id="nf-name" placeholder="🔍 Search fund name..." autocomplete="off"
+          oninput="searchFit(this.value)" onfocus="searchFit(this.value)"
+          onblur="setTimeout(function(){hideFitDd();},200)">
+        <div class="cmp-dd" id="fit-dd"></div>
       </div>
       <div>
-        <label>AMC</label>
+        <label>AMC <span id="nf-amc-auto" style="display:none;color:var(--g2);font-weight:700;">(auto-filled)</span></label>
         <input type="text" id="nf-amc" list="amc-list" placeholder="e.g. HDFC Mutual Fund">
         <datalist id="amc-list"></datalist>
       </div>
       <div>
-        <label>Category</label>
+        <label>Category <span id="nf-cat-auto" style="display:none;color:var(--g2);font-weight:700;">(auto-filled)</span></label>
         <select id="nf-cat"></select>
       </div>
     </div>
@@ -336,6 +340,67 @@ initPage();
 
 // ── FIT CALCULATION ───────────────────────────────────────────
 function esc(s){ return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+// ── STEP 2 SCHEME SEARCH (New Fund Fit only — separate from Compare Funds' cmp* code) ──
+function searchFit(query){
+  var dd = document.getElementById('fit-dd');
+  if(!MF_LIST.length && !MF_LOADING) loadMFList();
+  if(!query || query.length<3 || !MF_LIST.length){ dd.style.display='none'; return; }
+  var q = query.toUpperCase();
+  var matches = MF_LIST.filter(function(f){ return f.schemeName && f.schemeName.toUpperCase().includes(q); }).slice(0,8);
+  if(!matches.length){ dd.innerHTML='<div class="cmp-dd-item" style="color:var(--t4);">No matches</div>'; dd.style.display='block'; return; }
+  dd.innerHTML = matches.map(function(m){
+    return '<div class="cmp-dd-item" onmousedown="selectFitFund(\''+jsEsc(m.schemeName)+'\')">'+esc(m.schemeName)+'</div>';
+  }).join('');
+  dd.style.display = 'block';
+}
+function hideFitDd(){ var dd=document.getElementById('fit-dd'); if(dd) dd.style.display='none'; }
+
+function selectFitFund(name){
+  document.getElementById('nf-name').value = name;
+  hideFitDd();
+
+  var amc = fitGetAMC(name);
+  var amcInp = document.getElementById('nf-amc');
+  amcInp.value = amc;
+  document.getElementById('nf-amc-auto').style.display = 'inline';
+
+  var cat = fitGetCategory(name);
+  var catSel = document.getElementById('nf-cat');
+  var found = false;
+  for(var i=0;i<catSel.options.length;i++){ if(catSel.options[i].value===cat){ catSel.selectedIndex=i; found=true; break; } }
+  document.getElementById('nf-cat-auto').style.display = found ? 'inline' : 'none';
+}
+
+// Independent classification for New Fund Fit — deliberately NOT shared with Compare Funds' cmpGetCategory/cmpGetAMC
+function fitGetCategory(name){
+  var u = name.toUpperCase();
+  if(u.includes('ELSS')||u.includes('TAX SAVER')) return 'ELSS (Tax Saver)';
+  if(u.includes('LARGE AND MID')||u.includes('LARGE & MID')) return 'Large & MidCap';
+  if(u.includes('LARGE CAP')||u.includes('LARGECAP')) return 'Large Cap';
+  if(u.includes('MULTI CAP')||u.includes('MULTICAP')) return 'Multi Cap';
+  if(u.includes('FLEXI CAP')||u.includes('FLEXICAP')) return 'Flexi Cap';
+  if(u.includes('SMALL CAP')||u.includes('SMALLCAP')) return 'Small Cap';
+  if(u.includes('MID CAP')||u.includes('MIDCAP')) return 'Mid Cap';
+  if(u.includes('FOCUSED')||u.includes('FOCUS')) return 'Focused';
+  if(u.includes('DIVIDEND YIELD')) return 'Dividend Yield';
+  if(u.includes('VALUE')||u.includes('CONTRA')) return 'Value / Contra';
+  if(u.includes('BALANCED ADVANTAGE')||u.includes('DYNAMIC ASSET')) return 'Balanced Advantage';
+  if(u.includes('MULTI ASSET')) return 'Multi Asset Allocation';
+  if(u.includes('HYBRID')||u.includes('BALANCED')) return 'Aggressive Hybrid';
+  if(u.includes('ARBITRAGE')) return 'Arbitrage';
+  if(u.includes('GOLD')||u.includes('SILVER')) return 'Gold / Silver ETF-FoF';
+  if(u.includes('INTERNATIONAL')||u.includes('OVERSEAS')||u.includes('GLOBAL')||u.includes('NASDAQ')||u.includes('US ')||u.includes('JAPAN')) return 'International / Global FoF';
+  if(u.includes('INDEX')||u.includes('ETF')) return 'Index Fund / ETF';
+  if(u.includes('DEBT')||u.includes('GILT')||u.includes('BOND')||u.includes('LIQUID')||u.includes('DURATION')||u.includes('INCOME')) return 'Debt (Any Duration)';
+  if(u.includes('THEMATIC')||u.includes('SECTOR')||u.includes('PHARMA')||u.includes('BANKING')||u.includes('TECH')||u.includes('INFRA')||u.includes('AUTO')||u.includes('FMCG')||u.includes('ENERGY')||u.includes('METAL')||u.includes('REALTY')||u.includes('PSU')||u.includes('MNC')||u.includes('CONSUMPTION')) return 'Thematic / Sectoral';
+  return 'Flexi Cap';
+}
+function fitGetAMC(name){
+  var known = ['HDFC','SBI','Nippon India','ICICI Prudential','Kotak','Axis','Motilal Oswal','Edelweiss','Sundaram','UTI','Aditya Birla Sun Life','DSP','Bajaj Finserv','Canara Robeco','HSBC','Bandhan','Tata','Mirae Asset','Franklin Templeton','PPFAS','Quant','WhiteOak Capital'];
+  for(var i=0;i<known.length;i++){ if(name.toUpperCase().includes(known[i].toUpperCase())) return known[i]+' Mutual Fund'; }
+  return name.split(' ').slice(0,2).join(' ');
+}
 
 function computeFit(){
   var holdings = getHoldings();
