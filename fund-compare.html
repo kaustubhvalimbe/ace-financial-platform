@@ -62,28 +62,44 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);min-height:100vh
 .tab-btn{flex:1;background:#fff;border:1.5px solid var(--bd);border-bottom:none;border-radius:12px 12px 0 0;padding:14px 10px;font-size:13px;font-weight:800;color:var(--t4);cursor:pointer;text-align:center;transition:.15s;}
 .tab-btn.active{color:var(--p1);background:#fff;box-shadow:0 -2px 10px rgba(60,49,151,.08);}
 .tab-btn:not(.active){background:var(--g4);color:var(--t4);}
-.cmp-slot-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.cmp-slot{position:relative;}
-.cmp-slot label{font-size:11px;font-weight:800;color:var(--t4);text-transform:uppercase;display:block;margin-bottom:5px;}
-.cmp-slot input{padding:11px 14px;border:1.5px solid var(--bd);border-radius:9px;font-size:13px;width:100%;outline:none;font-family:var(--fh);}
-.cmp-slot input.filled{border-color:var(--g1);background:var(--g3);}
-.cmp-dd{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--bd);border-radius:9px;margin-top:4px;max-height:240px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:50;display:none;}
-.cmp-dd-item{padding:9px 14px;font-size:12px;cursor:pointer;border-bottom:1px solid var(--bd);}
-.cmp-dd-item:last-child{border-bottom:none;}
-.cmp-dd-item:hover{background:var(--p4);}
-.cmp-clear{position:absolute;right:10px;top:32px;background:none;border:none;color:#dc2626;font-weight:900;cursor:pointer;font-size:14px;display:none;}
-.cmp-slot.has-fund .cmp-clear{display:block;}
-.cmp-table{width:100%;border-collapse:collapse;font-size:12px;}
-.cmp-table th{background:var(--p1);color:#fff;padding:10px 12px;text-align:left;font-size:11px;font-weight:800;text-transform:uppercase;white-space:nowrap;}
-.cmp-table td{padding:10px 12px;border-bottom:1px solid var(--bd);vertical-align:middle;}
-.cmp-table tr:nth-child(even){background:#fafaff;}
-.cmp-table td.best{background:var(--g3);color:var(--g2);font-weight:900;}
-.cmp-note{font-size:11px;color:var(--t4);margin-top:10px;}
-.print-logo-cmp{display:flex;align-items:center;gap:10px;background:var(--p1);padding:12px 18px;border-radius:10px;margin-bottom:16px;}
+/* ═══ COMPARE FUNDS — scoped port of the proven original engine ═══ */
+#tab-compare{--cp1:#2d2478;--cp2:#3c3197;--cp3:#6b63c9;--cp4:#f0effe;--cg1:#5a8a10;--cg2:#8bc32a;--cg4:#d4eda0;--cg5:#f5fce8;--cbg:#f7faf0;--ct1:#1a1240;--ct4:#6b7280;--ct5:#9ca3af;--cred:#dc2626;--cfh:"Georgia",serif;--cfm:"Courier New",monospace;}
+#tab-compare .search-section{background:#fff;border:2px solid var(--cg4);border-radius:14px;padding:20px;margin-bottom:20px;}
+#tab-compare .search-title{font-family:var(--cfh);font-size:16px;font-weight:900;color:var(--cp2);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+#tab-compare .search-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+#tab-compare .search-box{position:relative;}
+#tab-compare .slot-label{font-size:10px;font-weight:800;color:var(--cp3);margin-bottom:3px;font-family:var(--cfm);text-transform:uppercase;}
+#tab-compare .search-inp{width:100%;background:var(--cg5);border:2px solid var(--cg4);color:var(--ct1);font-size:12px;padding:9px 12px;border-radius:9px;}
+#tab-compare .search-inp:focus{outline:none;border-color:var(--cp2);}
+#tab-compare .dropdown{position:absolute;top:100%;left:0;right:0;background:#fff;border:2px solid var(--cp3);border-radius:9px;max-height:220px;overflow-y:auto;z-index:500;display:none;box-shadow:0 8px 24px rgba(60,49,151,.15);}
+#tab-compare .dropdown.show{display:block;}
+#tab-compare .dd-item{padding:9px 12px;cursor:pointer;font-size:12px;font-weight:600;border-bottom:1px solid var(--cg5);}
+#tab-compare .dd-item:hover{background:var(--cg5);color:var(--cg1);}
+#tab-compare .dd-item:last-child{border-bottom:none;}
+#tab-compare .selected-fund{background:var(--cp4);border:1.5px solid var(--cp3);border-radius:8px;padding:8px 12px;margin-top:6px;display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:700;color:var(--cp2);}
+#tab-compare .selected-fund span{cursor:pointer;color:var(--cred);font-weight:900;font-size:14px;}
+#tab-compare .compare-btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--cg1),var(--cg2));border:none;color:#fff;font-family:var(--cfh);font-size:15px;font-weight:900;border-radius:11px;cursor:pointer;box-shadow:0 4px 14px rgba(139,195,42,.35);margin-top:14px;}
+#tab-compare .compare-btn:disabled{opacity:.5;cursor:not-allowed;}
+#tab-compare .result-wrap{background:#fff;border:2px solid var(--cg4);border-radius:14px;overflow:visible;display:none;padding:16px;}
+#tab-compare .result-wrap.show{display:block;}
+#tab-compare .cmp-scroll-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;}
+#tab-compare .cmp-tbl{min-width:100%;border-collapse:collapse;font-size:12px;}
+#tab-compare .cmp-tbl thead th{background:linear-gradient(135deg,var(--cp4),var(--cg5));padding:12px 14px;font-weight:800;font-size:11px;color:var(--cp2);text-align:center;border-bottom:2px solid var(--cg4);}
+#tab-compare .cmp-tbl thead th:first-child{text-align:left;color:var(--ct4);font-size:10px;min-width:140px;}
+#tab-compare .fth{font-size:11px;font-weight:800;color:var(--ct1);line-height:1.3;}
+#tab-compare .fam{font-size:9px;color:var(--ct4);margin-top:2px;}
+#tab-compare .cmp-tbl tbody tr:hover td{background:var(--cg5);}
+#tab-compare .cmp-tbl tbody tr:nth-child(even) td{background:var(--cbg);}
+#tab-compare .cmp-tbl td{padding:10px 14px;border-bottom:1px solid var(--cg4);}
+#tab-compare .cmp-tbl td.plbl{font-size:11px;font-weight:700;color:var(--ct4);white-space:nowrap;background:#fff!important;border-right:2px solid var(--cg4);position:sticky;left:0;}
+#tab-compare .cmp-tbl td.pval{text-align:center;font-family:var(--cfm);font-size:12px;font-weight:700;color:var(--ct1);}
+#tab-compare .cmp-tbl td.best{background:linear-gradient(135deg,#f0fff0,#e8fcd0)!important;color:var(--cg1)!important;font-weight:900!important;}
+#tab-compare .cmp-tbl td.best::after{content:" ✓";font-size:9px;}
+#tab-compare .cmp-tbl .srow td{background:linear-gradient(135deg,var(--cp4),var(--cg5))!important;font-size:12px;font-weight:800;color:var(--cp2);padding:8px 14px;}
+#tab-compare .note{background:var(--cg5);border:1.5px solid var(--cg4);border-radius:9px;padding:11px 14px;margin-top:12px;font-size:11px;color:var(--ct4);line-height:1.7;}
+#tab-compare .loading{padding:30px;text-align:center;color:var(--ct4);font-size:13px;}
 @media(max-width:640px){
-  .cmp-slot-grid{grid-template-columns:1fr;}
-}
-@media(max-width:640px){
+  #tab-compare .search-row{grid-template-columns:1fr 1fr;}
   .hold-row-hdr,.hold-row,.hold-total-row{grid-template-columns:1.4fr 1fr 70px 30px;}
   .form-grid{grid-template-columns:1fr;}
 }
@@ -142,7 +158,7 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);min-height:100vh
         <label>Scheme Name</label>
         <input type="text" id="nf-name" placeholder="🔍 Search fund name..." autocomplete="off"
           oninput="searchFit(this.value)" onfocus="searchFit(this.value)"
-          onblur="setTimeout(function(){hideFitDd();},200)">
+          onblur="setTimeout(function(){hideFitDd();},300)">
         <div class="cmp-dd" id="fit-dd"></div>
       </div>
       <div>
@@ -208,21 +224,19 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);min-height:100vh
 <!-- TAB 2: COMPARE FUNDS -->
 <div class="main" id="tab-compare" style="display:none;">
 
-  <div class="card">
-    <div class="card-title">Select 2–4 Funds to Compare</div>
-    <div class="card-sub">Search by fund name — pulled live from the AMFI scheme list</div>
-    <div id="mf-status" style="font-size:12px;font-weight:700;margin-bottom:12px;"></div>
-    <div class="cmp-slot-grid" id="cmp-slots"></div>
-    <div style="margin-top:18px;">
-      <button class="btn-g" id="cmp-btn" onclick="compareNow()" disabled>📊 Compare Now</button>
+  <div class="search-section">
+    <div class="search-title">Search &amp; Select Funds to Compare</div>
+    <div class="search-row" id="slots-row">
+      <!-- 4 slots built by JS -->
     </div>
+    <button class="compare-btn" id="cmp-btn" onclick="buildTable()" disabled>
+      ⚖️ Compare Now — Select at least 2 funds above
+    </button>
   </div>
-
-  <div class="card" id="cmp-result-card" style="display:none;">
-    <div class="card-title">Comparison</div>
-    <div id="cmp-result"></div>
-    <div class="cmp-note">✅ <strong style="color:var(--g1);">Best value</strong> in each return column highlighted green · Returns computed from AMFI daily NAV history, fetched live</div>
-    <div style="margin-top:16px;">
+  <div class="result-wrap" id="result-wrap">
+    <div class="cmp-scroll-wrap"><div id="cmp-result"><div class="loading">Loading comparison...</div></div></div>
+    <div class="note">✅ <strong style="color:var(--cg1);">Best value</strong> highlighted green · Returns loaded from AMFI NAV data on demand</div>
+    <div style="margin-top:14px;">
       <button class="btn-sec" onclick="printCompare()">🖨️ Print / Save as PDF</button>
     </div>
   </div>
@@ -338,6 +352,7 @@ function initPage(){
   addHoldingRow('Small Cap', '', '');
 }
 initPage();
+loadMFList(); // eager-load for New Fund Fit's Step 2 scheme search (Compare Funds tab uses its own separate loadFunds())
 
 // ── FIT CALCULATION ───────────────────────────────────────────
 function esc(s){ return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
@@ -373,7 +388,7 @@ function selectFitFund(name){
   document.getElementById('nf-cat-auto').style.display = found ? 'inline' : 'none';
 }
 
-// Independent classification for New Fund Fit — deliberately NOT shared with Compare Funds' cmpGetCategory/cmpGetAMC
+// Independent classification for New Fund Fit — deliberately NOT shared with Compare Funds' own AMC-extraction logic in loadFundData
 function fitGetCategory(name){
   var u = name.toUpperCase();
   if(u.includes('ELSS')||u.includes('TAX SAVER')) return 'ELSS (Tax Saver)';
@@ -541,37 +556,18 @@ function switchTab(name){
   } else {
     fitPanel.style.display='none'; cmpPanel.style.display='block';
     cmpBtn.classList.add('active'); fitBtn.classList.remove('active');
-    if(!MF_LIST.length) loadMFList();
+    if(!loaded){ loadFunds(); buildSlots(); updateBtn(); }
   }
 }
 
 // ═══════════════════════════════════════════════════════════════
-// COMPARE FUNDS (2–4 side by side, live AMFI NAV-based returns)
+// COMPARE FUNDS — faithful port of the proven original engine
+// (kept exactly as-is: same function/variable names, same thresholds,
+//  same "always-enabled button + alert" UX per Kaustubh's original spec)
 // ═══════════════════════════════════════════════════════════════
-var MF_LIST = [];
+var MF_LIST = []; // used only by New Fund Fit's Step 2 scheme search — Compare Funds below uses its own ALL_FUNDS
 var MF_LOADING = false;
 var MF_LOAD_FAILED = false;
-var CMP_SLOTS = [null, null, null, null];
-var navCache = {};
-
-function initCmpSlots(){
-  var wrap = document.getElementById('cmp-slots');
-  wrap.innerHTML = '';
-  for(var i=0;i<4;i++){
-    var slot = document.createElement('div');
-    slot.className = 'cmp-slot';
-    slot.id = 'cmp-slot-'+i;
-    slot.innerHTML =
-      '<label>Fund '+(i+1)+(i<2?' (required)':' (optional)')+'</label>'+
-      '<input type="text" id="cmp-inp-'+i+'" placeholder="🔍 Search fund name..." '+
-      'oninput="searchCmp('+i+',this.value)" onfocus="searchCmp('+i+',this.value)" '+
-      'onblur="setTimeout(function(){hideCmpDd('+i+');},200)">'+
-      '<button class="cmp-clear" onclick="clearCmpSlot('+i+')" title="Remove">✕</button>'+
-      '<div class="cmp-dd" id="cmp-dd-'+i+'"></div>';
-    wrap.appendChild(slot);
-  }
-}
-initCmpSlots();
 loadMFList(); // start loading immediately on page load, don't wait for tab switch
 
 function setMfStatus(text, color){
@@ -631,169 +627,208 @@ async function fetchMFAPI(){
 
 function jsEsc(s){ return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 
-function searchCmp(idx, query){
-  var dd = document.getElementById('cmp-dd-'+idx);
-  if(!query || query.length<3){ dd.style.display='none'; return; }
-  if(MF_LOADING){
-    dd.innerHTML='<div class="cmp-dd-item" style="color:var(--t4);">⏳ Still loading fund list, try again in a moment...</div>';
-    dd.style.display='block'; return;
+// ── COMPARE FUNDS ENGINE (ported verbatim from the proven original) ──
+var ALL_FUNDS = [];
+var SELECTED  = [null, null, null, null];
+var loaded    = false;
+
+async function loadFunds() {
+  if(loaded) return;
+  try {
+    var r = await fetch('https://api.mfapi.in/mf');
+    var data = await r.json();
+    ALL_FUNDS = data.map(function(f){
+      return {code: String(f.schemeCode), name: f.schemeName};
+    }).filter(function(f){ return f.name && f.name.length > 4; });
+    loaded = true;
+    console.log('Compare: '+ALL_FUNDS.length+' funds loaded');
+  } catch(e) {
+    console.log('Fund load failed:', e.message);
   }
-  if(MF_LOAD_FAILED || !MF_LIST.length){
-    dd.innerHTML='<div class="cmp-dd-item" style="color:#991b1b;">⚠️ Fund list failed to load — see retry link above</div>';
-    dd.style.display='block'; return;
+}
+
+function buildSlots() {
+  var row = document.getElementById('slots-row');
+  row.innerHTML = '';
+  for(var i = 0; i < 4; i++) {
+    var box = document.createElement('div');
+    box.className = 'search-box';
+    var lbl = document.createElement('div');
+    lbl.className = 'slot-label';
+    lbl.textContent = 'Fund ' + (i+1) + (i===0?' (Required)':i===1?' (Required)':' (Optional)');
+    var inp = document.createElement('input');
+    inp.className = 'search-inp';
+    inp.type = 'text';
+    inp.placeholder = 'Search fund name...';
+    inp.setAttribute('data-slot', i);
+    var dd = document.createElement('div');
+    dd.className = 'dropdown';
+    dd.id = 'dd-'+i;
+    var sel = document.createElement('div');
+    sel.id = 'sel-'+i;
+    (function(idx, input, dropdown) {
+      input.addEventListener('input', function(){
+        searchFund(idx, input.value, dropdown);
+      });
+      input.addEventListener('focus', function(){
+        if(input.value.length >= 2) dropdown.classList.add('show');
+      });
+      document.addEventListener('click', function(e){
+        if(!box.contains(e.target)) dropdown.classList.remove('show');
+      });
+    })(i, inp, dd);
+    box.appendChild(lbl);
+    box.appendChild(inp);
+    box.appendChild(dd);
+    box.appendChild(sel);
+    row.appendChild(box);
   }
-  var q = query.toUpperCase();
-  var matches = MF_LIST.filter(function(f){ return f.schemeName && f.schemeName.toUpperCase().includes(q); }).slice(0,8);
-  if(!matches.length){ dd.innerHTML='<div class="cmp-dd-item" style="color:var(--t4);">No matches</div>'; dd.style.display='block'; return; }
-  dd.innerHTML = matches.map(function(m){
-    return '<div class="cmp-dd-item" onmousedown="selectCmpFund('+idx+',\''+jsEsc(m.schemeCode)+'\',\''+jsEsc(m.schemeName)+'\')">'+esc(m.schemeName)+'</div>';
-  }).join('');
-  dd.style.display = 'block';
-}
-function hideCmpDd(idx){ var dd=document.getElementById('cmp-dd-'+idx); if(dd) dd.style.display='none'; }
-
-function selectCmpFund(idx, code, name){
-  CMP_SLOTS[idx] = {schemeCode:code, schemeName:name};
-  var inp = document.getElementById('cmp-inp-'+idx);
-  inp.value = name;
-  inp.classList.add('filled');
-  document.getElementById('cmp-slot-'+idx).classList.add('has-fund');
-  hideCmpDd(idx);
-  updateCmpBtn();
-}
-function clearCmpSlot(idx){
-  CMP_SLOTS[idx] = null;
-  var inp = document.getElementById('cmp-inp-'+idx);
-  inp.value = '';
-  inp.classList.remove('filled');
-  document.getElementById('cmp-slot-'+idx).classList.remove('has-fund');
-  updateCmpBtn();
-}
-function updateCmpBtn(){
-  var filled = CMP_SLOTS.filter(function(s){ return s; }).length;
-  document.getElementById('cmp-btn').disabled = filled<2;
 }
 
-// ── Category/AMC classification (lightweight, mirrors market-pulse getSubCat) ──
-function cmpGetCategory(name){
-  var u=name.toUpperCase();
-  if(u.includes('ELSS')||u.includes('TAX SAVER'))return 'ELSS';
-  if(u.includes('LARGE AND MID')||u.includes('LARGE & MID'))return 'Large & MidCap';
-  if(u.includes('LARGE CAP')||u.includes('LARGECAP'))return 'Large Cap';
-  if(u.includes('MULTI CAP')||u.includes('MULTICAP'))return 'Multi Cap';
-  if(u.includes('FLEXI CAP')||u.includes('FLEXICAP'))return 'Flexi Cap';
-  if(u.includes('SMALL CAP')||u.includes('SMALLCAP'))return 'Small Cap';
-  if(u.includes('MID CAP')||u.includes('MIDCAP'))return 'Mid Cap';
-  if(u.includes('FOCUSED')||u.includes('FOCUS'))return 'Focused';
-  if(u.includes('VALUE')||u.includes('CONTRA'))return 'Value/Contra';
-  if(u.includes('HYBRID')||u.includes('BALANCED ADVANTAGE'))return 'Hybrid';
-  if(u.includes('DEBT')||u.includes('GILT')||u.includes('BOND')||u.includes('LIQUID')||u.includes('DURATION'))return 'Debt';
-  if(u.includes('INDEX')||u.includes('ETF'))return 'Index/ETF';
-  if(u.includes('THEMATIC')||u.includes('SECTOR')||u.includes('PHARMA')||u.includes('BANKING')||u.includes('TECH')||u.includes('INFRA'))return 'Thematic/Sectoral';
-  return 'Equity';
-}
-function cmpGetAMC(name){
-  var known = ['HDFC','SBI','Nippon India','ICICI Prudential','Kotak','Axis','Motilal Oswal','Edelweiss','Sundaram','UTI','Aditya Birla Sun Life','DSP','Bajaj Finserv','Canara Robeco','HSBC','Bandhan','Tata','Mirae Asset','Franklin Templeton','PPFAS','Quant','WhiteOak Capital'];
-  for(var i=0;i<known.length;i++){ if(name.toUpperCase().includes(known[i].toUpperCase())) return known[i]; }
-  return name.split(' ').slice(0,2).join(' ');
+function searchFund(slot, query, dropdown) {
+  if(query.length < 2) { dropdown.classList.remove('show'); return; }
+  var q = query.toLowerCase();
+  var matches = ALL_FUNDS.filter(function(f){
+    return f.name.toLowerCase().indexOf(q) >= 0;
+  }).slice(0, 20);
+  if(!matches.length) { dropdown.classList.remove('show'); return; }
+  dropdown.innerHTML = '';
+  matches.forEach(function(f) {
+    var item = document.createElement('div');
+    item.className = 'dd-item';
+    item.textContent = f.name;
+    item.addEventListener('click', function(){
+      selectFund(slot, f);
+      dropdown.classList.remove('show');
+    });
+    dropdown.appendChild(item);
+  });
+  dropdown.classList.add('show');
 }
 
-// ── NAV history + CAGR ──────────────────────────────────────────
-async function fetchNavHistory(code){
-  if(navCache[code]) return navCache[code];
-  try{
+function selectFund(slot, fund) {
+  SELECTED[slot] = fund;
+  var inp = document.querySelector('[data-slot="'+slot+'"]');
+  if(inp) inp.value = fund.name;
+  var sel = document.getElementById('sel-'+slot);
+  if(sel) {
+    sel.innerHTML = '<div class="selected-fund"><span style="flex:1;font-size:10px">✅ '+
+      (fund.name.length>40?fund.name.substring(0,40)+'…':fund.name)+'</span>'+
+      '<span onclick="clearSlot('+slot+')">✕</span></div>';
+  }
+  updateBtn();
+}
+
+function clearSlot(slot) {
+  SELECTED[slot] = null;
+  var inp = document.querySelector('[data-slot="'+slot+'"]');
+  if(inp) inp.value = '';
+  var sel = document.getElementById('sel-'+slot);
+  if(sel) sel.innerHTML = '';
+  document.getElementById('result-wrap').classList.remove('show');
+  updateBtn();
+}
+
+function updateBtn() {
+  var count = SELECTED.filter(function(f){ return f!==null; }).length;
+  var btn = document.getElementById('cmp-btn');
+  if(count >= 2) {
+    btn.disabled = false;
+    btn.textContent = '⚖️ Compare '+count+' Funds Now →';
+  } else {
+    btn.disabled = false; // Always enabled per Kaustubh's request
+    btn.textContent = '⚖️ Compare Now — Select at least '+(2-count)+' more fund'+(count===0?'s':'');
+  }
+}
+
+async function buildTable() {
+  var funds = SELECTED.filter(function(f){ return f!==null; });
+  if(funds.length < 2) {
+    alert('Please select at least 2 funds to compare.');
+    return;
+  }
+  var wrap = document.getElementById('result-wrap');
+  wrap.classList.add('show');
+  document.getElementById('cmp-result').innerHTML = '<div class="loading">⏳ Loading NAV data for all funds...</div>';
+
+  var fundData = [];
+  for(var i=0; i<funds.length; i++) {
+    var d = await loadFundData(funds[i].code, funds[i].name);
+    fundData.push(d);
+  }
+  renderTable(fundData);
+}
+
+async function loadFundData(code, name) {
+  var f = {code:code, name:name, amc:'—', nav:null, date:null,
+    r1m:null, r3m:null, r6m:null, r1y:null, r3y:null, r5y:null, r10y:null,
+    plan: name.toUpperCase().includes('DIRECT')?'Direct':'Regular',
+    nat:  name.toUpperCase().includes('IDCW')?'IDCW':'Growth',
+  };
+  var amcs=['Aditya Birla Sun Life','Axis','Bajaj Finserv','Bandhan','Baroda BNP Paribas',
+    'Canara Robeco','DSP','Edelweiss','Franklin Templeton','HDFC','HSBC','ICICI Prudential',
+    'IDFC','Invesco','JM Financial','Kotak','LIC','Mahindra Manulife','Mirae Asset',
+    'Motilal Oswal','Navi','Nippon India','NJ','PGIM India','Parag Parikh','Quant',
+    'Quantum','Samco','SBI','Sundaram','Tata','UTI','Union','WhiteOak','Zerodha'];
+  for(var a=0;a<amcs.length;a++) if(name.includes(amcs[a])){ f.amc=amcs[a]+' MF'; break; }
+  try {
     var r = await fetch('https://api.mfapi.in/mf/'+code);
     var d = await r.json();
-    if(!d.data || d.data.length<2) return null;
-    navCache[code] = d.data; // most recent first
-    return d.data;
-  }catch(e){ return null; }
+    if(d.data && d.data.length > 0) {
+      var cur = parseFloat(d.data[0].nav);
+      f.nav  = cur;
+      f.date = d.data[0].date;
+      var pts = d.data.length;
+      if(pts>=21)   { var o=parseFloat(d.data[20].nav);  if(o>0) f.r1m=((cur/o)-1)*100; }
+      if(pts>=63)   { var o=parseFloat(d.data[62].nav);  if(o>0) f.r3m=((cur/o)-1)*100; }
+      if(pts>=126)  { var o=parseFloat(d.data[125].nav); if(o>0) f.r6m=((cur/o)-1)*100; }
+      if(pts>=252)  { var o=parseFloat(d.data[251].nav); if(o>0) f.r1y=((cur/o)-1)*100; }
+      if(pts>=756)  { var o=parseFloat(d.data[755].nav); if(o>0) f.r3y=(Math.pow(cur/o,1/3)-1)*100; }
+      if(pts>=1260) { var o=parseFloat(d.data[1259].nav);if(o>0) f.r5y=(Math.pow(cur/o,1/5)-1)*100; }
+      if(pts>=2520) { var o=parseFloat(d.data[2519].nav);if(o>0) f.r10y=(Math.pow(cur/o,1/10)-1)*100; }
+    }
+  } catch(e) { console.log('NAV load failed for '+code); }
+  return f;
 }
-function cagrFromHistory(data, years){
-  if(!data || data.length<2) return null;
-  var latest = data[0];
-  var latestNav = parseFloat(latest.nav);
-  var latestDate = parseDMY(latest.date);
-  if(!latestNav || !latestDate) return null;
-  var targetDate = new Date(latestDate); targetDate.setFullYear(targetDate.getFullYear()-years);
-  // find the nearest entry to targetDate (data sorted most-recent-first)
-  var best = null, bestDiff = Infinity;
-  for(var i=0;i<data.length;i++){
-    var dt = parseDMY(data[i].date);
-    if(!dt) continue;
-    var diff = Math.abs(dt - targetDate);
-    if(diff < bestDiff){ bestDiff = diff; best = data[i]; }
-    if(dt < targetDate) break; // data is descending in date, so once we pass target we can stop
+
+function renderTable(funds) {
+  function fR(v){ return v===null?'—':(v>=0?'+':'')+v.toFixed(2)+'%'; }
+  function buildRow(lbl, vals, nums, bHigh, bLow) {
+    var best=null, valid=[];
+    if(nums) nums.forEach(function(v){ if(v!==null&&!isNaN(v)) valid.push(v); });
+    if(bHigh&&valid.length) best=Math.max.apply(null,valid);
+    if(bLow &&valid.length) best=Math.min.apply(null,valid);
+    var row='<tr><td class="plbl">'+lbl+'</td>';
+    vals.forEach(function(v,i){
+      var isBest=best!==null&&nums&&nums[i]===best;
+      row+='<td class="pval'+(isBest?' best':'')+'">'+v+'</td>';
+    });
+    return row+'</tr>';
   }
-  if(!best) return null;
-  var startNav = parseFloat(best.nav);
-  var startDate = parseDMY(best.date);
-  if(!startNav || !startDate) return null;
-  var actualYears = (latestDate - startDate) / (365.25*24*3600*1000);
-  if(actualYears < years*0.7) return null; // not enough history for a fair CAGR
-  if(actualYears <= 1.05){
-    return ((latestNav/startNav)-1)*100; // simple return for near-1Y windows
-  }
-  return (Math.pow(latestNav/startNav, 1/actualYears)-1)*100;
-}
-function parseDMY(str){
-  // AMFI format: DD-MM-YYYY
-  var parts = str.split('-');
-  if(parts.length!==3) return null;
-  return new Date(parseInt(parts[2]), parseInt(parts[1])-1, parseInt(parts[0]));
-}
-
-async function compareNow(){
-  var slots = CMP_SLOTS.filter(function(s){ return s; });
-  if(slots.length<2) return;
-  var btn = document.getElementById('cmp-btn');
-  btn.disabled = true; btn.textContent = 'Loading NAV data...';
-
-  var results = await Promise.all(slots.map(async function(s){
-    var hist = await fetchNavHistory(s.schemeCode);
-    return {
-      name: s.schemeName,
-      category: cmpGetCategory(s.schemeName),
-      amc: cmpGetAMC(s.schemeName),
-      nav: hist && hist[0] ? parseFloat(hist[0].nav) : null,
-      navDate: hist && hist[0] ? hist[0].date : null,
-      r1y: cagrFromHistory(hist, 1),
-      r3y: cagrFromHistory(hist, 3),
-      r5y: cagrFromHistory(hist, 5)
-    };
-  }));
-
-  btn.disabled = false; btn.textContent = '📊 Compare Now';
-  buildCompareTable(results);
-}
-
-function fmtPct(v){ return v===null || v===undefined ? '—' : (v>=0?'+':'')+v.toFixed(2)+'%'; }
-
-function buildCompareTable(results){
-  function bestIdx(key){
-    var vals = results.map(function(r){ return r[key]; });
-    var valid = vals.filter(function(v){ return v!==null && v!==undefined; });
-    if(!valid.length) return -1;
-    var max = Math.max.apply(null, valid);
-    return vals.indexOf(max);
-  }
-  var best1y = bestIdx('r1y'), best3y = bestIdx('r3y'), best5y = bestIdx('r5y');
-
-  var html = '<div style="overflow-x:auto;"><table class="cmp-table"><thead><tr>'
-    + '<th>Metric</th>' + results.map(function(r){ return '<th>'+esc(r.name)+'</th>'; }).join('')
-    + '</tr></thead><tbody>';
-
-  html += '<tr><td style="font-weight:800;">AMC</td>' + results.map(function(r){ return '<td>'+esc(r.amc)+'</td>'; }).join('') + '</tr>';
-  html += '<tr><td style="font-weight:800;">Category</td>' + results.map(function(r){ return '<td>'+esc(r.category)+'</td>'; }).join('') + '</tr>';
-  html += '<tr><td style="font-weight:800;">Latest NAV</td>' + results.map(function(r){ return '<td>'+(r.nav?'₹'+r.nav.toFixed(2):'—')+(r.navDate?' <span style="color:var(--t4);font-size:10px;">('+r.navDate+')</span>':'')+'</td>'; }).join('') + '</tr>';
-  html += '<tr><td style="font-weight:800;">1Y Return</td>' + results.map(function(r,i){ return '<td class="'+(i===best1y?'best':'')+'">'+fmtPct(r.r1y)+'</td>'; }).join('') + '</tr>';
-  html += '<tr><td style="font-weight:800;">3Y CAGR</td>' + results.map(function(r,i){ return '<td class="'+(i===best3y?'best':'')+'">'+fmtPct(r.r3y)+'</td>'; }).join('') + '</tr>';
-  html += '<tr><td style="font-weight:800;">5Y CAGR</td>' + results.map(function(r,i){ return '<td class="'+(i===best5y?'best':'')+'">'+fmtPct(r.r5y)+'</td>'; }).join('') + '</tr>';
-  html += '</tbody></table></div>';
-
+  var hdr='<th>Parameter</th>';
+  funds.forEach(function(f){
+    var nm=f.name.length>30?f.name.substring(0,30)+'…':f.name;
+    hdr+='<th><div class="fth">'+nm+'</div><div class="fam">'+f.amc+'</div></th>';
+  });
+  var html='<table class="cmp-tbl"><thead><tr>'+hdr+'</tr></thead><tbody>';
+  html+='<tr class="srow"><td colspan="'+(funds.length+1)+'">📋 Fund Information</td></tr>';
+  html+=buildRow('AMC',         funds.map(function(f){return f.amc;}));
+  html+=buildRow('Plan Type',   funds.map(function(f){return f.plan;}));
+  html+=buildRow('Nature',      funds.map(function(f){return f.nat;}));
+  html+=buildRow('Current NAV', funds.map(function(f){return f.nav?'₹'+f.nav.toFixed(f.nav>100?2:4):'—';}));
+  html+=buildRow('NAV Date',    funds.map(function(f){return f.date||'—';}));
+  html+='<tr class="srow"><td colspan="'+(funds.length+1)+'">📈 Returns — Real from AMFI NAV History</td></tr>';
+  var rets=[{l:'1M Return',k:'r1m'},{l:'3M Return',k:'r3m'},{l:'6M Return',k:'r6m'},
+    {l:'1Y CAGR',k:'r1y'},{l:'3Y CAGR',k:'r3y'},{l:'5Y CAGR',k:'r5y'},{l:'10Y CAGR',k:'r10y'}];
+  rets.forEach(function(rr){
+    html+=buildRow(rr.l, funds.map(function(f){return fR(f[rr.k]);}),
+      funds.map(function(f){return f[rr.k];}), true, false);
+  });
+  html+='<tr class="srow"><td colspan="'+(funds.length+1)+'">✅ Suitability</td></tr>';
+  html+=buildRow('Min SIP (SEBI)', funds.map(function(f){return f.plan==='Direct'?'₹100':'₹500';}));
+  html+=buildRow('Tax Benefit 80C', funds.map(function(f){return f.name.toUpperCase().includes('ELSS')||f.name.toUpperCase().includes('TAX')? '✅ Yes':'❌ No';}));
+  html+='</tbody></table>';
   document.getElementById('cmp-result').innerHTML = html;
-  document.getElementById('cmp-result-card').style.display = 'block';
-  document.getElementById('cmp-result-card').scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 // ── PRINT (single frame, Ace logo header, all stylesheet rules carried over) ──
@@ -812,11 +847,14 @@ function printCompare(){
   if(!w){ alert('Please allow pop-ups to print this comparison.'); return; }
   w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Ace Financial Services — Fund Comparison</title>'
     + '<style>'+styles+'</style>'
-    + '<style>body{background:#fff!important;padding:20px;} .cmp-table{page-break-inside:avoid;} .print-logo-cmp{display:flex!important;}</style>'
+    + '<style>body{background:#fff!important;padding:20px;} .cmp-tbl{page-break-inside:avoid;} .print-logo-cmp{display:flex!important;}</style>'
     + '</head><body>'
-    + '<div class="print-logo-cmp"><span style="color:#fff;font-weight:900;font-size:16px;">Ace Financial Services</span>'
+    + '<div id="tab-compare">' // re-establish the scoped CSS variable context so ported #tab-compare .xxx rules apply here too
+    + '<div class="print-logo-cmp" style="display:flex;align-items:center;gap:10px;background:var(--cp1,#2d2478);padding:12px 18px;border-radius:10px;margin-bottom:16px;">'
+    + '<span style="color:#fff;font-weight:900;font-size:16px;">Ace Financial Services</span>'
     + '<span style="color:rgba(255,255,255,.75);font-size:11px;margin-left:auto;">ARN-110832 · AMFI Registered MFD · EUIN E155215</span></div>'
     + '<div style="page-break-inside:avoid;">'+content+'</div>'
+    + '</div>'
     + '</body></html>');
   w.document.close();
   w.focus();
