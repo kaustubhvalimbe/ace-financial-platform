@@ -1010,7 +1010,7 @@ function anlParseNSDL(text){
 
 // ── SHOW VERIFICATION SCREEN ───────────────────────────────
 function anlShowVerification(){
-  document.getElementById('anl-verify-card').style.display = 'block';
+  document.getElementById('verify-card').style.display = 'block';
 
   // Set badge
   var badge = document.getElementById('anl-cas-type-badge');
@@ -1035,7 +1035,7 @@ function anlShowVerification(){
   anlRenderFundRows();
 
   // Scroll to verify card
-  document.getElementById('anl-verify-card').scrollIntoView({behavior:'smooth',block:'start'});
+  document.getElementById('verify-card').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 // ── RENDER FUND ROWS ────────────────────────────────────────
@@ -1070,7 +1070,7 @@ function anlAddFundRow(){
 
 function anlReset(){
   ANL = {file:null,pdfDoc:null,casType:'',rawText:'',investor:{name:'',pan:'',date:''},funds:[],flaggedCount:0};
-  document.getElementById('anl-verify-card').style.display='none';
+  document.getElementById('verify-card').style.display='none';
   document.getElementById('anl-report-output').style.display='none';
   document.getElementById('anl-upload-label').textContent='Click to upload your CAS PDF';
   document.getElementById('anl-drop-zone').classList.remove('has-file');
