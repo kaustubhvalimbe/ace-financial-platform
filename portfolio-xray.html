@@ -1535,6 +1535,39 @@ function xrayGenerate(){
     + '<div class="metric"><div class="val">'+sectors.length+'</div><div class="lbl">Sectors</div></div>'
     + '</div></div>';
 
+  // Fund-by-fund detail — each holding with invested, current value, gain/loss, return
+  html += '<div class="card"><div class="report-hdr">Your Funds — '+funds.length+' Holding'+(funds.length!==1?'s':'')+'</div>'
+    + '<div style="overflow-x:auto;"><table class="stk-table"><thead><tr>'
+    + '<th>#</th><th>Fund Name</th><th style="text-align:right;">Invested</th>'
+    + '<th style="text-align:right;">Current Value</th><th style="text-align:right;">Gain / Loss</th>'
+    + '<th style="text-align:center;">Return</th>'
+    + '</tr></thead><tbody>';
+
+  funds.forEach(function(f,i){
+    var fInvested = f.invested||0;
+    var fValue    = f.value||0;
+    var fGain     = fValue - fInvested;
+    var fPct      = fInvested>0 ? (fGain/fInvested*100) : 0;
+    html += '<tr>'
+      + '<td style="color:var(--t4);font-weight:700;font-size:11px;">'+(i+1)+'</td>'
+      + '<td style="font-weight:700;color:var(--t1);">'+anlEsc(f.name||'&mdash;')+'</td>'
+      + '<td style="text-align:right;color:var(--t2);">'+fmtN(fInvested)+'</td>'
+      + '<td style="text-align:right;font-weight:700;color:var(--t1);">'+fmtN(fValue)+'</td>'
+      + '<td style="text-align:right;font-weight:700;color:'+gainC(fGain)+'">'+fmtN(fGain)+'</td>'
+      + '<td style="text-align:center;font-weight:800;color:'+gainC(fPct)+'">'+fPct.toFixed(1)+'%</td>'
+      + '</tr>';
+  });
+
+  html += '<tr style="background:var(--p4);font-weight:800;">'
+    + '<td></td><td>Total</td>'
+    + '<td style="text-align:right;">'+fmtN(totalInvested)+'</td>'
+    + '<td style="text-align:right;">'+fmtN(totalValue)+'</td>'
+    + '<td style="text-align:right;color:'+gainC(totalGain)+'">'+fmtN(totalGain)+'</td>'
+    + '<td style="text-align:center;color:'+gainC(gainPct)+'">'+gainPct.toFixed(1)+'%</td>'
+    + '</tr>';
+
+  html += '</tbody></table></div></div>';
+
   // Concentration check
   html += '<div class="card"><div class="report-hdr">Concentration Check</div>';
   html += (top3Pct>15)
