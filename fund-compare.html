@@ -58,6 +58,31 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);min-height:100vh
 .metric .val{font-size:20px;font-weight:900;color:var(--p1);}
 .metric .lbl{font-size:10px;font-weight:800;color:var(--t4);text-transform:uppercase;margin-top:3px;}
 .coming-soon{border:2px dashed var(--bd);border-radius:12px;padding:20px;text-align:center;color:var(--t4);font-size:13px;}
+.tab-bar{max-width:900px;margin:0 auto;padding:0 20px;display:flex;gap:8px;margin-top:-18px;position:relative;z-index:2;}
+.tab-btn{flex:1;background:#fff;border:1.5px solid var(--bd);border-bottom:none;border-radius:12px 12px 0 0;padding:14px 10px;font-size:13px;font-weight:800;color:var(--t4);cursor:pointer;text-align:center;transition:.15s;}
+.tab-btn.active{color:var(--p1);background:#fff;box-shadow:0 -2px 10px rgba(60,49,151,.08);}
+.tab-btn:not(.active){background:var(--g4);color:var(--t4);}
+.cmp-slot-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.cmp-slot{position:relative;}
+.cmp-slot label{font-size:11px;font-weight:800;color:var(--t4);text-transform:uppercase;display:block;margin-bottom:5px;}
+.cmp-slot input{padding:11px 14px;border:1.5px solid var(--bd);border-radius:9px;font-size:13px;width:100%;outline:none;font-family:var(--fh);}
+.cmp-slot input.filled{border-color:var(--g1);background:var(--g3);}
+.cmp-dd{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--bd);border-radius:9px;margin-top:4px;max-height:240px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:50;display:none;}
+.cmp-dd-item{padding:9px 14px;font-size:12px;cursor:pointer;border-bottom:1px solid var(--bd);}
+.cmp-dd-item:last-child{border-bottom:none;}
+.cmp-dd-item:hover{background:var(--p4);}
+.cmp-clear{position:absolute;right:10px;top:32px;background:none;border:none;color:#dc2626;font-weight:900;cursor:pointer;font-size:14px;display:none;}
+.cmp-slot.has-fund .cmp-clear{display:block;}
+.cmp-table{width:100%;border-collapse:collapse;font-size:12px;}
+.cmp-table th{background:var(--p1);color:#fff;padding:10px 12px;text-align:left;font-size:11px;font-weight:800;text-transform:uppercase;white-space:nowrap;}
+.cmp-table td{padding:10px 12px;border-bottom:1px solid var(--bd);vertical-align:middle;}
+.cmp-table tr:nth-child(even){background:#fafaff;}
+.cmp-table td.best{background:var(--g3);color:var(--g2);font-weight:900;}
+.cmp-note{font-size:11px;color:var(--t4);margin-top:10px;}
+.print-logo-cmp{display:flex;align-items:center;gap:10px;background:var(--p1);padding:12px 18px;border-radius:10px;margin-bottom:16px;}
+@media(max-width:640px){
+  .cmp-slot-grid{grid-template-columns:1fr;}
+}
 @media(max-width:640px){
   .hold-row-hdr,.hold-row,.hold-total-row{grid-template-columns:1.4fr 1fr 70px 30px;}
   .form-grid{grid-template-columns:1fr;}
@@ -75,15 +100,21 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);min-height:100vh
 
 <div class="hero">
   <h1>🧭 Fund Compare &amp; Discovery</h1>
-  <p>Start here with New Fund Fit — check whether an NFO or new fund idea actually adds value to a portfolio, or just duplicates what's already held</p>
+  <p>New Fund Fit checks whether an NFO adds real value — Compare Funds puts up to 4 funds side by side with live AMFI return data</p>
   <div class="hero-badges">
     <span class="hb">🎯 Category Gap Check</span>
     <span class="hb">🏦 AMC Concentration Check</span>
     <span class="hb">🔁 Overlap Risk Check</span>
+    <span class="hb">📊 Live NAV-Based Returns</span>
   </div>
 </div>
 
-<div class="main">
+<div class="tab-bar">
+  <button class="tab-btn active" id="tab-btn-fit" onclick="switchTab('fit')">🎯 New Fund Fit</button>
+  <button class="tab-btn" id="tab-btn-compare" onclick="switchTab('compare')">📊 Compare Funds</button>
+</div>
+
+<div class="main" id="tab-fit">
 
   <!-- STEP 1: CURRENT PORTFOLIO -->
   <div class="card">
@@ -164,7 +195,30 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);min-height:100vh
   <div class="card">
     <div class="card-title">Coming Next</div>
     <div class="coming-soon">
-      <strong>Fund Compare</strong> (side-by-side comparison of 2–4 funds) and <strong>Fund Discovery</strong> (search &amp; browse the AMFI fund list) are next on the roadmap for this page.
+      <strong>Fund Discovery</strong> (search &amp; browse the full AMFI fund list) is next on the roadmap for this page.
+    </div>
+  </div>
+
+</div>
+
+<!-- TAB 2: COMPARE FUNDS -->
+<div class="main" id="tab-compare" style="display:none;">
+
+  <div class="card">
+    <div class="card-title">Select 2–4 Funds to Compare</div>
+    <div class="card-sub">Search by fund name — pulled live from the AMFI scheme list</div>
+    <div class="cmp-slot-grid" id="cmp-slots"></div>
+    <div style="margin-top:18px;">
+      <button class="btn-g" id="cmp-btn" onclick="compareNow()" disabled>📊 Compare Now</button>
+    </div>
+  </div>
+
+  <div class="card" id="cmp-result-card" style="display:none;">
+    <div class="card-title">Comparison</div>
+    <div id="cmp-result"></div>
+    <div class="cmp-note">✅ <strong style="color:var(--g1);">Best value</strong> in each return column highlighted green · Returns computed from AMFI daily NAV history, fetched live</div>
+    <div style="margin-top:16px;">
+      <button class="btn-sec" onclick="printCompare()">🖨️ Print / Save as PDF</button>
     </div>
   </div>
 
@@ -405,6 +459,259 @@ function printReport(){
     + '<div class="footer">Ace Financial Services · ARN-110832 · AMFI Registered MFD · EUIN E155215<br>This is a preliminary screening tool, not investment advice. Please review full scheme documents before any investment decision.</div>';
 
   acePrint('Fund Fit Report', body);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TAB SWITCHING
+// ═══════════════════════════════════════════════════════════════
+function switchTab(name){
+  var fitPanel = document.getElementById('tab-fit');
+  var cmpPanel = document.getElementById('tab-compare');
+  var fitBtn = document.getElementById('tab-btn-fit');
+  var cmpBtn = document.getElementById('tab-btn-compare');
+  if(name==='fit'){
+    fitPanel.style.display='block'; cmpPanel.style.display='none';
+    fitBtn.classList.add('active'); cmpBtn.classList.remove('active');
+  } else {
+    fitPanel.style.display='none'; cmpPanel.style.display='block';
+    cmpBtn.classList.add('active'); fitBtn.classList.remove('active');
+    if(!MF_LIST.length) loadMFList();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// COMPARE FUNDS (2–4 side by side, live AMFI NAV-based returns)
+// ═══════════════════════════════════════════════════════════════
+var MF_LIST = [];
+var MF_LOADING = false;
+var CMP_SLOTS = [null, null, null, null];
+var navCache = {};
+
+function initCmpSlots(){
+  var wrap = document.getElementById('cmp-slots');
+  wrap.innerHTML = '';
+  for(var i=0;i<4;i++){
+    var slot = document.createElement('div');
+    slot.className = 'cmp-slot';
+    slot.id = 'cmp-slot-'+i;
+    slot.innerHTML =
+      '<label>Fund '+(i+1)+(i<2?' (required)':' (optional)')+'</label>'+
+      '<input type="text" id="cmp-inp-'+i+'" placeholder="🔍 Search fund name..." '+
+      'oninput="searchCmp('+i+',this.value)" onfocus="searchCmp('+i+',this.value)" '+
+      'onblur="setTimeout(function(){hideCmpDd('+i+');},200)">'+
+      '<button class="cmp-clear" onclick="clearCmpSlot('+i+')" title="Remove">✕</button>'+
+      '<div class="cmp-dd" id="cmp-dd-'+i+'"></div>';
+    wrap.appendChild(slot);
+  }
+}
+initCmpSlots();
+
+async function loadMFList(){
+  if(MF_LOADING || MF_LIST.length) return;
+  MF_LOADING = true;
+  for(var i=0;i<4;i++){
+    var inp = document.getElementById('cmp-inp-'+i);
+    if(inp && !CMP_SLOTS[i]) inp.placeholder = 'Loading fund list...';
+  }
+  MF_LIST = await fetchMFAPI();
+  MF_LOADING = false;
+  for(var j=0;j<4;j++){
+    var inp2 = document.getElementById('cmp-inp-'+j);
+    if(inp2 && !CMP_SLOTS[j]) inp2.placeholder = '🔍 Search fund name...';
+  }
+}
+
+async function fetchMFAPI(){
+  try{var r=await fetch('https://api.mfapi.in/mf',{mode:'cors',headers:{'Accept':'application/json'}});if(r.ok){var d=await r.json();if(Array.isArray(d)&&d.length>100)return d;}}catch(e){}
+  try{var r2=await fetch('https://api.allorigins.win/raw?url=https%3A%2F%2Fapi.mfapi.in%2Fmf');if(r2.ok){var d2=await r2.json();if(Array.isArray(d2)&&d2.length>100)return d2;}}catch(e){}
+  try{var r3=await fetch('https://corsproxy.io/?https://api.mfapi.in/mf');if(r3.ok){var d3=await r3.json();if(Array.isArray(d3)&&d3.length>100)return d3;}}catch(e){}
+  return [];
+}
+
+function jsEsc(s){ return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+
+function searchCmp(idx, query){
+  var dd = document.getElementById('cmp-dd-'+idx);
+  if(!query || query.length<3 || !MF_LIST.length){ dd.style.display='none'; return; }
+  var q = query.toUpperCase();
+  var matches = MF_LIST.filter(function(f){ return f.schemeName && f.schemeName.toUpperCase().includes(q); }).slice(0,8);
+  if(!matches.length){ dd.innerHTML='<div class="cmp-dd-item" style="color:var(--t4);">No matches</div>'; dd.style.display='block'; return; }
+  dd.innerHTML = matches.map(function(m){
+    return '<div class="cmp-dd-item" onmousedown="selectCmpFund('+idx+',\''+jsEsc(m.schemeCode)+'\',\''+jsEsc(m.schemeName)+'\')">'+esc(m.schemeName)+'</div>';
+  }).join('');
+  dd.style.display = 'block';
+}
+function hideCmpDd(idx){ var dd=document.getElementById('cmp-dd-'+idx); if(dd) dd.style.display='none'; }
+
+function selectCmpFund(idx, code, name){
+  CMP_SLOTS[idx] = {schemeCode:code, schemeName:name};
+  var inp = document.getElementById('cmp-inp-'+idx);
+  inp.value = name;
+  inp.classList.add('filled');
+  document.getElementById('cmp-slot-'+idx).classList.add('has-fund');
+  hideCmpDd(idx);
+  updateCmpBtn();
+}
+function clearCmpSlot(idx){
+  CMP_SLOTS[idx] = null;
+  var inp = document.getElementById('cmp-inp-'+idx);
+  inp.value = '';
+  inp.classList.remove('filled');
+  document.getElementById('cmp-slot-'+idx).classList.remove('has-fund');
+  updateCmpBtn();
+}
+function updateCmpBtn(){
+  var filled = CMP_SLOTS.filter(function(s){ return s; }).length;
+  document.getElementById('cmp-btn').disabled = filled<2;
+}
+
+// ── Category/AMC classification (lightweight, mirrors market-pulse getSubCat) ──
+function cmpGetCategory(name){
+  var u=name.toUpperCase();
+  if(u.includes('ELSS')||u.includes('TAX SAVER'))return 'ELSS';
+  if(u.includes('LARGE AND MID')||u.includes('LARGE & MID'))return 'Large & MidCap';
+  if(u.includes('LARGE CAP')||u.includes('LARGECAP'))return 'Large Cap';
+  if(u.includes('MULTI CAP')||u.includes('MULTICAP'))return 'Multi Cap';
+  if(u.includes('FLEXI CAP')||u.includes('FLEXICAP'))return 'Flexi Cap';
+  if(u.includes('SMALL CAP')||u.includes('SMALLCAP'))return 'Small Cap';
+  if(u.includes('MID CAP')||u.includes('MIDCAP'))return 'Mid Cap';
+  if(u.includes('FOCUSED')||u.includes('FOCUS'))return 'Focused';
+  if(u.includes('VALUE')||u.includes('CONTRA'))return 'Value/Contra';
+  if(u.includes('HYBRID')||u.includes('BALANCED ADVANTAGE'))return 'Hybrid';
+  if(u.includes('DEBT')||u.includes('GILT')||u.includes('BOND')||u.includes('LIQUID')||u.includes('DURATION'))return 'Debt';
+  if(u.includes('INDEX')||u.includes('ETF'))return 'Index/ETF';
+  if(u.includes('THEMATIC')||u.includes('SECTOR')||u.includes('PHARMA')||u.includes('BANKING')||u.includes('TECH')||u.includes('INFRA'))return 'Thematic/Sectoral';
+  return 'Equity';
+}
+function cmpGetAMC(name){
+  var known = ['HDFC','SBI','Nippon India','ICICI Prudential','Kotak','Axis','Motilal Oswal','Edelweiss','Sundaram','UTI','Aditya Birla Sun Life','DSP','Bajaj Finserv','Canara Robeco','HSBC','Bandhan','Tata','Mirae Asset','Franklin Templeton','PPFAS','Quant','WhiteOak Capital'];
+  for(var i=0;i<known.length;i++){ if(name.toUpperCase().includes(known[i].toUpperCase())) return known[i]; }
+  return name.split(' ').slice(0,2).join(' ');
+}
+
+// ── NAV history + CAGR ──────────────────────────────────────────
+async function fetchNavHistory(code){
+  if(navCache[code]) return navCache[code];
+  try{
+    var r = await fetch('https://api.mfapi.in/mf/'+code);
+    var d = await r.json();
+    if(!d.data || d.data.length<2) return null;
+    navCache[code] = d.data; // most recent first
+    return d.data;
+  }catch(e){ return null; }
+}
+function cagrFromHistory(data, years){
+  if(!data || data.length<2) return null;
+  var latest = data[0];
+  var latestNav = parseFloat(latest.nav);
+  var latestDate = parseDMY(latest.date);
+  if(!latestNav || !latestDate) return null;
+  var targetDate = new Date(latestDate); targetDate.setFullYear(targetDate.getFullYear()-years);
+  // find the nearest entry to targetDate (data sorted most-recent-first)
+  var best = null, bestDiff = Infinity;
+  for(var i=0;i<data.length;i++){
+    var dt = parseDMY(data[i].date);
+    if(!dt) continue;
+    var diff = Math.abs(dt - targetDate);
+    if(diff < bestDiff){ bestDiff = diff; best = data[i]; }
+    if(dt < targetDate) break; // data is descending in date, so once we pass target we can stop
+  }
+  if(!best) return null;
+  var startNav = parseFloat(best.nav);
+  var startDate = parseDMY(best.date);
+  if(!startNav || !startDate) return null;
+  var actualYears = (latestDate - startDate) / (365.25*24*3600*1000);
+  if(actualYears < years*0.7) return null; // not enough history for a fair CAGR
+  if(actualYears <= 1.05){
+    return ((latestNav/startNav)-1)*100; // simple return for near-1Y windows
+  }
+  return (Math.pow(latestNav/startNav, 1/actualYears)-1)*100;
+}
+function parseDMY(str){
+  // AMFI format: DD-MM-YYYY
+  var parts = str.split('-');
+  if(parts.length!==3) return null;
+  return new Date(parseInt(parts[2]), parseInt(parts[1])-1, parseInt(parts[0]));
+}
+
+async function compareNow(){
+  var slots = CMP_SLOTS.filter(function(s){ return s; });
+  if(slots.length<2) return;
+  var btn = document.getElementById('cmp-btn');
+  btn.disabled = true; btn.textContent = 'Loading NAV data...';
+
+  var results = await Promise.all(slots.map(async function(s){
+    var hist = await fetchNavHistory(s.schemeCode);
+    return {
+      name: s.schemeName,
+      category: cmpGetCategory(s.schemeName),
+      amc: cmpGetAMC(s.schemeName),
+      nav: hist && hist[0] ? parseFloat(hist[0].nav) : null,
+      navDate: hist && hist[0] ? hist[0].date : null,
+      r1y: cagrFromHistory(hist, 1),
+      r3y: cagrFromHistory(hist, 3),
+      r5y: cagrFromHistory(hist, 5)
+    };
+  }));
+
+  btn.disabled = false; btn.textContent = '📊 Compare Now';
+  buildCompareTable(results);
+}
+
+function fmtPct(v){ return v===null || v===undefined ? '—' : (v>=0?'+':'')+v.toFixed(2)+'%'; }
+
+function buildCompareTable(results){
+  function bestIdx(key){
+    var vals = results.map(function(r){ return r[key]; });
+    var valid = vals.filter(function(v){ return v!==null && v!==undefined; });
+    if(!valid.length) return -1;
+    var max = Math.max.apply(null, valid);
+    return vals.indexOf(max);
+  }
+  var best1y = bestIdx('r1y'), best3y = bestIdx('r3y'), best5y = bestIdx('r5y');
+
+  var html = '<div style="overflow-x:auto;"><table class="cmp-table"><thead><tr>'
+    + '<th>Metric</th>' + results.map(function(r){ return '<th>'+esc(r.name)+'</th>'; }).join('')
+    + '</tr></thead><tbody>';
+
+  html += '<tr><td style="font-weight:800;">AMC</td>' + results.map(function(r){ return '<td>'+esc(r.amc)+'</td>'; }).join('') + '</tr>';
+  html += '<tr><td style="font-weight:800;">Category</td>' + results.map(function(r){ return '<td>'+esc(r.category)+'</td>'; }).join('') + '</tr>';
+  html += '<tr><td style="font-weight:800;">Latest NAV</td>' + results.map(function(r){ return '<td>'+(r.nav?'₹'+r.nav.toFixed(2):'—')+(r.navDate?' <span style="color:var(--t4);font-size:10px;">('+r.navDate+')</span>':'')+'</td>'; }).join('') + '</tr>';
+  html += '<tr><td style="font-weight:800;">1Y Return</td>' + results.map(function(r,i){ return '<td class="'+(i===best1y?'best':'')+'">'+fmtPct(r.r1y)+'</td>'; }).join('') + '</tr>';
+  html += '<tr><td style="font-weight:800;">3Y CAGR</td>' + results.map(function(r,i){ return '<td class="'+(i===best3y?'best':'')+'">'+fmtPct(r.r3y)+'</td>'; }).join('') + '</tr>';
+  html += '<tr><td style="font-weight:800;">5Y CAGR</td>' + results.map(function(r,i){ return '<td class="'+(i===best5y?'best':'')+'">'+fmtPct(r.r5y)+'</td>'; }).join('') + '</tr>';
+  html += '</tbody></table></div>';
+
+  document.getElementById('cmp-result').innerHTML = html;
+  document.getElementById('cmp-result-card').style.display = 'block';
+  document.getElementById('cmp-result-card').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// ── PRINT (single frame, Ace logo header, all stylesheet rules carried over) ──
+function printCompare(){
+  var content = document.getElementById('cmp-result').innerHTML;
+  var styles = '';
+  try{
+    for(var i=0;i<document.styleSheets.length;i++){
+      try{
+        var rules = document.styleSheets[i].cssRules || document.styleSheets[i].rules;
+        if(rules){ for(var j=0;j<rules.length;j++){ styles += rules[j].cssText+'\n'; } }
+      }catch(e){}
+    }
+  }catch(e){}
+  var w = window.open('', '_blank', 'width=900,height=700');
+  if(!w){ alert('Please allow pop-ups to print this comparison.'); return; }
+  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Ace Financial Services — Fund Comparison</title>'
+    + '<style>'+styles+'</style>'
+    + '<style>body{background:#fff!important;padding:20px;} .cmp-table{page-break-inside:avoid;} .print-logo-cmp{display:flex!important;}</style>'
+    + '</head><body>'
+    + '<div class="print-logo-cmp"><span style="color:#fff;font-weight:900;font-size:16px;">Ace Financial Services</span>'
+    + '<span style="color:rgba(255,255,255,.75);font-size:11px;margin-left:auto;">ARN-110832 · AMFI Registered MFD · EUIN E155215</span></div>'
+    + '<div style="page-break-inside:avoid;">'+content+'</div>'
+    + '</body></html>');
+  w.document.close();
+  w.focus();
+  setTimeout(function(){ w.print(); }, 400);
 }
 </script>
 </body>
