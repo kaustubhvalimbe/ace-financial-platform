@@ -777,7 +777,7 @@ function getSubCat(name,cat){
     if(u.includes('NIFTY NEXT 50')||u.includes('JUNIOR NIFTY')||u.includes('JR NIFTY')) return 'Nifty Next 50';
     if(u.includes('NIFTY 100')) return 'Nifty 100';
     if(u.includes('NIFTY 500')) return 'Nifty 500';
-    if(u.includes('NIFTY 50')||u.includes('NIFTY50')||u.includes('NIFTY INDEX')) return 'Nifty 50';
+    if(u.includes('NIFTY 50')||u.includes('NIFTY50')||u.includes('NIFTY INDEX')||(u.includes('NIFTY')&&!u.includes('MIDCAP')&&!u.includes('SMALL')&&!u.includes('100')&&!u.includes('500')&&!u.includes('NEXT'))) return 'Nifty 50';
     if(u.includes('SENSEX')||u.includes('BSE 30')||u.includes('BSE30')) return 'Sensex';
     if(u.includes('DEBT')||u.includes('BOND INDEX')||u.includes('GSEC')||u.includes('SDL')) return 'Debt Index';
     return 'Sector ETF';
@@ -832,9 +832,73 @@ function detNat(name){
 }
 
 function xAMC(name){
-  const amcs=['360 ONE','Aditya Birla Sun Life','Angel One','Axis','Bajaj Finserv','Bandhan','Bank of India','Baroda BNP Paribas','Canara Robeco','Choice','DSP','Edelweiss','Franklin Templeton','Groww','HDFC','Helios','HSBC','ICICI Prudential','IDBI','IDFC','IIFL','ITI','Invesco','JM Financial','Kotak','LIC','Mahindra Manulife','Mirae Asset','Motilal Oswal','Navi','Nippon India','NJ','Old Bridge','PGIM India','Parag Parikh','PPFAS','Quant','Quantum','Samco','SBI','Shriram','Sundaram','Tata','Taurus','Trust','Union','Unifi','UTI','WhiteOak','Zerodha'];
-  for(const a of amcs) if(name.includes(a)) return a+' MF';
-  return 'Other AMC'; // honest bucket for anything unmatched — never fabricate a unique pseudo-AMC name per fund, which is what inflated the count to 1386
+  // Canonical AMC name -> [current name, legacy/rebrand names]. Source: authoritative AMC/RTA list.
+  // Order matters where one name is a substring of another (e.g. 'Quant' is inside 'Quantum') —
+  // the more specific/longer name must be checked first.
+  const amcMap = [
+    ['360 ONE',['360 ONE','IIFL']],
+    ['Aditya Birla Sun Life',['Aditya Birla Sun Life']],
+    ['AlphaGrep',['AlphaGrep']],
+    ['Angel One',['Angel One']],
+    ['Ask',['Ask Mutual','Ask Fund','Ask Asset']], // narrowed — 'Ask' alone risks false matches
+    ['Bandhan',['Bandhan','IDFC']],
+    ['Choice',['Choice']],
+    ['DSP',['DSP']],
+    ['Franklin Templeton',['Franklin Templeton']],
+    ['HDFC',['HDFC']],
+    ['Helios',['Helios']],
+    ['HSBC',['HSBC','L&T']],
+    ['ICICI Prudential',['ICICI Prudential']],
+    ['IL&FS',['IL&FS']],
+    ['Jio BlackRock',['Jio BlackRock']],
+    ['Kotak',['Kotak']],
+    ['Mahindra Manulife',['Mahindra Manulife']],
+    ['Navi',['Navi','Essel']],
+    ['PPFAS',['PPFAS','Parag Parikh']],
+    ['SBI',['SBI']],
+    ['Shriram',['Shriram']],
+    ['Tata',['Tata']],
+    ['Unifi',['Unifi']],
+    ['Union',['Union']],
+    ['WhiteOak',['WhiteOak','White Oak']],
+    ['Zerodha',['Zerodha']],
+    ['Abakkus',['Abakkus']],
+    ['Axis',['Axis']],
+    ['Bajaj Finserv',['Bajaj Finserv']],
+    ['Bank of India',['Bank of India']],
+    ['Baroda BNP Paribas',['Baroda BNP Paribas']],
+    ['Canara Robeco',['Canara Robeco']],
+    ['Capitalmind',['Capitalmind']],
+    ['Edelweiss',['Edelweiss']],
+    ['Groww',['Groww','Indiabulls']],
+    ['Invesco',['Invesco']],
+    ['ITI',['ITI']],
+    ['JM Financial',['JM Financial']],
+    ['Lakshya',['Lakshya']],
+    ['LIC',['LIC','IDBI']],
+    ['Mirae Asset',['Mirae Asset']],
+    ['Monarch',['Monarch']],
+    ['Motilal Oswal',['Motilal Oswal']],
+    ['Nippon India',['Nippon India','Reliance']],
+    ['NJ',['NJ']],
+    ['Old Bridge',['Old Bridge']],
+    ['PGIM India',['PGIM India','DHFL']],
+    ['Quantum',['Quantum']],       // MUST be checked before 'Quant' — 'Quant' is a substring of 'Quantum'
+    ['Quant',['Quant','Escorts']],
+    ['Samco',['Samco','SAMCO']],
+    ['Sundaram',['Sundaram']],
+    ['Taurus',['Taurus']],
+    ['The Wealth Company',['The Wealth Company']],
+    ['Trust',['Trust']],
+    ['UTI',['UTI']]
+  ];
+  const u = name.toUpperCase();
+  for(const [canonical, aliases] of amcMap){
+    for(const alias of aliases){
+      if(u.includes(alias.toUpperCase())) return canonical+' MF';
+    }
+  }
+  return 'Other AMC'; // honest bucket for anything unmatched — never fabricate a unique pseudo-AMC name per fund
 }
 
 // ── AMFI PARSING ──────────────────────────────────────────
