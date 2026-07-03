@@ -622,7 +622,7 @@ function getSubCat(name) {
   if(u.includes('HYBRID')||u.includes('BALANCED')) return 'Aggressive Hybrid';
   // Equity
   // Bluechip funds are classified as Large Cap per SEBI
-  if(u.includes('LARGE AND MID')||u.includes('LARGE & MID')||u.includes('LARGECAP AND MID')) return 'Large & MidCap';
+  if(u.includes('LARGE AND MID')||u.includes('LARGE & MID')||u.includes('LARGECAP AND MID')||u.includes('LARGE CAP AND MID')||u.includes('LARGE CAP & MID')) return 'Large & MidCap';
   if(u.includes('FOCUSED')||u.includes('FOCUS')||u.includes('CONCENTRATED')) return 'Focused';
   if(u.includes('LARGE CAP')||u.includes('LARGECAP')||u.includes('LARGE-CAP')) return 'Large Cap';
   if(u.includes('MULTI CAP')||u.includes('MULTICAP')) return 'Multi Cap';
