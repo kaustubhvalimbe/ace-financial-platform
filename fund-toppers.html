@@ -99,6 +99,18 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
 .ret-nil{color:var(--t5);}
 .si-cell{background:linear-gradient(135deg,var(--p4),var(--g5))!important;color:var(--p2)!important;font-weight:900!important;}
 .loading-msg{text-align:center;padding:32px;color:var(--t5);}
+.fmf-box{position:relative;background:var(--p4);border:1.5px solid var(--p3);border-radius:10px;padding:12px 14px;margin-bottom:12px;}
+.fmf-box label{font-size:11px;font-weight:800;color:var(--p2);text-transform:uppercase;display:block;margin-bottom:6px;}
+.fmf-inp{width:100%;padding:9px 12px;border:1.5px solid var(--p3);border-radius:8px;font-size:12px;outline:none;}
+.fmf-dd{position:absolute;left:14px;right:14px;top:100%;margin-top:2px;background:#fff;border:1.5px solid var(--p3);border-radius:8px;max-height:220px;overflow-y:auto;z-index:50;box-shadow:0 8px 20px rgba(0,0,0,.12);display:none;}
+.fmf-dd.show{display:block;}
+.fmf-dd-item{padding:8px 12px;font-size:12px;cursor:pointer;border-bottom:1px solid var(--g4);}
+.fmf-dd-item:hover{background:var(--g5);}
+.fmf-dd-item:last-child{border-bottom:none;}
+.fmf-result{margin-top:10px;background:#fff;border:1.5px solid var(--g1);border-radius:8px;padding:10px 14px;font-size:12px;display:none;}
+.fmf-result.show{display:block;}
+.fmf-result .rank-num{font-size:18px;font-weight:900;color:var(--g1);}
+.toppers-tbl tbody tr.highlighted td{background:var(--g5)!important;box-shadow:inset 0 0 0 2px var(--g1);}
 .empty-msg{text-align:center;padding:40px;}
 .empty-msg h3{font-family:var(--fh);font-size:16px;color:var(--t4);}
 
@@ -373,7 +385,7 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
     <div class="section-hdr" style="flex-wrap:wrap;gap:10px;">
       <div style="flex:1;">
         <div class="section-title" id="result-title">Select a Category</div>
-        <div class="section-sub" id="result-sub">Choose any sub-category from the left panel to see Top 10 funds</div>
+        <div class="section-sub" id="result-sub">Choose any sub-category from the left panel to see all ranked funds</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
         <span style="font-size:11px;font-weight:700;color:var(--t5);">Rank By:</span>
@@ -389,7 +401,7 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
       <div class="empty-msg">
         <div style="font-size:36px;margin-bottom:12px;">🏆</div>
         <h3>Select a Sub-Category</h3>
-        <p style="color:var(--t5);font-size:12px;margin-top:8px;">Click any category on the left — Large Cap, Mid Cap, Small Cap etc<br>to see the Top 10 ranked funds with full return analysis</p>
+        <p style="color:var(--t5);font-size:12px;margin-top:8px;">Click any category on the left — Large Cap, Mid Cap, Small Cap etc<br>to see all funds ranked with full return analysis, and find where your fund stands</p>
       </div>
     </div>
 
@@ -624,7 +636,7 @@ function getSubCat(name) {
   // Bluechip funds are classified as Large Cap per SEBI
   if(u.includes('LARGE AND MID')||u.includes('LARGE & MID')||u.includes('LARGECAP AND MID')||u.includes('LARGE CAP AND MID')||u.includes('LARGE CAP & MID')) return 'Large & MidCap';
   if(u.includes('FOCUSED')||u.includes('FOCUS')||u.includes('CONCENTRATED')) return 'Focused';
-  if(u.includes('LARGE CAP')||u.includes('LARGECAP')||u.includes('LARGE-CAP')) return 'Large Cap';
+  if(u.includes('LARGE CAP')||u.includes('LARGECAP')||u.includes('LARGE-CAP')||u.includes('BLUECHIP')||u.includes('BLUE CHIP')) return 'Large Cap';
   if(u.includes('MULTI CAP')||u.includes('MULTICAP')) return 'Multi Cap';
   if(u.includes('FLEXI CAP')||u.includes('FLEXICAP')||u.includes('FLEXI-CAP')) return 'Flexi Cap';
   if(u.includes('SMALL CAP')||u.includes('SMALLCAP')) return 'Small Cap';
@@ -691,10 +703,10 @@ async function renderToppers() {
   var titleEl = document.getElementById('result-title');
   var subEl   = document.getElementById('result-sub');
 
-  titleEl.textContent = 'Top 10 — ' + ST.subcat;
+  titleEl.textContent = 'All Funds — ' + ST.subcat;
   subEl.textContent   = (ST.nature==='direct'?'Direct':'Regular')+' · Growth Plans · Ranked by '+getSortLabel();
 
-  content.innerHTML = '<div class="loading-msg">⏳ Loading top funds for '+ST.subcat+'...</div>';
+  content.innerHTML = '<div class="loading-msg">⏳ Loading funds for '+ST.subcat+'...</div>';
 
   // Filter funds
   var pool = allFunds.filter(function(f){
@@ -708,14 +720,11 @@ async function renderToppers() {
 
   if(!pool.length) {
     content.innerHTML = '<div class="empty-msg"><h3>No funds found for this filter</h3><p style="color:var(--t5);font-size:12px;margin-top:6px">Try switching between Direct and Regular plans</p></div>';
+    _rendering = false;
     return;
   }
 
-  // Load returns for all funds in pool (batch of 20 max)
-  var toLoad = pool.filter(function(f){ return !f.retLoaded; }).slice(0, 30);
-  await Promise.all(toLoad.map(loadFundReturns));
-
-  // Deduplicate pool by fund code
+  // Deduplicate pool by fund code BEFORE loading returns, so we never fetch NAV history twice for the same scheme
   var seen = {};
   pool = pool.filter(function(f){
     if(seen[f.code]) return false;
@@ -723,22 +732,45 @@ async function renderToppers() {
     return true;
   });
 
-  // Sort
+  // Load returns for EVERY fund in the category, in batches — no artificial cap.
+  // Batched (not one giant Promise.all) so a large category (100+ funds) doesn't fire
+  // an excessive number of simultaneous requests at api.mfapi.in.
+  var toLoad = pool.filter(function(f){ return !f.retLoaded; });
+  var BATCH = 25;
+  for(var bi=0; bi<toLoad.length; bi+=BATCH){
+    var batch = toLoad.slice(bi, bi+BATCH);
+    content.innerHTML = '<div class="loading-msg">⏳ Loading returns... ('+Math.min(bi+BATCH,toLoad.length)+' / '+toLoad.length+' funds)</div>';
+    await Promise.all(batch.map(loadFundReturns));
+  }
+
+  // Sort — full list, not just top 10
   var sortKey = ST.sort;
   var sorted = pool.filter(function(f){ return f[sortKey] !== null && f[sortKey] !== undefined; });
   sorted.sort(function(a,b){ return (b[sortKey]||0)-(a[sortKey]||0); });
-  var top10 = sorted.slice(0, 10);
+  var allRanked = sorted;
+  CURRENT_RANKED = allRanked; // exposed for the Find My Fund search below
 
-  if(!top10.length) {
+  if(!allRanked.length) {
     content.innerHTML = '<div class="empty-msg"><h3>Returns data loading...</h3><p style="color:var(--t5);font-size:12px;margin-top:6px">Please try again in a moment</p></div>';
+    _rendering = false;
     return;
   }
 
   var wrap = document.createElement('div');
   wrap.className = 'toppers-wrap';
+
+  // ── FIND MY FUND ──
+  var fmf = document.createElement('div');
+  fmf.className = 'fmf-box';
+  fmf.innerHTML = '<label>🔍 Find My Fund — see where it ranks in this list</label>'
+    + '<input type="text" class="fmf-inp" id="fmf-inp" placeholder="Type your fund name..." autocomplete="off">'
+    + '<div class="fmf-dd" id="fmf-dd"></div>'
+    + '<div class="fmf-result" id="fmf-result"></div>';
+  wrap.appendChild(fmf);
+
   var hdr = document.createElement('div');
   hdr.className = 'toppers-hdr';
-  hdr.innerHTML = '<div class="toppers-hdr-title">Top 10 — '+ST.subcat+'</div>'
+  hdr.innerHTML = '<div class="toppers-hdr-title">All '+allRanked.length+' Funds — '+ST.subcat+'</div>'
     +'<div class="toppers-hdr-sub">Ranked by '+getSortLabel()+' · '+(ST.nature==='direct'?'Direct':'Regular')+' · Growth · All CAGR Annualised</div>';
   wrap.appendChild(hdr);
   var tbl = document.createElement('table');
@@ -747,12 +779,13 @@ async function renderToppers() {
   thead.innerHTML = '<tr><th>#</th><th>Fund Name</th><th>6M CAGR</th><th>1Y CAGR</th><th>3Y CAGR</th><th>5Y CAGR</th><th style="background:linear-gradient(135deg,var(--g1),var(--g2))">SI CAGR</th></tr>';
   tbl.appendChild(thead);
   var tbody = document.createElement('tbody');
+  tbody.id = 'toppers-tbody';
 
   // Update sub title with active fund count
   var titleEl2 = document.getElementById('result-sub');
-  if(titleEl2) titleEl2.textContent = (ST.nature==='direct'?'Direct':'Regular')+' · Growth · '+top10.length+' active funds · Ranked by '+getSortLabel()+' (All CAGR Annualised)';
+  if(titleEl2) titleEl2.textContent = (ST.nature==='direct'?'Direct':'Regular')+' · Growth · '+allRanked.length+' active funds · Ranked by '+getSortLabel()+' (All CAGR Annualised)';
 
-  top10.forEach(function(f, i) {
+  allRanked.forEach(function(f, i) {
     var rank = i+1;
     var rankCls = rank===1?'r1':rank===2?'r2':rank===3?'r3':'rn';
 
@@ -764,6 +797,7 @@ async function renderToppers() {
 
     var tr = document.createElement('tr');
     tr.style.cursor='pointer';
+    tr.id = 'topper-row-'+f.code;
     tr.setAttribute('data-code', f.code);
     var shortName = f.name.replace(/ - Direct Plan - Growth/gi,'').replace(/ - Direct Plan/gi,'').replace(/ - Regular Plan - Growth/gi,'').replace(/ - Regular Plan/gi,'');
     tr.innerHTML = '<td><div class="rank-badge '+rankCls+'">'+rank+'</div></td>'
@@ -785,7 +819,60 @@ async function renderToppers() {
   note.style.cssText = 'background:var(--g5);border:1.5px solid var(--g4);border-radius:9px;padding:10px 14px;margin-top:10px;font-size:11px;color:var(--t4);line-height:1.8;';
   note.textContent = 'All returns are annualised CAGR. Re-check rankings every 6 months. Past performance is not a guarantee.';
   content.appendChild(note);
+  initFmfSearch();
   _rendering = false;
+}
+
+// ── FIND MY FUND — search within the currently rendered category and show its rank ──
+var CURRENT_RANKED = [];
+function initFmfSearch(){
+  var inp = document.getElementById('fmf-inp');
+  var dd  = document.getElementById('fmf-dd');
+  if(!inp || !dd) return;
+  inp.addEventListener('input', function(){
+    var q = inp.value.trim().toLowerCase();
+    if(q.length < 2){ dd.classList.remove('show'); return; }
+    var matches = CURRENT_RANKED.filter(function(f){ return f.name.toLowerCase().indexOf(q) >= 0; }).slice(0, 8);
+    if(!matches.length){ dd.classList.remove('show'); return; }
+    dd.innerHTML = matches.map(function(f){
+      var rank = CURRENT_RANKED.indexOf(f) + 1;
+      var shortName = f.name.replace(/ - Direct Plan - Growth/gi,'').replace(/ - Direct Plan/gi,'').replace(/ - Regular Plan - Growth/gi,'').replace(/ - Regular Plan/gi,'');
+      return '<div class="fmf-dd-item" data-code="'+f.code+'">#'+rank+' — '+shortName+'</div>';
+    }).join('');
+    dd.classList.add('show');
+    dd.querySelectorAll('.fmf-dd-item').forEach(function(item){
+      item.addEventListener('mousedown', function(){
+        showFmfResult(item.getAttribute('data-code'));
+        dd.classList.remove('show');
+      });
+    });
+  });
+  inp.addEventListener('blur', function(){ setTimeout(function(){ dd.classList.remove('show'); }, 200); });
+}
+
+function showFmfResult(code){
+  var idx = -1;
+  for(var i=0;i<CURRENT_RANKED.length;i++){ if(CURRENT_RANKED[i].code===code){ idx=i; break; } }
+  if(idx===-1) return;
+  var f = CURRENT_RANKED[idx];
+  var rank = idx+1;
+  var total = CURRENT_RANKED.length;
+  var resultBox = document.getElementById('fmf-result');
+  var shortName = f.name.replace(/ - Direct Plan - Growth/gi,'').replace(/ - Direct Plan/gi,'').replace(/ - Regular Plan - Growth/gi,'').replace(/ - Regular Plan/gi,'');
+  var sortKey = ST.sort;
+  var val = f[sortKey];
+  var valTxt = (val===null||val===undefined) ? '—' : (val>=0?'+':'')+val.toFixed(2)+'%';
+  if(resultBox){
+    resultBox.innerHTML = '🎯 <strong>'+shortName+'</strong> is ranked <span class="rank-num">#'+rank+'</span> out of '+total+' funds in this category ('+getSortLabel()+': '+valTxt+')';
+    resultBox.classList.add('show');
+  }
+  // Highlight and scroll to the row in the table
+  document.querySelectorAll('#toppers-tbody tr.highlighted').forEach(function(tr){ tr.classList.remove('highlighted'); });
+  var row = document.getElementById('topper-row-'+code);
+  if(row){
+    row.classList.add('highlighted');
+    row.scrollIntoView({behavior:'smooth', block:'center'});
+  }
 }
 
 function getSortLabel() {
