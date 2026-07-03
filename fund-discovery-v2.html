@@ -832,9 +832,9 @@ function detNat(name){
 }
 
 function xAMC(name){
-  const amcs=['Aditya Birla Sun Life','Axis','Bajaj Finserv','Bandhan','Baroda BNP Paribas','Canara Robeco','DSP','Edelweiss','Franklin Templeton','HDFC','HSBC','ICICI Prudential','IDFC','Invesco','JM Financial','Kotak','LIC','Mahindra Manulife','Mirae Asset','Motilal Oswal','Navi','Nippon India','NJ','PGIM India','Parag Parikh','Quant','Quantum','Samco','SBI','Sundaram','Tata','UTI','Union','WhiteOak','Zerodha','Groww','360 ONE','Shriram','ITI','Helios','Old Bridge'];
+  const amcs=['360 ONE','Aditya Birla Sun Life','Angel One','Axis','Bajaj Finserv','Bandhan','Bank of India','Baroda BNP Paribas','Canara Robeco','Choice','DSP','Edelweiss','Franklin Templeton','Groww','HDFC','Helios','HSBC','ICICI Prudential','IDBI','IDFC','IIFL','ITI','Invesco','JM Financial','Kotak','LIC','Mahindra Manulife','Mirae Asset','Motilal Oswal','Navi','Nippon India','NJ','Old Bridge','PGIM India','Parag Parikh','PPFAS','Quant','Quantum','Samco','SBI','Shriram','Sundaram','Tata','Taurus','Trust','Union','Unifi','UTI','WhiteOak','Zerodha'];
   for(const a of amcs) if(name.includes(a)) return a+' MF';
-  return name.split(' ').slice(0,3).join(' ');
+  return 'Other AMC'; // honest bucket for anything unmatched — never fabricate a unique pseudo-AMC name per fund, which is what inflated the count to 1386
 }
 
 // ── AMFI PARSING ──────────────────────────────────────────
