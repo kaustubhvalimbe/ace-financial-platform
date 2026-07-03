@@ -542,9 +542,14 @@ async function loadFunds() {
   if(loaded) return;
   try {
     var data = await fetchMFAPI();
-    if(!data) { 
-      document.getElementById('ft-status').innerHTML = 'Data loading failed. <button onclick="location.reload()" style="background:#8bc32a;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;font-weight:700;">Retry</button>';
-      return; 
+    if(!data) {
+      var contentEl = document.getElementById('toppers-content');
+      if(contentEl){
+        contentEl.innerHTML = '<div class="empty-msg"><h3>Could not load fund data</h3>'
+          + '<p style="color:var(--t5);font-size:12px;margin-top:6px">Check your internet connection, then '
+          + '<button onclick="location.reload()" style="background:#8bc32a;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;font-weight:700;">Retry</button></p></div>';
+      }
+      return;
     }
     allFunds=[];
     for(var _i=0;_i<data.length;_i++){
@@ -574,7 +579,7 @@ async function loadFunds() {
 
 // ── SUB-CATEGORY DETECTION ─────────────────────────────
 function getSubCat(name) {
-  var u = name.toUpperCase();
+  var u = name.toUpperCase().replace(/-/g, ' '); // normalize hyphens (e.g. "Mid-Cap" -> "MID CAP") so real scheme names match the space/no-space checks below
   // ELSS
   if(u.includes('ELSS')||u.includes('TAX SAVER')||u.includes('TAX SAVING')) return 'ELSS Flexi Cap';
   // Index / ETF
