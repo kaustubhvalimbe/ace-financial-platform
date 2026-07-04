@@ -118,8 +118,12 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
 
 /* ── STOCK INTELLIGENCE — MOBILE LAYOUT (rebuilt) ── */
 @media(max-width:768px){
-  nav{padding:0 14px!important;height:52px!important;}
+  nav{padding:0 14px!important;height:52px!important;gap:8px!important;}
   .bs{display:none!important;}
+  .bn{font-size:12px!important;white-space:nowrap!important;}
+  .bi{height:28px!important;}
+  .nav-links{flex-wrap:nowrap!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;gap:4px!important;flex:1 1 auto!important;min-width:0!important;}
+  .nav-links a{font-size:11px!important;padding:6px 9px!important;white-space:nowrap!important;flex-shrink:0!important;}
 
   /* Ticker: tighter, single scrollable row */
   .ticker{padding:6px 12px!important;gap:6px!important;}
@@ -492,16 +496,30 @@ function openPanel(s) {
   });
   document.getElementById("sdov").classList.add("open");
   document.getElementById("sdp").classList.add("open");
+  if(!location.hash.includes('stock-detail')) history.pushState({sdpOpen:true}, '', '#stock-detail');
 }
 
 function mkCard(l, v, c) {
   return "<div class=\"icard\"><div class=\"ilbl\">"+l+"</div><div class=\"ival\" style=\"color:"+c+"\">"+v+"</div></div>";
 }
 
-function closePanel() {
+function hidePanelUI() {
   document.getElementById("sdov").classList.remove("open");
   document.getElementById("sdp").classList.remove("open");
 }
+
+function closePanel() {
+  if(location.hash.includes('stock-detail')) {
+    history.back(); // triggers popstate below, which actually hides the panel
+  } else {
+    hidePanelUI();
+  }
+}
+
+// Phone/browser back button: if the detail panel is open, close it instead of navigating away
+window.addEventListener('popstate', function(){
+  hidePanelUI();
+});
 
 var FUND_CODES = {"SBI Bluechip":"119022","Axis Bluechip":"120465","ICICI Pru Bluechip":"120586","Kotak Bluechip":"120255","Canara Robeco Bluechip":"102885","Franklin India Bluechip":"100033","HDFC Flexi Cap":"100010","Mirae Asset Large Cap":"118834","Nippon India Large Cap":"118701","UTI Nifty 50 Index":"120716","DSP Flexi Cap":"119206","PPFAS Flexi Cap":"122639","Motilal Oswal Flexi Cap":"120828","Motilal Oswal Midcap":"120847","HDFC Mid Cap Opp":"118989","HDFC Small Cap":"100032","Nippon India Small Cap":"118778","SBI Small Cap":"114959","SBI Magnum Midcap":"102389","Nippon India Mid Cap":"118702","Axis Midcap":"120468","Axis Small Cap":"125355","Axis Flexi Cap":"125354","Kotak Emerging Equity":"136118","Mirae Asset Midcap":"135804","Mirae Asset Flexi Cap":"145552","Quant Small Cap":"120845","Quant Mid Cap":"120844","Quant Large Cap":"120503","Quant Flexi Cap":"125497","Aditya Birla Flexi Cap":"119598","Edelweiss Large Cap":"135781","Edelweiss Midcap":"135782","Bandhan Large Cap":"119795","Nippon India Flexi Cap":"118704"};
 
