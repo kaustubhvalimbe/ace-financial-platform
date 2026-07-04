@@ -288,6 +288,11 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
   .right,.main-panel{padding:12px!important;width:100%!important;}
   .stats-row,.fund-grid,.calc-grid,.info-grid{grid-template-columns:1fr!important;gap:10px!important;}
   .table-wrap,.tbl-wrap{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;}
+  .toppers-tbl-scroll{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;}
+  .toppers-tbl{min-width:640px!important;font-size:11px!important;}
+  .toppers-tbl thead th{padding:8px 6px!important;font-size:10px!important;}
+  .toppers-tbl td{padding:8px 6px!important;}
+  .toppers-tbl thead th:nth-child(2){min-width:140px!important;}
   table{min-width:580px!important;font-size:12px!important;}
   thead th{padding:8px 10px!important;font-size:10px!important;white-space:nowrap!important;}
   tbody td{padding:8px 10px!important;font-size:12px!important;}
@@ -884,7 +889,10 @@ async function renderToppers() {
   });
 
   tbl.appendChild(tbody);
-  wrap.appendChild(tbl);
+  var tblScroll = document.createElement('div');
+  tblScroll.className = 'toppers-tbl-scroll';
+  tblScroll.appendChild(tbl);
+  wrap.appendChild(tblScroll);
   content.innerHTML = '';
   content.appendChild(wrap);
   var note = document.createElement('div');
