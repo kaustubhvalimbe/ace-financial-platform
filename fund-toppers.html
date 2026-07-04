@@ -243,6 +243,9 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
 
 /* ══ MOBILE RESPONSIVE — ACE FINANCIAL SERVICES ══ */
 .mob-menu-btn{display:none;background:none;border:none;font-size:22px;cursor:pointer;color:#1a1240;padding:4px 8px;border-radius:6px;align-items:center;}
+.mob-filter-btn{display:none;}
+.mob-filter-close{display:none;}
+.mob-filter-overlay{display:none;}
 .mob-nav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199;}
 .mob-nav-overlay.open{display:block;}
 .mob-nav-drawer{position:fixed;top:0;left:-280px;width:280px;height:100vh;background:#fff;z-index:200;transition:left .3s ease;overflow-y:auto;box-shadow:4px 0 20px rgba(0,0,0,.15);padding:20px 0;}
@@ -265,7 +268,23 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
   .hstat-v{font-size:16px!important;}
   .hstat-l{font-size:9px!important;}
   .wrap,.layout-wrap{display:block!important;}
-  .left,.sidebar-panel{display:none!important;}
+  .left,.sidebar-panel{
+    display:block!important;
+    position:fixed!important; top:0!important; left:-300px!important;
+    width:280px!important; height:100vh!important; z-index:250!important;
+    transition:left .3s ease!important; box-shadow:4px 0 20px rgba(0,0,0,.2)!important;
+    background:#fff!important;
+  }
+  .left.mob-open,.sidebar-panel.mob-open{left:0!important;}
+  .mob-filter-btn{
+    display:flex!important; align-items:center; gap:6px;
+    position:sticky; top:58px; z-index:60; margin:10px 14px 0;
+    background:var(--p1,#3c3197); color:#fff; border:none; border-radius:9px;
+    padding:10px 16px; font-size:13px; font-weight:800; cursor:pointer; width:calc(100% - 28px);
+  }
+  .mob-filter-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:249;}
+  .mob-filter-overlay.open{display:block;}
+  .mob-filter-close{display:block!important;width:100%;background:var(--g5,#f0fdf0);border:1.5px solid var(--g4,#d4eda0);border-radius:8px;padding:10px;font-size:13px;font-weight:800;color:var(--t2,#3d3b5c);margin-bottom:12px;cursor:pointer;}
   .right,.main-panel{padding:12px!important;width:100%!important;}
   .stats-row,.fund-grid,.calc-grid,.info-grid{grid-template-columns:1fr!important;gap:10px!important;}
   .table-wrap,.tbl-wrap{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;}
@@ -335,10 +354,15 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
   <button class="sort-btn" id="sb-ra"  onclick="setSort('riskAdj',this)" title="Sharpe-style: return per unit of risk taken, based on trailing 3Y volatility">⚖️ Risk Adjusted</button>
 </div>
 
+<!-- Mobile-only: Filters trigger + overlay (sidebar becomes a slide-out drawer on small screens) -->
+<button class="mob-filter-btn" id="mob-filter-btn" onclick="toggleMobFilters()">📂 Filters &amp; Categories</button>
+<div class="mob-filter-overlay" id="mob-filter-overlay" onclick="toggleMobFilters()"></div>
+
 <div class="wrap">
 
   <!-- LEFT PANEL -->
   <div class="left">
+    <button class="mob-filter-close" id="mob-filter-close" onclick="toggleMobFilters()">✕ Close</button>
     <div class="panel-title">🏆 Fund Toppers</div>
 
     <!-- Nature -->
@@ -501,10 +525,25 @@ function buildSubBtns() {
         btn.classList.add('on');
         ST.subcat = s.id;
         renderToppers();
+        if(window.innerWidth<=768) toggleMobFilters(true); // auto-close the mobile drawer after picking a category
       });
       container.appendChild(btn);
     });
   });
+}
+
+// ── MOBILE FILTER DRAWER (category sidebar becomes a slide-out on small screens) ──
+function toggleMobFilters(forceClose){
+  var left = document.querySelector('.left');
+  var overlay = document.getElementById('mob-filter-overlay');
+  if(!left || !overlay) return;
+  if(forceClose===true){
+    left.classList.remove('mob-open');
+    overlay.classList.remove('open');
+    return;
+  }
+  left.classList.toggle('mob-open');
+  overlay.classList.toggle('open');
 }
 
 // ── NATURE / SORT ──────────────────────────────────────
