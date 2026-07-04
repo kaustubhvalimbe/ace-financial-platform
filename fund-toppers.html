@@ -116,6 +116,10 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
 
 /* INSIGHT BOX */
 .insight-box{background:linear-gradient(135deg,var(--p4),var(--g5));border:1.5px solid #c4b5fd;border-radius:12px;padding:14px 18px;margin-bottom:16px;}
+.insight-hdr{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.insight-peek{display:none;} /* only shown on mobile when collapsed */
+.insight-chevron{display:none;} /* only shown on mobile — desktop has nothing to expand/collapse */
+.insight-body{display:block;margin-top:8px;}
 .insight-box p{font-size:12px;color:var(--p2);line-height:1.7;}
 .insight-box strong{color:var(--p2);}
 
@@ -259,6 +263,19 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
   .mob-menu-btn{display:flex!important;}
   nav{padding:0 14px!important;height:54px!important;}
   .bs{display:none!important;}
+
+  /* Insight boxes collapse to a single tappable line by default on mobile */
+  .insight-box{padding:11px 14px!important;}
+  .insight-hdr{cursor:pointer;}
+  .insight-peek{display:inline!important;color:var(--t4);font-weight:400;font-size:12px;}
+  .insight-chevron{display:inline-block!important;transition:transform .2s;flex-shrink:0;color:var(--p2);font-weight:900;}
+  .insight-body{display:none;font-size:13px;}
+  .insight-collapsible.expanded .insight-body{display:block;}
+  .insight-collapsible.expanded .insight-peek{display:none!important;}
+  .insight-collapsible.expanded .insight-chevron{transform:rotate(180deg);}
+  .cat-hint-desktop{display:none!important;}
+  .cat-hint-mobile{display:inline!important;}
+  .mob-filter-btn{animation:filterPulse 2s ease-in-out 3;}
   .hero,.page-hero{padding:18px 14px!important;}
   .hero h1,.hero-title{font-size:20px!important;line-height:1.3!important;}
   .hero p,.hero-sub{font-size:12px!important;}
@@ -318,6 +335,11 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
   .hero h1{font-size:17px!important;}
   .mv{font-size:12px!important;}
   .hstat-v{font-size:14px!important;}
+}
+
+@keyframes filterPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(60,49,151,.5);}
+  50%{box-shadow:0 0 0 8px rgba(60,49,151,0);}
 }
 
 </style>
@@ -408,12 +430,24 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
   <!-- RIGHT PANEL -->
   <div class="right">
 
-    <div class="insight-box">
-      <p>💡 <strong>Kaustubh's Insight:</strong> No single fund stays at No.1 forever. Rankings shift every 6 months. The fund at rank 3 or 4 today may outperform tomorrow. Study these toppers, compare their consistency, and choose wisely. <strong>Your uninterrupted SIP through all market cycles is what truly builds wealth.</strong></p>
+    <div class="insight-box insight-collapsible" id="insight-1">
+      <div class="insight-hdr" onclick="toggleInsight('insight-1')">
+        <span>💡 <strong>Kaustubh's Insight</strong> <span class="insight-peek">— No single fund stays at No.1 forever...</span></span>
+        <span class="insight-chevron">▾</span>
+      </div>
+      <div class="insight-body">
+        <p>No single fund stays at No.1 forever. Rankings shift every 6 months. The fund at rank 3 or 4 today may outperform tomorrow. Study these toppers, compare their consistency, and choose wisely. <strong>Your uninterrupted SIP through all market cycles is what truly builds wealth.</strong></p>
+      </div>
     </div>
 
-    <div class="insight-box" style="background:linear-gradient(135deg,#f0eeff,#e8f5d8);border-color:var(--p3);">
-      <p>⚖️ <strong>What does "Risk Adjusted" mean?</strong> Two funds can both give you 15% returns — but one got there through a smooth, steady climb, and the other through wild ups and downs. The Risk Adjusted number tells you <em>how</em> a fund earned its return, not just how much. <strong>Higher = a steadier, more efficient ride for the same return.</strong> A fund with a slightly lower raw return but a higher Risk Adjusted score may actually be the more trustworthy pick — less likely to test your patience mid-way, and less likely to make you panic and exit at the wrong time.</p>
+    <div class="insight-box insight-collapsible" id="insight-2" style="background:linear-gradient(135deg,#f0eeff,#e8f5d8);border-color:var(--p3);">
+      <div class="insight-hdr" onclick="toggleInsight('insight-2')">
+        <span>⚖️ <strong>What does "Risk Adjusted" mean?</strong> <span class="insight-peek">— tap to read</span></span>
+        <span class="insight-chevron">▾</span>
+      </div>
+      <div class="insight-body">
+        <p>Two funds can both give you 15% returns — but one got there through a smooth, steady climb, and the other through wild ups and downs. The Risk Adjusted number tells you <em>how</em> a fund earned its return, not just how much. <strong>Higher = a steadier, more efficient ride for the same return.</strong> A fund with a slightly lower raw return but a higher Risk Adjusted score may actually be the more trustworthy pick — less likely to test your patience mid-way, and less likely to make you panic and exit at the wrong time.</p>
+      </div>
     </div>
 
     <div class="section-hdr" style="flex-wrap:wrap;gap:10px;">
@@ -436,7 +470,11 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
       <div class="empty-msg">
         <div style="font-size:36px;margin-bottom:12px;">🏆</div>
         <h3>Select a Sub-Category</h3>
-        <p style="color:var(--t5);font-size:12px;margin-top:8px;">Click any category on the left — Large Cap, Mid Cap, Small Cap etc<br>to see all funds ranked with full return analysis, and find where your fund stands</p>
+        <p style="color:var(--t5);font-size:12px;margin-top:8px;">
+          <span class="cat-hint-desktop">Click any category on the left — Large Cap, Mid Cap, Small Cap etc</span>
+          <span class="cat-hint-mobile" style="display:none;">👆 Tap "📂 Filters &amp; Categories" above to choose a category</span>
+          <br>to see all funds ranked with full return analysis, and find where your fund stands
+        </p>
       </div>
     </div>
 
@@ -538,6 +576,11 @@ function buildSubBtns() {
 }
 
 // ── MOBILE FILTER DRAWER (category sidebar becomes a slide-out on small screens) ──
+function toggleInsight(id){
+  var box = document.getElementById(id);
+  if(box) box.classList.toggle('expanded');
+}
+
 function toggleMobFilters(forceClose){
   var left = document.querySelector('.left');
   var overlay = document.getElementById('mob-filter-overlay');
