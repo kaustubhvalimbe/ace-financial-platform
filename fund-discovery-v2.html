@@ -26,6 +26,7 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 24px;height:64px
 .bn{font-family:var(--fh);font-size:14px;font-weight:900;color:var(--p2);}
 .bn em{color:var(--g1);font-style:normal;}
 .bs{font-size:10px;color:var(--t5);font-family:var(--fm);}
+.bt{font-size:9px;color:var(--g1);font-weight:700;letter-spacing:.5px;margin-top:1px;}
 .nav-links{display:flex;gap:3px;}
 .nav-links a{text-decoration:none;font-size:12px;font-weight:700;padding:6px 12px;border-radius:7px;color:var(--t4);transition:all .2s;}
 .nav-links a:hover{background:var(--g5);color:var(--g1);}
@@ -439,6 +440,7 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 24px;height:64px
     <div>
       <div class="bn">Ace Financial <em>Services</em></div>
       <div class="bs">SEBI ARN · AMFI Registered MFD</div>
+      <div class="bt">Fund For Life Fund For Future</div>
     </div>
   </a>
   <div class="nav-links">
@@ -777,7 +779,7 @@ function getSubCat(name,cat){
     if(u.includes('NIFTY NEXT 50')||u.includes('JUNIOR NIFTY')||u.includes('JR NIFTY')) return 'Nifty Next 50';
     if(u.includes('NIFTY 100')) return 'Nifty 100';
     if(u.includes('NIFTY 500')) return 'Nifty 500';
-    if(u.includes('NIFTY 50')||u.includes('NIFTY50')||u.includes('NIFTY INDEX')||(u.includes('NIFTY')&&!u.includes('MIDCAP')&&!u.includes('SMALL')&&!u.includes('100')&&!u.includes('500')&&!u.includes('NEXT'))) return 'Nifty 50';
+    if(u.includes('NIFTY 50')||u.includes('NIFTY50')||u.includes('NIFTY INDEX')) return 'Nifty 50';
     if(u.includes('SENSEX')||u.includes('BSE 30')||u.includes('BSE30')) return 'Sensex';
     if(u.includes('DEBT')||u.includes('BOND INDEX')||u.includes('GSEC')||u.includes('SDL')) return 'Debt Index';
     return 'Sector ETF';

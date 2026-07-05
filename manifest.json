@@ -1,6 +1,6 @@
 {
   "name": "Ace Financial Services",
-  "short_name": "Ace Financial",
+  "short_name": "AFS",
   "description": "MFD analytics platform — Fund Compare, Fund Toppers, Stock Intelligence, Market Pulse and more.",
   "start_url": "./index.html",
   "scope": "./",
