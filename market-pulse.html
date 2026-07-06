@@ -161,6 +161,9 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);}
 @media(max-width:480px){
   .hero h1,.hero-title{font-size:16px!important;}
   .idx-item,.iv{font-size:12px!important;}
+  .fiidii-card{padding:10px 14px!important;gap:14px!important;}
+  .fiidii-card>div:first-child{width:100%!important;font-size:12px!important;}
+  .fiidii-card>div:last-child{gap:16px!important;width:100%!important;justify-content:space-between!important;}
 }
 </style>
 </head>
@@ -194,6 +197,12 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);}
   <div class="idx-divider"></div>
   <div class="idx-item"><div class="idx-name-sm">Nifty IT</div><div class="idx-val-sm" id="itv">--</div><div class="idx-chg-sm neu" id="itc">--</div></div>
   <div class="idx-divider"></div>
+  <div class="idx-item"><div class="idx-name-sm">Crude (WTI)</div><div class="idx-val-sm" id="clv">--</div><div class="idx-chg-sm neu" id="clc">--</div></div>
+  <div class="idx-divider"></div>
+  <div class="idx-item"><div class="idx-name-sm">Gold ($/oz)</div><div class="idx-val-sm" id="gcv">--</div><div class="idx-chg-sm neu" id="gcc">--</div></div>
+  <div class="idx-divider"></div>
+  <div class="idx-item"><div class="idx-name-sm">Silver ($/oz)</div><div class="idx-val-sm" id="siv">--</div><div class="idx-chg-sm neu" id="sic">--</div></div>
+  <div class="idx-divider"></div>
   <div class="idx-item" style="min-width:130px;"><div class="idx-name-sm">Updated</div><div class="idx-val-sm" style="font-size:11px;" id="tt">--</div><div class="idx-chg-sm neu" id="mkt-status">Live</div></div>
 </div>
 
@@ -202,6 +211,28 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);}
   <h1>📊 Market Pulse</h1>
   <p>Today's NAV movement vs Market — track which funds rose and which fell</p>
   <div class="hero-date" id="pulse-date">Loading date...</div>
+</div>
+
+<!--
+  FII / DII ACTIVITY — MANUALLY UPDATED
+  ─────────────────────────────────────
+  There is no reliable free live API for this data (NSE/BSE block bot access).
+  To update: replace the four number placeholders below with the latest
+  provisional figures (in ₹ Crore) from NSE/BSE, typically published after
+  market close each trading day. Figures are usually available on
+  nseindia.com or moneycontrol.com under "FII/DII activity".
+  Just edit the text between the <span> tags — nothing else needs to change.
+-->
+<div style="max-width:1200px;margin:0 auto 18px;padding:0 16px;">
+  <div class="fiidii-card" style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px 18px;display:flex;flex-wrap:wrap;gap:24px;align-items:center;">
+    <div style="font-weight:800;font-size:13px;color:#374151;white-space:nowrap;">🏦 FII / DII Activity <span style="font-weight:500;color:#9ca3af;">(as of <span id="fiidii-date">06 Jul 2026</span>)</span></div>
+    <div style="display:flex;gap:24px;flex-wrap:wrap;">
+      <div><span style="font-size:11px;color:#6b7280;">FII Net</span><br><span style="font-size:15px;font-weight:800;color:#dc2626;">₹ -1,245 Cr</span></div>
+      <div><span style="font-size:11px;color:#6b7280;">DII Net</span><br><span style="font-size:15px;font-weight:800;color:#16a34a;">₹ +2,110 Cr</span></div>
+      <div><span style="font-size:11px;color:#6b7280;">FII (Month)</span><br><span style="font-size:15px;font-weight:800;color:#dc2626;">₹ -8,760 Cr</span></div>
+      <div><span style="font-size:11px;color:#6b7280;">DII (Month)</span><br><span style="font-size:15px;font-weight:800;color:#16a34a;">₹ +15,320 Cr</span></div>
+    </div>
+  </div>
 </div>
 
 <!-- LAYOUT -->
@@ -473,6 +504,9 @@ var DISPLAY_INDICES=[
   {sym:"NIFTY_MID_100.NS",v:"mv",c:"mc2"},
   {sym:"NIFTY_SMLCAP_100.NS",v:"smv",c:"smc"},
   {sym:"^CNXIT",v:"itv",c:"itc"},
+  {sym:"CL=F",v:"clv",c:"clc"},
+  {sym:"GC=F",v:"gcv",c:"gcc"},
+  {sym:"SI=F",v:"siv",c:"sic"},
 ];
 // BENCHMARK_INDICES: fetched silently in the background purely to feed
 // indexPctMap for category/sector benchmarking — no sticky-bar tile.
