@@ -647,7 +647,7 @@ footer{
         <span class="italic">Guided.</span>
       </h1>
       <p class="hero-sub">
-        9 years of trusted mutual fund advisory in Pune. <b>8,500+ funds</b> analyzed. Personalized SIP &amp; investment planning. Serving investors across India with sincerity, transparency &amp; expertise.
+        9 years of trusted mutual fund advisory in Pune. <b><span id="fund-count-1">4,000+</span> funds</b> analyzed. Personalized SIP &amp; investment planning. Serving investors across India with sincerity, transparency &amp; expertise.
       </p>
       <div class="hero-btns">
         <a href="investment-case.html" class="btn-primary">⭐ Get My Investment Blueprint</a>
@@ -657,7 +657,7 @@ footer{
     <div class="hero-card fade-up">
       <div class="hcard-title">AFS Analytics Platform</div>
       <div class="hcard-stats">
-        <div class="hst"><div class="hst-v">8,500+</div><div class="hst-l">Live Funds</div></div>
+        <div class="hst"><div class="hst-v" id="fund-count-2">4,000+</div><div class="hst-l">Live Funds</div></div>
         <div class="hst"><div class="hst-v">55</div><div class="hst-l">AMCs</div></div>
         <div class="hst"><div class="hst-v">Real</div><div class="hst-l">NAV Returns</div></div>
         <div class="hst"><div class="hst-v">9 Yrs</div><div class="hst-l">Expertise</div></div>
@@ -682,7 +682,7 @@ footer{
   <div class="trust-sep"></div>
   <div class="trust-item"><span class="icon">🤝</span><div><div class="val">100%</div>Client-First Approach</div></div>
   <div class="trust-sep"></div>
-  <div class="trust-item"><span class="icon">📊</span><div><div class="val">8,500+</div>Funds Tracked Live</div></div>
+  <div class="trust-item"><span class="icon">📊</span><div><div class="val" id="fund-count-3">4,000+</div>Funds Tracked Live</div></div>
   <div class="trust-sep"></div>
   <div class="trust-item"><span class="icon">🏙️</span><div><div class="val">Pune, India</div>Serving Pan India</div></div>
 </div>
@@ -786,7 +786,7 @@ footer{
         <div class="section-title">India's Most <span>Powerful</span><br>MFD-Built Platform</div>
         <div class="section-sub">Built from 9 years of investor conversations — not by a tech company, but by a mutual fund distributor who knows exactly what investors need.</div>
         <div class="platform-features">
-          <div class="pf"><span class="pf-icon">🔍</span><div><div class="pf-title">Fund Discovery & Analytics</div><div class="pf-desc">All 8,500+ AMFI schemes with live NAV, real calculated returns, 10 risk ratios, ratings and detailed portfolio analysis.</div></div><span class="pf-new">LIVE</span></div>
+          <div class="pf"><span class="pf-icon">🔍</span><div><div class="pf-title">Fund Discovery & Analytics</div><div class="pf-desc">All <span id="fund-count-4">4,000+</span> AMFI schemes with live NAV, real calculated returns, 10 risk ratios, ratings and detailed portfolio analysis.</div></div><span class="pf-new">LIVE</span></div>
           <div class="pf"><span class="pf-icon">⭐</span><div><div class="pf-title">Investment Case Engine</div><div class="pf-desc">India's first personalized blueprint — amount, horizon, risk → 3–5 fund plan with SIP + lumpsum split and projected wealth table.</div></div><span class="pf-new">UNIQUE</span></div>
           <div class="pf"><span class="pf-icon">🧮</span><div><div class="pf-title">6 Professional Calculators</div><div class="pf-desc">SIP with step-up, SWP, Lumpsum, Goal Planner, ELSS Tax Saver, Inflation Adjusted Returns.</div></div><span class="pf-new">FREE</span></div>
           <div class="pf"><span class="pf-icon">🔐</span><div><div class="pf-title">Secure Client Portal</div><div class="pf-desc">Email + 2FA + OTP login. Personal portfolio dashboard. Client-specific reports and analytics.</div></div><span class="pf-new">COMING</span></div>
@@ -1204,6 +1204,55 @@ function submitForm(){
   overlay.addEventListener('click',close);
   document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
 })();
+
+// ── LIVE FUND COUNT — replaces static "8,500+" with a real, deduplicated count ──
+// Counts distinct fund PRODUCTS, not raw scheme codes (each fund has ~4 codes:
+// Direct/Regular x Growth/IDCW). Falls back to the static "4,000+" already in the
+// HTML if the fetch fails for any reason (e.g. this preview sandbox).
+async function loadLiveFundCount(){
+  var data = null;
+  try {
+    var r = await fetch('https://api.mfapi.in/mf');
+    if(r.ok) data = await r.json();
+  } catch(e){}
+  if(!data || !Array.isArray(data) || data.length < 100){
+    try {
+      var r2 = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://api.mfapi.in/mf'));
+      if(r2.ok) data = await r2.json();
+    } catch(e){}
+  }
+  if(!data || !Array.isArray(data)) return; // keep static fallback, don't touch the DOM
+
+  function normalize(name){
+    var n = name.toUpperCase();
+    n = n.replace(/-?\s*(DIRECT|REGULAR)\s*PLAN\s*-?/g, ' ');
+    n = n.replace(/-?\s*(DIRECT|REGULAR)\s*-?/g, ' ');
+    n = n.replace(/-?\s*GROWTH\s*(PLAN|OPTION)?\s*-?/g, ' ');
+    n = n.replace(/-?\s*IDCW.*$/g, ' ');
+    n = n.replace(/-?\s*DIVIDEND.*$/g, ' ');
+    n = n.replace(/-?\s*(DAILY|WEEKLY|FORTNIGHTLY|MONTHLY|QUARTERLY|HALF\s*YEARLY|ANNUAL)\s*(REINVESTMENT|PAYOUT|OPTION)?\s*-?/g, ' ');
+    n = n.replace(/-?\s*(PAYOUT|REINVESTMENT)\s*-?/g, ' ');
+    return n.replace(/\s+/g, ' ').trim();
+  }
+
+  var seen = {};
+  data.forEach(function(f){
+    if(!f.schemeName || f.schemeName.length < 5) return;
+    seen[normalize(f.schemeName)] = true;
+  });
+  var distinctCount = Object.keys(seen).length;
+
+  // Round down to nearest 500 for display, so the number doesn't need updating for tiny daily fluctuations
+  var displayCount = Math.floor(distinctCount / 500) * 500;
+  if(displayCount < 500) return; // sanity guard — don't show a wildly wrong number if parsing went badly wrong
+  var displayText = displayCount.toLocaleString('en-IN') + '+';
+
+  ['fund-count-1','fund-count-2','fund-count-3','fund-count-4'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.textContent = displayText;
+  });
+}
+loadLiveFundCount();
 
 </script>
 </body>
