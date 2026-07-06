@@ -568,8 +568,8 @@ function benchmarkPctFor(f){
 }
 
 async function loadIndices(){
-  for(var i=0;i<DISPLAY_INDICES.length;i++){
-    var idx=DISPLAY_INDICES[i];var data=await fetchIndex(idx.sym);if(!data)continue;
+  await Promise.all(DISPLAY_INDICES.map(async function(idx){
+    var data=await fetchIndex(idx.sym);if(!data)return;
     var up=data.chg>=0;
     var vEl=document.getElementById(idx.v);
     var cEl=document.getElementById(idx.c);
@@ -577,7 +577,7 @@ async function loadIndices(){
     if(cEl){cEl.textContent=(up?'+':'')+data.chg.toFixed(2)+' ('+(up?'+':'')+data.pct.toFixed(2)+'%)';cEl.className='idx-chg-sm '+(up?'up':'dn');}
     indexPctMap[idx.sym]=data.pct;
     if(idx.sym==='^NSEI')niftyPct=data.pct;
-  }
+  }));
   // Sector/benchmark-only indices — fetched in parallel, no DOM tile.
   await Promise.all(BENCHMARK_INDICES.map(function(idx){
     return fetchIndex(idx.sym).then(function(data){

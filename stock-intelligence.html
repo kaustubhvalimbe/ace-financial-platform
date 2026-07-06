@@ -641,30 +641,30 @@ async function loadOnePrice(s) {
 
 async function loadMarket() {
   var ids = [{sym:"^BSESN",v:"sv",c:"sc"},{sym:"^NSEI",v:"nv",c:"nc"},{sym:"^NSEBANK",v:"bv",c:"bc"}];
-  for(var i=0;i<ids.length;i++) {
+  await Promise.all(ids.map(async function(item){
     try {
-      var url = "https://api.allorigins.win/raw?url="+encodeURIComponent("https://query1.finance.yahoo.com/v8/finance/chart/"+ids[i].sym+"?interval=1d&range=2d");
+      var url = "https://api.allorigins.win/raw?url="+encodeURIComponent("https://query1.finance.yahoo.com/v8/finance/chart/"+item.sym+"?interval=1d&range=2d");
       var r = await fetch(url);
       var d = await r.json();
       var res = d.chart && d.chart.result && d.chart.result[0];
-      if(!res && ids[i].alt) {
-        var url2 = "https://api.allorigins.win/raw?url="+encodeURIComponent("https://query1.finance.yahoo.com/v8/finance/chart/"+ids[i].alt+"?interval=1d&range=2d");
+      if(!res && item.alt) {
+        var url2 = "https://api.allorigins.win/raw?url="+encodeURIComponent("https://query1.finance.yahoo.com/v8/finance/chart/"+item.alt+"?interval=1d&range=2d");
         var r2 = await fetch(url2);
         var d2 = await r2.json();
         res = d2.chart && d2.chart.result && d2.chart.result[0];
       }
-      if(!res) continue;
+      if(!res) return;
       var cur = res.meta.regularMarketPrice;
       var prev = res.meta.previousClose || res.meta.chartPreviousClose || cur;
       var chg = cur-prev;
       var pct = prev>0 ? (chg/prev)*100 : 0;
       var up = chg>=0;
-      document.getElementById(ids[i].v).textContent = cur.toLocaleString("en-IN",{maximumFractionDigits:2});
-      var cel = document.getElementById(ids[i].c);
+      document.getElementById(item.v).textContent = cur.toLocaleString("en-IN",{maximumFractionDigits:2});
+      var cel = document.getElementById(item.c);
       cel.textContent = (up?"+":"")+chg.toFixed(2)+" ("+(up?"+":"")+pct.toFixed(2)+"%)";
       cel.className = "mc "+(up?"up":"dn");
     } catch(e) {}
-  }
+  }));
   var now = new Date();
   document.getElementById("tt").textContent = "Updated: "+now.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"})+" IST";
   setTimeout(loadMarket, 300000);
