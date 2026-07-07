@@ -582,6 +582,9 @@ footer{
   .hero h1{font-size:17px!important;}
   .mv{font-size:12px!important;}
   .hstat-v{font-size:14px!important;}
+  #jw-fork button{min-width:0!important;width:100%;}
+  #jw-fork{padding:24px 18px!important;}
+  #jw-guided{padding:20px 16px!important;}
 }
 
 </style>
@@ -650,6 +653,140 @@ footer{
 </nav>
 
 <!-- HERO -->
+<!-- ══ JOURNEY FORK + GUIDED SELF-SERVICE FLOW ══ -->
+<section id="journey-widget" style="max-width:960px;margin:24px auto 0;padding:0 20px;">
+
+  <!-- SCREEN: Initial fork question -->
+  <div id="jw-fork" style="display:none;background:linear-gradient(135deg,var(--p1),var(--p2));border-radius:18px;padding:36px 28px;text-align:center;color:#fff;box-shadow:var(--s3,0 8px 24px rgba(0,0,0,.12));">
+    <div style="font-family:var(--fh);font-size:24px;font-weight:800;margin-bottom:8px;">How would you like to get started?</div>
+    <div style="font-size:14px;opacity:.85;margin-bottom:24px;">Pick whichever fits — you can always switch later.</div>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+      <button onclick="jwChooseAdvisor()" style="background:#fff;color:var(--p1);border:none;border-radius:12px;padding:18px 26px;font-size:15px;font-weight:800;cursor:pointer;font-family:var(--fh);min-width:240px;">
+        🧑‍💼 I'm working with Kaustubh<br><span style="font-size:12px;font-weight:600;opacity:.7;">Takes me to the full toolset</span>
+      </button>
+      <button onclick="jwChooseSelf()" style="background:var(--g1);color:#fff;border:none;border-radius:12px;padding:18px 26px;font-size:15px;font-weight:800;cursor:pointer;font-family:var(--fh);min-width:240px;">
+        🧭 I'm exploring on my own<br><span style="font-size:12px;font-weight:600;opacity:.85;">Guide me step by step</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- SCREEN: Guided Q&A (self-service path) -->
+  <div id="jw-guided" style="display:none;background:#fff;border:1.5px solid var(--bd,#e5e7eb);border-radius:18px;padding:30px 28px;box-shadow:var(--s2,0 4px 16px rgba(0,0,0,.06));">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:6px;">
+      <button onclick="jwSwitchToAdvisor()" style="background:none;border:none;color:var(--p1);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fh);text-decoration:underline;">Switch to full toolset →</button>
+    </div>
+    <div id="jw-guided-body"></div>
+  </div>
+
+</section>
+
+<script>
+var JW_KEY = 'ace_journey_choice';
+
+function jwGetChoice(){
+  try{ return localStorage.getItem(JW_KEY) || ''; }catch(e){ return ''; }
+}
+function jwSetChoice(v){
+  try{ localStorage.setItem(JW_KEY, v); }catch(e){}
+}
+
+function jwShowHero(show){
+  var heroEls = document.querySelectorAll('.hero, .trust-bar');
+  heroEls.forEach(function(el){ el.style.display = show ? '' : 'none'; });
+}
+
+function jwChooseAdvisor(){
+  jwSetChoice('advisor');
+  document.getElementById('jw-fork').style.display='none';
+  document.getElementById('jw-guided').style.display='none';
+  jwShowHero(true);
+}
+
+function jwChooseSelf(){
+  jwSetChoice('self');
+  document.getElementById('jw-fork').style.display='none';
+  jwShowHero(false);
+  var g=document.getElementById('jw-guided');
+  g.style.display='block';
+  jwRenderQ1();
+}
+
+function jwSwitchToAdvisor(){
+  jwChooseAdvisor();
+}
+
+function jwQBtn(label, sub, onclick){
+  return '<button onclick="'+onclick+'" style="display:block;width:100%;text-align:left;background:var(--bg3,#f0effe);border:1.5px solid var(--bd,#e5e7eb);border-radius:12px;padding:16px 18px;margin-bottom:10px;font-size:14px;font-weight:700;color:var(--t1,#1a1240);cursor:pointer;font-family:var(--fh);">'+label+(sub?'<div style="font-size:12px;font-weight:500;color:var(--t3,#6b63c0);margin-top:3px;">'+sub+'</div>':'')+'</button>';
+}
+
+function jwRenderQ1(){
+  document.getElementById('jw-guided-body').innerHTML =
+    '<div style="font-family:var(--fh);font-size:19px;font-weight:800;color:var(--p1);margin-bottom:16px;">What are you looking to do today?</div>' +
+    jwQBtn('📊 See how my money could grow', 'Plan a new investment — SIP, lumpsum, or STP', 'jwRenderQ2()') +
+    jwQBtn('📂 Review investments I already have', 'Upload your CAS for a full portfolio check-up', "jwRoute('portfolio-xray.html','Analyse My Existing Portfolio')") +
+    jwQBtn('🔍 Look up or compare specific funds', 'Explore 4,000+ funds with live data', "jwRoute('fund-discovery-v2.html','Fund Discovery')") +
+    jwQBtn('🧮 Just use a calculator', 'SIP, Goal, Lumpsum, SWP, ELSS, Inflation', "jwRoute('calculators.html','Calculators')");
+}
+
+function jwRenderQ2(){
+  document.getElementById('jw-guided-body').innerHTML =
+    '<div style="font-family:var(--fh);font-size:19px;font-weight:800;color:var(--p1);margin-bottom:16px;">How do you plan to invest?</div>' +
+    jwQBtn('💰 A lump sum, all at once', '', "jwRoute('investment-case.html?mode=sip','Investment Blueprint')") +
+    jwQBtn('📅 A fixed amount every month', '', "jwRoute('investment-case.html?mode=sip','Investment Blueprint')") +
+    jwQBtn('🔄 A lump sum, but moved into equity gradually', 'This is called an STP', 'jwRenderSTPExplain()') +
+    jwQBtn('🤔 Not sure — help me decide', '', 'jwRenderCompare()') +
+    '<button onclick="jwRenderQ1()" style="background:none;border:none;color:var(--t3,#6b63c0);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fh);margin-top:6px;">← Back</button>';
+}
+
+function jwRenderSTPExplain(){
+  document.getElementById('jw-guided-body').innerHTML =
+    '<div style="font-family:var(--fh);font-size:19px;font-weight:800;color:var(--p1);margin-bottom:12px;">What is an STP?</div>' +
+    '<div style="font-size:13px;color:var(--t2,#3c3197);line-height:1.7;margin-bottom:18px;">A <strong>Systematic Transfer Plan</strong> means your money sits safely in a Liquid Fund first, then moves into equity gradually in steps — rather than investing the whole amount at once.</div>' +
+    jwQBtn('Continue to STP planning →', '', "jwRoute('investment-case.html?mode=stp','STP Mode')") +
+    '<button onclick="jwRenderQ2()" style="background:none;border:none;color:var(--t3,#6b63c0);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fh);margin-top:6px;">← Back</button>';
+}
+
+function jwRenderCompare(){
+  document.getElementById('jw-guided-body').innerHTML =
+    '<div style="font-family:var(--fh);font-size:19px;font-weight:800;color:var(--p1);margin-bottom:14px;">SIP vs Lumpsum vs STP — in plain terms</div>' +
+    '<div style="font-size:13px;color:var(--t2,#3c3197);line-height:1.8;margin-bottom:18px;">' +
+    '<strong>Lumpsum</strong> — Invest a fixed amount once and let it grow over time.<br>' +
+    '<strong>SIP</strong> (Systematic Investment Plan) — Invest a smaller fixed amount monthly, weekly, or quarterly.<br>' +
+    '<strong>STP</strong> (Systematic Transfer Plan) — Park a lumpsum safely first, then move it into equity gradually in steps.' +
+    '</div>' +
+    jwQBtn('💰 Go with Lumpsum', '', "jwRoute('investment-case.html?mode=sip','Investment Blueprint')") +
+    jwQBtn('📅 Go with SIP', '', "jwRoute('investment-case.html?mode=sip','Investment Blueprint')") +
+    jwQBtn('🔄 Go with STP', '', "jwRoute('investment-case.html?mode=stp','STP Mode')") +
+    '<button onclick="jwRenderQ2()" style="background:none;border:none;color:var(--t3,#6b63c0);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fh);margin-top:6px;">← Back</button>';
+}
+
+function jwRoute(url, toolName){
+  document.getElementById('jw-guided-body').innerHTML =
+    '<div style="font-family:var(--fh);font-size:19px;font-weight:800;color:var(--p1);margin-bottom:10px;">Taking you to: '+toolName+'</div>' +
+    '<div style="font-size:12.5px;color:var(--t3,#6b63c0);line-height:1.6;margin-bottom:20px;background:var(--bg3,#f0effe);padding:12px 16px;border-radius:10px;">ℹ️ This tool calculates and projects outcomes — it does not place any real investment transactions.</div>' +
+    '<button onclick="window.location.href=\''+url+'\'" style="background:var(--g1);color:#fff;border:none;border-radius:10px;padding:14px 24px;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--fh);">Continue →</button>';
+}
+
+// ══ On load: decide which screen to show ══
+function jwInit(){
+  var choice = jwGetChoice();
+  if(choice==='advisor'){
+    jwShowHero(true);
+  } else if(choice==='self'){
+    jwShowHero(false);
+    document.getElementById('jw-guided').style.display='block';
+    jwRenderQ1();
+  } else {
+    jwShowHero(false);
+    document.getElementById('jw-fork').style.display='block';
+  }
+}
+document.addEventListener('DOMContentLoaded', jwInit);
+if(document.readyState==='interactive' || document.readyState==='complete'){
+  jwInit();
+}
+</script>
+
 <section class="hero" id="home">
   <div class="hero-pattern"></div>
   <div class="hero-inner">
@@ -1151,7 +1288,7 @@ function sendEmail() {
 </div>
 
 <!-- WHATSAPP FLOAT BUTTON -->
-<a href="https://wa.me/919999999999?text=Hi%20Kaustubh%2C%20I%20would%20like%20to%20know%20more%20about%20mutual%20fund%20investment." class="wa-float" target="_blank" title="Chat on WhatsApp" onclick="if(typeof gtag==='function'){gtag('event','whatsapp_click',{'event_category':'engagement','event_label':'floating_button'});}">💬</a>
+<a href="https://wa.me/919373334215?text=Hi%20Kaustubh%2C%20I%20would%20like%20to%20know%20more%20about%20mutual%20fund%20investment." class="wa-float" target="_blank" title="Chat on WhatsApp" onclick="if(typeof gtag==='function'){gtag('event','whatsapp_click',{'event_category':'engagement','event_label':'floating_button'});}">💬</a>
 
 <script>
 // Navbar scroll effect

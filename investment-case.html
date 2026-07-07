@@ -549,7 +549,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:var(--g5);}
 ::-webkit-scrollbar-thumb{background:var(--g4);border-radius:3px;}
-@media(max-width:700px){.ig2,.ac-grid,.fund-opts,.nfo-opts,.frc-grid,.sum-row,.plan-grid,.fi-grid,.fi-grid3{grid-template-columns:1fr!important;}.alloc-viz{grid-template-columns:1fr;}}
+@media(max-width:700px){.ig2,.ac-grid,.fund-opts,.nfo-opts,.frc-grid,.sum-row,.plan-grid,.fi-grid,.fi-grid3,.inv-grid3,.anl-contact-row{grid-template-columns:1fr!important;}.alloc-viz{grid-template-columns:1fr;}}
 
 /* SEBI/AMFI Disclaimer */
 .sebi-disclaimer{background:#1a1240;border-top:3px solid var(--gold,#d97706);padding:12px 20px;position:relative;}
@@ -872,15 +872,15 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
   </div>
   <div class="mcard" id="mb-stp" onclick="setMode('stp')">
     <div class="mc-icon">🔄</div>
-    <div><div class="mc-ttl">STP Mode</div><div class="mc-sub">Park in Liquid → Weekly/Monthly STP to Equity</div><div class="mc-badge bg">GAME CHANGER</div></div>
+    <div><div class="mc-ttl">STP Mode</div><div class="mc-sub">Systematic Transfer Plan (Transfer Lumpsum Amt from Liquid Fund to Equity in parts)</div><div class="mc-badge bg">GAME CHANGER</div></div>
   </div>
   <div class="mcard" id="mb-custom" onclick="setMode('custom')">
     <div class="mc-icon">✏️</div>
-    <div><div class="mc-ttl">Create My Blueprint</div><div class="mc-sub">Pick any fund · SIP / Lumpsum / Both · Max 10 funds</div><div class="mc-badge bo">ADVANCED</div></div>
+    <div><div class="mc-ttl">Create your Own Portfolio</div><div class="mc-sub">Pick any fund · SIP / Lumpsum / Both · Max 10 funds</div><div class="mc-badge bo">ADVANCED</div></div>
   </div>
   <div class="mcard" id="mb-analyse" onclick="window.location.href='portfolio-xray.html'">
     <div class="mc-icon">🔍</div>
-    <div><div class="mc-ttl">Analyse My Portfolio</div><div class="mc-sub">Upload CAS · Stock X-Ray · Sector Exposure · Full report</div><div class="mc-badge" style="background:#e65c00;color:#fff">NEW</div></div>
+    <div><div class="mc-ttl">Analyse My Existing Portfolio</div><div class="mc-sub">Upload CAS · Stock X-Ray · Sector Exposure · Full report</div><div class="mc-badge" style="background:#e65c00;color:#fff">NEW</div></div>
   </div>
 </div>
 
@@ -897,7 +897,7 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
 
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#e65c00,#f59e0b);border-radius:14px;padding:22px 26px;color:#fff;margin-bottom:20px;">
-      <div style="font-family:var(--fp);font-size:24px;margin-bottom:4px;">🔍 Analyse My Portfolio</div>
+      <div style="font-family:var(--fp);font-size:24px;margin-bottom:4px;">🔍 Analyse My Existing Portfolio</div>
       <div style="font-size:12px;opacity:.8;">Upload your CAS statement · Auto-detect CAMS / KFintech / NSDL / CDSL · Full portfolio assessment</div>
     </div>
 
@@ -973,7 +973,7 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
       <div id="anl-verify-status" class="anl-status info" style="display:none;"></div>
       
       <!-- Investor details -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px;padding:16px;background:var(--p4);border-radius:10px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;padding:16px;background:var(--p4);border-radius:10px;">
         <div>
           <div style="font-size:10px;font-weight:800;color:#000;text-transform:uppercase;margin-bottom:5px;">Investor Name</div>
           <input class="anl-inp" id="anl-inv-name" type="text" placeholder="Name from CAS">
@@ -985,6 +985,16 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
         <div>
           <div style="font-size:10px;font-weight:800;color:#000;text-transform:uppercase;margin-bottom:5px;">Statement Date</div>
           <input class="anl-inp" id="anl-inv-date" type="text" placeholder="DD Mon YYYY">
+        </div>
+      </div>
+      <div class="anl-contact-row" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;padding:16px;background:var(--p4);border-radius:10px;">
+        <div>
+          <div style="font-size:10px;font-weight:800;color:#000;text-transform:uppercase;margin-bottom:5px;">WhatsApp Number</div>
+          <input class="anl-inp" id="anl-inv-wa" type="tel" placeholder="9876543210">
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:800;color:#000;text-transform:uppercase;margin-bottom:5px;">Email Address</div>
+          <input class="anl-inp" id="anl-inv-email" type="email" placeholder="investor@email.com">
         </div>
       </div>
 
@@ -1071,7 +1081,6 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
             <th style="padding:10px 8px;font-size:11px;font-weight:800;text-align:center;width:60px;">Months</th>
             <th style="padding:10px 8px;font-size:11px;font-weight:800;text-align:center;width:75px;">Total Mo.</th>
             <th style="padding:10px 8px;font-size:11px;font-weight:800;text-align:center;width:70px;">CAGR %</th>
-            <th style="padding:10px 8px;font-size:11px;font-weight:800;text-align:center;width:60px;">Factor</th>
             <th style="padding:10px 8px;font-size:11px;font-weight:800;text-align:right;width:120px;">Returns ₹</th>
             <th style="padding:10px 8px;font-size:11px;font-weight:800;text-align:center;width:40px;"></th>
           </tr>
@@ -1207,7 +1216,7 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
           <div class="cmb-bp-arn">SEBI Registered ARN Holder · AMFI Certified MFD · Kaustubh Valimbe</div>
         </div>
         <div class="cmb-bp-engine">
-          <div class="cmb-bp-engine-nm">Create My Blueprint</div>
+          <div class="cmb-bp-engine-nm">Create your Own Portfolio</div>
           <div class="cmb-bp-engine-sub">SELF-DIRECTED INVESTMENT BLUEPRINT</div>
         </div>
       </div>
@@ -1280,6 +1289,80 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
 </div>
 
 <script>
+// ══ SHARED INVESTOR DETAILS PERSISTENCE (across all modes) ══
+var INV_STORAGE_KEY = 'ace_investor_details';
+
+function loadInvestorDetails(){
+  try{
+    var raw = localStorage.getItem(INV_STORAGE_KEY);
+    if(!raw) return {name:'',whatsapp:'',email:''};
+    var parsed = JSON.parse(raw);
+    return {
+      name: parsed.name||'',
+      whatsapp: parsed.whatsapp||'',
+      email: parsed.email||''
+    };
+  }catch(e){ return {name:'',whatsapp:'',email:''}; }
+}
+
+function saveInvestorDetails(partial){
+  try{
+    var current = loadInvestorDetails();
+    var merged = {
+      name: (partial.name!==undefined ? partial.name : current.name),
+      whatsapp: (partial.whatsapp!==undefined ? partial.whatsapp : current.whatsapp),
+      email: (partial.email!==undefined ? partial.email : current.email)
+    };
+    localStorage.setItem(INV_STORAGE_KEY, JSON.stringify(merged));
+  }catch(e){}
+}
+
+// Field ID map: [nameFieldId, whatsappFieldId, emailFieldId] per mode
+var INV_FIELD_GROUPS = [
+  ['v-name','v-wa','v-email'],
+  ['stp-v-name','stp-v-wa','stp-v-email'],
+  ['cmb-investor-name','cmb-investor-wa','cmb-investor-email'],
+  ['anl-inv-name','anl-inv-wa','anl-inv-email']
+];
+
+function wireInvestorDetailsPersistence(){
+  var saved = loadInvestorDetails();
+  INV_FIELD_GROUPS.forEach(function(group){
+    var nameEl = document.getElementById(group[0]);
+    var waEl   = document.getElementById(group[1]);
+    var emailEl= document.getElementById(group[2]);
+    // Pre-fill from shared storage, but never overwrite a field the user already typed into on this page load
+    if(nameEl && !nameEl.value) nameEl.value = saved.name;
+    if(waEl && !waEl.value) waEl.value = saved.whatsapp;
+    if(emailEl && !emailEl.value) emailEl.value = saved.email;
+    // Write back to shared storage on every change, so switching modes carries the latest value
+    if(nameEl) nameEl.addEventListener('input', function(){ saveInvestorDetails({name:nameEl.value}); });
+    if(waEl) waEl.addEventListener('input', function(){ saveInvestorDetails({whatsapp:waEl.value}); });
+    if(emailEl) emailEl.addEventListener('input', function(){ saveInvestorDetails({email:emailEl.value}); });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', wireInvestorDetailsPersistence);
+// Also run immediately in case DOMContentLoaded already fired (script placed at end of body)
+if(document.readyState==='interactive' || document.readyState==='complete'){
+  wireInvestorDetailsPersistence();
+}
+
+// ══ DEEP-LINK MODE SELECTION (from homepage guided flow) ══
+function applyModeFromURL(){
+  try{
+    var params = new URLSearchParams(window.location.search);
+    var m = params.get('mode');
+    if(m==='sip'||m==='stp'||m==='custom'){
+      setMode(m);
+    }
+  }catch(e){}
+}
+document.addEventListener('DOMContentLoaded', applyModeFromURL);
+if(document.readyState==='interactive' || document.readyState==='complete'){
+  applyModeFromURL();
+}
+
 // ══ STATE ══
 const ST={mode:"sip",step:1,name:"",totalLump:0,totalSIP:0,amt:0,yrs:0,mos:0,totalMos:0,planType:"regular",nature:"growth",stpFreq:"weekly",selClasses:[],fundCounts:{},selFunds:[],allocs:[],sipAmts:[],lumpAmts:[],stpAmts:[],userCAGR:[]};
 const COLS=["#3c3197","#8bc32a","#d97706","#0891b2","#ea580c","#db2777","#7c3aed","#059669","#b45309","#0369a1"];
@@ -3735,7 +3818,7 @@ function anlPrintReport(){
 
   <!-- HEADER -->
   <div style="background:var(--p1);border-radius:14px;padding:22px 26px;color:#fff;margin-bottom:20px;">
-    <div style="font-family:var(--fp);font-size:24px;margin-bottom:4px">✏️ Create My Blueprint</div>
+    <div style="font-family:var(--fp);font-size:24px;margin-bottom:4px">✏️ Create your Own Portfolio</div>
     <div style="font-size:12px;opacity:.7">Pick any fund · SIP / Lumpsum / Both · Up to 10 funds · Your own complete portfolio blueprint</div>
     <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center;">
       <div id="cmb-load-status" style="font-size:12px;opacity:.8">⏳ Loading funds...</div>
@@ -3744,10 +3827,16 @@ function anlPrintReport(){
   </div>
 
   <!-- INVESTOR NAME -->
-  <div style="background:#fff;border-radius:12px;border:1.5px solid var(--g4);padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:16px;">
+  <div class="cmb-inv-bar" style="background:#fff;border-radius:12px;border:1.5px solid var(--g4);padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
     <div style="font-size:11px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;">Investor Name</div>
     <input type="text" id="cmb-investor-name" placeholder="Type investor name..." 
-      style="flex:1;padding:10px 14px;border:1.5px solid var(--bd);border-radius:9px;font-size:14px;font-family:var(--fh);outline:none;max-width:320px;">
+      style="flex:1;min-width:160px;padding:10px 14px;border:1.5px solid var(--bd);border-radius:9px;font-size:14px;font-family:var(--fh);outline:none;max-width:320px;">
+    <div style="font-size:11px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;">WhatsApp</div>
+    <input type="tel" id="cmb-investor-wa" placeholder="9876543210" 
+      style="flex:1;min-width:140px;padding:10px 14px;border:1.5px solid var(--bd);border-radius:9px;font-size:14px;font-family:var(--fh);outline:none;max-width:200px;">
+    <div style="font-size:11px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;">Email</div>
+    <input type="email" id="cmb-investor-email" placeholder="investor@email.com" 
+      style="flex:1;min-width:180px;padding:10px 14px;border:1.5px solid var(--bd);border-radius:9px;font-size:14px;font-family:var(--fh);outline:none;max-width:260px;">
     <div style="font-size:11px;color:var(--t4);">Max 10 funds · SIP / Lumpsum / Both per fund</div>
   </div>
 
@@ -3800,9 +3889,19 @@ function anlPrintReport(){
       </div>
     </div>
     <div class="stp-card">
-      <div class="stp-field" style="max-width:420px">
-        <div class="stp-lbl">Investor Name</div>
-        <input class="stp-inp" id="stp-v-name" type="text" placeholder="Type investor name...">
+      <div class="inv-grid3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;max-width:960px;">
+        <div class="stp-field">
+          <div class="stp-lbl">Investor Name</div>
+          <input class="stp-inp" id="stp-v-name" type="text" placeholder="Type investor name...">
+        </div>
+        <div class="stp-field">
+          <div class="stp-lbl">WhatsApp Number</div>
+          <input class="stp-inp" id="stp-v-wa" type="tel" placeholder="9876543210">
+        </div>
+        <div class="stp-field">
+          <div class="stp-lbl">Email Address</div>
+          <input class="stp-inp" id="stp-v-email" type="email" placeholder="investor@email.com">
+        </div>
       </div>
       <div class="ibox blue" style="margin-top:16px">
         <span style="font-size:18px;flex-shrink:0">ℹ️</span>
@@ -5365,7 +5464,6 @@ function slBuildRowHTML(row, idx){
         'tabindex="'+(14+idx*6)+'" '+
         'value="'+(row.cagr||12)+'" oninput="slSetField('+row.id+',\'cagr\',this.value)">'+
     '</td>'+
-    '<td style="padding:8px;text-align:center;"><span style="font-size:12px;font-weight:800;color:var(--t4);">12</span></td>'+
     '<td style="padding:8px;text-align:right;"><span id="sl-ret-'+row.id+'" style="font-size:13px;font-weight:900;color:'+retColor+';">'+ret+'</span></td>'+
     '<td style="padding:6px;text-align:center;">'+
       '<button onclick="slRemoveRow('+row.id+')" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:16px;font-weight:800;padding:4px;">✕</button>'+
@@ -5428,7 +5526,13 @@ function slSetType(id, t){
   var amtC=t==='S'?'#2d6b0e':'var(--p1)';
   var amtEl=document.getElementById('sl-amt-'+id);
   if(amtEl){amtEl.style.background=amtBg;amtEl.style.borderColor=amtBd;amtEl.style.color=amtC;}
-  slCalcRow(id); slUpdateFooter();
+  slCalcRow(id);
+  var retEl=document.getElementById('sl-ret-'+id);
+  if(retEl){
+    retEl.textContent=row.returns>0?'₹'+slFmt(row.returns):'—';
+    retEl.style.color=row.returns>0?'#16a34a':'#94a3b8';
+  }
+  slUpdateFooter();
 }
 
 // ── Set Field ──────────────────────────────────────────────
