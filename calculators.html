@@ -465,6 +465,7 @@ function sv(id,v){document.getElementById(id).textContent=v;}
 function sfv(m,r,y){if(!m)return 0;const mr=r/12,n=y*12;return m*(Math.pow(1+mr,n)-1)/mr*(1+mr);}
 
 function cSIP(){
+  if(typeof gtag==='function'){gtag('event','calculator_use',{'event_category':'engagement','event_label':'sip_calculator'});}
   const m=+document.getElementById('si-amt').value,r=+document.getElementById('si-rate').value/100,y=+document.getElementById('si-yrs').value,su=+document.getElementById('si-su').value/100;
   sv('sv-amt',fmt(m));sv('sv-rate',r*100+'%');sv('sv-yrs',y+' Yrs');sv('sv-su',(su*100).toFixed(0)+'%');
   let corp=0,inv=0,mn=m;
@@ -478,6 +479,7 @@ function cSIP(){
 }
 
 function cSWP(){
+  if(typeof gtag==='function'){gtag('event','calculator_use',{'event_category':'engagement','event_label':'swp_calculator'});}
   const corpus=+document.getElementById('wi-c').value,wdl=+document.getElementById('wi-w').value,r=+document.getElementById('wi-r').value/100,y=+document.getElementById('wi-y').value;
   sv('wv-c',fmt(corpus));sv('wv-w',fmt(wdl));sv('wv-r',(r*100).toFixed(1)+'%');sv('wv-y',y+' Yrs');
   let bal=corpus,tw=0,ext=y,rows='';
@@ -487,6 +489,7 @@ function cSWP(){
 }
 
 function cLS(){
+  if(typeof gtag==='function'){gtag('event','calculator_use',{'event_category':'engagement','event_label':'lumpsum_calculator'});}
   const a=+document.getElementById('li-a').value,r=+document.getElementById('li-r').value/100,y=+document.getElementById('li-y').value;
   sv('lv-a',fmt(a));sv('lv-r',(r*100).toFixed(1)+'%');sv('lv-y',y+' Yrs');
   const mat=a*Math.pow(1+r,y),gain=mat-a;
@@ -497,6 +500,7 @@ function cLS(){
 }
 
 function cGoal(){
+  if(typeof gtag==='function'){gtag('event','calculator_use',{'event_category':'engagement','event_label':'goal_calculator'});}
   const tgt=+document.getElementById('gi-t').value,y=+document.getElementById('gi-y').value,r=+document.getElementById('gi-r').value/100,ex=+document.getElementById('gi-e').value;
   sv('gv-t',fmt(tgt));sv('gv-y',y+' Yrs');sv('gv-r',(r*100).toFixed(1)+'%');sv('gv-e',fmt(ex));
   const exFV=ex*Math.pow(1+r,y),rem=Math.max(0,tgt-exFV);
@@ -507,6 +511,7 @@ function cGoal(){
 }
 
 function cELSS(){
+  if(typeof gtag==='function'){gtag('event','calculator_use',{'event_category':'engagement','event_label':'elss_calculator'});}
   const ai=+document.getElementById('ei-i').value,sl=+document.getElementById('ei-s').value/100,r=+document.getElementById('ei-r').value/100,y=+document.getElementById('ei-y').value;
   sv('ev-i',fmt(ai));sv('ev-s',(sl*100).toFixed(0)+'%');sv('ev-r',(r*100).toFixed(1)+'%');sv('ev-y',y+' Yrs');
   const mat=sfv(ai/12,r,y),ti=ai/12*12*y,gain=mat-ti;
@@ -515,6 +520,7 @@ function cELSS(){
 }
 
 function cInf(){
+  if(typeof gtag==='function'){gtag('event','calculator_use',{'event_category':'engagement','event_label':'inflation_calculator'});}
   const a=+document.getElementById('ii-a').value,nr=+document.getElementById('ii-r').value/100,ir=+document.getElementById('ii-i').value/100,y=+document.getElementById('ii-y').value;
   sv('iv-a',fmt(a));sv('iv-r',(nr*100).toFixed(1)+'%');sv('iv-i',(ir*100).toFixed(1)+'%');sv('iv-y',y+' Yrs');
   const nv=a*Math.pow(1+nr,y),rr=(1+nr)/(1+ir)-1,rv=a*Math.pow(1+rr,y),fc=a*Math.pow(1+ir,y);
