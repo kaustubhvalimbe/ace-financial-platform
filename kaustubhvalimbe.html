@@ -447,6 +447,13 @@ footer{background:var(--t1);color:rgba(255,255,255,.6);padding:40px;text-align:c
 <body>
 
 <!-- NAVBAR -->
+<style>
+.nav-more{position:relative;display:inline-block;}
+.nav-more-menu{display:none;position:absolute;top:100%;right:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);min-width:150px;z-index:500;padding:6px;}
+.nav-more:hover .nav-more-menu{display:block;}
+.nav-more-menu a{display:block;padding:9px 14px;color:#1a1240;text-decoration:none;font-size:13px;font-weight:600;border-radius:6px;white-space:nowrap;}
+.nav-more-menu a:hover{background:#f5fce8;color:#5a8a10;}
+</style>
 <nav id="nav">
   <a href="#" class="nav-brand">
     <div class="nav-monogram">KV</div>
@@ -456,12 +463,17 @@ footer{background:var(--t1);color:rgba(255,255,255,.6);padding:40px;text-align:c
     </div>
   </a>
   <div class="nav-links">
-    <a href="#philosophy">Philosophy</a>
-    <a href="#journey">Journey</a>
-    <a href="#expertise">Expertise</a>
-    <a href="#platform">Platform</a>
-    <a href="#connect">Connect</a>
-    <a href="index.html" class="cta" target="_blank">🚀 Visit Platform</a>
+    <a href="index.html" title="Home" style="font-size:16px;">🏠</a>
+    <a href="fund-discovery-v2.html">🔍 Fund Discovery</a>
+    <a href="fund-toppers.html">🏆 Fund Toppers</a>
+    <a href="fund-compare.html">⚖️ Fund Compare</a>
+    <a href="investment-case.html">⭐ Investment Engine</a>
+    <a href="calculators.html">🧮 Calculators</a>
+    <a href="stock-intelligence.html">📊 Stock Intelligence</a>
+    <a href="market-pulse.html">📈 Market Pulse</a>
+    <a href="investor-awareness.html">📚 Investor Awareness</a>
+    <a href="kaustubhvalimbe.html" class="on">👤 Founder</a>
+    <div class="nav-more"><a href="javascript:void(0)">More ▾</a><div class="nav-more-menu"><a href="index.html#about">About</a><a href="index.html#services">Services</a><a href="index.html#platform">Platform</a><a href="index.html#contact">Contact</a></div></div>
   </div>
 </nav>
 

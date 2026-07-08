@@ -116,14 +116,38 @@ body{background:var(--bg);font-family:var(--fh);color:var(--t1);min-height:100vh
 </head>
 <body>
 
-<nav class="nav">
-  <div style="display:flex;align-items:center;gap:10px;">
-    <div>
-      <span class="nav-title">🧭 Fund Compare &amp; Discovery</span>
-      <div style="color:#c9e88a;font-size:8px;font-weight:700;letter-spacing:.5px;margin-top:1px;">Fund For Life Fund For Future</div>
+<style>
+.nav-links{display:flex;align-items:center;gap:2px;flex-wrap:wrap;}
+.nav-links a{text-decoration:none;font-size:12px;font-weight:700;padding:6px 11px;border-radius:7px;color:rgba(255,255,255,.85);}
+.nav-links a:hover,.nav-links a.on{background:rgba(255,255,255,.15);color:#fff;}
+.nav-more{position:relative;display:inline-block;}
+.nav-more-menu{display:none;position:absolute;top:100%;right:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);min-width:150px;z-index:500;padding:6px;}
+.nav-more:hover .nav-more-menu{display:block;}
+.nav-more-menu a{display:block;padding:9px 14px;color:#1a1240;text-decoration:none;font-size:13px;font-weight:600;border-radius:6px;white-space:nowrap;}
+.nav-more-menu a:hover{background:#f5fce8;color:#5a8a10;}
+@media(max-width:900px){.nav-links{display:none;}}
+</style>
+<nav class="nav" style="height:auto;min-height:56px;flex-wrap:wrap;gap:8px;padding:8px 24px;">
+  <a href="index.html" style="font-size:16px;text-decoration:none;" title="Home">🏠</a>
+  <div class="nav-links">
+    <a href="fund-discovery-v2.html">🔍 Fund Discovery</a>
+    <a href="fund-toppers.html">🏆 Fund Toppers</a>
+    <a href="fund-compare.html" class="on">⚖️ Fund Compare</a>
+    <a href="investment-case.html">⭐ Investment Engine</a>
+    <a href="calculators.html">🧮 Calculators</a>
+    <a href="stock-intelligence.html">📊 Stock Intelligence</a>
+    <a href="market-pulse.html">📈 Market Pulse</a>
+    <a href="investor-awareness.html">📚 Investor Awareness</a>
+    <a href="kaustubhvalimbe.html">👤 Founder</a>
+    <div class="nav-more"><a href="javascript:void(0)">More ▾</a>
+      <div class="nav-more-menu">
+        <a href="index.html#about">About</a>
+        <a href="index.html#services">Services</a>
+        <a href="index.html#platform">Platform</a>
+        <a href="index.html#contact">Contact</a>
+      </div>
     </div>
   </div>
-  <a href="investment-case.html" class="nav-back">← Back</a>
 </nav>
 
 <div class="hero">
