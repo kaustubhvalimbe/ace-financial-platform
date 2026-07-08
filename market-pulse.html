@@ -835,7 +835,7 @@ init();
   var overlay=document.createElement('div');overlay.className='mob-nav-overlay';document.body.appendChild(overlay);
   var drawer=document.createElement('div');drawer.className='mob-nav-drawer';
   var brand=document.createElement('div');brand.className='mnd-brand';
-  brand.innerHTML='<div style="font-family:serif;font-size:15px;font-weight:900;color:#3c3197;">Ace Financial <span style="color:#5a8a10;">Services</span></div><div style="font-size:10px;color:#9ca3af;margin-top:2px;">SEBI ARN · AMFI Registered MFD</div><div style="font-size:9px;color:#6aaa1e;font-weight:700;margin-top:1px;">Fund For Life Fund For Future</div>';
+  brand.innerHTML='<div style="font-family:serif;font-size:15px;font-weight:900;color:#3c3197;">Ace Financial <span style="color:#5a8a10;">Services</span></div><div style="font-size:10px;color:#9ca3af;margin-top:2px;">AMFI Registered MFD</div><div style="font-size:9px;color:#6aaa1e;font-weight:700;margin-top:1px;">Fund For Life Fund For Future</div>';
   drawer.appendChild(brand);
   var navLinks=document.getElementById('mp-nav-links');
   if(navLinks){navLinks.querySelectorAll('a').forEach(function(link){var a=document.createElement('a');a.href=link.href;a.innerHTML=link.innerHTML;if(link.classList.contains('on'))a.classList.add('on');drawer.appendChild(a);});}
