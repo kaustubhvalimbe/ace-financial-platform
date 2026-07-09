@@ -28,17 +28,20 @@
 body{background:var(--bg);color:var(--t1);font-family:var(--fb);min-height:100vh;}
 
 /* NAV */
-nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 28px;height:66px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(60,49,151,.08);}
-.brand{display:flex;align-items:center;gap:10px;text-decoration:none;}
+nav{background:#fff;border-bottom:3px solid var(--g4);padding:10px 28px;min-height:66px;display:flex;align-items:center;justify-content:space-between;flex-wrap:nowrap;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(60,49,151,.08);}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;}
 .brand-icon{height:36px;display:flex;align-items:center;justify-content:center;}
 .brand-name{font-size:15px;font-weight:900;color:var(--p2);font-family:var(--fh);}
 .brand-name em{color:var(--g1);font-style:normal;}
 .brand-sub{font-size:10px;color:var(--t5);font-family:var(--fm);}
-.brand-tag{font-size:9px;color:var(--g1);font-weight:700;letter-spacing:.5px;margin-top:1px;}
-.nav-links{display:flex;gap:4px;}
-.nav-links a{text-decoration:none;font-size:12px;font-weight:700;padding:7px 13px;border-radius:7px;color:var(--t4);transition:all .2s;}
+.brand-tag{display:none;}
+.nav-links{display:flex;gap:2px;align-items:center;}
+.nav-links a{text-decoration:none;font-size:12px;font-weight:700;padding:7px 13px;border-radius:20px;color:var(--t4);transition:all .2s;white-space:nowrap;}
 .nav-links a:hover{background:var(--g5);color:var(--g1);}
 .nav-links a.active{background:var(--p2);color:#fff;}
+.home-ic{width:34px;height:34px;border-radius:9px;background:var(--p1);display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;text-decoration:none;flex-shrink:0;transition:all .2s;margin-right:2px;}
+.home-ic:hover{background:var(--p2);}
+.nav-links a.home-mobile{display:none;}
 
 /* HERO */
 .hero{background:linear-gradient(135deg,var(--p1),var(--p2) 40%,#1e5a0a 75%,var(--g1));padding:24px 28px 20px;position:relative;overflow:hidden;}
@@ -601,6 +604,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield;}
 
 @media(max-width:768px){
   .nav-links{display:none!important;}
+  .home-ic{display:none!important;}
   .mob-menu-btn{display:flex!important;}
   nav{padding:0 14px!important;height:54px!important;}
   .bs{display:none!important;}
@@ -850,22 +854,21 @@ table.stp-t tr:last-child td { border-bottom:none; background:var(--p4,#f0eeff);
     <div>
       <div class="brand-name">Ace Financial <em>Services</em></div>
       <div class="brand-sub">AMFI Registered MFD</div>
-      <div class="brand-tag">Fund For Life Fund For Future</div>
     </div>
   </a>
+  <a href="index.html" class="home-ic" title="Home">🏠</a>
   <div class="nav-links">
-    <a href="index.html" title="Home" style="font-size:16px;">🏠</a>
+    <a href="index.html" class="home-mobile">🏠 Home</a>
     <a href="fund-discovery-v2.html">🔍 Fund Discovery</a>
     <a href="fund-toppers.html">🏆 Fund Toppers</a>
     <a href="fund-compare.html">⚖️ Fund Compare</a>
-    <a href="investment-case.html" class="on">⭐ Investment Engine</a>
+    <a href="investment-case.html" class="active">⭐ Investment Engine</a>
     <a href="calculators.html">🧮 Calculators</a>
     <a href="stock-intelligence.html">📊 Stock Intelligence</a>
     <a href="market-pulse.html">📈 Market Pulse</a>
     <a href="investor-awareness.html">📚 Investor Awareness</a>
     <a href="kaustubhvalimbe.html">👤 Founder</a>
     <div class="nav-more"><a href="javascript:void(0)">More ▾</a><div class="nav-more-menu"><a href="index.html#about">About</a><a href="index.html#services">Services</a><a href="index.html#platform">Platform</a><a href="index.html#contact">Contact</a></div></div>
-  </div></div>
   </div>
 </nav>
 
