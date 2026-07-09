@@ -101,7 +101,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 .bchrt{margin-top:14px;}
 .br{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
 .bl{font-size:12px;color:var(--t4);width:80px;flex-shrink:0;text-align:right;font-weight:600;}
-.bt{flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;border:1px solid var(--g4);}
+.pbar{flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;border:1px solid var(--g4);}
 .bf{height:100%;border-radius:4px;transition:width .6s ease;}
 .bv{font-family:var(--fm);font-size:11px;color:var(--t4);width:80px;text-align:right;}
 
@@ -338,8 +338,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
           <div class="rc"><div class="rc-lbl">XIRR (Approx)</div><div class="rc-val gr" id="sr-x">0%</div></div>
         </div>
         <div class="bchrt">
-          <div class="br"><div class="bl">Invested</div><div class="bt"><div class="bf" id="bfi" style="background:var(--g2);width:0%"></div></div><div class="bv" id="bvi">₹0</div></div>
-          <div class="br"><div class="bl">Gain</div><div class="bt"><div class="bf" id="bfg" style="background:var(--p2);width:0%"></div></div><div class="bv" id="bvg">₹0</div></div>
+          <div class="br"><div class="bl">Invested</div><div class="pbar"><div class="bf" id="bfi" style="background:var(--g2);width:0%"></div></div><div class="bv" id="bvi">₹0</div></div>
+          <div class="br"><div class="bl">Gain</div><div class="pbar"><div class="bf" id="bfg" style="background:var(--p2);width:0%"></div></div><div class="bv" id="bvg">₹0</div></div>
         </div>
         <div class="ytw"><table class="ytbl"><thead><tr><th>Year</th><th>Invested</th><th>Corpus</th><th>Gain</th></tr></thead><tbody id="st-body"></tbody></table></div>
       </div>
@@ -524,7 +524,7 @@ function cGoal(){
   const mr=r/12,n=y*12;const sip=rem>0?(rem*mr)/((Math.pow(1+mr,n)-1)*(1+mr)):0;const lump=rem>0?rem/Math.pow(1+r,y):0;
   sv('gr-sip',fmt(sip));sv('gr-lump',fmt(lump));sv('gr-tgt',fmt(tgt));sv('gr-gap',fmt(rem));sv('gr-efv',fmt(exFV));
   const eq=y>7?70:y>4?50:30,debt=y>7?20:y>4?35:50,liq=100-eq-debt;
-  document.getElementById('g-alloc').innerHTML=`<div class="br"><div class="bl">Equity</div><div class="bt"><div class="bf" style="background:var(--g2);width:${eq}%"></div></div><div class="bv">${eq}%</div></div><div class="br"><div class="bl">Debt</div><div class="bt"><div class="bf" style="background:var(--p2);width:${debt}%"></div></div><div class="bv">${debt}%</div></div><div class="br"><div class="bl">Liquid</div><div class="bt"><div class="bf" style="background:var(--gold);width:${liq}%"></div></div><div class="bv">${liq}%</div></div>`;
+  document.getElementById('g-alloc').innerHTML=`<div class="br"><div class="bl">Equity</div><div class="pbar"><div class="bf" style="background:var(--g2);width:${eq}%"></div></div><div class="bv">${eq}%</div></div><div class="br"><div class="bl">Debt</div><div class="pbar"><div class="bf" style="background:var(--p2);width:${debt}%"></div></div><div class="bv">${debt}%</div></div><div class="br"><div class="bl">Liquid</div><div class="pbar"><div class="bf" style="background:var(--gold);width:${liq}%"></div></div><div class="bv">${liq}%</div></div>`;
 }
 
 function cELSS(){
