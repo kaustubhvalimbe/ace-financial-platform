@@ -260,6 +260,16 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 24px;height:64px
   .sebi-disc-text{color:#000!important;font-size:9px!important;}
   .sebi-disc-text strong{color:#000!important;}
 }
+.faq-section{max-width:900px;margin:32px auto 0;padding:0 20px 40px;}
+.faq-ttl{font-family:var(--fh);font-size:20px;font-weight:900;color:var(--p1);margin-bottom:4px;}
+.faq-sub{font-size:12px;color:var(--t4);margin-bottom:18px;}
+.faq-item{border:1.5px solid var(--g4);border-radius:12px;margin-bottom:10px;background:#fff;overflow:hidden;}
+.faq-item summary{list-style:none;cursor:pointer;padding:15px 18px;font-size:14px;font-weight:700;color:var(--p1);display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.faq-item summary::-webkit-details-marker{display:none;}
+.faq-item summary::after{content:'+';font-size:20px;font-weight:400;color:var(--g1);flex-shrink:0;}
+.faq-item[open] summary::after{content:'−';}
+.faq-item[open] summary{border-bottom:1.5px solid var(--g4);}
+.faq-a{padding:14px 18px;font-size:13px;line-height:1.7;color:#3d3b5c;}
 </style>
 <style>
 
@@ -375,6 +385,29 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 24px;height:64px
   "address": { "@type": "PostalAddress", "addressLocality": "Pune", "addressRegion": "Maharashtra", "addressCountry": "IN" },
   "founder": { "@type": "Person", "name": "Kaustubh Valimbe" },
   "identifier": { "@type": "PropertyValue", "name": "AMFI ARN", "value": "ARN-110832" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What are the top performing mutual funds right now?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Fund Toppers ranks mutual funds by category across 6-month, 1-year, 3-year, 5-year, Since Inception, and Risk-Adjusted returns, updated regularly. Filter by category to see which funds are currently leading, along with Kaustubh's Insight commentary on what the ranking actually means." }
+    },
+    {
+      "@type": "Question",
+      "name": "Should I invest in the No.1 ranked fund in a category?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Not necessarily on rank alone. No single fund stays at No.1 forever — short-term rankings can shift with market cycles. Check the fund's Risk-Adjusted return alongside raw returns, and consider your own goals and risk tolerance rather than chasing last year's topper." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is risk-adjusted return and why does it matter?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Risk-adjusted return measures how much return a fund generated relative to the risk (volatility) it took on, rather than raw returns alone. A fund with slightly lower returns but much lower risk can be a better choice than a higher-return fund that took excessive risk to get there." }
+    }
+  ]
 }
 </script>
 </head>
@@ -535,6 +568,23 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 24px;height:64px
     <a href="index.html" class="adv-link al-h">🏠 Home</a>
     <a href="kaustubhvalimbe.html" class="adv-link al-a">👤 About Founder</a>
   </div>
+</div>
+
+<div class="faq-section">
+  <div class="faq-ttl">Frequently Asked Questions</div>
+  <div class="faq-sub">Common questions about top-ranked mutual funds</div>
+  <details class="faq-item">
+    <summary>What are the top performing mutual funds right now?</summary>
+    <div class="faq-a">Fund Toppers ranks mutual funds by category across 6-month, 1-year, 3-year, 5-year, Since Inception, and Risk-Adjusted returns, updated regularly. Filter by category to see which funds are currently leading, along with Kaustubh's Insight commentary on what the ranking actually means.</div>
+  </details>
+  <details class="faq-item">
+    <summary>Should I invest in the No.1 ranked fund in a category?</summary>
+    <div class="faq-a">Not necessarily on rank alone. No single fund stays at No.1 forever — short-term rankings can shift with market cycles. Check the fund's Risk-Adjusted return alongside raw returns, and consider your own goals and risk tolerance rather than chasing last year's topper.</div>
+  </details>
+  <details class="faq-item">
+    <summary>What is risk-adjusted return and why does it matter?</summary>
+    <div class="faq-a">Risk-adjusted return measures how much return a fund generated relative to the risk (volatility) it took on, rather than raw returns alone. A fund with slightly lower returns but much lower risk can be a better choice than a higher-return fund that took excessive risk to get there.</div>
+  </details>
 </div>
 
 <script>

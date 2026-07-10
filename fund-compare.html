@@ -176,6 +176,16 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 24px;height:64px
 @media(max-width:768px){
   .scroll-hint{display:block;}
 }
+.faq-section{max-width:900px;margin:32px auto 0;padding:0 20px 40px;}
+.faq-ttl{font-family:var(--fh);font-size:20px;font-weight:900;color:var(--p1);margin-bottom:4px;}
+.faq-sub{font-size:12px;color:var(--t4);margin-bottom:18px;}
+.faq-item{border:1.5px solid var(--g4);border-radius:12px;margin-bottom:10px;background:#fff;overflow:hidden;}
+.faq-item summary{list-style:none;cursor:pointer;padding:15px 18px;font-size:14px;font-weight:700;color:var(--p1);display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.faq-item summary::-webkit-details-marker{display:none;}
+.faq-item summary::after{content:'+';font-size:20px;font-weight:400;color:var(--g1);flex-shrink:0;}
+.faq-item[open] summary::after{content:'−';}
+.faq-item[open] summary{border-bottom:1.5px solid var(--g4);}
+.faq-a{padding:14px 18px;font-size:13px;line-height:1.7;color:#3d3b5c;}
 
 </style>
 <style>
@@ -252,6 +262,29 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 24px;height:64px
   "identifier": { "@type": "PropertyValue", "name": "AMFI ARN", "value": "ARN-110832" }
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I compare two mutual funds before investing?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Use the Fund Compare tool on this page to place up to 4 mutual funds side-by-side on returns (6M, 1Y, 3Y, 5Y, Since Inception), NAV, expense ratio, risk level, and category rank — making it easy to see which fund actually fits your goals rather than relying on a single number." }
+    },
+    {
+      "@type": "Question",
+      "name": "What should I check when comparing mutual funds — returns or expense ratio?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Both matter, but for the same time period. A fund with slightly lower returns but a much lower expense ratio can outperform over the long term once costs compound. This tool shows both side-by-side so you can weigh them together rather than looking at returns alone." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is a lower expense ratio always better?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Not automatically — expense ratio matters most when comparing funds with similar returns and risk within the same category. A fund with a higher expense ratio can still be the better choice if its risk-adjusted performance justifies the cost. Compare funds within the same category for a fair read." }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <nav>
@@ -315,6 +348,24 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 24px;height:64px
     <a href="kaustubhvalimbe.html" class="adv-link al-a">👤 About Founder</a>
   </div>
 </div>
+
+<div class="faq-section">
+  <div class="faq-ttl">Frequently Asked Questions</div>
+  <div class="faq-sub">Common questions about comparing mutual funds</div>
+  <details class="faq-item">
+    <summary>How do I compare two mutual funds before investing?</summary>
+    <div class="faq-a">Use the Fund Compare tool above to place up to 4 mutual funds side-by-side on returns (6M, 1Y, 3Y, 5Y, Since Inception), NAV, expense ratio, risk level, and category rank — making it easy to see which fund actually fits your goals rather than relying on a single number.</div>
+  </details>
+  <details class="faq-item">
+    <summary>What should I check when comparing mutual funds — returns or expense ratio?</summary>
+    <div class="faq-a">Both matter, but for the same time period. A fund with slightly lower returns but a much lower expense ratio can outperform over the long term once costs compound. This tool shows both side-by-side so you can weigh them together rather than looking at returns alone.</div>
+  </details>
+  <details class="faq-item">
+    <summary>Is a lower expense ratio always better?</summary>
+    <div class="faq-a">Not automatically — expense ratio matters most when comparing funds with similar returns and risk within the same category. A fund with a higher expense ratio can still be the better choice if its risk-adjusted performance justifies the cost. Compare funds within the same category for a fair read.</div>
+  </details>
+</div>
+
 <script>
 var ALL_FUNDS = [];
 var SELECTED  = [null, null, null, null]; // up to 4 slots
