@@ -127,6 +127,16 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 
 /* ELSS NOTE */
 .elss-note{background:linear-gradient(135deg,var(--g5),var(--p5));border:1.5px solid var(--g4);border-radius:12px;padding:15px;font-size:12px;color:var(--t4);line-height:1.7;}
+.faq-section{max-width:900px;margin:32px auto 0;padding:0 20px 40px;}
+.faq-ttl{font-family:var(--fh);font-size:20px;font-weight:900;color:var(--p1);margin-bottom:4px;}
+.faq-sub{font-size:12px;color:var(--t4);margin-bottom:18px;}
+.faq-item{border:1.5px solid var(--g4);border-radius:12px;margin-bottom:10px;background:#fff;overflow:hidden;}
+.faq-item summary{list-style:none;cursor:pointer;padding:15px 18px;font-size:14px;font-weight:700;color:var(--p1);display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.faq-item summary::-webkit-details-marker{display:none;}
+.faq-item summary::after{content:'+';font-size:20px;font-weight:400;color:var(--g1);flex-shrink:0;transition:transform .2s;}
+.faq-item[open] summary::after{content:'−';}
+.faq-item[open] summary{border-bottom:1.5px solid var(--g4);}
+.faq-a{padding:14px 18px;font-size:13px;line-height:1.7;color:var(--t2);}
 .elss-note strong{color:var(--g2);}
 
 ::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:var(--bg3);}::-webkit-scrollbar-thumb{background:var(--g4);border-radius:3px;}
@@ -552,6 +562,23 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     </div>
   </div>
 
+</div>
+
+<div class="faq-section">
+  <div class="faq-ttl">Frequently Asked Questions</div>
+  <div class="faq-sub">Common questions about SIP, retirement planning, and inflation</div>
+  <details class="faq-item">
+    <summary>How much SIP do I need to retire comfortably considering inflation?</summary>
+    <div class="faq-a">Use the Retirement Readiness calculator on this page: enter your monthly income, expenses (including EMIs), years to retirement, and inflation rate. It calculates the future cost of your current lifestyle, the retirement corpus you'll need, and the exact monthly SIP required to reach it — compared against what you can actually afford to save today.</div>
+  </details>
+  <details class="faq-item">
+    <summary>What is a good SIP amount for a monthly income of ₹1 lakh?</summary>
+    <div class="faq-a">It depends on your expenses and retirement timeline. For example, someone earning ₹1,00,000/month with ₹40,000/month in expenses has a ₹60,000 monthly surplus. To retire in 25 years accounting for 6% inflation, roughly ₹27,000/month invested via SIP at an assumed 12% return can build the required retirement corpus, leaving room for other financial goals.</div>
+  </details>
+  <details class="faq-item">
+    <summary>How does inflation affect my SIP and retirement planning?</summary>
+    <div class="faq-a">Inflation increases the future cost of your current expenses every year. A monthly expense of ₹40,000 today can grow to over ₹1,70,000/month in 25 years at 6% inflation. The Inflation Adjusted Returns and Retirement Readiness calculators on this page show both the nominal and real (inflation-adjusted) value of your investments so you can plan accurately.</div>
+  </details>
 </div>
 
 <script>
