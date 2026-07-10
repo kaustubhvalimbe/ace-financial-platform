@@ -314,6 +314,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   <div class="ctab" onclick="showC('goal',this)">🎯 Goal Planner</div>
   <div class="ctab" onclick="showC('elss',this)">🛡️ ELSS Tax Saver</div>
   <div class="ctab" onclick="showC('inf',this)">📊 Inflation Adjusted</div>
+  <div class="ctab" onclick="showC('ret',this)">🏖️ Retirement Readiness</div>
 </div>
 
 <div class="cbody">
@@ -474,6 +475,37 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     </div>
   </div>
 
+  <!-- RETIREMENT READINESS -->
+  <div class="cpnl" id="c-ret">
+    <div class="clay">
+      <div class="cinp-card">
+        <div class="calc-ttl">Retirement <span>Readiness</span></div>
+        <div class="calc-dsc">See what your current lifestyle will cost you in the future due to inflation, the retirement corpus you'll need to sustain it, and the monthly SIP required to get there — compared against what you can actually afford to save today.</div>
+        <div class="ig"><div class="ig-lbl"><span>Monthly Income (₹)</span><span class="ig-val" id="rv-inc">₹1,00,000</span></div><input type="number" id="ri-inc" min="10000" max="10000000" step="1000" value="100000" placeholder="e.g. 100000" oninput="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cRet()"><div class="ig-range"><span>₹10K</span><span>₹1Cr</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Monthly Expenses incl. EMIs (₹)</span><span class="ig-val" id="rv-exp">₹40,000</span></div><input type="number" id="ri-exp" min="1000" max="10000000" step="1000" value="40000" placeholder="e.g. 40000" oninput="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cRet()"><div class="ig-range"><span>₹1K</span><span>₹1Cr</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Years to Retirement</span><span class="ig-val" id="rv-y">25 Yrs</span></div><input type="number" id="ri-y" min="1" max="50" step="1" value="25" placeholder="e.g. 25" oninput="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cRet()"><div class="ig-range"><span>1 Yr</span><span>50 Yrs</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Inflation Rate (%)</span><span class="ig-val" id="rv-infl">6%</span></div><input type="number" id="ri-infl" min="1" max="15" step="0.5" value="6" placeholder="e.g. 6" oninput="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cRet()"><div class="ig-range"><span>1%</span><span>15%</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Expected SIP Return (%)</span><span class="ig-val" id="rv-ret">12%</span></div><input type="number" id="ri-ret" min="1" max="30" step="0.5" value="12" placeholder="e.g. 12" oninput="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cRet()"><div class="ig-range"><span>1%</span><span>30%</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Safe Withdrawal Rate (%)</span><span class="ig-val" id="rv-swr">4%</span></div><input type="number" id="ri-swr" min="2" max="8" step="0.5" value="4" placeholder="e.g. 4" oninput="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cRet()"><div class="ig-range"><span>2% (safer)</span><span>8% (aggressive)</span></div></div>
+      </div>
+      <div class="cres-card">
+        <div class="rcards">
+          <div class="rc big"><div class="rc-lbl">Required Monthly SIP</div><div class="rc-val gr big" id="rr-sip">₹0</div></div>
+          <div class="rc hl"><div class="rc-lbl">Monthly Surplus Available Today</div><div class="rc-val pu" id="rr-sur">₹0</div></div>
+          <div class="rc"><div class="rc-lbl">Your ₹Expense Today Will Cost (Future)</div><div class="rc-val" id="rr-fexp">₹0</div></div>
+          <div class="rc"><div class="rc-lbl">Retirement Corpus Needed</div><div class="rc-val go" id="rr-corp">₹0</div></div>
+          <div class="rc"><div class="rc-lbl" id="rr-gap-lbl">Extra Surplus After SIP</div><div class="rc-val gr" id="rr-gap">₹0</div></div>
+          <div class="rc"><div class="rc-lbl">If Entire Surplus Invested (Future Value)</div><div class="rc-val gr" id="rr-fullfv">₹0</div></div>
+          <div class="rc"><div class="rc-lbl">...in Today's Rupees (Real Value)</div><div class="rc-val" id="rr-fullreal">₹0</div></div>
+        </div>
+        <div class="galloc">
+          <div class="galloc-ttl">Surplus Utilisation</div>
+          <div id="r-alloc"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -546,13 +578,32 @@ function cInf(){
   document.getElementById('it-body').innerHTML=rows;
 }
 
+function cRet(){
+  if(typeof gtag==='function'){gtag('event','calculator_use',{'event_category':'engagement','event_label':'retirement_readiness_calculator'});}
+  const inc=+document.getElementById('ri-inc').value,exp=+document.getElementById('ri-exp').value,y=+document.getElementById('ri-y').value,infl=+document.getElementById('ri-infl').value/100,ret=+document.getElementById('ri-ret').value/100,swr=+document.getElementById('ri-swr').value/100;
+  sv('rv-inc',fmt(inc));sv('rv-exp',fmt(exp));sv('rv-y',y+' Yrs');sv('rv-infl',(infl*100).toFixed(1)+'%');sv('rv-ret',(ret*100).toFixed(1)+'%');sv('rv-swr',(swr*100).toFixed(1)+'%');
+  const surplus=Math.max(0,inc-exp);
+  const futureExp=exp*Math.pow(1+infl,y);
+  const corpus=(futureExp*12)/swr;
+  const reqSip=sfv(1,ret,y)>0?corpus/sfv(1,ret,y):0;
+  const gap=surplus-reqSip;
+  const fullFV=sfv(surplus,ret,y);
+  const fullReal=fullFV/Math.pow(1+infl,y);
+  sv('rr-sip',fmt(reqSip));sv('rr-sur',fmt(surplus));sv('rr-fexp',fmt(futureExp)+'/mo');sv('rr-corp',fmt(corpus));sv('rr-fullfv',fmt(fullFV));sv('rr-fullreal',fmt(fullReal));
+  const gapEl=document.getElementById('rr-gap'),gapLbl=document.getElementById('rr-gap-lbl');
+  if(gap>=0){gapLbl.textContent='Extra Surplus After Required SIP';gapEl.className='rc-val gr';sv('rr-gap',fmt(gap));}
+  else{gapLbl.textContent='Shortfall — Increase Income or Cut Expenses';gapEl.className='rc-val re';sv('rr-gap',fmt(Math.abs(gap)));}
+  const sipPct=surplus>0?Math.min(100,(reqSip/surplus*100)):0,freePct=100-sipPct;
+  document.getElementById('r-alloc').innerHTML=`<div class="br"><div class="bl">Required SIP</div><div class="pbar"><div class="bf" style="background:var(--p2);width:${sipPct.toFixed(0)}%"></div></div><div class="bv">${fmt(reqSip)}</div></div><div class="br"><div class="bl">Free Surplus</div><div class="pbar"><div class="bf" style="background:var(--g2);width:${freePct.toFixed(0)}%"></div></div><div class="bv">${fmt(Math.max(0,surplus-reqSip))}</div></div>`;
+}
+
 function showC(id,el){
   document.querySelectorAll('.cpnl').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('on'));
   document.getElementById('c-'+id).classList.add('on');el.classList.add('on');
 }
 
-cSIP();cSWP();cLS();cGoal();cELSS();cInf();
+cSIP();cSWP();cLS();cGoal();cELSS();cInf();cRet();
 
 // ── INPUT VALIDATION ─────────────────────────────────────
 function validateInput(id, min, max, fieldName) {
