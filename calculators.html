@@ -555,6 +555,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
           <div class="rc"><div class="rc-lbl">If Entire Surplus Invested (Future Value)</div><div class="rc-val gr" id="rr-fullfv">₹0</div></div>
           <div class="rc"><div class="rc-lbl">...in Today's Rupees (Real Value)</div><div class="rc-val" id="rr-fullreal">₹0</div></div>
         </div>
+        <div class="elss-note" id="rr-caveat" style="margin-top:4px;">This is a mathematical target based on your inputs, not a recommendation to commit this much of your surplus. A sound plan typically also keeps an emergency fund and balances multiple goals — insurance, children's education, medical costs — not just retirement.</div>
         <div class="galloc">
           <div class="galloc-ttl">Surplus Utilisation</div>
           <div id="r-alloc"></div>
@@ -708,8 +709,30 @@ function cRet(){
   const fullReal=fullFV/Math.pow(1+infl,y);
   sv('rr-sip',fmt(reqSip));sv('rr-sur',fmt(surplus));sv('rr-fexp',fmt(futureExp)+'/mo');sv('rr-corp',fmt(corpus));sv('rr-fullfv',fmt(fullFV));sv('rr-fullreal',fmt(fullReal));
   const gapEl=document.getElementById('rr-gap'),gapLbl=document.getElementById('rr-gap-lbl');
-  if(gap>=0){gapLbl.textContent='Extra Surplus After Required SIP';gapEl.className='rc-val gr';sv('rr-gap',fmt(gap));}
-  else{gapLbl.textContent='Shortfall — Increase Income or Cut Expenses';gapEl.className='rc-val re';sv('rr-gap',fmt(Math.abs(gap)));}
+  const caveatEl=document.getElementById('rr-caveat');
+  const sipShare=surplus>0?(reqSip/surplus):(reqSip>0?1:0); // fraction of surplus the required SIP consumes
+  const defaultCaveat="This is a mathematical target based on your inputs, not a recommendation to commit this much of your surplus. A sound plan typically also keeps an emergency fund and balances multiple goals — insurance, children's education, medical costs — not just retirement.";
+  if(gap<0){
+    gapLbl.textContent='Shortfall — Increase Income or Cut Expenses';
+    gapEl.className='rc-val re';
+    sv('rr-gap',fmt(Math.abs(gap)));
+    caveatEl.innerHTML='<strong>Your surplus falls short of the required SIP.</strong> '+defaultCaveat;
+  } else if(sipShare>=0.9){
+    gapLbl.textContent='Very Tight — Almost No Margin for Other Goals';
+    gapEl.className='rc-val re';
+    sv('rr-gap',fmt(gap));
+    caveatEl.innerHTML='<strong>Caution: this plan uses '+(sipShare*100).toFixed(0)+'% of your monthly surplus.</strong> '+defaultCaveat;
+  } else if(sipShare>=0.75){
+    gapLbl.textContent='Tight Margin — Limited Room for Other Goals';
+    gapEl.className='rc-val go';
+    sv('rr-gap',fmt(gap));
+    caveatEl.innerHTML='<strong>Note: this plan uses '+(sipShare*100).toFixed(0)+'% of your monthly surplus.</strong> '+defaultCaveat;
+  } else {
+    gapLbl.textContent='Extra Surplus After Required SIP';
+    gapEl.className='rc-val gr';
+    sv('rr-gap',fmt(gap));
+    caveatEl.innerHTML=defaultCaveat;
+  }
   const sipPct=surplus>0?Math.min(100,(reqSip/surplus*100)):0,freePct=100-sipPct;
   document.getElementById('r-alloc').innerHTML=`<div class="br"><div class="bl">Required SIP</div><div class="pbar"><div class="bf" style="background:var(--p2);width:${sipPct.toFixed(0)}%"></div></div><div class="bv">${fmt(reqSip)}</div></div><div class="br"><div class="bl">Free Surplus</div><div class="pbar"><div class="bf" style="background:var(--g2);width:${freePct.toFixed(0)}%"></div></div><div class="bv">${fmt(Math.max(0,surplus-reqSip))}</div></div>`;
 }
