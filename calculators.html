@@ -12,11 +12,11 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>7 Free Mutual Fund Calculators — SIP, SWP, Retirement Readiness | Ace Financial Services</title>
-<meta name="description" content="7 free professional mutual fund calculators — SIP with step-up, SWP, Lumpsum, Goal-based planner, ELSS tax saver, Inflation adjusted returns, and Retirement Readiness (SIP needed to beat inflation). Powered by Ace Financial Services, AMFI Registered MFD, Pune.">
-<meta name="keywords" content="SIP calculator india 2026, SWP calculator, lumpsum calculator, ELSS tax calculator 80C, goal based investment planner, mutual fund returns calculator, inflation adjusted returns, retirement readiness calculator, SIP for retirement calculator, wealth calculator india">
-<meta property="og:title" content="7 Free Mutual Fund Calculators — SIP, SWP, Retirement Readiness | Ace Financial Services">
-<meta property="og:description" content="7 free professional mutual fund calculators including Retirement Readiness — find the SIP needed to beat inflation and retire comfortably. Powered by Ace Financial Services, AMFI Registered MFD, Pune.">
+<title>8 Free Mutual Fund Calculators — SIP, SWP, Retirement Planning | Ace Financial Services</title>
+<meta name="description" content="8 free professional mutual fund calculators — SIP with step-up, SWP, Lumpsum, Goal-based planner, ELSS tax saver, Inflation adjusted returns, Retirement Readiness, and Financial Planning with SIP & SWP (full lifecycle simulator). Powered by Ace Financial Services, AMFI Registered MFD, Pune.">
+<meta name="keywords" content="SIP calculator india 2026, SWP calculator, lumpsum calculator, ELSS tax calculator 80C, goal based investment planner, mutual fund returns calculator, inflation adjusted returns, retirement readiness calculator, SIP for retirement calculator, SIP SWP lifecycle planner, wealth calculator india">
+<meta property="og:title" content="8 Free Mutual Fund Calculators — SIP, SWP, Retirement Planning | Ace Financial Services">
+<meta property="og:description" content="8 free professional mutual fund calculators including a full SIP-to-SWP lifecycle planner — see whether your retirement plan actually survives. Powered by Ace Financial Services, AMFI Registered MFD, Pune.">
 <meta property="og:type" content="website">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Kaustubh Valimbe — Ace Financial Services">
@@ -286,7 +286,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   "@type": "FinancialService",
   "name": "Ace Financial Services",
   "alternateName": "AFS",
-  "description": "AMFI-registered Mutual Fund Distributor offering 7 free mutual fund calculators including SIP, SWP, Lumpsum, Goal Planner, ELSS, Inflation Adjusted Returns, and Retirement Readiness, in Pune, India.",
+  "description": "AMFI-registered Mutual Fund Distributor offering 8 free mutual fund calculators including SIP, SWP, Lumpsum, Goal Planner, ELSS, Inflation Adjusted Returns, Retirement Readiness, and a full SIP-to-SWP lifecycle planner, in Pune, India.",
   "url": "https://acefinservices.com/calculators.html",
   "areaServed": { "@type": "City", "name": "Pune" },
   "address": { "@type": "PostalAddress", "addressLocality": "Pune", "addressRegion": "Maharashtra", "addressCountry": "IN" },
@@ -359,7 +359,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 <div class="hero">
   <div class="hero-in">
     <h1>MF <span>Calculators</span></h1>
-    <p>7 professional calculators — SIP with Step-up · SWP · Lumpsum · Goal Planner · ELSS Tax Saver · Inflation Adjusted Returns · Retirement Readiness</p>
+    <p>8 professional calculators — SIP with Step-up · SWP · Lumpsum · Goal Planner · ELSS Tax Saver · Inflation Adjusted Returns · Retirement Readiness · Financial Planning with SIP & SWP</p>
   </div>
 </div>
 
@@ -371,6 +371,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   <div class="ctab" onclick="showC('elss',this)">🛡️ ELSS Tax Saver</div>
   <div class="ctab" onclick="showC('inf',this)">📊 Inflation Adjusted</div>
   <div class="ctab" onclick="showC('ret',this)">🏖️ Retirement Readiness</div>
+  <div class="ctab" onclick="showC('sipswp',this)">🔄 SIP + SWP Planner</div>
 </div>
 
 <div class="cbody">
@@ -562,6 +563,49 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     </div>
   </div>
 
+  <!-- SIP + SWP LIFECYCLE PLANNER -->
+  <div class="cpnl" id="c-sipswp">
+    <div class="clay">
+      <div class="cinp-card">
+        <div class="calc-ttl">Financial Planning with <span>SIP &amp; SWP</span></div>
+        <div class="calc-dsc">Simulate your full journey — invest via SIP for your working years, then switch to a monthly withdrawal (SWP) in retirement — and see honestly whether your plan actually survives, or runs out. Every assumption below is yours to set; nothing is picked for you.</div>
+
+        <div style="font-size:11px;font-weight:800;color:var(--p2);text-transform:uppercase;letter-spacing:.5px;margin:14px 0 8px;">Phase 1 — Accumulation (SIP)</div>
+        <div class="ig"><div class="ig-lbl"><span>Monthly SIP Amount (₹)</span><span class="ig-val" id="ssv-sip">₹15,000</span></div><input type="number" id="ssi-sip" min="500" max="1000000" step="500" value="15000" oninput="cSIPSWP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSIPSWP()"><div class="ig-range"><span>₹500</span><span>₹10L</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Expected Return — Accumulation (%)</span><span class="ig-val" id="ssv-accret">12%</span></div><input type="number" id="ssi-accret" min="1" max="30" step="0.5" value="12" oninput="cSIPSWP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSIPSWP()"><div class="ig-range"><span>1%</span><span>30%</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Years to Retirement</span><span class="ig-val" id="ssv-y">25 Yrs</span></div><input type="number" id="ssi-y" min="1" max="50" step="1" value="25" oninput="cSIPSWP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSIPSWP()"><div class="ig-range"><span>1 Yr</span><span>50 Yrs</span></div></div>
+
+        <div style="font-size:11px;font-weight:800;color:var(--p2);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px;">Phase 2 — Your Current Picture</div>
+        <div class="ig"><div class="ig-lbl"><span>Current Monthly Income (₹)</span><span class="ig-val" id="ssv-inc">₹1,00,000</span></div><input type="number" id="ssi-inc" min="0" max="10000000" step="1000" value="100000" oninput="cSIPSWP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSIPSWP()"><div class="ig-range"><span>₹0</span><span>₹1Cr</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Income Growth Rate (%/yr)</span><span class="ig-val" id="ssv-incgr">8%</span></div><input type="number" id="ssi-incgr" min="0" max="25" step="0.5" value="8" oninput="cSIPSWP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSIPSWP()"><div class="ig-range"><span>0%</span><span>25%</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Current Monthly Expenses incl. EMIs (₹)</span><span class="ig-val" id="ssv-exp">₹40,000</span></div><input type="number" id="ssi-exp" min="0" max="10000000" step="1000" value="40000" oninput="cSIPSWP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSIPSWP()"><div class="ig-range"><span>₹0</span><span>₹1Cr</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Of Which, Monthly EMI (₹)</span><span class="ig-val" id="ssv-emi">₹15,000</span></div><input type="number" id="ssi-emi" min="0" max="10000000" step="1000" value="15000" oninput="cSIPSWP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSIPSWP()"><div class="ig-range"><span>₹0</span><span>Assumed to end by retirement</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Inflation Rate (%)</span><span class="ig-val" id="ssv-infl">6%</span></div><input type="number" id="ssi-infl" min="1" max="15" step="0.5" value="6" oninput="cSIPSWP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSIPSWP()"><div class="ig-range"><span>1%</span><span>15%</span></div></div>
+
+        <div style="font-size:11px;font-weight:800;color:var(--p2);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px;">Phase 3 — Decumulation (SWP)</div>
+        <div class="ig"><div class="ig-lbl"><span>Starting Monthly Withdrawal (₹)</span><span class="ig-val" id="ssv-wd">₹50,000</span></div><input type="number" id="ssi-wd" min="0" max="10000000" step="1000" value="50000" oninput="cSIPSWP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSIPSWP()"><div class="ig-range"><span>₹0</span><span>₹1Cr</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Expected Return — Post-Retirement (%)</span><span class="ig-val" id="ssv-retret">8%</span></div><input type="number" id="ssi-retret" min="0" max="30" step="0.5" value="8" oninput="cSIPSWP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSIPSWP()"><div class="ig-range"><span>0%</span><span>30%</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Withdrawal Escalation (%/yr)</span><span class="ig-val" id="ssv-wdesc">6%</span></div><input type="number" id="ssi-wdesc" min="0" max="15" step="0.5" value="6" oninput="cSIPSWP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSIPSWP()"><div class="ig-range"><span>0% (flat)</span><span>15%</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Annual One-Time Expense — e.g. Health Insurance (₹)</span><span class="ig-val" id="ssv-oneexp">₹1,00,000</span></div><input type="number" id="ssi-oneexp" min="0" max="10000000" step="5000" value="100000" oninput="cSIPSWP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSIPSWP()"><div class="ig-range"><span>₹0</span><span>₹1Cr</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>One-Time Expense Escalation (%/yr)</span><span class="ig-val" id="ssv-oneesc">8%</span></div><input type="number" id="ssi-oneesc" min="0" max="20" step="0.5" value="8" oninput="cSIPSWP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSIPSWP()"><div class="ig-range"><span>0%</span><span>20% (medical inflation often higher)</span></div></div>
+      </div>
+
+      <div class="cres-card">
+        <div class="rcards">
+          <div class="rc big"><div class="rc-lbl">Corpus at Retirement (End of Accumulation)</div><div class="rc-val gr big" id="ss-corpus">₹0</div></div>
+          <div class="rc"><div class="rc-lbl">Future Monthly Income (at Retirement)</div><div class="rc-val" id="ss-fincome">₹0</div></div>
+          <div class="rc"><div class="rc-lbl">Future Living Expense, EMI-Free</div><div class="rc-val" id="ss-fexp">₹0</div></div>
+          <div class="rc hl" style="grid-column:1/-1;"><div class="rc-lbl" id="ss-outcome-lbl">SWP Outcome</div><div class="rc-val" id="ss-outcome" style="font-size:20px;">—</div></div>
+        </div>
+        <div class="elss-note" id="ss-explain" style="margin-top:4px;">Enter your numbers above to see the full simulation.</div>
+        <div class="galloc" style="margin-top:16px;">
+          <div class="galloc-ttl">Corpus Trajectory During Retirement (every 5 years)</div>
+          <div id="ss-table"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div class="faq-section">
@@ -670,13 +714,93 @@ function cRet(){
   document.getElementById('r-alloc').innerHTML=`<div class="br"><div class="bl">Required SIP</div><div class="pbar"><div class="bf" style="background:var(--p2);width:${sipPct.toFixed(0)}%"></div></div><div class="bv">${fmt(reqSip)}</div></div><div class="br"><div class="bl">Free Surplus</div><div class="pbar"><div class="bf" style="background:var(--g2);width:${freePct.toFixed(0)}%"></div></div><div class="bv">${fmt(Math.max(0,surplus-reqSip))}</div></div>`;
 }
 
+function cSIPSWP(){
+  if(typeof gtag==='function'){gtag('event','calculator_use',{'event_category':'engagement','event_label':'sip_swp_planner'});}
+  const sip=+document.getElementById('ssi-sip').value;
+  const accRet=+document.getElementById('ssi-accret').value/100;
+  const years=+document.getElementById('ssi-y').value;
+  const inc=+document.getElementById('ssi-inc').value;
+  const incGr=+document.getElementById('ssi-incgr').value/100;
+  const exp=+document.getElementById('ssi-exp').value;
+  const emi=+document.getElementById('ssi-emi').value;
+  const infl=+document.getElementById('ssi-infl').value/100;
+  const wd0=+document.getElementById('ssi-wd').value;
+  const retRet=+document.getElementById('ssi-retret').value/100;
+  const wdEsc=+document.getElementById('ssi-wdesc').value/100;
+  const oneExp0=+document.getElementById('ssi-oneexp').value;
+  const oneEsc=+document.getElementById('ssi-oneesc').value/100;
+
+  sv('ssv-sip',fmt(sip));sv('ssv-accret',(accRet*100).toFixed(1)+'%');sv('ssv-y',years+' Yrs');
+  sv('ssv-inc',fmt(inc));sv('ssv-incgr',(incGr*100).toFixed(1)+'%');sv('ssv-exp',fmt(exp));sv('ssv-emi',fmt(emi));sv('ssv-infl',(infl*100).toFixed(1)+'%');
+  sv('ssv-wd',fmt(wd0));sv('ssv-retret',(retRet*100).toFixed(1)+'%');sv('ssv-wdesc',(wdEsc*100).toFixed(1)+'%');sv('ssv-oneexp',fmt(oneExp0));sv('ssv-oneesc',(oneEsc*100).toFixed(1)+'%');
+
+  // ── Phase 1: Accumulation ──
+  const corpus0=sfv(sip,accRet,years);
+  const futureIncome=inc*Math.pow(1+incGr,years);
+  const livingToday=Math.max(0,exp-emi);
+  const futureLiving=livingToday*Math.pow(1+infl,years);
+
+  sv('ss-corpus',fmt(corpus0));
+  sv('ss-fincome',fmt(futureIncome)+'/mo');
+  sv('ss-fexp',fmt(futureLiving)+'/mo');
+
+  // ── Phase 3: Decumulation (SWP) simulation, month by month ──
+  const maxYears=75;
+  let corpus=corpus0, withdrawal=wd0, oneExp=oneExp0;
+  let month=0, depleted=false;
+  const snapshots=[]; // every 5 years
+  const totalMonths=maxYears*12;
+  while(month<totalMonths){
+    month++;
+    corpus=corpus*(1+retRet/12);
+    corpus-=withdrawal;
+    if(month%12===0){
+      corpus-=oneExp;
+      withdrawal*=(1+wdEsc);
+      oneExp*=(1+oneEsc);
+    }
+    if(corpus<=0){ corpus=0; depleted=true; break; }
+    if(month%60===0){ snapshots.push({yr:month/12, val:corpus}); }
+  }
+
+  const outcomeEl=document.getElementById('ss-outcome');
+  const outcomeLbl=document.getElementById('ss-outcome-lbl');
+  const explainEl=document.getElementById('ss-explain');
+  if(depleted){
+    const yrs=Math.floor(month/12), mos=month%12;
+    outcomeLbl.textContent='SWP Outcome — Corpus Depletes';
+    outcomeEl.textContent='Runs out in '+yrs+' yrs'+(mos>0?' '+mos+' mo':'');
+    outcomeEl.className='rc-val re';
+    explainEl.textContent='Based on your inputs, the corpus is fully exhausted after about '+yrs+' years of withdrawals. Consider a higher SIP, lower withdrawal, or a different post-retirement return assumption.';
+  } else {
+    outcomeLbl.textContent='SWP Outcome — Sustainable';
+    outcomeEl.textContent='Still growing after '+maxYears+'+ years';
+    outcomeEl.className='rc-val gr';
+    explainEl.textContent='Under your inputs, the corpus\'s own growth outpaces your withdrawals — it does not run out within '+maxYears+' years. This is a mathematical projection based on constant assumed rates, not a guarantee; real returns vary year to year.';
+  }
+
+  // ── Trajectory table ──
+  let tblHtml='<table style="width:100%;border-collapse:collapse;font-size:12px;">';
+  tblHtml+='<tr style="background:var(--p1);color:#fff;"><th style="padding:6px 8px;text-align:left;">Year</th><th style="padding:6px 8px;text-align:right;">Corpus Remaining</th></tr>';
+  if(snapshots.length===0){
+    tblHtml+='<tr><td colspan="2" style="padding:8px;color:var(--t4);">Corpus depleted before year 5.</td></tr>';
+  } else {
+    snapshots.forEach(function(s,i){
+      const bg=i%2===0?'#fafaff':'#fff';
+      tblHtml+='<tr style="background:'+bg+';"><td style="padding:6px 8px;border-bottom:1px solid var(--bd,#e5e7eb);">Year '+s.yr+'</td><td style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--bd,#e5e7eb);font-weight:700;">'+fmt(s.val)+'</td></tr>';
+    });
+  }
+  tblHtml+='</table>';
+  document.getElementById('ss-table').innerHTML=tblHtml;
+}
+
 function showC(id,el){
   document.querySelectorAll('.cpnl').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('on'));
   document.getElementById('c-'+id).classList.add('on');el.classList.add('on');
 }
 
-cSIP();cSWP();cLS();cGoal();cELSS();cInf();cRet();
+cSIP();cSWP();cLS();cGoal();cELSS();cInf();cRet();cSIPSWP();
 
 // ── INPUT VALIDATION ─────────────────────────────────────
 function validateInput(id, min, max, fieldName) {
