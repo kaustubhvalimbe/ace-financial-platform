@@ -807,8 +807,9 @@ async function loadFunds() {
       if(_u.includes('- OPTION I ')||_u.includes('- OPTION II')||_u.includes('- OPTION III')) continue;
       if(_u.includes('- PLAN A')||_u.includes('- PLAN B')||_u.includes('- PLAN C')) continue;
       if(!isActiveAMC(_n)) continue;
+      var _isTrueETF = _u.includes('ETF') && !_u.includes('FUND OF FUND') && !_u.includes(' FOF') && !_u.includes('FOF ');
       allFunds.push({code:String(data[_i].schemeCode),name:_n,
-        plan:_u.includes('DIRECT')?'direct':'regular',nat:'growth',
+        plan:_isTrueETF ? 'direct' : (_u.includes('DIRECT')?'direct':'regular'),nat:'growth',
         subcat:getSubCat(_n),amc:xAMC(_n),
         r6m:null,r1y:null,r3y:null,r5y:null,rSI:null,riskAdj:null,
         inceptionDate:null,nav:null,date:null,retLoaded:false});
@@ -996,6 +997,23 @@ async function loadFundReturns(fund) {
     var lastIdx = pts-1;
     var inav = parseFloat(d.data[lastIdx].nav);
     if(inav>0){ fund.rSI=(Math.pow(cur/inav,1/(pts/252))-1)*100; fund.inceptionDate=d.data[lastIdx].date; }
+
+    // ── SANITY GUARD: reject implausible CAGR values caused by NAV data anomalies ──
+    // (e.g. old NAV-base plan mergers/re-basing events in the underlying data feed).
+    // Low-volatility debt/money-market categories should never realistically show
+    // double-digit-plus CAGR over any period — a result like that is a data error,
+    // not real performance, so we null it out rather than display a wrong number.
+    var LOW_VOL_CATS = ['Liquid','Overnight','Ultra Short Duration','Low Duration','Money Market',
+      'Gilt','Short Duration','Medium Duration','Banking & PSU','Corporate Bond','Credit Risk','Dynamic Bond'];
+    var isLowVol = LOW_VOL_CATS.indexOf(fund.subcat) >= 0;
+    var lowVolCeiling = 20;   // % CAGR — generous upper bound for any debt/liquid category
+    var universalCeiling = 100; // % CAGR — implausible even for the most aggressive equity fund
+    ['r6m','r1y','r3y','r5y','rSI'].forEach(function(k){
+      if(fund[k] === null || fund[k] === undefined) return;
+      var ceiling = isLowVol ? lowVolCeiling : universalCeiling;
+      if(fund[k] > ceiling || fund[k] < -95) fund[k] = null;
+    });
+
     // Mark active only if NAV is recent (within 90 days)
     // This filters out defunct/merged funds like ING, Religare, Fidelity etc
     var navDateStr = d.data[0].date; // format: DD-Mon-YYYY
@@ -1263,6 +1281,17 @@ async function loadFundRet(fund){
       fund.rSI = (Math.pow(cur / inceptionNav, 1 / years) - 1) * 100;
       fund.inceptionDate = inceptionDate;
     }
+
+    // Same sanity guard as loadFundReturns() — reject implausible CAGR from NAV data anomalies
+    const LOW_VOL_CATS2 = ['Liquid','Overnight','Ultra Short Duration','Low Duration','Money Market',
+      'Gilt','Short Duration','Medium Duration','Banking & PSU','Corporate Bond','Credit Risk','Dynamic Bond'];
+    const isLowVol2 = LOW_VOL_CATS2.indexOf(fund.subcat) >= 0;
+    ['r1m','r3m','r6m','r1y','r3y','r5y','r10y','rSI'].forEach(function(k){
+      if(fund[k] === null || fund[k] === undefined) return;
+      const ceiling = isLowVol2 ? 20 : 100;
+      if(fund[k] > ceiling || fund[k] < -95) fund[k] = null;
+    });
+
     fund.retLoaded=true;
   }catch(e){}
 }
