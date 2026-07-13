@@ -479,6 +479,15 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 24px;height:64px
       </div>
     </div>
 
+    <!-- Browse by AMC -->
+    <div class="sec">
+      <div class="sec-title">🏢 Or Browse by AMC</div>
+      <select id="amc-select" onchange="onAMCSelect(this.value)" style="width:100%;padding:9px 10px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fb);font-size:12px;font-weight:600;color:var(--t1);background:#fff;outline:none;cursor:pointer;">
+        <option value="">Select an AMC…</option>
+      </select>
+      <div style="font-size:10px;color:var(--t5);margin-top:6px;line-height:1.5;">See every scheme from one fund house, ranked by returns</div>
+    </div>
+
     <!-- Asset Classes -->
     <div class="sec">
       <div class="sec-title">Asset Class</div>
@@ -547,10 +556,10 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 24px;height:64px
     <div id="toppers-content">
       <div class="empty-msg">
         <div style="font-size:36px;margin-bottom:12px;">🏆</div>
-        <h3>Select a Sub-Category</h3>
+        <h3>Select a Category or an AMC</h3>
         <p style="color:var(--t5);font-size:12px;margin-top:8px;">
-          <span class="cat-hint-desktop">Click any category on the left — Large Cap, Mid Cap, Small Cap etc</span>
-          <span class="cat-hint-mobile" style="display:none;">👆 Tap "📂 Filters &amp; Categories" above to choose a category</span>
+          <span class="cat-hint-desktop">Click any category on the left — Large Cap, Mid Cap, Small Cap etc — or pick a fund house from the "Browse by AMC" dropdown</span>
+          <span class="cat-hint-mobile" style="display:none;">👆 Tap "📂 Filters &amp; Categories" above to choose a category or an AMC</span>
           <br>to see all funds ranked with full return analysis, and find where your fund stands
         </p>
       </div>
@@ -591,7 +600,7 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 24px;height:64px
 // ── STATE ──────────────────────────────────────────────
 var S = {all:[], activeCode:null};
 var CACHE = {};
-var ST = { nature:'direct', subcat:'', sort:'r5y', funds:[] };
+var ST = { nature:'direct', subcat:'', sort:'r5y', funds:[], mode:'category', amc:'' };
 var CACHE = {};
 
 // ── SUB-CATEGORIES ─────────────────────────────────────
@@ -662,6 +671,10 @@ function buildSubBtns() {
         document.querySelectorAll('.sbtn').forEach(function(b){ b.classList.remove('on'); });
         btn.classList.add('on');
         ST.subcat = s.id;
+        ST.mode = 'category';
+        ST.amc = '';
+        var amcSel = document.getElementById('amc-select');
+        if(amcSel) amcSel.value = '';
         renderToppers();
         if(window.innerWidth<=768) toggleMobFilters(true); // auto-close the mobile drawer after picking a category
       });
@@ -699,14 +712,44 @@ function setNature(n, el) {
     badge.textContent = n==='direct' ? 'Direct Plans' : 'Regular Plans';
     badge.className = 'badge-plan ' + (n==='direct'?'bp-dir':'bp-reg');
   }
-  if(ST.subcat) renderToppers();
+  if(ST.subcat || ST.amc) renderToppers();
 }
 
 function setSort(key, el) {
   ST.sort = key;
   document.querySelectorAll('.sort-btn').forEach(function(b){ b.classList.remove('on'); });
   el.classList.add('on');
-  if(ST.subcat) renderToppers();
+  if(ST.subcat || ST.amc) renderToppers();
+}
+
+// ── BROWSE BY AMC ───────────────────────────────────────
+function buildAMCDropdown() {
+  var sel = document.getElementById('amc-select');
+  if(!sel) return;
+  var seen = {};
+  var names = [];
+  allFunds.forEach(function(f){
+    if(f.amc && !seen[f.amc]) { seen[f.amc] = true; names.push(f.amc); }
+  });
+  names.sort(function(a,b){ return a.localeCompare(b); });
+  var current = sel.value;
+  sel.innerHTML = '<option value="">Select an AMC… (' + names.length + ')</option>';
+  names.forEach(function(n){
+    var opt = document.createElement('option');
+    opt.value = n; opt.textContent = n;
+    sel.appendChild(opt);
+  });
+  sel.value = current;
+}
+
+function onAMCSelect(val) {
+  ST.amc = val;
+  if(!val) return;
+  ST.mode = 'amc';
+  ST.subcat = '';
+  document.querySelectorAll('.sbtn').forEach(function(b){ b.classList.remove('on'); });
+  renderToppers();
+  if(window.innerWidth<=768) toggleMobFilters(true);
 }
 
 // ── LOAD FUNDS ─────────────────────────────────────────
@@ -771,6 +814,7 @@ async function loadFunds() {
         inceptionDate:null,nav:null,date:null,retLoaded:false});
     }
     loaded = true;
+    buildAMCDropdown();
     console.log('Toppers: '+allFunds.length+' funds loaded');
   } catch(e) {
     console.log('Load failed:', e.message);
@@ -905,20 +949,26 @@ async function loadFundReturns(fund) {
 // ── RENDER TOPPERS ─────────────────────────────────────
 var _rendering = false;
 async function renderToppers() {
-  if(!ST.subcat) return;
+  if(ST.mode === 'amc' ? !ST.amc : !ST.subcat) return;
   if(_rendering) return;
   _rendering = true;
   var content = document.getElementById('toppers-content');
   var titleEl = document.getElementById('result-title');
   var subEl   = document.getElementById('result-sub');
 
-  titleEl.textContent = 'All Funds — ' + ST.subcat;
+  var label = ST.mode === 'amc' ? ST.amc : ST.subcat;
+  titleEl.textContent = (ST.mode === 'amc' ? 'All Schemes — ' : 'All Funds — ') + label;
   subEl.textContent   = (ST.nature==='direct'?'Direct':'Regular')+' · Growth Plans · Ranked by '+getSortLabel();
 
-  content.innerHTML = '<div class="loading-msg">⏳ Loading funds for '+ST.subcat+'...</div>';
+  content.innerHTML = '<div class="loading-msg">⏳ Loading funds for '+label+'...</div>';
 
   // Filter funds
   var pool = allFunds.filter(function(f){
+    if(ST.mode === 'amc') {
+      return f.amc === ST.amc &&
+             f.plan === ST.nature &&
+             f.nat  === 'growth';
+    }
     return f.subcat === ST.subcat &&
            f.plan   === ST.nature &&
            f.nat    === 'growth';
@@ -979,7 +1029,7 @@ async function renderToppers() {
 
   var hdr = document.createElement('div');
   hdr.className = 'toppers-hdr';
-  hdr.innerHTML = '<div class="toppers-hdr-title">All '+allRanked.length+' Funds — '+ST.subcat+'</div>'
+  hdr.innerHTML = '<div class="toppers-hdr-title">All '+allRanked.length+' Funds — '+label+'</div>'
     +'<div class="toppers-hdr-sub">Ranked by '+getSortLabel()+' · '+(ST.nature==='direct'?'Direct':'Regular')+' · Growth · All CAGR Annualised</div>';
   wrap.appendChild(hdr);
   var tbl = document.createElement('table');
@@ -1014,8 +1064,9 @@ async function renderToppers() {
     tr.id = 'topper-row-'+f.code;
     tr.setAttribute('data-code', f.code);
     var shortName = f.name.replace(/ - Direct Plan - Growth/gi,'').replace(/ - Direct Plan/gi,'').replace(/ - Regular Plan - Growth/gi,'').replace(/ - Regular Plan/gi,'');
+    var subLabel = ST.mode === 'amc' ? (f.subcat||'') : f.amc;
     tr.innerHTML = '<td><div class="rank-badge '+rankCls+'">'+rank+'</div></td>'
-      + '<td><div class="fund-name">'+shortName+'</div><div class="fund-amc">'+f.amc+'</div></td>'
+      + '<td><div class="fund-name">'+shortName+'</div><div class="fund-amc">'+subLabel+'</div></td>'
       + '<td>'+fmtR(f.r6m)+'</td>'
       + '<td>'+fmtR(f.r1y)+'</td>'
       + '<td>'+fmtR(f.r3y)+'</td>'
