@@ -881,14 +881,80 @@ function getSubCat(name) {
   return 'Other Equity';
 }
 
+var AMC_MAP = [
+  {canonical:'360 ONE MF',            aliases:['360 ONE','IIFL']},
+  {canonical:'Aditya Birla Sun Life MF', aliases:['ADITYA BIRLA SUN LIFE','ADITYA BIRLA']},
+  {canonical:'Axis MF',               aliases:['AXIS']},
+  {canonical:'Bajaj Finserv MF',      aliases:['BAJAJ FINSERV']},
+  {canonical:'Bandhan MF',            aliases:['BANDHAN','IDFC']},
+  {canonical:'Bank of India MF',      aliases:['BANK OF INDIA']},
+  {canonical:'Baroda BNP Paribas MF', aliases:['BARODA BNP PARIBAS','BNP PARIBAS','BARODA']},
+  {canonical:'Canara Robeco MF',      aliases:['CANARA ROBECO']},
+  {canonical:'DSP MF',                aliases:['DSP']},
+  {canonical:'Edelweiss MF',          aliases:['EDELWEISS']},
+  {canonical:'Franklin Templeton MF', aliases:['FRANKLIN TEMPLETON','FRANKLIN INDIA']},
+  {canonical:'Groww MF',              aliases:['GROWW']},
+  {canonical:'HDFC MF',               aliases:['HDFC']},
+  {canonical:'Helios MF',             aliases:['HELIOS']},
+  {canonical:'HSBC MF',               aliases:['HSBC']},
+  {canonical:'ICICI Prudential MF',   aliases:['ICICI PRUDENTIAL']},
+  {canonical:'Invesco MF',            aliases:['INVESCO']},
+  {canonical:'ITI MF',                aliases:['ITI ','ITI']},
+  {canonical:'JM Financial MF',       aliases:['JM FINANCIAL','JM ']},
+  {canonical:'Kotak Mahindra MF',     aliases:['KOTAK']},
+  {canonical:'LIC MF',                aliases:['LIC']},
+  {canonical:'Mahindra Manulife MF',  aliases:['MAHINDRA MANULIFE']},
+  {canonical:'Mirae Asset MF',        aliases:['MIRAE ASSET']},
+  {canonical:'Motilal Oswal MF',      aliases:['MOTILAL OSWAL']},
+  {canonical:'Navi MF',               aliases:['NAVI']},
+  {canonical:'Nippon India MF',       aliases:['NIPPON INDIA','NIPPON']},
+  {canonical:'NJ MF',                 aliases:['NJ ']},
+  {canonical:'Old Bridge MF',         aliases:['OLD BRIDGE']},
+  {canonical:'PGIM India MF',         aliases:['PGIM INDIA','PGIM']},
+  {canonical:'Parag Parikh MF',       aliases:['PARAG PARIKH','PPFAS']},
+  {canonical:'Quant MF',              aliases:['QUANT']},
+  {canonical:'Quantum MF',            aliases:['QUANTUM']},
+  {canonical:'Samco MF',              aliases:['SAMCO']},
+  {canonical:'SBI MF',                aliases:['SBI']},
+  {canonical:'Shriram MF',            aliases:['SHRIRAM']},
+  {canonical:'Sundaram MF',           aliases:['SUNDARAM']},
+  {canonical:'Tata MF',               aliases:['TATA']},
+  {canonical:'Taurus MF',             aliases:['TAURUS']},
+  {canonical:'Trust MF',              aliases:['TRUST MUTUAL','TRUST']},
+  {canonical:'Union MF',              aliases:['UNION']},
+  {canonical:'UTI MF',                aliases:['UTI']},
+  {canonical:'WhiteOak Capital MF',   aliases:['WHITEOAK','WHITE OAK']},
+  {canonical:'Zerodha MF',            aliases:['ZERODHA']},
+  {canonical:'Unifi MF',              aliases:['UNIFI']},
+  {canonical:'Capitalmind MF',        aliases:['CAPITALMIND']},
+  {canonical:'Abakkus MF',            aliases:['ABAKKUS']},
+  {canonical:'Angel One MF',          aliases:['ANGEL ONE']},
+  {canonical:'AlphaGrep MF',          aliases:['ALPHAGREP']},
+  {canonical:'ASK MF',                aliases:['ASK ']},
+  {canonical:'Choice MF',             aliases:['CHOICE']},
+  {canonical:'Essel MF',              aliases:['ESSEL']},
+  {canonical:'IL&FS MF',              aliases:['IL&FS']},
+  {canonical:'IDBI MF',               aliases:['IDBI MF','IDBI']},
+  {canonical:'Lakshya MF',            aliases:['LAKSHYA']},
+  {canonical:'Monarch MF',            aliases:['MONARCH']},
+  {canonical:'The Wealth Company MF', aliases:['THE WEALTH COMPANY']},
+  {canonical:'Jio BlackRock MF',      aliases:['JIO BLACKROCK']},
+  {canonical:'Indiabulls MF',         aliases:['INDIABULLS']}
+];
+
 function xAMC(name) {
-  var amcs = ['Aditya Birla Sun Life','Axis','Bajaj Finserv','Bandhan','Baroda BNP Paribas',
-    'Canara Robeco','DSP','Edelweiss','Franklin Templeton','HDFC','HSBC','ICICI Prudential',
-    'IDFC','Invesco','JM Financial','Kotak','LIC','Mahindra Manulife','Mirae Asset',
-    'Motilal Oswal','Navi','Nippon India','NJ','PGIM India','Parag Parikh','Quant',
-    'Quantum','Samco','SBI','Sundaram','Tata','UTI','Union','WhiteOak','Zerodha','Groww'];
-  for(var i=0;i<amcs.length;i++) if(name.includes(amcs[i])) return amcs[i]+' MF';
-  return name.split(' ').slice(0,3).join(' ');
+  var upper = name.toUpperCase();
+  var best = null, bestLen = 0;
+  for(var i=0;i<AMC_MAP.length;i++){
+    var entry = AMC_MAP[i];
+    for(var j=0;j<entry.aliases.length;j++){
+      var a = entry.aliases[j].trim();
+      if(a && upper.indexOf(a.toUpperCase())>=0 && a.length>bestLen){
+        best = entry.canonical; bestLen = a.length;
+      }
+    }
+  }
+  return best || 'Other AMC';
 }
 
 // ── LOAD INDIVIDUAL FUND RETURNS ──────────────────────
