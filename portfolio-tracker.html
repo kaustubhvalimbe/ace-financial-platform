@@ -299,6 +299,18 @@ function xirr(cashflows){
 var ROWS = 10;
 function todayISO(){ var d=new Date(); return d.toISOString().slice(0,10); }
 
+// CRITICAL: parse "YYYY-MM-DD" (from <input type="date">) using LOCAL timezone
+// construction, matching how NAV history dates are built in getNavHistory().
+// Using new Date("YYYY-MM-DD") directly is WRONG — that string form is parsed
+// as UTC midnight by the JS spec, while new Date(y,m,d) is local midnight.
+// Depending on the browser's timezone, that mismatch can silently shift the
+// lookup to the next day's NAV instead of the exact date entered.
+function parseISODateLocal(str){
+  if(!str) return null;
+  var parts = str.split('-');
+  return new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+}
+
 function buildRows(){
   var tbody = document.getElementById('pf-tbody');
   var html = '';
@@ -373,10 +385,10 @@ async function recalcRow(row){
   var sipDayEl = document.getElementById('sipday-'+row);
 
   if(!variant || !startVal || !amt || amt<=0){
-    sipDayEl.textContent = startVal ? ('Day '+new Date(startVal).getDate()) : '—';
+    sipDayEl.textContent = startVal ? ('Day '+parseISODateLocal(startVal).getDate()) : '—';
     return;
   }
-  var startDate = new Date(startVal);
+  var startDate = parseISODateLocal(startVal);
   sipDayEl.textContent = 'Day '+startDate.getDate();
 
   var arr = await getNavHistory(variant.code);
@@ -384,7 +396,7 @@ async function recalcRow(row){
     document.getElementById('pnav-'+row).textContent = 'No data';
     return;
   }
-  var endDate = endVal ? new Date(endVal) : new Date();
+  var endDate = endVal ? parseISODateLocal(endVal) : new Date();
   var currentPoint = navOnOrBefore(arr, endDate.getTime());
   if(!currentPoint){ document.getElementById('cnav-'+row).textContent='No data'; return; }
   document.getElementById('cnav-'+row).textContent = fmtNav(currentPoint.nav);
