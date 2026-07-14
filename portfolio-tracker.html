@@ -77,7 +77,7 @@ table.pf-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:1500px
 .pf-tbl tr:nth-child(even){background:#fafaff;}
 .pf-tbl input,.pf-tbl select{width:100%;padding:6px 7px;border:1.5px solid var(--g4);border-radius:6px;font-size:11px;font-family:var(--fb);color:var(--t1);background:#fff;outline:none;}
 .pf-tbl input:focus,.pf-tbl select:focus{border-color:var(--p2);}
-.fname-wrap{position:relative;min-width:210px;}
+.fname-wrap{position:relative;min-width:280px;}
 .fname-dd{position:absolute;left:0;right:0;top:100%;margin-top:2px;background:#fff;border:1.5px solid var(--p3);border-radius:8px;max-height:220px;overflow-y:auto;z-index:60;box-shadow:0 8px 20px rgba(0,0,0,.15);display:none;}
 .fname-dd.show{display:block;}
 .fname-dd-item{padding:8px 10px;font-size:11px;cursor:pointer;border-bottom:1px solid var(--g4);}
@@ -135,8 +135,6 @@ table.pf-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:1500px
         <tr>
           <th>#</th>
           <th>Fund Name</th>
-          <th>Plan</th>
-          <th>Option</th>
           <th>L / S</th>
           <th>Start Date</th>
           <th>SIP Day</th>
@@ -219,30 +217,6 @@ async function searchFunds(query) {
     if(r3.ok) { var d3 = await r3.json(); if(Array.isArray(d3)) return d3; }
   } catch(e) {}
   return null;
-}
-
-function baseName(name){
-  return name
-    .replace(/\s*-\s*Direct Plan\s*-\s*Growth/gi,'')
-    .replace(/\s*-\s*Regular Plan\s*-\s*Growth/gi,'')
-    .replace(/\s*-\s*Direct Plan/gi,'')
-    .replace(/\s*-\s*Regular Plan/gi,'')
-    .replace(/\s*-\s*Growth Option/gi,'')
-    .replace(/\s*-\s*Growth Plan/gi,'')
-    .replace(/\s*-\s*Growth/gi,'')
-    .replace(/\s*-\s*IDCW.*/gi,'')
-    .replace(/\s*-\s*Dividend.*/gi,'')
-    .trim();
-}
-
-function groupIntoBaseFunds(rawResults){
-  var groups = {};
-  rawResults.forEach(function(f){
-    var bn = baseName(f.schemeName);
-    if(!groups[bn]) groups[bn] = [];
-    groups[bn].push({code:String(f.schemeCode), name:f.schemeName});
-  });
-  return Object.keys(groups).map(function(bn){ return {base:bn, variants:groups[bn]}; });
 }
 
 // ══════════════════════════════════════════════════════════
@@ -332,8 +306,6 @@ function buildRows(){
     html += '<tr data-row="'+i+'">'
       + '<td class="sr-cell">'+i+'</td>'
       + '<td><div class="fname-wrap"><input type="text" id="fn-'+i+'" placeholder="Type fund name…" autocomplete="off" oninput="onFundSearch('+i+')"><div class="fname-dd" id="fdd-'+i+'"></div></div></td>'
-      + '<td><select id="plan-'+i+'" onchange="recalcRow('+i+')"><option value="R">Regular</option><option value="D">Direct</option></select></td>'
-      + '<td><select id="opt-'+i+'" onchange="recalcRow('+i+')"><option value="G">Growth</option><option value="I">IDCW</option></select></td>'
       + '<td><select id="ls-'+i+'" onchange="onLSChange('+i+')"><option value="L">Lumpsum</option><option value="S">SIP</option></select></td>'
       + '<td><input type="date" id="start-'+i+'" onchange="recalcRow('+i+')"></td>'
       + '<td><span id="sipday-'+i+'" class="sip-day-hint">—</span></td>'
@@ -369,16 +341,15 @@ function onFundSearch(row){
       dd.innerHTML = '<div class="fname-dd-item" style="color:var(--t4);">No matches found. Try a different spelling.</div>';
       return;
     }
-    var grouped = groupIntoBaseFunds(raw).slice(0,8);
-    lastMatches[row] = grouped;
-    if(!grouped.length){ dd.classList.remove('show'); return; }
-    dd.innerHTML = grouped.map(function(f,idx){
-      return '<div class="fname-dd-item" data-idx="'+idx+'">'+f.base+'</div>';
+    var matches = raw.slice(0,12).map(function(f){ return {code:String(f.schemeCode), name:f.schemeName}; });
+    lastMatches[row] = matches;
+    dd.innerHTML = matches.map(function(f,idx){
+      return '<div class="fname-dd-item" data-idx="'+idx+'">'+f.name+'</div>';
     }).join('');
     dd.querySelectorAll('.fname-dd-item').forEach(function(item,idx){
       item.addEventListener('mousedown', function(){
-        SELECTED[row] = grouped[idx];
-        inp.value = grouped[idx].base;
+        SELECTED[row] = matches[idx];
+        inp.value = matches[idx].name;
         dd.classList.remove('show');
         recalcRow(row);
       });
@@ -393,26 +364,8 @@ function onLSChange(row){
   recalcRow(row);
 }
 
-function resolveSchemeCode(row){
-  var sel = SELECTED[row];
-  if(!sel) return null;
-  var plan = document.getElementById('plan-'+row).value; // R/D
-  var opt = document.getElementById('opt-'+row).value;   // G/I
-  var planStr = plan==='D' ? 'direct' : 'regular';
-  var optStr = opt==='G' ? 'growth' : 'idcw';
-  var best = null;
-  sel.variants.forEach(function(v){
-    var u = v.name.toLowerCase();
-    var planMatch = planStr==='direct' ? u.indexOf('direct')>=0 : u.indexOf('direct')<0;
-    var optMatch = optStr==='growth' ? u.indexOf('growth')>=0 : (u.indexOf('idcw')>=0 || u.indexOf('dividend')>=0);
-    if(planMatch && optMatch) best = v;
-  });
-  if(!best && sel.variants.length) best = sel.variants[0]; // fallback: closest available
-  return best;
-}
-
 async function recalcRow(row){
-  var variant = resolveSchemeCode(row);
+  var variant = SELECTED[row]; // {code, name} — the exact fund picked from the popup
   var startVal = document.getElementById('start-'+row).value;
   var endVal = document.getElementById('end-'+row).value;
   var amt = parseFloat(document.getElementById('amt-'+row).value);
