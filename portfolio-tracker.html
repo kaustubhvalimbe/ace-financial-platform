@@ -69,8 +69,6 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 24px;height:64px
 .hero-ttl{font-family:var(--fh);font-size:26px;color:var(--p1);margin-bottom:6px;}
 .hero-ttl span{color:var(--g1);}
 .hero-sub{font-size:13px;color:var(--t4);max-width:760px;line-height:1.6;margin-bottom:20px;}
-.status-bar{background:var(--p4);border:1.5px solid var(--p3);border-radius:10px;padding:10px 16px;font-size:12px;color:var(--p2);margin-bottom:18px;display:none;}
-.status-bar.show{display:block;}
 
 .tbl-scroll{overflow-x:auto;border-radius:14px;border:1.5px solid var(--g4);background:#fff;}
 table.pf-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:1500px;}
@@ -130,7 +128,6 @@ table.pf-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:1500px
 <div class="wrap">
   <div class="hero-ttl">Track Your <span>Existing Portfolio</span></div>
   <div class="hero-sub">Enter your past mutual fund investments — lumpsum or SIP — below. This tool fetches each fund's real historical NAV data and calculates exactly what your investment is worth today, using the actual NAV on your transaction date(s), not an estimate.</div>
-  <div class="status-bar" id="status-bar">Loading fund master list…</div>
 
   <div class="tbl-scroll">
     <table class="pf-tbl" id="pf-tbl">
@@ -199,25 +196,27 @@ table.pf-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:1500px
 
 <script>
 // ══════════════════════════════════════════════════════════
-// MASTER FUND LIST LOADING (same resilient pattern as Fund Toppers)
+// ON-DEMAND FUND SEARCH (searches live per keystroke, debounced —
+// avoids downloading the entire ~18,000+ scheme list upfront, which
+// is heavy enough to fail on the free CORS-proxy fallbacks)
 // ══════════════════════════════════════════════════════════
-var MASTER = [];      // raw {schemeCode, schemeName}
-var BASE_FUNDS = [];  // deduplicated base fund names -> list of variant scheme codes
-var loaded = false;
 var navCache = {};    // schemeCode -> full NAV history array (cached after first fetch)
+var searchDebounce = {}; // row -> timeout handle
+var loaded = true; // search works on-demand, no upfront load gate needed
 
-async function fetchMFAPI() {
+async function searchFunds(query) {
+  var q = encodeURIComponent(query);
   try {
-    var r = await fetch('https://api.mfapi.in/mf');
-    if(r.ok) { var d = await r.json(); if(Array.isArray(d) && d.length>100) return d; }
+    var r = await fetch('https://api.mfapi.in/mf/search?q='+q);
+    if(r.ok) { var d = await r.json(); if(Array.isArray(d)) return d; }
   } catch(e) {}
   try {
-    var r2 = await fetch('https://api.allorigins.win/raw?url=https%3A%2F%2Fapi.mfapi.in%2Fmf');
-    if(r2.ok) { var d2 = await r2.json(); if(Array.isArray(d2) && d2.length>100) return d2; }
+    var r2 = await fetch('https://api.allorigins.win/raw?url=https%3A%2F%2Fapi.mfapi.in%2Fmf%2Fsearch%3Fq%3D'+q);
+    if(r2.ok) { var d2 = await r2.json(); if(Array.isArray(d2)) return d2; }
   } catch(e) {}
   try {
-    var r3 = await fetch('https://corsproxy.io/?https://api.mfapi.in/mf');
-    if(r3.ok) { var d3 = await r3.json(); if(Array.isArray(d3) && d3.length>100) return d3; }
+    var r3 = await fetch('https://corsproxy.io/?https://api.mfapi.in/mf/search?q='+q);
+    if(r3.ok) { var d3 = await r3.json(); if(Array.isArray(d3)) return d3; }
   } catch(e) {}
   return null;
 }
@@ -236,23 +235,14 @@ function baseName(name){
     .trim();
 }
 
-async function initMaster(){
-  document.getElementById('status-bar').classList.add('show');
-  var data = await fetchMFAPI();
-  if(!data){
-    document.getElementById('status-bar').textContent = 'Could not load fund list. Please refresh the page.';
-    return;
-  }
-  MASTER = data;
+function groupIntoBaseFunds(rawResults){
   var groups = {};
-  data.forEach(function(f){
+  rawResults.forEach(function(f){
     var bn = baseName(f.schemeName);
     if(!groups[bn]) groups[bn] = [];
     groups[bn].push({code:String(f.schemeCode), name:f.schemeName});
   });
-  BASE_FUNDS = Object.keys(groups).map(function(bn){ return {base:bn, variants:groups[bn]}; });
-  loaded = true;
-  document.getElementById('status-bar').classList.remove('show');
+  return Object.keys(groups).map(function(bn){ return {base:bn, variants:groups[bn]}; });
 }
 
 // ══════════════════════════════════════════════════════════
@@ -362,25 +352,38 @@ function buildRows(){
 
 var SELECTED = {}; // row -> {base, variants}
 
+var lastMatches = {}; // row -> current dropdown matches, for click handling
+
 function onFundSearch(row){
   var inp = document.getElementById('fn-'+row);
   var dd = document.getElementById('fdd-'+row);
-  var q = inp.value.trim().toLowerCase();
-  if(q.length<2 || !loaded){ dd.classList.remove('show'); return; }
-  var matches = BASE_FUNDS.filter(function(f){ return f.base.toLowerCase().indexOf(q)>=0; }).slice(0,8);
-  if(!matches.length){ dd.classList.remove('show'); return; }
-  dd.innerHTML = matches.map(function(f,idx){
-    return '<div class="fname-dd-item" data-idx="'+idx+'">'+f.base+'</div>';
-  }).join('');
-  dd.classList.add('show');
-  dd.querySelectorAll('.fname-dd-item').forEach(function(item,idx){
-    item.addEventListener('mousedown', function(){
-      SELECTED[row] = matches[idx];
-      inp.value = matches[idx].base;
-      dd.classList.remove('show');
-      recalcRow(row);
+  var q = inp.value.trim();
+  if(q.length<2){ dd.classList.remove('show'); return; }
+
+  clearTimeout(searchDebounce[row]);
+  searchDebounce[row] = setTimeout(async function(){
+    dd.innerHTML = '<div class="fname-dd-item" style="color:var(--t4);">Searching…</div>';
+    dd.classList.add('show');
+    var raw = await searchFunds(q);
+    if(!raw || !raw.length){
+      dd.innerHTML = '<div class="fname-dd-item" style="color:var(--t4);">No matches found. Try a different spelling.</div>';
+      return;
+    }
+    var grouped = groupIntoBaseFunds(raw).slice(0,8);
+    lastMatches[row] = grouped;
+    if(!grouped.length){ dd.classList.remove('show'); return; }
+    dd.innerHTML = grouped.map(function(f,idx){
+      return '<div class="fname-dd-item" data-idx="'+idx+'">'+f.base+'</div>';
+    }).join('');
+    dd.querySelectorAll('.fname-dd-item').forEach(function(item,idx){
+      item.addEventListener('mousedown', function(){
+        SELECTED[row] = grouped[idx];
+        inp.value = grouped[idx].base;
+        dd.classList.remove('show');
+        recalcRow(row);
+      });
     });
-  });
+  }, 350); // debounce: wait 350ms after typing stops before hitting the API
 }
 
 function onLSChange(row){
@@ -516,7 +519,6 @@ function toggleDetail(row){
 // INIT
 // ══════════════════════════════════════════════════════════
 buildRows();
-initMaster();
 </script>
 </body>
 </html>
