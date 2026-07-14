@@ -256,7 +256,7 @@ function fmtMoney(n){
   if(n===null||n===undefined||isNaN(n)) return '—';
   if(Math.abs(n)>=10000000) return '₹'+(n/10000000).toFixed(2)+' Cr';
   if(Math.abs(n)>=100000) return '₹'+(n/100000).toFixed(2)+' L';
-  return '₹'+n.toLocaleString('en-IN',{maximumFractionDigits:0});
+  return '₹'+n.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
 }
 function fmtNav(n){ return (n===null||n===undefined||isNaN(n)) ? '—' : n.toFixed(4); }
 function fmtPct(n){ return (n===null||n===undefined||isNaN(n)) ? '—' : (n>=0?'+':'')+n.toFixed(2)+'%'; }
