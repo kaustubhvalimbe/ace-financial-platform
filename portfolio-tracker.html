@@ -22,6 +22,7 @@
 <link rel="canonical" href="https://acefinservices.com/portfolio-tracker.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
   --p1:#2d2478;--p2:#3c3197;--p3:#6b63c9;--p4:#f0effe;--p5:#faf9ff;
@@ -71,6 +72,28 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 24px;height:64px
 .hero-sub{font-size:13px;color:var(--t4);max-width:760px;line-height:1.6;margin-bottom:20px;}
 
 .tbl-scroll{overflow-x:auto;border-radius:14px;border:1.5px solid var(--g4);background:#fff;}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+.tb-btn{background:#fff;border:1.5px solid var(--p3);color:var(--p2);font-size:12px;font-weight:700;padding:9px 16px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.tb-btn:hover{background:var(--p4);}
+.tb-btn.primary{background:var(--p2);color:#fff;border-color:var(--p2);}
+.tb-btn.primary:hover{background:var(--p1);}
+.upload-status{font-size:12px;color:var(--t4);margin-left:6px;align-self:center;}
+@media print{
+  nav, .toolbar, .legend, input, select { }
+  nav{display:none!important;}
+  .toolbar{display:none!important;}
+  .legend{display:none!important;}
+  body{background:#fff!important;}
+  .hero-sub{display:none;}
+  .fname-wrap input, input[type="number"], input[type="date"], select{
+    border:none!important;background:transparent!important;padding:2px!important;
+    -webkit-appearance:none;appearance:none;color:#000!important;
+  }
+  .fname-dd{display:none!important;}
+  .show-tbl-btn{display:none!important;}
+  .pf-tbl{min-width:0!important;}
+  .tbl-scroll{border:none!important;overflow:visible!important;}
+}
 table.pf-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:1500px;}
 .pf-tbl th{background:var(--p1);color:#fff;padding:9px 8px;text-align:left;font-size:10px;font-weight:800;text-transform:uppercase;white-space:nowrap;position:sticky;top:0;}
 .pf-tbl td{padding:6px 6px;border-bottom:1px solid var(--g4);vertical-align:middle;}
@@ -128,6 +151,14 @@ table.pf-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:1500px
 <div class="wrap">
   <div class="hero-ttl">Track Your <span>Existing Portfolio</span></div>
   <div class="hero-sub">Enter your past mutual fund investments — lumpsum or SIP — below. This tool fetches each fund's real historical NAV data and calculates exactly what your investment is worth today, using the actual NAV on your transaction date(s), not an estimate.</div>
+
+  <div class="toolbar">
+    <button class="tb-btn" onclick="downloadTemplate()">📥 Download Excel Template</button>
+    <button class="tb-btn primary" onclick="document.getElementById('excel-upload-input').click()">📤 Upload Excel (1–10 rows)</button>
+    <input type="file" id="excel-upload-input" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleExcelUpload(event)">
+    <span class="upload-status" id="upload-status"></span>
+    <button class="tb-btn" onclick="window.print()" style="margin-left:auto;">🖨️ Print Results</button>
+  </div>
 
   <div class="tbl-scroll">
     <table class="pf-tbl" id="pf-tbl">
@@ -320,7 +351,7 @@ function buildRows(){
       + '<td><div class="fname-wrap"><input type="text" id="fn-'+i+'" placeholder="Type fund name…" autocomplete="off" oninput="onFundSearch('+i+')"><div class="fname-dd" id="fdd-'+i+'"></div></div></td>'
       + '<td><select id="ls-'+i+'" onchange="onLSChange('+i+')"><option value="L">Lumpsum</option><option value="S">SIP</option></select></td>'
       + '<td><input type="date" id="start-'+i+'" onchange="recalcRow('+i+')"></td>'
-      + '<td><span id="sipday-'+i+'" class="sip-day-hint">—</span></td>'
+      + '<td><input type="number" id="sipday-'+i+'" min="1" max="31" placeholder="1-31" oninput="recalcRow('+i+')" style="width:60px;"></td>'
       + '<td><input type="number" id="amt-'+i+'" placeholder="Amount" min="0" oninput="recalcRow('+i+')"></td>'
       + '<td><input type="date" id="end-'+i+'" value="'+todayISO()+'" onchange="recalcRow('+i+')"></td>'
       + '<td class="out-val pu" id="pnav-'+i+'">—</td>'
@@ -382,14 +413,18 @@ async function recalcRow(row){
   var endVal = document.getElementById('end-'+row).value;
   var amt = parseFloat(document.getElementById('amt-'+row).value);
   var ls = document.getElementById('ls-'+row).value;
-  var sipDayEl = document.getElementById('sipday-'+row);
+  var sipDayInput = document.getElementById('sipday-'+row);
+
+  // Convenience pre-fill: if SIP day is blank and we have a start date, suggest
+  // that date's day-of-month — but NEVER overwrite something the user already typed.
+  if(startVal && !sipDayInput.value){
+    sipDayInput.value = parseISODateLocal(startVal).getDate();
+  }
 
   if(!variant || !startVal || !amt || amt<=0){
-    sipDayEl.textContent = startVal ? ('Day '+parseISODateLocal(startVal).getDate()) : '—';
     return;
   }
   var startDate = parseISODateLocal(startVal);
-  sipDayEl.textContent = 'Day '+startDate.getDate();
 
   var arr = await getNavHistory(variant.code);
   if(!arr){
@@ -417,10 +452,14 @@ async function recalcRow(row){
     // day-of-month (clamped to that month's actual last day), NOT by repeatedly
     // calling setMonth() on a running date — that approach drifts permanently
     // once it crosses a short month (e.g. SIP day 31 hitting a 28/29/30-day month).
+    // SIP Day comes from the user's own explicit entry — it can genuinely differ
+    // from the Start Date's day-of-month (e.g. registered on the 16th, but chose
+    // the 5th of every month as the actual recurring SIP date).
     var installments = [];
     var startYear = startDate.getFullYear();
     var startMonth = startDate.getMonth();
-    var sipDay = startDate.getDate();
+    var sipDay = parseInt(sipDayInput.value) || startDate.getDate();
+    sipDay = Math.max(1, Math.min(31, sipDay)); // guard against invalid entries
     var totalUnits = 0, totalInvested = 0;
     var cashflows = [];
     var monthOffset = 0;
@@ -478,6 +517,108 @@ function toggleDetail(row){
     dr.style.display = 'none';
     btn.textContent = 'Show Table';
   }
+}
+
+// ══════════════════════════════════════════════════════════
+// EXCEL TEMPLATE DOWNLOAD
+// ══════════════════════════════════════════════════════════
+function downloadTemplate(){
+  var headers = ['Fund Name (exact, as shown in search — e.g. "HDFC Flexi Cap Fund - Growth Plan")','L/S (Lumpsum or SIP)','Start Date (DD-MM-YYYY)','SIP Day (1-31, only if SIP)','Amount','End Date (DD-MM-YYYY, optional — defaults to today)'];
+  var example1 = ['HDFC Flexi Cap Fund - Growth Plan','Lumpsum','21-12-2000','','100000',''];
+  var example2 = ['SBI Large & Midcap Fund - Regular Plan - Growth','SIP','16-02-2022','16','10000',''];
+  var ws = XLSX.utils.aoa_to_sheet([headers, example1, example2]);
+  ws['!cols'] = [{wch:45},{wch:16},{wch:20},{wch:14},{wch:12},{wch:20}];
+  var wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Portfolio');
+  XLSX.writeFile(wb, 'portfolio-tracker-template.xlsx');
+}
+
+// ══════════════════════════════════════════════════════════
+// EXCEL UPLOAD — parses 1-10 data rows and populates the table
+// ══════════════════════════════════════════════════════════
+function parseExcelDateFlexible(val){
+  if(!val && val!==0) return '';
+  if(val instanceof Date && !isNaN(val.getTime())){
+    return val.getFullYear()+'-'+String(val.getMonth()+1).padStart(2,'0')+'-'+String(val.getDate()).padStart(2,'0');
+  }
+  if(typeof val === 'number'){
+    // Excel serial date number (days since 1899-12-30). Built from UTC epoch ms,
+    // so MUST be read back with UTC getters — using local getters here would
+    // reintroduce the exact same UTC/local mismatch bug found earlier in the
+    // main date-parsing logic (shifts by a day depending on the browser's timezone).
+    var d = new Date(Math.round((val - 25569) * 86400 * 1000));
+    return d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0')+'-'+String(d.getUTCDate()).padStart(2,'0');
+  }
+  var s = String(val).trim();
+  var m = s.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/); // DD-MM-YYYY or DD/MM/YYYY
+  if(m) return m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0');
+  var m2 = s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/); // YYYY-MM-DD
+  if(m2) return m2[1]+'-'+m2[2].padStart(2,'0')+'-'+m2[3].padStart(2,'0');
+  return '';
+}
+
+async function handleExcelUpload(event){
+  var file = event.target.files[0];
+  if(!file) return;
+  var statusEl = document.getElementById('upload-status');
+  statusEl.textContent = 'Reading file…';
+
+  var reader = new FileReader();
+  reader.onload = async function(e){
+    try{
+      var data = new Uint8Array(e.target.result);
+      var wb = XLSX.read(data, {type:'array', cellDates:true});
+      var sheet = wb.Sheets[wb.SheetNames[0]];
+      var rows = XLSX.utils.sheet_to_json(sheet, {header:1, raw:true});
+      var dataRows = rows.slice(1).filter(function(r){ return r && r.length && r[0]; }).slice(0,10);
+
+      if(!dataRows.length){
+        statusEl.textContent = 'No data rows found in file.';
+        return;
+      }
+
+      for(var i=0;i<dataRows.length;i++){
+        var rowNum = i+1;
+        statusEl.textContent = 'Processing row '+rowNum+' of '+dataRows.length+'…';
+        var r = dataRows[i];
+        var fundNameText = String(r[0]||'').trim();
+        var lsText = String(r[1]||'').trim().toLowerCase();
+        var startText = parseExcelDateFlexible(r[2]);
+        var sipDayText = r[3]!==undefined && r[3]!==null ? String(r[3]).trim() : '';
+        var amtText = r[4]!==undefined && r[4]!==null ? String(r[4]).trim() : '';
+        var endText = parseExcelDateFlexible(r[5]) || todayISO();
+
+        if(!fundNameText){ continue; }
+
+        // Search and auto-select the best matching fund
+        var results = await searchFunds(fundNameText);
+        if(!results || !results.length){
+          document.getElementById('fn-'+rowNum).value = fundNameText + ' (NOT FOUND — please search manually)';
+          continue;
+        }
+        // Prefer an exact case-insensitive name match; otherwise take the first result
+        var exact = results.find(function(x){ return x.schemeName.toLowerCase() === fundNameText.toLowerCase(); });
+        var picked = exact || results[0];
+        SELECTED[rowNum] = {code:String(picked.schemeCode), name:picked.schemeName};
+        document.getElementById('fn-'+rowNum).value = picked.schemeName;
+
+        document.getElementById('ls-'+rowNum).value = lsText.indexOf('s')===0 ? 'S' : 'L';
+        onLSChange(rowNum);
+        document.getElementById('start-'+rowNum).value = startText;
+        document.getElementById('sipday-'+rowNum).value = sipDayText;
+        document.getElementById('amt-'+rowNum).value = amtText;
+        document.getElementById('end-'+rowNum).value = endText;
+
+        await recalcRow(rowNum);
+      }
+      statusEl.textContent = '✅ Loaded '+dataRows.length+' row(s) successfully.';
+    } catch(err){
+      statusEl.textContent = 'Could not read file. Please use the template format.';
+      console.error(err);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+  event.target.value = ''; // allow re-uploading the same file name again later
 }
 
 // ══════════════════════════════════════════════════════════
