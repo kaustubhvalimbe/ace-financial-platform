@@ -73,7 +73,7 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 24px;height:64px
 
 .tbl-scroll{overflow-x:auto;border-radius:14px;border:1.5px solid var(--g4);background:#fff;}
 .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
-.tb-btn{background:#fff;border:1.5px solid var(--p3);color:var(--p2);font-size:12px;font-weight:700;padding:9px 16px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.tb-btn{background:#fff;border:1.5px solid var(--p3);color:var(--p2);font-size:12px;font-weight:700;padding:9px 16px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:6px;text-decoration:none;}
 .tb-btn:hover{background:var(--p4);}
 .tb-btn.primary{background:var(--p2);color:#fff;border-color:var(--p2);}
 .tb-btn.primary:hover{background:var(--p1);}
@@ -153,7 +153,7 @@ table.pf-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:1500px
   <div class="hero-sub">Enter your past mutual fund investments — lumpsum or SIP — below. This tool fetches each fund's real historical NAV data and calculates exactly what your investment is worth today, using the actual NAV on your transaction date(s), not an estimate.</div>
 
   <div class="toolbar">
-    <button class="tb-btn" onclick="downloadTemplate()">📥 Download Excel Template</button>
+    <a href="portfolio-tracker-template.xlsx" download class="tb-btn">📥 Download Excel Template</a>
     <button class="tb-btn primary" onclick="document.getElementById('excel-upload-input').click()">📤 Upload Excel (1–10 rows)</button>
     <input type="file" id="excel-upload-input" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleExcelUpload(event)">
     <span class="upload-status" id="upload-status"></span>
@@ -635,20 +635,6 @@ function toggleDetail(row){
     dr.style.display = 'none';
     btn.textContent = 'Show Table';
   }
-}
-
-// ══════════════════════════════════════════════════════════
-// EXCEL TEMPLATE DOWNLOAD
-// ══════════════════════════════════════════════════════════
-function downloadTemplate(){
-  var headers = ['Fund Name (exact, as shown in search — e.g. "HDFC Flexi Cap Fund - Growth Plan")','L/S (Lumpsum or SIP)','Start Date (DD-MM-YYYY)','SIP Day (1-31, only if SIP)','Amount','End Date (DD-MM-YYYY, optional — defaults to today)'];
-  var example1 = ['HDFC Flexi Cap Fund - Growth Plan','Lumpsum','21-12-2000','','100000',''];
-  var example2 = ['SBI Large & Midcap Fund - Regular Plan - Growth','SIP','16-02-2022','16','10000',''];
-  var ws = XLSX.utils.aoa_to_sheet([headers, example1, example2]);
-  ws['!cols'] = [{wch:45},{wch:16},{wch:20},{wch:14},{wch:12},{wch:20}];
-  var wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Portfolio');
-  XLSX.writeFile(wb, 'portfolio-tracker-template.xlsx');
 }
 
 // ══════════════════════════════════════════════════════════
