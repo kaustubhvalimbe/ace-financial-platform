@@ -518,7 +518,8 @@ function parseAMFIDate(str){
 async function fetchAMFINav(schemeName, targetDate){
   // Narrow ~10-day window starting at the target date, enough to forward-fill
   // across a weekend or short holiday run, without requesting AMFI's full
-  // 90-day-max allowance (which returns ALL AMCs' data — very large).
+  // 90-day-max allowance. Note: AMFI's endpoint returns ALL AMCs regardless
+  // of window length, so the payload is large (10,000+ rows) either way.
   var d2 = new Date(targetDate);
   d2.setDate(d2.getDate()+10);
   var frmdt = fmtAMFIDate(targetDate);
@@ -526,17 +527,34 @@ async function fetchAMFINav(schemeName, targetDate){
   var url = 'http://portal.amfiindia.com/DownloadNAVHistoryReport_Po.aspx?frmdt='+frmdt+'&todt='+todt;
 
   var text = null;
+  var attempts = [];
+
   try {
     var r = await fetch(url);
+    attempts.push('direct: HTTP '+r.status);
     if(r.ok) text = await r.text();
-  } catch(e){}
+  } catch(e){ attempts.push('direct: '+e.message); }
+
   if(!text){
     try {
       var r2 = await fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(url));
+      attempts.push('allorigins: HTTP '+r2.status);
       if(r2.ok) text = await r2.text();
-    } catch(e){}
+    } catch(e){ attempts.push('allorigins: '+e.message); }
   }
-  if(!text) return {error:'Could not reach AMFI (network/CORS issue)'};
+  if(!text){
+    try {
+      var r3 = await fetch('https://corsproxy.io/?'+encodeURIComponent(url));
+      attempts.push('corsproxy: HTTP '+r3.status);
+      if(r3.ok) text = await r3.text();
+    } catch(e){ attempts.push('corsproxy: '+e.message); }
+  }
+
+  if(!text){
+    console.error('AMFI fetch failed. Attempts:', attempts.join(' | '));
+    return {error:'Could not reach AMFI — see browser console for details (F12)'};
+  }
+  console.log('AMFI fetch succeeded via:', attempts[attempts.length-1], '| response length:', text.length);
 
   var normTarget = schemeName.toLowerCase().replace(/[^a-z0-9]/g,'');
   var lines = text.split('\n');
