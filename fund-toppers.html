@@ -112,6 +112,7 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 24px;height:64px
 .rn{background:var(--p2);}
 .fund-name{font-size:12px;font-weight:800;color:var(--t1);line-height:1.3;}
 .fund-amc{font-size:10px;color:var(--t4);margin-top:2px;}
+.fund-nav-line{font-size:10px;color:var(--g1);margin-top:2px;font-family:var(--fm);}
 .ret-pos{color:var(--g1);}
 .ret-neg{color:var(--red);}
 .ret-nil{color:var(--t5);}
@@ -1149,8 +1150,9 @@ async function renderToppers() {
     tr.setAttribute('data-code', f.code);
     var shortName = f.name.replace(/ - Direct Plan - Growth/gi,'').replace(/ - Direct Plan/gi,'').replace(/ - Regular Plan - Growth/gi,'').replace(/ - Regular Plan/gi,'');
     var subLabel = ST.mode === 'amc' ? (f.subcat||'') : f.amc;
+    var navLine = (f.nav && f.date) ? ('NAV: ₹'+parseFloat(f.nav).toFixed(4)+' (as on '+f.date+')') : '';
     tr.innerHTML = '<td><div class="rank-badge '+rankCls+'">'+rank+'</div></td>'
-      + '<td><div class="fund-name">'+shortName+'</div><div class="fund-amc">'+subLabel+'</div></td>'
+      + '<td><div class="fund-name">'+shortName+'</div><div class="fund-amc">'+subLabel+'</div>'+(navLine?'<div class="fund-nav-line">'+navLine+'</div>':'')+'</td>'
       + '<td>'+fmtR(f.r6m)+'</td>'
       + '<td>'+fmtR(f.r1y)+'</td>'
       + '<td>'+fmtR(f.r3y)+'</td>'
