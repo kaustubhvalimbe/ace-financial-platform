@@ -358,10 +358,9 @@ function buildRows(){
       + '<td class="out-val pu" id="cnav-'+i+'">—</td>'
       + '<td class="out-val gr" id="cval-'+i+'">—</td>'
       + '<td class="out-val gr" id="ret-'+i+'">—</td>'
-      + '<td><input type="text" id="rmk-'+i+'" placeholder="Remark"><br><button class="show-tbl-btn" id="tblbtn-'+i+'" style="display:none;margin-top:4px;" onclick="toggleDetail('+i+')">Show Table</button> <button class="show-tbl-btn" id="amfi-btn-'+i+'" style="margin-top:4px;" onclick="verifyRowAgainstAMFI('+i+')">🔍 Verify vs AMFI</button></td>'
+      + '<td><input type="text" id="rmk-'+i+'" placeholder="Remark"><br><button class="show-tbl-btn" id="tblbtn-'+i+'" style="display:none;margin-top:4px;" onclick="toggleDetail('+i+')">Show Table</button> <a href="https://www.amfiindia.com/net-asset-value/nav-history" target="_blank" class="show-tbl-btn" style="display:inline-block;margin-top:4px;text-decoration:none;">🔗 Check on AMFI</a></td>'
       + '</tr>'
-      + '<tr class="detail-row" id="detailrow-'+i+'" style="display:none;"><td colspan="14" id="detailcell-'+i+'"></td></tr>'
-      + '<tr><td colspan="14" id="amfi-result-'+i+'" style="padding:4px 8px;"></td></tr>';
+      + '<tr class="detail-row" id="detailrow-'+i+'" style="display:none;"><td colspan="14" id="detailcell-'+i+'"></td></tr>';
   }
   tbody.innerHTML = html;
 }
@@ -497,141 +496,6 @@ async function recalcRow(row){
 }
 
 var ROW_SIP_DATA = {};
-
-// ══════════════════════════════════════════════════════════
-// AMFI CROSS-CHECK — verifies our NAV against AMFI's own official
-// historical NAV report directly (not the third-party mfapi.in mirror),
-// since api.mfapi.in is itself just a downstream copy of this same
-// AMFI data, and copies can occasionally have transcription errors.
-// ══════════════════════════════════════════════════════════
-function fmtAMFIDate(dt){
-  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  var dd = String(dt.getDate()).padStart(2,'0');
-  return dd+'-'+months[dt.getMonth()]+'-'+dt.getFullYear();
-}
-function parseAMFIDate(str){
-  var months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
-  var parts = str.trim().split('-');
-  return new Date(parseInt(parts[2]), months[parts[1]], parseInt(parts[0])).getTime();
-}
-
-async function fetchAMFINav(schemeName, targetDate){
-  // Narrow ~10-day window starting at the target date, enough to forward-fill
-  // across a weekend or short holiday run, without requesting AMFI's full
-  // 90-day-max allowance. Note: AMFI's endpoint returns ALL AMCs regardless
-  // of window length, so the payload is large (10,000+ rows) either way.
-  var d2 = new Date(targetDate);
-  d2.setDate(d2.getDate()+10);
-  var frmdt = fmtAMFIDate(targetDate);
-  var todt = fmtAMFIDate(d2);
-  var url = 'http://portal.amfiindia.com/DownloadNAVHistoryReport_Po.aspx?frmdt='+frmdt+'&todt='+todt;
-
-  var text = null;
-  var attempts = [];
-
-  try {
-    var r = await fetch(url);
-    attempts.push('direct: HTTP '+r.status);
-    if(r.ok) text = await r.text();
-  } catch(e){ attempts.push('direct: '+e.message); }
-
-  if(!text){
-    try {
-      var r2 = await fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(url));
-      attempts.push('allorigins: HTTP '+r2.status);
-      if(r2.ok) text = await r2.text();
-    } catch(e){ attempts.push('allorigins: '+e.message); }
-  }
-  if(!text){
-    try {
-      var r3 = await fetch('https://corsproxy.io/?'+encodeURIComponent(url));
-      attempts.push('corsproxy: HTTP '+r3.status);
-      if(r3.ok) text = await r3.text();
-    } catch(e){ attempts.push('corsproxy: '+e.message); }
-  }
-
-  if(!text){
-    console.error('AMFI fetch failed. Attempts:', attempts.join(' | '));
-    return {error:'Could not reach AMFI — see browser console for details (F12)'};
-  }
-  console.log('AMFI fetch succeeded via:', attempts[attempts.length-1], '| response length:', text.length);
-
-  var normTarget = schemeName.toLowerCase().replace(/[^a-z0-9]/g,'');
-  var lines = text.split('\n');
-  var matches = [];
-  for(var i=0;i<lines.length;i++){
-    var line = lines[i].trim();
-    if(!line || line.indexOf(';')<0) continue;
-    var parts = line.split(';');
-    if(parts.length<8) continue;
-    var normLine = parts[1].toLowerCase().replace(/[^a-z0-9]/g,'');
-    if(normLine===normTarget){
-      var navVal = parseFloat(parts[4]);
-      if(!isNaN(navVal)) matches.push({nav:navVal, date:parts[7]});
-    }
-  }
-  if(!matches.length) return {error:'Fund not found in AMFI data for this window'};
-
-  matches.sort(function(a,b){ return parseAMFIDate(a.date)-parseAMFIDate(b.date); });
-  for(var j=0;j<matches.length;j++){
-    if(parseAMFIDate(matches[j].date) >= targetDate.getTime()){
-      return {nav:matches[j].nav, date:matches[j].date};
-    }
-  }
-  return {error:'No AMFI data on/after this date in the window checked'};
-}
-
-async function verifyRowAgainstAMFI(row){
-  var variant = SELECTED[row];
-  var resultEl = document.getElementById('amfi-result-'+row);
-  var btn = document.getElementById('amfi-btn-'+row);
-  if(!variant){ return; }
-  btn.textContent = 'Checking…';
-  btn.disabled = true;
-
-  var startVal = document.getElementById('start-'+row).value;
-  var endVal = document.getElementById('end-'+row).value;
-  var ls = document.getElementById('ls-'+row).value;
-  var sipDayInput = document.getElementById('sipday-'+row);
-
-  var purchaseDate;
-  if(ls==='L'){
-    purchaseDate = parseISODateLocal(startVal);
-  } else {
-    // first SIP installment date
-    var sd = parseISODateLocal(startVal);
-    var sipDay = parseInt(sipDayInput.value) || sd.getDate();
-    var lastDay = new Date(sd.getFullYear(), sd.getMonth()+1, 0).getDate();
-    purchaseDate = new Date(sd.getFullYear(), sd.getMonth(), Math.min(sipDay, lastDay));
-  }
-  var endDate = endVal ? parseISODateLocal(endVal) : new Date();
-
-  var [purchaseResult, currentResult] = await Promise.all([
-    fetchAMFINav(variant.name, purchaseDate),
-    fetchAMFINav(variant.name, endDate)
-  ]);
-
-  var ourPurchaseNav = parseFloat(document.getElementById('pnav-'+row).textContent);
-  var ourCurrentNav = parseFloat(document.getElementById('cnav-'+row).textContent);
-
-  var html = '<div style="font-size:11px;line-height:1.8;">';
-  if(purchaseResult.error){
-    html += '⚠️ Purchase NAV check: '+purchaseResult.error+'<br>';
-  } else {
-    var pMatch = Math.abs(purchaseResult.nav - ourPurchaseNav) < 0.001;
-    html += (pMatch?'✅':'❌')+' Purchase NAV — Our tool: '+ourPurchaseNav.toFixed(4)+' | AMFI ('+purchaseResult.date+'): '+purchaseResult.nav.toFixed(4)+'<br>';
-  }
-  if(currentResult.error){
-    html += '⚠️ Current NAV check: '+currentResult.error;
-  } else {
-    var cMatch = Math.abs(currentResult.nav - ourCurrentNav) < 0.001;
-    html += (cMatch?'✅':'❌')+' Current NAV — Our tool: '+ourCurrentNav.toFixed(4)+' | AMFI ('+currentResult.date+'): '+currentResult.nav.toFixed(4);
-  }
-  html += '</div>';
-  resultEl.innerHTML = html;
-  btn.textContent = '🔍 Verify vs AMFI';
-  btn.disabled = false;
-}
 
 function toggleDetail(row){
   var dr = document.getElementById('detailrow-'+row);
