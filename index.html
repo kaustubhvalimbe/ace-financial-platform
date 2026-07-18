@@ -1007,10 +1007,10 @@ footer{
       <div class="cform fade-up">
         <h3>📩 Send a Message</h3>
         <div class="frow">
-          <div class="fgroup"><label>Your Name</label><input type="text" placeholder="Rajesh Sharma"></div>
-          <div class="fgroup"><label>Phone Number</label><input type="tel" placeholder="+91 98765 43210"></div>
+          <div class="fgroup"><label for="mf-name">Your Name</label><input type="text" id="mf-name" placeholder="Rajesh Sharma"></div>
+          <div class="fgroup"><label for="mf-phone">Phone Number</label><input type="tel" id="mf-phone" placeholder="+91 98765 43210"></div>
         </div>
-        <div class="fgroup"><label>Email Address</label><input type="email" placeholder="rajesh@email.com"></div>
+        <div class="fgroup"><label for="mf-email">Email Address</label><input type="email" id="mf-email" placeholder="rajesh@email.com"></div>
         <div class="fgroup">
           <label for="interest-select">I am interested in</label>
           <select id="interest-select">
@@ -1024,9 +1024,11 @@ footer{
             <option>General MF Advisory</option>
           </select>
         </div>
-        <div class="fgroup"><label>Investment Amount (Approx)</label><input type="text" placeholder="e.g. ₹5,000/month SIP or ₹1,00,000 lumpsum"></div>
-        <div class="fgroup"><label>Message</label><textarea placeholder="Tell me about your financial goals..."></textarea></div>
+        <div class="fgroup"><label for="mf-amount">Investment Amount (Approx)</label><input type="text" id="mf-amount" placeholder="e.g. ₹5,000/month SIP or ₹1,00,000 lumpsum"></div>
+        <div class="fgroup"><label for="mf-message">Message</label><textarea id="mf-message" placeholder="Tell me about your financial goals..."></textarea></div>
         <button class="submit-btn" onclick="submitForm()">🚀 Send Message — I'll Respond Within 24 Hours</button>
+        <div id="mf-success" style="display:none;background:rgba(139,195,42,.15);border:1px solid rgba(139,195,42,.4);border-radius:8px;padding:12px;color:#5a8a10;font-size:13px;font-weight:600;margin-top:12px;">✅ Message sent! I'll respond within 24 hours.</div>
+        <div id="mf-error" style="display:none;background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.35);border-radius:8px;padding:12px;color:#dc2626;font-size:13px;font-weight:600;margin-top:12px;">⚠️ Something went wrong sending your message. Please reach me on WhatsApp or email support@acefinservices.com.</div>
       </div>
     </div>
   </div>
@@ -1216,14 +1218,40 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
 
 // Form submission
 function submitForm(){
-  const btn=document.querySelector('.submit-btn');
-  btn.textContent='✅ Message Sent! I will respond within 24 hours.';
-  btn.style.background='linear-gradient(135deg,#5a8a10,#8bc32a)';
-  if(typeof gtag==='function'){gtag('event','contact_form_submit',{'event_category':'engagement','event_label':'homepage_contact_form'});}
-  setTimeout(()=>{
-    btn.textContent='🚀 Send Message — I\'ll Respond Within 24 Hours';
-    btn.style.background='';
-  },4000);
+  var name    = (document.getElementById('mf-name')||{}).value ? document.getElementById('mf-name').value.trim() : '';
+  var phone   = (document.getElementById('mf-phone')||{}).value ? document.getElementById('mf-phone').value.trim() : '';
+  var email   = (document.getElementById('mf-email')||{}).value ? document.getElementById('mf-email').value.trim() : '';
+  var interest= (document.getElementById('interest-select')||{}).value || '';
+  var amount  = (document.getElementById('mf-amount')||{}).value ? document.getElementById('mf-amount').value.trim() : '';
+  var message = (document.getElementById('mf-message')||{}).value ? document.getElementById('mf-message').value.trim() : '';
+  if(!name||!email||!message){ alert('Please fill in your Name, Email and Message.'); return; }
+  var svc = (typeof EJ_SVC!=='undefined')?EJ_SVC:'service_rjllkcq';
+  var tpl = (typeof EJ_TPL!=='undefined')?EJ_TPL:'template_98oznol';
+  var hasInterest = interest && interest.indexOf('Select')===-1;
+  var subject = hasInterest ? interest : 'Website Enquiry';
+  var fullMsg = message + (amount ? '\n\nInvestment Amount: '+amount : '') + (hasInterest ? '\nInterested in: '+interest : '');
+  var btn=document.querySelector('.submit-btn');
+  var orig=btn.textContent;
+  btn.textContent='⏳ Sending...'; btn.disabled=true;
+  emailjs.send(svc, tpl, {
+    from_name:name, from_phone:phone||'Not provided',
+    from_email:email, subject:subject, message:fullMsg,
+    to_email1:'support@acefinservices.com',
+    to_email2:'kaustubh.valimbe@acefinservices.com',
+    reply_to:email
+  }).then(function(){
+    document.getElementById('mf-success').style.display='block';
+    document.getElementById('mf-error').style.display='none';
+    if(typeof gtag==='function'){gtag('event','contact_form_submit',{'event_category':'engagement','event_label':'primary_contact_form','subject':subject});}
+    btn.textContent=orig; btn.disabled=false;
+    ['mf-name','mf-phone','mf-email','mf-amount','mf-message'].forEach(function(id){var el=document.getElementById(id); if(el) el.value='';});
+    var sel=document.getElementById('interest-select'); if(sel) sel.selectedIndex=0;
+    setTimeout(function(){ document.getElementById('mf-success').style.display='none'; },6000);
+  }).catch(function(){
+    document.getElementById('mf-error').style.display='block';
+    document.getElementById('mf-success').style.display='none';
+    btn.textContent=orig; btn.disabled=false;
+  });
 }
 </script>
 <script>
