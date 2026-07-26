@@ -664,11 +664,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:8px;flex-wrap:wrap;">
           <div style="font-size:12px;font-weight:800;color:var(--t1);">Amortization Schedule</div>
           <div style="display:flex;gap:6px;">
-            <button id="lvt-y" class="loan-vt on" onclick="setLoanView('y')">Yearly</button>
-            <button id="lvt-m" class="loan-vt" onclick="setLoanView('m')">Monthly</button>
+            <button id="lvt-y" class="loan-vt" onclick="setLoanView('y')">Yearly</button>
+            <button id="lvt-m" class="loan-vt on" onclick="setLoanView('m')">Monthly</button>
           </div>
         </div>
-        <div class="ytw" style="max-height:300px;margin-top:10px;"><table class="ytbl"><thead><tr><th id="lth-p">Year</th><th>Opening</th><th>EMI</th><th>Principal</th><th>Interest</th><th>Closing</th></tr></thead><tbody id="loan-body"></tbody></table></div>
+        <div class="ytw" style="max-height:300px;margin-top:10px;"><table class="ytbl"><thead><tr><th id="lth-p">Month</th><th>Opening</th><th>EMI</th><th>Principal</th><th>Interest</th><th>Closing</th></tr></thead><tbody id="loan-body"></tbody></table></div>
         <button class="loan-print" onclick="printLoan()">🖨️ Print / Save Amortization as PDF</button>
       </div>
     </div>
@@ -985,7 +985,7 @@ function validateInput(id, min, max, fieldName) {
 </script>
 <script>
 /* ═══ LOAN EMI CALCULATOR (9th) ═══ */
-var LOAN_MODE='emi', LOAN_VIEW='y', LOAN_SCHED=[], LOAN_META={};
+var LOAN_MODE='emi', LOAN_VIEW='m', LOAN_SCHED=[], LOAN_META={};
 function loanINR(n){return '₹'+Math.round(n).toLocaleString('en-IN');}
 function lnum(id){var v=parseFloat(document.getElementById(id).value);return isNaN(v)?0:v;}
 function setLoanMode(m){
