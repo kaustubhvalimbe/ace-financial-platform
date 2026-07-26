@@ -12,11 +12,11 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>8 Free Mutual Fund Calculators — SIP, SWP, Retirement Planning | Ace Financial Services</title>
-<meta name="description" content="8 free professional mutual fund calculators — SIP with step-up, SWP, Lumpsum, Goal-based planner, ELSS tax saver, Inflation adjusted returns, Retirement Readiness, and Financial Planning with SIP & SWP (full lifecycle simulator). Powered by Ace Financial Services, AMFI Registered MFD, Pune.">
+<title>9 Free Mutual Fund Calculators — SIP, SWP, Retirement Planning | Ace Financial Services</title>
+<meta name="description" content="9 free professional mutual fund calculators — SIP with step-up, SWP, Lumpsum, Goal-based planner, ELSS tax saver, Inflation adjusted returns, Retirement Readiness, and Financial Planning with SIP & SWP (full lifecycle simulator). Powered by Ace Financial Services, AMFI Registered MFD, Pune.">
 <meta name="keywords" content="SIP calculator india 2026, SWP calculator, lumpsum calculator, ELSS tax calculator 80C, goal based investment planner, mutual fund returns calculator, inflation adjusted returns, retirement readiness calculator, SIP for retirement calculator, SIP SWP lifecycle planner, wealth calculator india">
-<meta property="og:title" content="8 Free Mutual Fund Calculators — SIP, SWP, Retirement Planning | Ace Financial Services">
-<meta property="og:description" content="8 free professional mutual fund calculators including a full SIP-to-SWP lifecycle planner — see whether your retirement plan actually survives. Powered by Ace Financial Services, AMFI Registered MFD, Pune.">
+<meta property="og:title" content="9 Free Mutual Fund Calculators — SIP, SWP, Retirement Planning | Ace Financial Services">
+<meta property="og:description" content="9 free professional mutual fund calculators including a full SIP-to-SWP lifecycle planner — see whether your retirement plan actually survives. Powered by Ace Financial Services, AMFI Registered MFD, Pune.">
 <meta property="og:type" content="website">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Kaustubh Valimbe — Ace Financial Services">
@@ -286,7 +286,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   "@type": "FinancialService",
   "name": "Ace Financial Services",
   "alternateName": "AFS",
-  "description": "AMFI-registered Mutual Fund Distributor offering 8 free mutual fund calculators including SIP, SWP, Lumpsum, Goal Planner, ELSS, Inflation Adjusted Returns, Retirement Readiness, and a full SIP-to-SWP lifecycle planner, in Pune, India.",
+  "description": "AMFI-registered Mutual Fund Distributor offering 9 free mutual fund & loan calculators including SIP, SWP, Lumpsum, Goal Planner, ELSS, Inflation Adjusted Returns, Retirement Readiness, a full SIP-to-SWP lifecycle planner, and a Loan EMI calculator with amortization schedule, in Pune, India.",
   "url": "https://acefinservices.com/calculators.html",
   "areaServed": { "@type": "City", "name": "Pune" },
   "address": { "@type": "PostalAddress", "addressLocality": "Pune", "addressRegion": "Maharashtra", "addressCountry": "IN" },
@@ -359,7 +359,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 <div class="hero">
   <div class="hero-in">
     <h1>Mutual Fund <span>Calculators</span> - Play with Numbers</h1>
-    <p>8 professional calculators — SIP with Step-up · SWP · Lumpsum · Goal Planner · ELSS Tax Saver · Inflation Adjusted Returns · Retirement Readiness · Financial Planning with SIP & SWP</p>
+    <p>9 professional calculators — SIP with Step-up · SWP · Lumpsum · Goal Planner · ELSS Tax Saver · Inflation Adjusted Returns · Retirement Readiness · Financial Planning with SIP & SWP · Loan EMI</p>
   </div>
 </div>
 
@@ -372,6 +372,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   <div class="ctab" onclick="showC('inf',this)">📊 Inflation Adjusted</div>
   <div class="ctab" onclick="showC('ret',this)">🏖️ Retirement Readiness</div>
   <div class="ctab" onclick="showC('sipswp',this)">🔄 SIP + SWP Planner</div>
+  <div class="ctab" onclick="showC('loan',this)">🏦 Loan EMI</div>
 </div>
 
 <div class="cbody">
@@ -607,6 +608,72 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     </div>
   </div>
 
+  <style>
+  .loan-modes{display:flex;gap:8px;background:var(--g5);border:1.5px solid var(--g4);border-radius:11px;padding:5px;margin-bottom:20px;}
+  .loan-mode{flex:1;padding:11px 8px;border:none;background:transparent;color:var(--t4);font-family:var(--fb);font-size:13px;font-weight:800;border-radius:8px;cursor:pointer;line-height:1.25;transition:all .2s;}
+  .loan-mode small{display:block;font-size:10px;font-weight:600;opacity:.7;margin-top:2px;}
+  .loan-mode.on{background:var(--p2);color:#fff;box-shadow:0 3px 10px rgba(60,49,151,.28);}
+  .loan-mode.on small{opacity:.85;}
+  .loan-vt{padding:5px 12px;border:1.5px solid var(--g4);background:var(--w1);color:var(--t4);font-family:var(--fb);font-size:11px;font-weight:700;border-radius:7px;cursor:pointer;}
+  .loan-vt.on{background:var(--p2);color:#fff;border-color:var(--p2);}
+  .loan-print{width:100%;margin-top:16px;padding:12px;background:linear-gradient(135deg,var(--p2),var(--g1));color:#fff;border:none;border-radius:10px;font-family:var(--fh);font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(60,49,151,.28);}
+  .ytbl td.pr{font-family:var(--fm);color:var(--p2);font-weight:700;}
+  .ytbl td.in{font-family:var(--fm);color:var(--gold);font-weight:700;}
+  .ytbl tr.yr td{background:var(--p4)!important;font-family:var(--fh);font-weight:800;color:var(--p2);}
+  </style>
+  <!-- LOAN EMI -->
+  <div class="cpnl" id="c-loan">
+    <div class="clay">
+      <div class="cinp-card">
+        <h2 class="calc-ttl">Loan <span>EMI Calculator</span></h2>
+        <div class="calc-dsc">Calculate your monthly EMI from loan amount, interest rate and tenure — or enter an EMI amount and find out the exact years &amp; months needed to repay. View the full amortization schedule and print it to PDF.</div>
+
+        <div class="loan-modes">
+          <button class="loan-mode on" id="lm-emi" onclick="setLoanMode('emi')">Calculate EMI<small>tenure → monthly EMI</small></button>
+          <button class="loan-mode" id="lm-ten" onclick="setLoanMode('ten')">Enter EMI<small>EMI → years &amp; months</small></button>
+        </div>
+
+        <div class="ig"><div class="ig-lbl"><span>Loan Amount (₹)</span><span class="ig-val" id="lv-amt">₹25,00,000</span></div><input type="number" id="li-amt" min="1000" step="1000" value="2500000" placeholder="e.g. 2500000" oninput="cLoan()" onchange="cLoan()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>₹50K</span><span>₹5 Cr</span></div></div>
+
+        <div class="ig"><div class="ig-lbl"><span>Rate of Interest (% p.a.)</span><span class="ig-val" id="lv-rate">8.5%</span></div><input type="number" id="li-rate" min="0" max="40" step="0.05" value="8.5" placeholder="e.g. 8.5" oninput="cLoan()" onchange="cLoan()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>0%</span><span>20%</span></div></div>
+
+        <div class="ig" id="lig-ten"><div class="ig-lbl"><span>Duration / Period of Loan</span><span class="ig-val" id="lv-dur">20Y 0M</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div><input type="number" id="li-yrs" min="0" max="40" step="1" value="20" placeholder="Years" oninput="cLoan()" onchange="cLoan()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>Years</span><span>max 40</span></div></div>
+            <div><input type="number" id="li-mos" min="0" max="11" step="1" value="0" placeholder="Months" oninput="cLoan()" onchange="cLoan()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>Months</span><span>max 11</span></div></div>
+          </div>
+        </div>
+
+        <div class="ig" id="lig-emi" style="display:none;"><div class="ig-lbl"><span>EMI Amount (₹ / month)</span><span class="ig-val" id="lv-emi">₹21,000</span></div><input type="number" id="li-emi" min="1" step="500" value="21000" placeholder="e.g. 21000" oninput="cLoan()" onchange="cLoan()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>your chosen EMI</span><span>→ we find the tenure</span></div></div>
+
+        <div class="elss-note" id="loan-err" style="display:none;margin-top:6px;color:var(--red);font-weight:600;"></div>
+      </div>
+
+      <div class="cres-card">
+        <div class="rcards">
+          <div class="rc big"><div class="rc-lbl" id="lr-emi-lbl">Monthly EMI</div><div class="rc-val gr big" id="lr-emi">₹0</div></div>
+          <div class="rc"><div class="rc-lbl">Principal</div><div class="rc-val" id="lr-prin">₹0</div></div>
+          <div class="rc hl"><div class="rc-lbl">Total Interest</div><div class="rc-val go" id="lr-int">₹0</div></div>
+          <div class="rc"><div class="rc-lbl">Total Payment</div><div class="rc-val pu" id="lr-tot">₹0</div></div>
+          <div class="rc"><div class="rc-lbl" id="lr-ten-lbl">Tenure</div><div class="rc-val" id="lr-ten">—</div></div>
+        </div>
+        <div class="bchrt">
+          <div class="br"><div class="bl">Principal</div><div class="pbar"><div class="bf" id="lbf-p" style="background:var(--p2);width:0%"></div></div><div class="bv" id="lbv-p">₹0</div></div>
+          <div class="br"><div class="bl">Interest</div><div class="pbar"><div class="bf" id="lbf-i" style="background:var(--gold);width:0%"></div></div><div class="bv" id="lbv-i">₹0</div></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:8px;flex-wrap:wrap;">
+          <div style="font-size:12px;font-weight:800;color:var(--t1);">Amortization Schedule</div>
+          <div style="display:flex;gap:6px;">
+            <button id="lvt-y" class="loan-vt on" onclick="setLoanView('y')">Yearly</button>
+            <button id="lvt-m" class="loan-vt" onclick="setLoanView('m')">Monthly</button>
+          </div>
+        </div>
+        <div class="ytw" style="max-height:300px;margin-top:10px;"><table class="ytbl"><thead><tr><th id="lth-p">Year</th><th>Opening</th><th>EMI</th><th>Principal</th><th>Interest</th><th>Closing</th></tr></thead><tbody id="loan-body"></tbody></table></div>
+        <button class="loan-print" onclick="printLoan()">🖨️ Print / Save Amortization as PDF</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div class="faq-section">
@@ -626,7 +693,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   </details>
   <details class="faq-item">
     <summary>Are these calculators free, and do I need to log in?</summary>
-    <div class="faq-a">All 8 calculators are completely free and require no login or sign-up. You can use the SIP, SWP, Lumpsum, Goal Planner, ELSS Tax Saver, Inflation Adjusted, Retirement Readiness, and combined SIP &amp; SWP tools as many times as you like, directly in your browser.</div>
+    <div class="faq-a">All 9 calculators are completely free and require no login or sign-up. You can use the SIP, SWP, Lumpsum, Goal Planner, ELSS Tax Saver, Inflation Adjusted, Retirement Readiness, combined SIP &amp; SWP, and Loan EMI tools as many times as you like, directly in your browser.</div>
   </details>
   <details class="faq-item">
     <summary>How accurate are the calculator results?</summary>
@@ -915,6 +982,170 @@ function validateInput(id, min, max, fieldName) {
   document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
 })();
 
+</script>
+<script>
+/* ═══ LOAN EMI CALCULATOR (9th) ═══ */
+var LOAN_MODE='emi', LOAN_VIEW='y', LOAN_SCHED=[], LOAN_META={};
+function loanINR(n){return '₹'+Math.round(n).toLocaleString('en-IN');}
+function lnum(id){var v=parseFloat(document.getElementById(id).value);return isNaN(v)?0:v;}
+function setLoanMode(m){
+  LOAN_MODE=m;
+  document.getElementById('lm-emi').classList.toggle('on',m==='emi');
+  document.getElementById('lm-ten').classList.toggle('on',m==='ten');
+  document.getElementById('lig-ten').style.display=(m==='emi')?'':'none';
+  document.getElementById('lig-emi').style.display=(m==='ten')?'':'none';
+  document.getElementById('lr-emi-lbl').textContent=(m==='ten')?'EMI (as entered)':'Monthly EMI';
+  document.getElementById('lr-ten-lbl').textContent='Tenure';
+  cLoan();
+}
+function setLoanView(v){
+  LOAN_VIEW=v;
+  document.getElementById('lvt-y').classList.toggle('on',v==='y');
+  document.getElementById('lvt-m').classList.toggle('on',v==='m');
+  document.getElementById('lth-p').textContent=(v==='y')?'Year':'Month';
+  renderLoanTable();
+}
+function loanErr(msg){
+  var e=document.getElementById('loan-err');
+  if(msg){e.textContent='⚠️ '+msg;e.style.display='';}else{e.style.display='none';e.textContent='';}
+}
+function cLoan(){
+  var P=lnum('li-amt'), annual=lnum('li-rate'), r=annual/12/100;
+  // live labels
+  document.getElementById('lv-amt').textContent=P>0?loanINR(P):'₹0';
+  document.getElementById('lv-rate').textContent=annual+'%';
+  var y=Math.min(40,Math.max(0,Math.floor(lnum('li-yrs'))));
+  var mo=Math.min(11,Math.max(0,Math.floor(lnum('li-mos'))));
+  document.getElementById('lv-dur').textContent=y+'Y '+mo+'M';
+  document.getElementById('lv-emi').textContent=lnum('li-emi')>0?loanINR(lnum('li-emi')):'₹0';
+
+  loanErr('');
+  if(P<=0){ loanErr('Enter a valid Loan Amount.'); clearLoan(); return; }
+  if(annual<0){ loanErr('Enter a valid interest rate.'); clearLoan(); return; }
+
+  var n, emi;
+  if(LOAN_MODE==='emi'){
+    n=y*12+mo;
+    if(n<=0){ loanErr('Enter the loan duration (years and/or months).'); clearLoan(); return; }
+    emi=(r===0)? P/n : P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
+  } else {
+    emi=lnum('li-emi');
+    if(emi<=0){ loanErr('Enter a valid EMI amount.'); clearLoan(); return; }
+    if(r===0){ n=Math.ceil(P/emi); }
+    else {
+      var minEmi=P*r;
+      if(emi<=minEmi){ loanErr('EMI too low — at '+annual+'% p.a. the first month\'s interest alone is '+loanINR(minEmi)+'. Enter a higher EMI.'); clearLoan(); return; }
+      n=Math.ceil(-Math.log(1-(P*r)/emi)/Math.log(1+r));
+    }
+    if(n>600){ loanErr('At this EMI the loan takes over 50 years. Increase the EMI.'); clearLoan(); return; }
+  }
+  buildLoanSchedule(P,r,emi,n);
+  renderLoan(P,emi);
+}
+function clearLoan(){
+  ['lr-emi','lr-prin','lr-int','lr-tot'].forEach(function(id){document.getElementById(id).textContent='₹0';});
+  document.getElementById('lr-ten').textContent='—';
+  document.getElementById('lbf-p').style.width='0%';document.getElementById('lbf-i').style.width='0%';
+  document.getElementById('lbv-p').textContent='₹0';document.getElementById('lbv-i').textContent='₹0';
+  document.getElementById('loan-body').innerHTML='';LOAN_SCHED=[];
+}
+function buildLoanSchedule(P,r,emi,n){
+  LOAN_SCHED=[];var bal=P,ti=0,tp=0,tpay=0;
+  for(var i=1;i<=n;i++){
+    var interest=bal*r, principal=emi-interest, pay=emi;
+    if(i===n||principal>=bal){principal=bal;pay=bal+interest;}
+    var opening=bal; bal=opening-principal; if(bal<0.005)bal=0;
+    LOAN_SCHED.push({m:i,opening:opening,pay:pay,principal:principal,interest:interest,closing:bal});
+    ti+=interest;tp+=principal;tpay+=pay;
+    if(bal<=0){n=i;break;}
+  }
+  LOAN_META={n:LOAN_SCHED.length,P:P,emi:emi,ti:ti,tp:tp,tpay:tpay};
+}
+function loanTenureTxt(){var n=LOAN_META.n,y=Math.floor(n/12),m=n%12;return (y>0?y+'Y ':'')+(m>0?m+'M':'')+(n?' ('+n+' mo)':'');}
+function renderLoan(P,emi){
+  var M=LOAN_META;
+  document.getElementById('lr-emi').textContent=loanINR(emi);
+  document.getElementById('lr-prin').textContent=loanINR(P);
+  document.getElementById('lr-int').textContent=loanINR(M.ti);
+  document.getElementById('lr-tot').textContent=loanINR(M.tpay);
+  document.getElementById('lr-ten').textContent=loanTenureTxt().trim();
+  var pPct=M.tpay>0?(P/M.tpay*100):100, iPct=100-pPct;
+  document.getElementById('lbf-p').style.width=pPct.toFixed(1)+'%';
+  document.getElementById('lbf-i').style.width=iPct.toFixed(1)+'%';
+  document.getElementById('lbv-p').textContent=loanINR(P);
+  document.getElementById('lbv-i').textContent=loanINR(M.ti);
+  renderLoanTable();
+}
+function renderLoanTable(){
+  if(!LOAN_SCHED.length){document.getElementById('loan-body').innerHTML='';return;}
+  var rows='';
+  if(LOAN_VIEW==='m'){
+    var cy=0;
+    LOAN_SCHED.forEach(function(row){
+      var yr=Math.ceil(row.m/12);
+      if(yr!==cy){cy=yr;rows+='<tr class="yr"><td colspan="6">Year '+yr+'</td></tr>';}
+      rows+='<tr><td class="m">M'+row.m+'</td><td>'+loanINR(row.opening)+'</td><td>'+loanINR(row.pay)+'</td><td class="pr">'+loanINR(row.principal)+'</td><td class="in">'+loanINR(row.interest)+'</td><td>'+loanINR(row.closing)+'</td></tr>';
+    });
+  } else {
+    var yr=0,oi=0,op=0,opay=0,opening=0,closing=0,started=false;
+    function flush(y){rows+='<tr><td class="m">Year '+y+'</td><td>'+loanINR(opening)+'</td><td>'+loanINR(opay)+'</td><td class="pr">'+loanINR(op)+'</td><td class="in">'+loanINR(oi)+'</td><td>'+loanINR(closing)+'</td></tr>';}
+    LOAN_SCHED.forEach(function(row){
+      var t=Math.ceil(row.m/12);
+      if(t!==yr){if(started)flush(yr);yr=t;oi=0;op=0;opay=0;opening=row.opening;started=true;}
+      oi+=row.interest;op+=row.principal;opay+=row.pay;closing=row.closing;
+    });
+    if(started)flush(yr);
+  }
+  document.getElementById('loan-body').innerHTML=rows;
+}
+function printLoan(){
+  if(!LOAN_SCHED.length){return;}
+  var M=LOAN_META;
+  var rows=LOAN_SCHED.map(function(row){
+    return '<tr><td>'+row.m+'</td><td>'+loanINR(row.opening)+'</td><td>'+loanINR(row.pay)+'</td><td>'+loanINR(row.principal)+'</td><td>'+loanINR(row.interest)+'</td><td>'+loanINR(row.closing)+'</td></tr>';
+  }).join('');
+  var w=window.open('','_blank');
+  w.document.write('<html><head><title>Loan Amortization Schedule — Ace Financial Services</title><style>'+
+    'body{font-family:Arial,Helvetica,sans-serif;color:#1a1240;margin:24px;}'+
+    'h1{font-size:20px;margin:0 0 2px;}h2{font-size:12px;color:#6b7280;font-weight:normal;margin:0 0 16px;}'+
+    '.sum{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:18px;}'+
+    '.sc{border:1.5px solid #000;border-radius:8px;padding:10px 16px;min-width:130px;}'+
+    '.sc b{display:block;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.4px;}'+
+    '.sc span{font-size:18px;font-weight:800;}'+
+    'table{width:100%;border-collapse:collapse;font-size:11px;}'+
+    'th,td{border:1px solid #999;padding:5px 8px;text-align:right;}'+
+    'th{background:#eee;}td:first-child,th:first-child{text-align:center;}'+
+    'tfoot td{font-weight:800;background:#f0effe;}'+
+    '.disc{margin-top:14px;font-size:9px;color:#555;line-height:1.6;}'+
+    '@media print{@page{margin:12mm;}}</style></head><body>'+
+    '<h1>🏦 Loan Amortization Schedule</h1><h2>Ace Financial Services · ARN-110832 · Generated '+new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'})+'</h2>'+
+    '<div class="sum">'+
+      '<div class="sc"><b>Loan Amount</b><span>'+loanINR(M.P)+'</span></div>'+
+      '<div class="sc"><b>Interest Rate</b><span>'+lnum('li-rate')+'% p.a.</span></div>'+
+      '<div class="sc"><b>Monthly EMI</b><span>'+loanINR(M.emi)+'</span></div>'+
+      '<div class="sc"><b>Tenure</b><span>'+loanTenureTxt().trim()+'</span></div>'+
+      '<div class="sc"><b>Total Interest</b><span>'+loanINR(M.ti)+'</span></div>'+
+      '<div class="sc"><b>Total Payment</b><span>'+loanINR(M.tpay)+'</span></div>'+
+    '</div>'+
+    '<table><thead><tr><th>Month</th><th>Opening Balance</th><th>EMI Paid</th><th>Principal</th><th>Interest</th><th>Closing Balance</th></tr></thead>'+
+    '<tbody>'+rows+'</tbody>'+
+    '<tfoot><tr><td>Total</td><td></td><td>'+loanINR(M.tpay)+'</td><td>'+loanINR(M.tp)+'</td><td>'+loanINR(M.ti)+'</td><td>₹0</td></tr></tfoot></table>'+
+    '<div class="disc"><b>Disclaimer:</b> This amortization schedule is provided by Ace Financial Services (AMFI-registered Mutual Fund Distributor, ARN-110832) for educational and planning purposes only. It is not a loan offer or financial advice. Figures are indicative; your lender\'s actual EMI may differ slightly due to day-count conventions, fees and insurance. Verify all figures with your bank before borrowing.</div>'+
+    '</body></html>');
+  w.document.close();
+  setTimeout(function(){w.focus();w.print();},350);
+}
+/* deep-link + init */
+(function(){
+  function initLoan(){
+    if(location.hash==='#loan'){
+      var t=document.querySelector('.ctab[onclick*="\'loan\'"]');
+      if(t){showC('loan',t);}
+    }
+    cLoan();
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',initLoan);}else{initLoan();}
+})();
 </script>
 </body>
 </html>
