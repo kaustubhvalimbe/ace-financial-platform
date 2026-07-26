@@ -620,6 +620,27 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   .ytbl td.pr{font-family:var(--fm);color:var(--p2);font-weight:700;}
   .ytbl td.in{font-family:var(--fm);color:var(--gold);font-weight:700;}
   .ytbl tr.yr td{background:var(--p4)!important;font-family:var(--fh);font-weight:800;color:var(--p2);}
+  .loan-dur{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  /* ── Loan EMI mobile fixes ── */
+  @media(max-width:768px){
+    /* wide 6-col amortization table scrolls horizontally instead of overflowing */
+    .ytw{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;}
+    #c-loan .ytbl{min-width:560px!important;}
+    #c-loan .ytbl th,#c-loan .ytbl td{white-space:nowrap!important;padding:7px 9px!important;}
+    /* result cards: shrink big amounts so they never overflow their cell */
+    #c-loan .rc{padding:12px!important;}
+    #c-loan .rc-val{font-size:16px!important;word-break:break-word!important;}
+    #c-loan .rc-val.big{font-size:20px!important;}
+    #c-loan .ig-val{font-size:13px!important;}
+    .loan-mode{font-size:12px!important;padding:10px 6px!important;}
+    .loan-mode small{font-size:9px!important;}
+    /* keep Years | Months side by side even under the global 1fr-1fr collapse rule */
+    .loan-dur{display:grid!important;grid-template-columns:1fr 1fr!important;}
+  }
+  @media(max-width:430px){
+    /* stack the four small result cards on very narrow phones */
+    #c-loan .rcards{grid-template-columns:1fr!important;}
+  }
   </style>
   <!-- LOAN EMI -->
   <div class="cpnl" id="c-loan">
@@ -638,7 +659,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         <div class="ig"><div class="ig-lbl"><span>Rate of Interest (% p.a.)</span><span class="ig-val" id="lv-rate">8.5%</span></div><input type="number" id="li-rate" min="0" max="40" step="0.05" value="8.5" placeholder="e.g. 8.5" oninput="cLoan()" onchange="cLoan()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>0%</span><span>20%</span></div></div>
 
         <div class="ig" id="lig-ten"><div class="ig-lbl"><span>Duration / Period of Loan</span><span class="ig-val" id="lv-dur">20Y 0M</span></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div class="loan-dur">
             <div><input type="number" id="li-yrs" min="0" max="40" step="1" value="20" placeholder="Years" oninput="cLoan()" onchange="cLoan()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>Years</span><span>max 40</span></div></div>
             <div><input type="number" id="li-mos" min="0" max="11" step="1" value="0" placeholder="Months" oninput="cLoan()" onchange="cLoan()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>Months</span><span>max 11</span></div></div>
           </div>
