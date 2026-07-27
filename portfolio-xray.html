@@ -1841,7 +1841,7 @@ function xrayGenerate(){
   <a href="kaustubhvalimbe.html">👤 Founder</a>
 </div>
 <script>
-window.ACE_WA_MSG='Hi Kaustubh, I analysed my portfolio and would like a review with you.'; window.ACE_RELATED=[{icon:'⚖️',label:'Compare Funds',href:'fund-compare.html'},{icon:'🏆',label:'Fund Toppers',href:'fund-toppers.html'},{icon:'📈',label:'Track Portfolio',href:'portfolio-tracker.html'}];
+window.ACE_WA_MSG='Hi Kaustubh, I analysed my portfolio and would like a review with you.'; window.ACE_RELATED=[{icon:'📖',label:'Read your CAS',href:'analyse-portfolio-cas.html'},{icon:'📊',label:'What is XIRR?',href:'xirr-explained.html'},{icon:'⚖️',label:'Compare Funds',href:'fund-compare.html'}];
 
 /* ═══ ACE UX LAYER — advisory CTA · related tools · input persistence ═══ */
 (function(){
@@ -1865,7 +1865,7 @@ window.ACE_WA_MSG='Hi Kaustubh, I analysed my portfolio and would like a review 
         var html='<h4>\uD83E\uDDED Continue exploring</h4><p>Other tools that pair well with this one</p><div class="ace-rel-row">';
         window.ACE_RELATED.forEach(function(r){ html+='<a href="'+r.href+'">'+(r.icon||'')+' '+r.label+'</a>'; });
         bar.innerHTML=html+'</div>';
-        var foot=document.querySelector('footer,.adv-bar,.sebi-disclaimer,.disclaimer,.site-footer');
+        var foot=document.querySelector('footer,.adv-bar,.sebi-disclaimer,.disclaimer,.site-footer,.faq-section');
         if(foot && foot.parentNode){ foot.parentNode.insertBefore(bar, foot); } else { document.body.appendChild(bar); }
       }
     }catch(e){}
