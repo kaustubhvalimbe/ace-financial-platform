@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>What Is XIRR? The True Way to Measure SIP Returns | Ace Financial Services</title>
+<meta name="description" content="XIRR is the real annualised return of a SIP because each instalment is invested on a different date. Learn what XIRR means, how it differs from CAGR and absolute return, with a worked example. Free XIRR calculator by Ace Financial Services, AMFI Registered MFD, Pune.">
+<meta name="author" content="Kaustubh Valimbe — Ace Financial Services">
+<link rel="canonical" href="https://acefinservices.com/xirr-explained.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="What Is XIRR? The True Way to Measure SIP Returns | Ace Financial Services">
+<meta property="og:description" content="XIRR is the real annualised return of a SIP because each instalment is invested on a different date. Learn what XIRR means, how it differs from CAGR and absolute return, with a worked example. Free XIRR calculator by Ace Financial Services, AMFI Registered MFD, Pune.">
+<meta property="og:url" content="https://acefinservices.com/xirr-explained.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "What is XIRR and how to measure SIP returns", "author": {"@type": "Person", "name": "Kaustubh Valimbe"}, "publisher": {"@type": "Organization", "name": "Ace Financial Services"}, "description": "XIRR is the real annualised return of a SIP because each instalment is invested on a different date. Learn what XIRR means, how it differs from CAGR and absolute return, with a worked example. Free XIRR calculator by Ace Financial Services, AMFI Registered MFD, Pune."}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is a higher XIRR always better?", "acceptedAnswer": {"@type": "Answer", "text": "Generally yes, but only when comparing like with like \u2014 the same category, over the same period, at a similar risk level. A high short-term XIRR during a rising market is not proof of a good fund. Always weigh XIRR against volatility and the length of the track record."}}, {"@type": "Question", "name": "Why is my XIRR higher than my absolute return?", "acceptedAnswer": {"@type": "Answer", "text": "Because in a SIP your money is invested over time, not all at once. The absolute figure spreads your total gain over the full period as if every rupee were invested from day one, which understates the annualised rate. XIRR corrects for this, so it is usually higher than the absolute return for a growing SIP."}}, {"@type": "Question", "name": "Can XIRR be negative?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. If your current value is below what you invested, XIRR will be negative \u2014 it simply annualises the loss across the actual holding period, just as it annualises a gain."}}, {"@type": "Question", "name": "Do I need a Detailed CAS to calculate portfolio XIRR?", "acceptedAnswer": {"@type": "Answer", "text": "To compute XIRR you need the dates of each purchase. A Detailed CAS (with transaction history) contains these; a Summary CAS (holdings only) does not, so it can show absolute return but not XIRR. You can request a Detailed statement from CAMS or KFintech."}}]}</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--p1:#3c3197;--p2:#2d2478;--p3:#5a4fd8;--p4:#f0eeff;--g1:#5a8a10;--g2:#2d6b0e;--g3:#f4fbea;--g4:#e4e2f0;--gg:#8bc32a;--t1:#1a1240;--t2:#3d3b5c;--t4:#7a7898;--t5:#b0aec8;--bg:#f7f6ff;--bd:#e4e2f0;--gold:#d97706;--fh:"Playfair Display",Georgia,serif;--fb:"Plus Jakarta Sans","Segoe UI",Arial,sans-serif;--fm:"JetBrains Mono","Courier New",monospace;}
+body{font-family:var(--fb);color:var(--t1);background:var(--bg);line-height:1.7;-webkit-font-smoothing:antialiased;}
+nav{background:#fff;border-bottom:3px solid #d4eda0;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(60,49,151,.08);}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;}
+.bi{height:36px;display:flex;align-items:center;justify-content:center;}
+.bn{font-family:var(--fh);font-size:14px;font-weight:900;color:#3c3197;}
+.bn em{color:#5a8a10;font-style:normal;}
+.bs{font-size:10px;color:#9ca3af;font-family:var(--fm);}
+.bt{font-size:9px;color:#5a8a10;font-weight:700;letter-spacing:.5px;margin-top:1px;}
+.nav-links{display:flex;gap:3px;flex-wrap:wrap;justify-content:flex-end;}
+.nav-links a{text-decoration:none;font-size:12px;font-weight:700;padding:6px 12px;border-radius:7px;color:#6b7280;transition:all .2s;}
+.nav-links a:hover{background:#f5fce8;color:#5a8a10;}
+.nav-links a.on{background:#3c3197;color:#fff;}
+.nav-more{position:relative;display:inline-block;}
+.nav-more-menu{display:none;position:absolute;top:100%;right:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);min-width:150px;z-index:500;padding:6px;}
+.nav-more:hover .nav-more-menu{display:block;}
+.nav-more-menu a{display:block;padding:9px 14px;color:#1a1240;text-decoration:none;font-size:13px;font-weight:600;border-radius:6px;white-space:nowrap;}
+.nav-more-menu a:hover{background:#f5fce8;color:#5a8a10;}
+.mob-menu-btn{display:none;background:none;border:none;font-size:22px;cursor:pointer;color:#1a1240;padding:4px 8px;border-radius:6px;}
+.mob-nav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199;}
+.mob-nav-overlay.open{display:block;}
+.mob-nav-drawer{position:fixed;top:0;left:-280px;width:280px;height:100vh;background:#fff;z-index:200;transition:left .3s ease;overflow-y:auto;box-shadow:4px 0 20px rgba(0,0,0,.15);padding:20px 0;}
+.mob-nav-drawer.open{left:0;}
+.mob-nav-drawer .mnd-brand{padding:0 20px 16px;border-bottom:1px solid #e5e7eb;margin-bottom:8px;font-family:var(--fh);font-weight:900;color:#3c3197;}
+.mob-nav-drawer a{display:flex;align-items:center;gap:10px;padding:13px 20px;font-size:14px;font-weight:600;color:#4a4a6a;text-decoration:none;border-left:3px solid transparent;}
+.mob-nav-drawer a:hover,.mob-nav-drawer a.on{background:#f0effe;color:#3c3197;border-left-color:#3c3197;}
+@media(max-width:1100px){.nav-links{display:none!important;}.mob-menu-btn{display:block!important;}}
+@media(max-width:768px){nav{padding:0 14px!important;height:54px!important;}.bs,.bt{display:none!important;}}
+.hero{background:linear-gradient(135deg,#2d2478,#3c3197,#5a4fd8);padding:44px 24px;text-align:center;position:relative;overflow:hidden;}
+.hero::after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);background-size:22px 22px;}
+.hero-in{position:relative;z-index:1;max-width:820px;margin:0 auto;}
+.crumb{font-size:11px;color:rgba(255,255,255,.6);font-family:var(--fm);margin-bottom:12px;}
+.crumb a{color:rgba(255,255,255,.8);text-decoration:none;}
+.hero h1{font-family:var(--fh);font-size:34px;font-weight:900;color:#fff;line-height:1.2;}
+.hero h1 span{color:#b8e05a;}
+.hero .sub{color:rgba(255,255,255,.82);font-size:15px;margin-top:12px;line-height:1.6;}
+.wrap{max-width:820px;margin:0 auto;padding:36px 22px 20px;}
+article h2{font-family:var(--fh);font-size:24px;font-weight:800;color:var(--p1);margin:34px 0 12px;line-height:1.3;}
+article h3{font-size:17px;font-weight:800;color:var(--t1);margin:22px 0 8px;}
+article p{font-size:15.5px;color:var(--t2);margin-bottom:15px;}
+article ul,article ol{margin:0 0 16px 22px;}
+article li{font-size:15.5px;color:var(--t2);margin-bottom:7px;}
+article strong{color:var(--t1);}
+article a.inline{color:var(--p3);font-weight:700;text-decoration:none;border-bottom:1.5px solid #d6d2f5;}
+article a.inline:hover{border-bottom-color:var(--p3);}
+.lead{font-size:17px;color:var(--t1);font-weight:500;border-left:4px solid var(--gg);background:var(--g3);padding:14px 18px;border-radius:0 10px 10px 0;margin-bottom:8px;}
+.callout{background:var(--p4);border:1.5px solid #d6d2f5;border-radius:12px;padding:16px 18px;margin:20px 0;font-size:14.5px;color:var(--t2);}
+.callout b{color:var(--p1);}
+.keytable{width:100%;border-collapse:collapse;margin:18px 0;font-size:14px;}
+.keytable th,.keytable td{border:1px solid var(--g4);padding:10px 12px;text-align:left;}
+.keytable th{background:var(--p4);color:var(--p1);font-weight:800;font-family:var(--fm);font-size:12px;text-transform:uppercase;letter-spacing:.3px;}
+.keytable td{color:var(--t2);}
+.keytable tr:nth-child(even) td{background:#faf9ff;}
+.cta-card{background:linear-gradient(135deg,var(--p4),var(--g3));border:2px solid #d4eda0;border-radius:16px;padding:24px;margin:30px 0;text-align:center;}
+.cta-card h3{font-family:var(--fh);font-size:20px;font-weight:900;color:var(--p1);margin-bottom:6px;}
+.cta-card p{font-size:14px;color:var(--t2);margin-bottom:16px;}
+.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.cta-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--g1),var(--gg));color:#fff;font-weight:800;font-size:14px;padding:12px 22px;border-radius:11px;text-decoration:none;box-shadow:0 4px 14px rgba(139,195,42,.3);transition:transform .2s;}
+.cta-btn:hover{transform:translateY(-1px);}
+.cta-btn.alt{background:linear-gradient(135deg,var(--p2),var(--p1));box-shadow:0 4px 14px rgba(60,49,151,.3);}
+.faq{margin-top:14px;}
+.faq details{border:1.5px solid var(--g4);border-radius:11px;margin-bottom:10px;background:#fff;overflow:hidden;}
+.faq summary{padding:15px 18px;font-weight:800;font-size:15px;color:var(--t1);cursor:pointer;list-style:none;position:relative;}
+.faq summary::-webkit-details-marker{display:none;}
+.faq summary::after{content:"+";position:absolute;right:18px;color:var(--p3);font-size:20px;font-weight:800;}
+.faq details[open] summary::after{content:"–";}
+.faq details[open] summary{color:var(--p1);}
+.faq .fa{padding:0 18px 16px;font-size:14.5px;color:var(--t2);}
+.related-articles{border-top:1px solid var(--g4);margin-top:34px;padding-top:22px;}
+.related-articles h4{font-family:var(--fh);font-size:16px;color:var(--p1);margin-bottom:12px;}
+.related-articles a{display:block;color:var(--p3);font-weight:700;font-size:14px;text-decoration:none;padding:8px 0;border-bottom:1px solid #f0eeff;}
+footer.site{background:#1a1240;color:rgba(255,255,255,.75);padding:30px 24px;margin-top:20px;}
+footer.site .fin{max-width:820px;margin:0 auto;}
+footer.site .disc{font-size:11px;line-height:1.7;border-left:3px solid var(--gold);padding-left:14px;margin-bottom:16px;}
+footer.site .disc b{color:var(--gold);}
+footer.site .frow{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:12px;align-items:center;}
+footer.site .frow a{color:#b8e05a;text-decoration:none;font-weight:700;}
+footer.site .fname{font-family:var(--fh);font-weight:800;color:#fff;font-size:14px;}
+@media(max-width:768px){.hero h1{font-size:26px;}.wrap{padding:26px 16px;}article h2{font-size:21px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="brand">
+    <div class="bi"><img alt="Ace Financial Services logo" src="images/logo.webp" srcset="images/logo.webp 1x, images/logo@3x.webp 2x" width="151" height="72" decoding="async" style="height:36px;width:auto;object-fit:contain;"></div>
+    <div><div class="bn">Ace Financial <em>Services</em></div><div class="bs">AMFI Registered MFD</div><div class="bt">Fund For Life Fund For Future</div></div>
+  </a>
+  <div class="nav-links">
+    <a href="index.html" title="Home" style="font-size:16px;">🏠</a>
+    <a href="fund-discovery-v2.html">🔍 Fund Discovery</a>
+    <a href="fund-toppers.html">🏆 Fund Toppers</a>
+    <a href="fund-compare.html">⚖️ Fund Compare</a>
+    <a href="investment-case.html">⭐ Investment Engine</a>
+    <a href="calculators.html">🧮 Calculators</a>
+    <a href="stock-intelligence.html">📊 Stock Intelligence</a>
+    <a href="market-pulse.html">📈 Market Pulse</a>
+    <a href="investor-awareness.html" class="on">📚 Investor Awareness</a>
+    <a href="kaustubhvalimbe.html">👤 Founder</a>
+    <div class="nav-more"><a href="javascript:void(0)">More ▾</a><div class="nav-more-menu"><a href="index.html#about">About</a><a href="index.html#services">Services</a><a href="index.html#platform">Platform</a><a href="index.html#contact">Contact</a></div></div>
+  </div>
+  <button class="mob-menu-btn" onclick="aceToggleMobNav()">☰</button>
+</nav>
+<div class="hero"><div class="hero-in">
+<div class="crumb"><a href="index.html">Home</a> › <a href="investor-awareness.html">Investor Awareness</a> › What is XIRR and how to measure SIP returns</div>
+<h1>What is <span>XIRR</span> — and why it is the real return on your SIP</h1>
+<div class="sub">The absolute return on your statement understates how hard your SIP money worked. XIRR is the honest, annualised number — here's what it means and how to find yours.</div>
+</div></div>
+<div class="wrap">
+<article>
+
+<p class="lead">If you invest through a SIP, the single most useful number to judge how it has done is <strong>XIRR</strong> — not the "absolute return" your statement shows, and not a simple CAGR. Here is what XIRR means, why it exists, and how to find yours in a minute.</p>
+
+<h2>The problem with "absolute return" on a SIP</h2>
+<p>Suppose you invested ₹10,000 every month for a year — ₹1,20,000 in total — and today it is worth ₹1,30,000. Your statement proudly shows a gain of ₹10,000, an <strong>absolute return of about 8.3%</strong>.</p>
+<p>But that 8.3% is misleading, and here's why: your <em>first</em> instalment was invested for a full year, while your <em>last</em> instalment was invested for barely a month. Most of your money was in the market for only part of the year — yet the absolute figure treats every rupee as if it had the same time to grow. It quietly understates how hard your money actually worked.</p>
+
+<h2>What XIRR actually measures</h2>
+<p>XIRR — Extended Internal Rate of Return — is the <strong>annualised, money-weighted return</strong>. In plain words: it works out the single yearly growth rate that, applied to each instalment for the exact number of days it stayed invested, would turn all your investments into today's value.</p>
+<p>Because it accounts for <strong>when</strong> each rupee went in, XIRR is the only fair way to compare a SIP against a fixed deposit, a benchmark, or another fund. It is exactly the number CAMS/KFintech statements and fund fact-sheets quote, and it is what a spreadsheet's <span style="font-family:var(--fm);">XIRR()</span> function computes.</p>
+
+<div class="callout"><b>The one-line version:</b> Absolute return tells you <i>how much</i> you gained. XIRR tells you <i>how fast</i> — per year, honestly accounting for the timing of every instalment.</div>
+
+<h2>A worked example</h2>
+<p>Take the same SIP: ₹10,000 a month for 12 months, now worth ₹1,30,000.</p>
+<ul>
+<li><strong>Absolute return:</strong> 8.3% (₹10,000 gain on ₹1,20,000 invested).</li>
+<li><strong>XIRR:</strong> about <strong>15.7% per annum.</strong></li>
+</ul>
+<p>The XIRR is much higher than the absolute figure — because on average your money was invested for only about half the year, so an 8.3% total gain over that shorter effective period annualises to roughly 15.7%. Neither number is "wrong"; they answer different questions. For judging performance and comparing options, XIRR is the one that matters.</p>
+
+<h2>XIRR vs CAGR vs absolute return</h2>
+<table class="keytable">
+<tr><th>Measure</th><th>Best for</th><th>Handles multiple dated instalments?</th></tr>
+<tr><td>Absolute return</td><td>A quick "how much did I gain" snapshot</td><td>No — ignores timing</td></tr>
+<tr><td>CAGR</td><td>A single lump-sum held over a period</td><td>No — assumes one investment, one date</td></tr>
+<tr><td>XIRR</td><td>SIPs, top-ups, redemptions — any dated cash flows</td><td>Yes — this is what it's built for</td></tr>
+</table>
+<p>Rule of thumb: for a one-time lump sum, CAGR and XIRR agree. The moment you invest on multiple dates — as every SIP does — <strong>use XIRR</strong>.</p>
+
+<div class="cta-card">
+<h3>Find your SIP's real XIRR — free</h3>
+<p>Enter your instalments and current value, or upload your CAS, and see the true annualised return in seconds.</p>
+<div class="cta-btns">
+<a class="cta-btn" href="calculators.html#xirr">🧮 SIP XIRR Calculator</a>
+<a class="cta-btn alt" href="portfolio-xray.html">🩺 XIRR on your whole portfolio</a>
+</div>
+</div>
+
+<h2>How to read your XIRR once you have it</h2>
+<p>A higher XIRR is generally better, but always read it alongside <strong>risk</strong> and <strong>time period</strong>. A fund with a dazzling one-year XIRR during a bull run tells you little about how it behaves in a fall. Look at XIRR over longer, complete market cycles, and compare a fund only against its own category and a relevant benchmark — never a small-cap against a large-cap on XIRR alone.</p>
+
+<div class="related-articles"><h4>Keep learning</h4><a href="analyse-portfolio-cas.html">How to analyse your portfolio from a CAS →</a><a href="sip-vs-swp.html">SIP vs SWP explained →</a><a href="fund-compare.html">Compare mutual funds side by side →</a></div>
+<h2>Frequently asked questions</h2>
+<div class="faq"><details><summary>Is a higher XIRR always better?</summary><div class="fa">Generally yes, but only when comparing like with like — the same category, over the same period, at a similar risk level. A high short-term XIRR during a rising market is not proof of a good fund. Always weigh XIRR against volatility and the length of the track record.</div></details><details><summary>Why is my XIRR higher than my absolute return?</summary><div class="fa">Because in a SIP your money is invested over time, not all at once. The absolute figure spreads your total gain over the full period as if every rupee were invested from day one, which understates the annualised rate. XIRR corrects for this, so it is usually higher than the absolute return for a growing SIP.</div></details><details><summary>Can XIRR be negative?</summary><div class="fa">Yes. If your current value is below what you invested, XIRR will be negative — it simply annualises the loss across the actual holding period, just as it annualises a gain.</div></details><details><summary>Do I need a Detailed CAS to calculate portfolio XIRR?</summary><div class="fa">To compute XIRR you need the dates of each purchase. A Detailed CAS (with transaction history) contains these; a Summary CAS (holdings only) does not, so it can show absolute return but not XIRR. You can request a Detailed statement from CAMS or KFintech.</div></details></div>
+</article>
+</div>
+<footer class="site"><div class="fin">
+<div class="disc"><b>Disclaimer:</b> This article is for educational purposes only and does not constitute investment advice or a recommendation to buy or sell any scheme. Examples are illustrative and simplified. Mutual fund investments are subject to market risks; read all scheme related documents carefully. Ace Financial Services is an AMFI-registered Mutual Fund Distributor (ARN-110832). Consider your own goals, horizon and risk profile, and consult a qualified professional before investing.</div>
+<div class="frow"><div><div class="fname">Kaustubh Valimbe</div><div>AMFI Registered MFD · Ace Financial Services · Pune</div></div><div><a href="index.html#contact">Talk to an advisor →</a></div></div>
+</div></footer>
+<script>window.ACE_WA_MSG="Hi Kaustubh, I read your XIRR guide and would like help understanding my SIP returns.";</script>
+<script>
+function aceToggleMobNav(){
+  var ov=document.querySelector('.mob-nav-overlay'), dr=document.querySelector('.mob-nav-drawer');
+  if(!ov){
+    ov=document.createElement('div');ov.className='mob-nav-overlay';ov.onclick=aceToggleMobNav;document.body.appendChild(ov);
+    dr=document.createElement('div');dr.className='mob-nav-drawer';
+    var b=document.createElement('div');b.className='mnd-brand';b.innerHTML='Ace Financial <em style="color:#5a8a10;font-style:normal">Services</em>';dr.appendChild(b);
+    dr.innerHTML+=document.querySelector('.nav-links').innerHTML;
+    document.body.appendChild(dr);
+  }
+  ov.classList.toggle('open');dr.classList.toggle('open');
+}
+
+(function(){
+  function init(){
+    try{
+      if(!document.querySelector('.ace-wa, .wa-float')){
+        var css=document.createElement('style');
+        css.textContent='.ace-wa{position:fixed;bottom:28px;right:28px;z-index:9999;width:58px;height:58px;border-radius:50%;background:#25d366;display:flex;align-items:center;justify-content:center;font-size:28px;text-decoration:none;box-shadow:0 4px 20px rgba(37,211,102,.5);transition:transform .2s;animation:aceWa 3s ease-in-out infinite;}.ace-wa:hover{transform:scale(1.1);}@keyframes aceWa{0%,100%{box-shadow:0 4px 20px rgba(37,211,102,.5);}50%{box-shadow:0 8px 32px rgba(37,211,102,.7);}}@media print{.ace-wa{display:none!important;}}';
+        document.head.appendChild(css);
+        var wa=document.createElement('a');wa.className='ace-wa';wa.target='_blank';wa.rel='noopener';wa.title='Chat with Kaustubh on WhatsApp';
+        wa.href='https://wa.me/919373334215?text='+encodeURIComponent(window.ACE_WA_MSG||'Hi Kaustubh, I have a question about mutual fund investments.');
+        wa.textContent='\uD83D\uDCAC';
+        wa.addEventListener('click',function(){ if(typeof gtag==='function'){gtag('event','whatsapp_click',{event_category:'engagement',event_label:'article_float'});} });
+        document.body.appendChild(wa);
+      }
+    }catch(e){}
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}else{init();}
+})();
+</script>
+</body>
+</html>

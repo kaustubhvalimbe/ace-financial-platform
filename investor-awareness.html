@@ -165,6 +165,9 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 24px;height:64px
 .faq-item[open] summary::after{content:'−';}
 .faq-item[open] summary{border-bottom:1.5px solid var(--g4);}
 .faq-a{padding:14px 18px;font-size:13px;line-height:1.7;color:#3d3b5c;}
+.info-card.guide-card{text-decoration:none;color:inherit;display:block;}
+.info-card.guide-card:hover{border-color:var(--p3);box-shadow:0 4px 20px rgba(60,49,151,.12);}
+.guide-more{display:inline-block;margin-top:10px;color:var(--p3);font-weight:800;font-size:13px;}
 </style>
 <style>
 
@@ -322,6 +325,7 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 24px;height:64px
   <a href="#redeem"          class="qn-btn">How to Redeem</a>
   <a href="#sip-lumpsum"     class="qn-btn">SIP vs Lumpsum</a>
   <a href="#glossary"        class="qn-btn">Key Terms Glossary</a>
+  <a href="#deep-guides"     class="qn-btn">📖 In-depth Guides</a>
   <a href="#amc-registrar"   class="qn-btn">55 AMCs — CAMS &amp; KFintech</a>
 </div>
 
@@ -349,7 +353,32 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 24px;height:64px
 <div class="container">
 
   <!-- ══ WHAT IS MUTUAL FUND ══ -->
-  <div class="section" id="what-is-mf">
+  <div class="section" id="deep-guides">
+  <div class="section-title">📖 In-depth Guides</div>
+  <div class="section-sub">Focused deep-dives on the concepts that matter most — each paired with a free tool to apply it.</div>
+  <div class="info-grid">
+    <a class="info-card guide-card featured" href="xirr-explained.html">
+      <div class="ic-icon">📊</div>
+      <div class="ic-title">What is XIRR?</div>
+      <div class="ic-text">Why XIRR — not absolute return or CAGR — is the honest way to measure a SIP, with a worked example and a free calculator.</div>
+      <span class="guide-more">Read the guide →</span>
+    </a>
+    <a class="info-card guide-card" href="analyse-portfolio-cas.html">
+      <div class="ic-icon">🩺</div>
+      <div class="ic-title">Analyse your portfolio from a CAS</div>
+      <div class="ic-text">How to read your Consolidated Account Statement — asset allocation, fund overlap, gains and XIRR — and X-ray it in seconds.</div>
+      <span class="guide-more">Read the guide →</span>
+    </a>
+    <a class="info-card guide-card" href="sip-vs-swp.html">
+      <div class="ic-icon">🔄</div>
+      <div class="ic-title">SIP vs SWP</div>
+      <div class="ic-text">Building wealth versus drawing an income — how SIPs and SWPs form the two halves of an investing lifetime.</div>
+      <span class="guide-more">Read the guide →</span>
+    </a>
+  </div>
+</div>
+
+<div class="section" id="what-is-mf">
     <div class="section-title">What is a Mutual Fund?</div>
     <div class="section-sub">The foundation every investor must understand</div>
 
