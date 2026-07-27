@@ -2029,5 +2029,52 @@ document.addEventListener('keydown', function(e){
 })();
 
 </script>
+<script>
+window.ACE_WA_MSG='Hi Kaustubh, I was looking at the top-performing funds and would like your guidance.'; window.ACE_RELATED=[{icon:'⚖️',label:'Compare Funds',href:'fund-compare.html'},{icon:'🔍',label:'Fund Discovery',href:'fund-discovery-v2.html'},{icon:'🧮',label:'Calculators',href:'calculators.html'}];
+
+/* ═══ ACE UX LAYER — advisory CTA · related tools · input persistence ═══ */
+(function(){
+  function init(){
+    try{
+      if(!document.querySelector('.ace-wa, .wa-float')){
+        var css=document.createElement('style');
+        css.textContent='.ace-wa{position:fixed;bottom:28px;right:28px;z-index:9999;width:58px;height:58px;border-radius:50%;background:#25d366;display:flex;align-items:center;justify-content:center;font-size:28px;text-decoration:none;box-shadow:0 4px 20px rgba(37,211,102,.5);transition:transform .2s;animation:aceWa 3s ease-in-out infinite;}.ace-wa:hover{transform:scale(1.1);}@keyframes aceWa{0%,100%{box-shadow:0 4px 20px rgba(37,211,102,.5);}50%{box-shadow:0 8px 32px rgba(37,211,102,.7);}}.ace-rel{background:#fff;border:2px solid #d4eda0;border-radius:14px;padding:18px 20px;margin:22px auto;max-width:1100px;}.ace-rel h4{font-family:Playfair Display,serif;font-size:15px;font-weight:900;color:#3c3197;margin:0 0 4px;}.ace-rel p{font-size:11px;color:#9ca3af;margin:0 0 12px;}.ace-rel-row{display:flex;flex-wrap:wrap;gap:10px;}.ace-rel a{display:flex;align-items:center;gap:7px;background:#f5fce8;border:1.5px solid #d4eda0;border-radius:10px;padding:9px 14px;text-decoration:none;color:#1a1240;font-size:12px;font-weight:700;transition:all .2s;}.ace-rel a:hover{background:#3c3197;color:#fff;border-color:#3c3197;}@media print{.ace-wa,.ace-rel{display:none!important;}}';
+        document.head.appendChild(css);
+        var wa=document.createElement('a');
+        wa.className='ace-wa'; wa.target='_blank'; wa.rel='noopener'; wa.title='Chat with Kaustubh on WhatsApp';
+        wa.href='https://wa.me/919373334215?text='+encodeURIComponent(window.ACE_WA_MSG||'Hi Kaustubh, I have a question about mutual fund investments.');
+        wa.textContent='\uD83D\uDCAC';
+        wa.addEventListener('click',function(){ if(typeof gtag==='function'){gtag('event','whatsapp_click',{event_category:'engagement',event_label:'tool_float'});} });
+        document.body.appendChild(wa);
+      }
+    }catch(e){}
+    try{
+      if(window.ACE_RELATED && window.ACE_RELATED.length && !document.querySelector('.ace-rel')){
+        var bar=document.createElement('div'); bar.className='ace-rel';
+        var html='<h4>\uD83E\uDDED Continue exploring</h4><p>Other tools that pair well with this one</p><div class="ace-rel-row">';
+        window.ACE_RELATED.forEach(function(r){ html+='<a href="'+r.href+'">'+(r.icon||'')+' '+r.label+'</a>'; });
+        bar.innerHTML=html+'</div>';
+        var foot=document.querySelector('footer,.adv-bar,.sebi-disclaimer,.disclaimer,.site-footer');
+        if(foot && foot.parentNode){ foot.parentNode.insertBefore(bar, foot); } else { document.body.appendChild(bar); }
+      }
+    }catch(e){}
+    if(window.ACE_UX_PERSIST){
+      try{
+        var KEY='aceux:'+location.pathname;
+        var store={}; try{ store=JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(_){}
+        var SEL='input[id]:not([type=file]):not([type=password]):not([type=search]):not([type=date]):not([type=checkbox]):not([type=radio]), select[id]';
+        var els=document.querySelectorAll(SEL);
+        els.forEach(function(el){ if(store[el.id]!=null && store[el.id]!==''){ el.value=store[el.id]; } });
+        els.forEach(function(el){ if(store[el.id]!=null && store[el.id]!==''){ try{ el.dispatchEvent(new Event('input',{bubbles:true})); }catch(_){}} });
+        document.addEventListener('input', function(e){
+          var el=e.target; if(!el || !el.id) return;
+          if(el.matches && el.matches(SEL)){ store[el.id]=el.value; try{ localStorage.setItem(KEY,JSON.stringify(store)); }catch(_){} }
+        }, true);
+      }catch(e){}
+    }
+  }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
+})();
+</script>
 </body>
 </html>
