@@ -812,6 +812,13 @@ function anlParseMFCentral(text){
       invested += parseFloat(pm[1].replace(/,/g,''));
     }
     if(!invested && value > 0) invested = value;
+    // Dated purchase transactions (best-effort) for XIRR — validated later against `invested`
+    var txns = [];
+    var datedRe = /(\d{1,2}[-\/][A-Za-z]{3}[-\/]\d{4})[^\n\r]{0,60}?(?:Purchase|SIP|Systematic|Investment)[^\n\r]*?\s+([\d,]+\.\d{2})\s+[\d,]+\.\d+/gi;
+    var dtm;
+    while((dtm = datedRe.exec(block)) !== null){
+      txns.push({date: dtm[1], amt: parseFloat(dtm[2].replace(/,/g,''))});
+    }
 
     var gain = value - invested;
     var flagged = !fname || units === 0 || value === 0;
@@ -819,7 +826,7 @@ function anlParseMFCentral(text){
     if(folio && (fname || units > 0)){
       funds.push({
         name:fname, folio:folio, units:units, nav:nav,
-        value:value, invested:invested, gain:gain, flagged:flagged
+        value:value, invested:invested, gain:gain, flagged:flagged, txns:txns
       });
     }
   });
@@ -1181,6 +1188,52 @@ function anlIsDebt(cat){
 }
 
 // ── GENERATE REPORT ────────────────────────────────────────
+/* ═══ PORTFOLIO XIRR (money-weighted return from dated CAS transactions) ═══ */
+function anlXdate(s){
+  if(!s) return null;
+  var mo={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+  var m=String(s).match(/(\d{1,2})[-\/ ]([A-Za-z]{3})[A-Za-z]*[-\/ ](\d{4})/);
+  if(!m) return null;
+  var mm=mo[m[2].toLowerCase().slice(0,3)]; if(mm==null) return null;
+  return new Date(parseInt(m[3],10), mm, parseInt(m[1],10));
+}
+function anlXnpv(rate,cfs,dates){ var t0=dates[0].getTime(),s=0; for(var i=0;i<cfs.length;i++){ var yr=(dates[i].getTime()-t0)/31536000000; s+=cfs[i]/Math.pow(1+rate,yr);} return s; }
+function anlXirr(cfs,dates){
+  if(cfs.length<2) return null;
+  var rate=0.1,i;
+  for(i=0;i<100;i++){ var f=anlXnpv(rate,cfs,dates); var d=(anlXnpv(rate+1e-6,cfs,dates)-f)/1e-6; if(Math.abs(d)<1e-12)break; var nr=rate-f/d; if(!isFinite(nr))break; if(Math.abs(nr-rate)<1e-8)return nr; rate=nr; if(rate<=-0.9999)rate=-0.9999; }
+  var lo=-0.9999,hi=10,flo=anlXnpv(lo,cfs,dates),fhi=anlXnpv(hi,cfs,dates); if(flo*fhi>0)return null;
+  for(i=0;i<200;i++){ var mid=(lo+hi)/2,fm=anlXnpv(mid,cfs,dates); if(Math.abs(fm)<1e-7)return mid; if(flo*fm<0)hi=mid; else {lo=mid;flo=fm;} }
+  return (lo+hi)/2;
+}
+// Returns {xirr, covCount, covVal} — only counts funds whose captured txns reconcile with invested
+function anlPortfolioXIRR(funds, stmtDate){
+  var allCfs=[], allDates=[], covVal=0, covCount=0;
+  funds.forEach(function(f){
+    f.xirr=null;
+    if(!(f.txns && f.txns.length>=2 && f.invested>0 && f.value>0)) return;
+    var sumTx=f.txns.reduce(function(a,t){return a+t.amt;},0);
+    if(Math.abs(sumTx - f.invested) > 0.06*f.invested) return; // reconciliation guard
+    var cfs=[], dates=[], ok=true;
+    f.txns.forEach(function(t){ var d=anlXdate(t.date); if(!d){ok=false;return;} cfs.push(-t.amt); dates.push(d); });
+    if(!ok) return;
+    cfs.push(f.value); dates.push(stmtDate);
+    var fx=anlXirr(cfs,dates);
+    if(fx==null || fx<=-0.95 || fx>=3) return; // sane bounds
+    f.xirr=fx*100;
+    f.txns.forEach(function(t){ var d=anlXdate(t.date); if(d){ allCfs.push(-t.amt); allDates.push(d);} });
+    covVal+=f.value; covCount++;
+  });
+  var px=null;
+  if(covCount>0){
+    var idx=allDates.map(function(d,i){return i;}).sort(function(a,b){return allDates[a]-allDates[b];});
+    var scfs=idx.map(function(i){return allCfs[i];}), sdts=idx.map(function(i){return allDates[i];});
+    scfs.push(covVal); sdts.push(stmtDate);
+    var r=anlXirr(scfs,sdts);
+    if(r!=null && r>-0.95 && r<3) px=r*100;
+  }
+  return {xirr:px, covCount:covCount, covVal:covVal};
+}
 function anlGenerateReport(){
   // Sync latest edits from inputs
   ANL.investor.name = document.getElementById('anl-inv-name').value||ANL.investor.name;
@@ -1195,6 +1248,12 @@ function anlGenerateReport(){
   var totalInvested = funds.reduce(function(s,f){return s+(f.invested||f.value);},0);
   var totalGain     = totalValue - totalInvested;
   var gainPct       = totalInvested>0 ? ((totalGain/totalInvested)*100) : 0;
+  // Portfolio XIRR (money-weighted, from reconcilable dated transactions)
+  var _stmtDate = anlXdate(ANL.investor.date) || new Date();
+  var _xr = anlPortfolioXIRR(funds, _stmtDate);
+  var portfolioXIRR = _xr.xirr;
+  var xirrCovCount = _xr.covCount;
+  var xirrCovValPct = totalValue>0 ? (_xr.covVal/totalValue*100) : 0;
 
   // Categorise
   funds.forEach(function(f){
@@ -1282,6 +1341,17 @@ function anlGenerateReport(){
     report += '<div style="font-size:20px;font-weight:800;color:'+m.c+';">'+m.v+'</div></div>';
   });
   report += '</div></div>'; // end hero
+  // ── Portfolio XIRR card ──
+  if(portfolioXIRR != null){
+    report += '<div style="background:linear-gradient(135deg,#f0effe,#f5fce8);border:1.5px solid #d4eda0;border-radius:12px;padding:16px 20px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">';
+    report += '<div style="flex:1;min-width:220px;"><div style="font-size:12px;font-weight:800;color:#3c3197;text-transform:uppercase;letter-spacing:.4px;">Portfolio XIRR \u00b7 Annualised Return</div>';
+    report += '<div style="font-size:12px;color:#6b7280;margin-top:4px;line-height:1.5;">The true money-weighted return \u2014 it accounts for <b>when</b> each SIP/purchase was made, unlike the '+fmtP(gainPct)+' absolute figure. This is the number to compare against FDs and benchmarks.</div></div>';
+    report += '<div style="font-size:36px;font-weight:900;color:'+(portfolioXIRR>=0?'#5a8a10':'#dc2626')+';font-family:var(--fm,monospace);">'+(portfolioXIRR>=0?'+':'')+portfolioXIRR.toFixed(2)+'%</div>';
+    report += '</div>';
+    report += '<div style="font-size:10px;color:#9ca3af;line-height:1.6;margin-bottom:16px;">XIRR is computed from reconstructed purchase history for '+xirrCovCount+' of '+funds.length+' funds ('+fmtP(xirrCovValPct)+' of portfolio value). Funds whose transaction history could not be fully and reliably reconstructed from the statement are excluded from the XIRR (their value still counts in the totals above). Valued as on the statement date.</div>';
+  } else {
+    report += '<div style="background:#f5fce8;border:1.5px solid #d4eda0;border-radius:10px;padding:12px 15px;font-size:12px;color:#4b5563;margin-bottom:16px;line-height:1.6;">\u2139\ufe0f <b>XIRR not available for this statement.</b> XIRR \u2014 the true annualised, money-weighted return \u2014 needs a <b>Detailed CAS with dated transaction history</b>. This looks like a Summary statement (holdings only), so only the absolute return ('+fmtP(gainPct)+') is shown above. Request a \u201cDetailed\u201d statement from CAMS/KFintech (with transactions) to unlock XIRR.</div>';
+  }
 
   // Asset Allocation Card
   report += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">';
