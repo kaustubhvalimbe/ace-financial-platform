@@ -565,6 +565,74 @@ function aceRollHTML(d, pctInfo, metricLbl){
   return h+'</div>';
 }
 
+
+/* ═══ ACE BENCHMARK + RISK (real beta/alpha/capture/TE vs Nifty 50 proxy) ═══ */
+var ACE_BMK=null, ACE_BMK_MAP=null, ACE_BMK_NAME='', ACE_BMK_PROMISE=null;
+function aceLoadBmk(){
+  if(ACE_BMK_PROMISE) return ACE_BMK_PROMISE;
+  ACE_BMK_PROMISE=(async function(){
+    try{
+      var res=await fetch('https://api.mfapi.in/mf/search?q=nifty%2050%20index');
+      var list=await res.json();
+      var cands=(list||[]).filter(function(x){var n=(x.schemeName||'').toUpperCase();
+        return n.indexOf('NIFTY 50')>=0&&n.indexOf('INDEX')>=0&&n.indexOf('DIRECT')>=0&&n.indexOf('GROWTH')>=0&&
+               n.indexOf('IDCW')<0&&n.indexOf('DIVIDEND')<0&&n.indexOf('NEXT')<0&&n.indexOf('EQUAL')<0;}).slice(0,4);
+      var best=null;
+      for(var i=0;i<cands.length;i++){ try{
+        var r=await fetch('https://api.mfapi.in/mf/'+cands[i].schemeCode); var d=await r.json();
+        if(d&&d.data&&(!best||d.data.length>best.data.length)) best={data:d.data,name:cands[i].schemeName};
+      }catch(e){} }
+      if(best&&best.data.length>60){ ACE_BMK=best.data; ACE_BMK_NAME=best.name; ACE_BMK_MAP={};
+        for(var j=0;j<best.data.length;j++) ACE_BMK_MAP[best.data[j].date]=parseFloat(best.data[j].nav);
+        if(typeof console!=='undefined') console.log('Benchmark loaded: '+ACE_BMK_NAME+' ('+best.data.length+' pts)');
+      }
+    }catch(e){ if(typeof console!=='undefined') console.log('Benchmark load failed', e&&e.message); }
+    return ACE_BMK;
+  })();
+  return ACE_BMK_PROMISE;
+}
+function aceRisk(data){
+  var out={stdDev:null,sharpe:null,sortino:null,maxDD:null,beta:null,alpha:null,upCap:null,downCap:null,teErr:null,benchLabel:'vs Nifty 50 (n/a)'};
+  if(!data||data.length<60) return out;
+  var navs=data.slice(0,Math.min(756,data.length)).map(function(x){return parseFloat(x.nav);}).filter(function(v){return !isNaN(v)&&v>0;});
+  if(navs.length<20) return out;
+  var rets=[]; for(var i=1;i<navs.length;i++) rets.push((navs[i-1]-navs[i])/navs[i]);
+  var mean=rets.reduce(function(a,b){return a+b;},0)/rets.length;
+  var variance=rets.reduce(function(s,r){return s+Math.pow(r-mean,2);},0)/rets.length;
+  var stdDev=Math.sqrt(variance)*Math.sqrt(252)*100; var riskFree=0.065/252;
+  out.stdDev=stdDev;
+  out.sharpe=stdDev>0?((mean-riskFree)*252)/(stdDev/100):null;
+  var downRets=rets.filter(function(r){return r<0;});
+  var downVar=downRets.reduce(function(s,r){return s+r*r;},0)/(downRets.length||1);
+  out.sortino=downVar>0?((mean-riskFree)*252)/(Math.sqrt(downVar)*Math.sqrt(252)):null;
+  var peak=navs[0],maxDD=0; for(var n=0;n<navs.length;n++){ if(navs[n]>peak)peak=navs[n]; var dd=(peak-navs[n])/peak; if(dd>maxDD)maxDD=dd; }
+  out.maxDD=-(maxDD*100);
+  if(ACE_BMK_MAP){
+    var fr=[],br=[],win=data.slice(0,Math.min(756,data.length));
+    for(var bi=1;bi<win.length;bi++){
+      var bN=ACE_BMK_MAP[win[bi-1].date],bO=ACE_BMK_MAP[win[bi].date];
+      var fN=parseFloat(win[bi-1].nav),fO=parseFloat(win[bi].nav);
+      if(bN>0&&bO>0&&fN>0&&fO>0){fr.push((fN-fO)/fO);br.push((bN-bO)/bO);}
+    }
+    if(fr.length>60){
+      var mfd=fr.reduce(function(a,b){return a+b;},0)/fr.length;
+      var mbd=br.reduce(function(a,b){return a+b;},0)/br.length;
+      var cov=0,vb=0; for(var ci=0;ci<fr.length;ci++){cov+=(fr[ci]-mfd)*(br[ci]-mbd);vb+=(br[ci]-mbd)*(br[ci]-mbd);}
+      cov/=fr.length;vb/=fr.length;
+      if(vb>0){
+        out.beta=cov/vb; out.alpha=((mfd-riskFree)-out.beta*(mbd-riskFree))*252*100;
+        var fu=0,bu=0,fd=0,bd=0; for(var pi=0;pi<br.length;pi++){if(br[pi]>0){fu+=fr[pi];bu+=br[pi];}else if(br[pi]<0){fd+=fr[pi];bd+=br[pi];}}
+        out.upCap=bu>0?(fu/bu)*100:null; out.downCap=bd<0?(fd/bd)*100:null;
+        var md=0; for(var ti=0;ti<fr.length;ti++)md+=(fr[ti]-br[ti]); md/=fr.length;
+        var dv=0; for(var t2=0;t2<fr.length;t2++)dv+=Math.pow((fr[t2]-br[t2])-md,2);
+        out.teErr=Math.sqrt(dv/fr.length)*Math.sqrt(252)*100;
+        out.benchLabel='vs Nifty 50 (proxy)';
+      }
+    }
+  }
+  return out;
+}
+
 async function loadFundData(code, name) {
   var f = {code:code, name:name, amc:'—', nav:null, date:null,
     r1m:null, r3m:null, r6m:null, r1y:null, r3y:null, r5y:null, r10y:null,
@@ -594,6 +662,7 @@ async function loadFundData(code, name) {
       if(pts>=1260) { var o=parseFloat(d.data[1259].nav);if(o>0) f.r5y=(Math.pow(cur/o,1/5)-1)*100; }
       if(pts>=2520) { var o=parseFloat(d.data[2519].nav);if(o>0) f.r10y=(Math.pow(cur/o,1/10)-1)*100; }
       f.roll3y=aceRolling(d.data,3); f.roll5y=aceRolling(d.data,5);
+      await aceLoadBmk(); f.risk=aceRisk(d.data);
     }
   } catch(e) { console.log('NAV load failed for '+code); }
   return f;
@@ -644,6 +713,21 @@ function renderTable(funds) {
     html+=buildRow('5Y Rolling · Median', funds.map(function(f){return f.roll5y?fR(f.roll5y.median):'—';}), funds.map(function(f){return f.roll5y?f.roll5y.median:null;}), true,false);
     html+=buildRow('5Y Rolling · Best / Worst', funds.map(function(f){return f.roll5y?fR(f.roll5y.best)+' / '+fR(f.roll5y.worst):'—';}));
     html+=buildRow('5Y Rolling · % Windows Positive', funds.map(function(f){return f.roll5y?f.roll5y.pctPositive.toFixed(0)+'%':'—';}), funds.map(function(f){return f.roll5y?f.roll5y.pctPositive:null;}), true,false);
+  }
+  // Risk & Benchmark Metrics — real, from NAV history
+  var _hasRisk = funds.some(function(f){return f.risk;});
+  if(_hasRisk){
+    var _bl='vs Nifty 50'; for(var _bi=0;_bi<funds.length;_bi++){ if(funds[_bi].risk&&funds[_bi].risk.benchLabel){_bl=funds[_bi].risk.benchLabel;break;} }
+    html+='<tr class="srow"><td colspan="'+(funds.length+1)+'">📉 Risk &amp; Benchmark Metrics — real, from NAV history ('+_bl+')</td></tr>';
+    html+=buildRow('Std Deviation (ann.)', funds.map(function(f){return f.risk&&f.risk.stdDev!=null?f.risk.stdDev.toFixed(2)+'%':'—';}), funds.map(function(f){return f.risk?f.risk.stdDev:null;}), false,true);
+    html+=buildRow('Sharpe Ratio', funds.map(function(f){return f.risk&&f.risk.sharpe!=null?f.risk.sharpe.toFixed(2):'—';}), funds.map(function(f){return f.risk?f.risk.sharpe:null;}), true,false);
+    html+=buildRow('Sortino Ratio', funds.map(function(f){return f.risk&&f.risk.sortino!=null?f.risk.sortino.toFixed(2):'—';}), funds.map(function(f){return f.risk?f.risk.sortino:null;}), true,false);
+    html+=buildRow('Max Drawdown', funds.map(function(f){return f.risk&&f.risk.maxDD!=null?f.risk.maxDD.toFixed(2)+'%':'—';}), funds.map(function(f){return f.risk?f.risk.maxDD:null;}), true,false);
+    html+=buildRow('Beta ('+_bl+')', funds.map(function(f){return f.risk&&f.risk.beta!=null?f.risk.beta.toFixed(2):'—';}), null, false,false);
+    html+=buildRow('Alpha (ann.)', funds.map(function(f){return f.risk&&f.risk.alpha!=null?(f.risk.alpha>=0?'+':'')+f.risk.alpha.toFixed(2)+'%':'—';}), funds.map(function(f){return f.risk?f.risk.alpha:null;}), true,false);
+    html+=buildRow('Up Capture', funds.map(function(f){return f.risk&&f.risk.upCap!=null?f.risk.upCap.toFixed(0)+'%':'—';}), funds.map(function(f){return f.risk?f.risk.upCap:null;}), true,false);
+    html+=buildRow('Down Capture', funds.map(function(f){return f.risk&&f.risk.downCap!=null?f.risk.downCap.toFixed(0)+'%':'—';}), funds.map(function(f){return f.risk?f.risk.downCap:null;}), false,true);
+    html+=buildRow('Tracking Error (ann.)', funds.map(function(f){return f.risk&&f.risk.teErr!=null?f.risk.teErr.toFixed(2)+'%':'—';}), null, false,false);
   }
   // Suitability
   html+='<tr class="srow"><td colspan="'+(funds.length+1)+'">✅ Suitability</td></tr>';
