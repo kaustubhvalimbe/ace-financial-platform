@@ -12,11 +12,11 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>9 Free Mutual Fund Calculators — SIP, SWP, Retirement Planning | Ace Financial Services</title>
-<meta name="description" content="9 free professional mutual fund calculators — SIP with step-up, SWP, Lumpsum, Goal-based planner, ELSS tax saver, Inflation adjusted returns, Retirement Readiness, and Financial Planning with SIP & SWP (full lifecycle simulator). Powered by Ace Financial Services, AMFI Registered MFD, Pune.">
+<title>10 Free Mutual Fund Calculators — SIP, SWP, Retirement Planning | Ace Financial Services</title>
+<meta name="description" content="10 free professional mutual fund calculators — SIP with step-up, SWP, Lumpsum, Goal-based planner, ELSS tax saver, Inflation adjusted returns, Retirement Readiness, and Financial Planning with SIP & SWP (full lifecycle simulator). Powered by Ace Financial Services, AMFI Registered MFD, Pune.">
 <meta name="keywords" content="SIP calculator india 2026, SWP calculator, lumpsum calculator, ELSS tax calculator 80C, goal based investment planner, mutual fund returns calculator, inflation adjusted returns, retirement readiness calculator, SIP for retirement calculator, SIP SWP lifecycle planner, wealth calculator india">
-<meta property="og:title" content="9 Free Mutual Fund Calculators — SIP, SWP, Retirement Planning | Ace Financial Services">
-<meta property="og:description" content="9 free professional mutual fund calculators including a full SIP-to-SWP lifecycle planner — see whether your retirement plan actually survives. Powered by Ace Financial Services, AMFI Registered MFD, Pune.">
+<meta property="og:title" content="10 Free Mutual Fund Calculators — SIP, SWP, Retirement Planning | Ace Financial Services">
+<meta property="og:description" content="10 free professional mutual fund calculators including a full SIP-to-SWP lifecycle planner — see whether your retirement plan actually survives. Powered by Ace Financial Services, AMFI Registered MFD, Pune.">
 <meta property="og:type" content="website">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Kaustubh Valimbe — Ace Financial Services">
@@ -286,7 +286,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   "@type": "FinancialService",
   "name": "Ace Financial Services",
   "alternateName": "AFS",
-  "description": "AMFI-registered Mutual Fund Distributor offering 9 free mutual fund & loan calculators including SIP, SWP, Lumpsum, Goal Planner, ELSS, Inflation Adjusted Returns, Retirement Readiness, a full SIP-to-SWP lifecycle planner, and a Loan EMI calculator with amortization schedule, in Pune, India.",
+  "description": "AMFI-registered Mutual Fund Distributor offering 10 free mutual fund & loan calculators including SIP, SWP, Lumpsum, Goal Planner, ELSS, Inflation Adjusted Returns, Retirement Readiness, a full SIP-to-SWP lifecycle planner, a Loan EMI calculator with amortization schedule, and a SIP XIRR calculator, in Pune, India.",
   "url": "https://acefinservices.com/calculators.html",
   "areaServed": { "@type": "City", "name": "Pune" },
   "address": { "@type": "PostalAddress", "addressLocality": "Pune", "addressRegion": "Maharashtra", "addressCountry": "IN" },
@@ -359,7 +359,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 <div class="hero">
   <div class="hero-in">
     <h1>Mutual Fund <span>Calculators</span> - Play with Numbers</h1>
-    <p>9 professional calculators — SIP with Step-up · SWP · Lumpsum · Goal Planner · ELSS Tax Saver · Inflation Adjusted Returns · Retirement Readiness · Financial Planning with SIP & SWP · Loan EMI</p>
+    <p>10 professional calculators — SIP with Step-up · SWP · Lumpsum · Goal Planner · ELSS Tax Saver · Inflation Adjusted Returns · Retirement Readiness · Financial Planning with SIP & SWP · Loan EMI · SIP XIRR</p>
   </div>
 </div>
 
@@ -373,6 +373,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   <div class="ctab" onclick="showC('ret',this)">🏖️ Retirement Readiness</div>
   <div class="ctab" onclick="showC('sipswp',this)">🔄 SIP + SWP Planner</div>
   <div class="ctab" onclick="showC('loan',this)">🏦 Loan EMI</div>
+  <div class="ctab" onclick="showC('xirr',this)">📊 SIP XIRR</div>
 </div>
 
 <div class="cbody">
@@ -695,6 +696,94 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     </div>
   </div>
 
+  <style>
+  .xfreq{display:flex;gap:6px;margin:2px 0 4px;}
+  .xrow{display:grid;grid-template-columns:1.2fr 1fr auto;gap:8px;align-items:center;margin-bottom:8px;}
+  .xrow input{padding:8px 10px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:13px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;width:100%;}
+  .xrow-del{width:32px;height:32px;border:none;border-radius:8px;background:#fde8e8;color:var(--red);font-size:16px;font-weight:800;cursor:pointer;line-height:1;}
+  .xrow-head{display:grid;grid-template-columns:1.2fr 1fr auto;gap:8px;font-size:10px;font-weight:800;color:var(--t5);text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px;padding:0 2px;}
+  .xrow-head span:last-child{width:32px;}
+  .xadd{width:100%;margin-top:4px;padding:9px;border:1.5px dashed var(--g2);background:var(--g5);color:var(--g1);font-family:var(--fb);font-size:12px;font-weight:800;border-radius:9px;cursor:pointer;}
+  .ytbl td.xin{font-family:var(--fm);color:var(--red);font-weight:700;}
+  .ytbl td.xout{font-family:var(--fm);color:var(--g1);font-weight:700;}
+  .ytbl tr.xval td{background:var(--p4)!important;font-weight:800;color:var(--p2);}
+  /* XIRR mobile fixes (mirror loan panel) */
+  @media(max-width:768px){
+    #c-xirr .ytbl{min-width:480px!important;}
+    #c-xirr .ytbl th,#c-xirr .ytbl td{white-space:nowrap!important;padding:7px 9px!important;}
+    #c-xirr .rc{padding:12px!important;}
+    #c-xirr .rc-val{font-size:16px!important;word-break:break-word!important;}
+    #c-xirr .rc-val.big{font-size:20px!important;}
+    #c-xirr .ig-val{font-size:13px!important;}
+    .xrow input{font-size:12px!important;}
+  }
+  @media(max-width:430px){
+    #c-xirr .rcards{grid-template-columns:1fr!important;}
+    .xrow{grid-template-columns:1fr 1fr auto!important;}
+  }
+  </style>
+  <!-- SIP XIRR -->
+  <div class="cpnl" id="c-xirr">
+    <div class="clay">
+      <div class="cinp-card">
+        <h2 class="calc-ttl">SIP <span>XIRR Calculator</span></h2>
+        <div class="calc-dsc">XIRR is the true annualised return of a SIP — because every instalment is invested on a different date, a simple CAGR or absolute-gain figure understates or overstates the real return. Enter your SIP and its current value to find the actual XIRR, or use <b>Custom Cash Flows</b> for lumpsums, step-ups and redemptions.</div>
+
+        <div class="loan-modes">
+          <button class="loan-mode on" id="xm-sip" onclick="setXMode('sip')">Regular SIP<small>SIP + value → XIRR</small></button>
+          <button class="loan-mode" id="xm-cf" onclick="setXMode('cf')">Custom Cash Flows<small>dated in/out flows</small></button>
+        </div>
+
+        <!-- SIP MODE -->
+        <div id="xsip">
+          <div class="ig"><div class="ig-lbl"><span>SIP Amount (per instalment)</span><span class="ig-val" id="xv-amt">₹10,000</span></div><input type="number" id="xi-amt" min="100" step="500" value="10000" oninput="xCalc()" onchange="xCalc()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"></div>
+
+          <div class="ig"><div class="ig-lbl"><span>Frequency</span><span class="ig-val" id="xv-freq">Monthly</span></div>
+            <div class="xfreq">
+              <button class="loan-vt on" id="xf-m" onclick="setXFreq('m')">Monthly</button>
+              <button class="loan-vt" id="xf-q" onclick="setXFreq('q')">Quarterly</button>
+              <button class="loan-vt" id="xf-w" onclick="setXFreq('w')">Weekly</button>
+            </div>
+          </div>
+
+          <div class="ig"><div class="ig-lbl"><span>SIP Start Date</span></div><input type="date" id="xi-start" value="2021-01-01" oninput="xCalc()" onchange="xCalc()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"></div>
+
+          <div class="ig"><div class="ig-lbl"><span>Number of Instalments</span><span class="ig-val" id="xv-n">60</span></div><input type="number" id="xi-n" min="1" max="600" step="1" value="60" oninput="xCalc()" onchange="xCalc()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>1</span><span>e.g. 60 = 5 yrs monthly</span></div></div>
+
+          <div class="ig"><div class="ig-lbl"><span>Current / Maturity Value</span><span class="ig-val" id="xv-cv">₹8,50,000</span></div><input type="number" id="xi-cv" min="0" step="1000" value="850000" oninput="xCalc()" onchange="xCalc()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"></div>
+
+          <div class="ig"><div class="ig-lbl"><span>Valuation Date (value as on)</span></div><input type="date" id="xi-val" oninput="xCalc()" onchange="xCalc()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"></div>
+        </div>
+
+        <!-- CUSTOM CASH FLOW MODE -->
+        <div id="xcf" style="display:none;">
+          <div class="xrow-head"><span>Date</span><span>Amount (₹)</span><span></span></div>
+          <div id="xcf-rows"></div>
+          <button class="xadd" onclick="addXcf()">＋ Add cash flow</button>
+          <div class="ig-range" style="margin-top:8px;"><span>Investments = negative (−)</span><span>Redemption / current value = positive (+)</span></div>
+        </div>
+
+        <div class="elss-note" id="xirr-err" style="display:none;margin-top:8px;color:var(--red);font-weight:600;"></div>
+      </div>
+
+      <div class="cres-card">
+        <div class="rcards">
+          <div class="rc big"><div class="rc-lbl">XIRR · Annualised Return</div><div class="rc-val gr big" id="xr-xirr">0%</div></div>
+          <div class="rc"><div class="rc-lbl">Total Invested</div><div class="rc-val" id="xr-inv">₹0</div></div>
+          <div class="rc"><div class="rc-lbl">Current Value</div><div class="rc-val pu" id="xr-val">₹0</div></div>
+          <div class="rc"><div class="rc-lbl">Absolute Gain</div><div class="rc-val go" id="xr-gain">₹0</div></div>
+          <div class="rc"><div class="rc-lbl">Absolute Return</div><div class="rc-val" id="xr-abs">0%</div></div>
+        </div>
+        <div class="elss-note" id="xirr-note" style="line-height:1.6;">Enter your SIP details to see the annualised XIRR.</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:8px;flex-wrap:wrap;">
+          <div style="font-size:12px;font-weight:800;color:var(--t1);">Cash Flow Schedule</div>
+        </div>
+        <div class="ytw" style="max-height:300px;margin-top:10px;"><table class="ytbl"><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Cumulative Invested</th></tr></thead><tbody id="xirr-body"></tbody></table></div>
+        <button class="loan-print" onclick="printXirr()">🖨️ Print / Save Cash Flows as PDF</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div class="faq-section">
@@ -714,7 +803,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   </details>
   <details class="faq-item">
     <summary>Are these calculators free, and do I need to log in?</summary>
-    <div class="faq-a">All 9 calculators are completely free and require no login or sign-up. You can use the SIP, SWP, Lumpsum, Goal Planner, ELSS Tax Saver, Inflation Adjusted, Retirement Readiness, combined SIP &amp; SWP, and Loan EMI tools as many times as you like, directly in your browser.</div>
+    <div class="faq-a">All 10 calculators are completely free and require no login or sign-up. You can use the SIP, SWP, Lumpsum, Goal Planner, ELSS Tax Saver, Inflation Adjusted, Retirement Readiness, combined SIP &amp; SWP, Loan EMI, and SIP XIRR tools as many times as you like, directly in your browser.</div>
   </details>
   <details class="faq-item">
     <summary>How accurate are the calculator results?</summary>
@@ -1166,6 +1255,213 @@ function printLoan(){
     cLoan();
   }
   if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',initLoan);}else{initLoan();}
+})();
+</script>
+<script>
+/* ═══ SIP XIRR CALCULATOR (10th) ═══ */
+var XMODE='sip', XFREQ='m', X_ROWS=[], X_META={};
+var XCF=[]; // custom cash flows [{date:'YYYY-MM-DD', amt:Number}]
+function xINR(n){var s=n<0?'-':'';return s+'₹'+Math.abs(Math.round(n)).toLocaleString('en-IN');}
+function xnum(id){var v=parseFloat(document.getElementById(id).value);return isNaN(v)?0:v;}
+function xParse(str){ if(!str)return null; var p=String(str).split('-'); if(p.length!==3)return null; var d=new Date(+p[0],+p[1]-1,+p[2]); return isNaN(d.getTime())?null:d; }
+function xToday(){var d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate());}
+function xFmtISO(d){var m=('0'+(d.getMonth()+1)).slice(-2),day=('0'+d.getDate()).slice(-2);return d.getFullYear()+'-'+m+'-'+day;}
+var XMON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function xFmt(d){return ('0'+d.getDate()).slice(-2)+'-'+XMON[d.getMonth()]+'-'+d.getFullYear();}
+function xAddMonths(d,k){var total=d.getMonth()+k;var ny=d.getFullYear()+Math.floor(total/12);var nm=((total%12)+12)%12;var dim=new Date(ny,nm+1,0).getDate();return new Date(ny,nm,Math.min(d.getDate(),dim));}
+function xAddDays(d,k){return new Date(d.getFullYear(),d.getMonth(),d.getDate()+k);}
+
+/* XIRR core: Newton-Raphson with bisection fallback (365-day, Excel-compatible) */
+function xnpv(rate,cfs,dates){var t0=dates[0].getTime(),s=0;for(var i=0;i<cfs.length;i++){var yr=(dates[i].getTime()-t0)/(1000*60*60*24*365);s+=cfs[i]/Math.pow(1+rate,yr);}return s;}
+function xirrSolve(cfs,dates){
+  var rate=0.1,i;
+  for(i=0;i<100;i++){
+    var f=xnpv(rate,cfs,dates);
+    var d=(xnpv(rate+1e-6,cfs,dates)-f)/1e-6;
+    if(Math.abs(d)<1e-12)break;
+    var nr=rate-f/d;
+    if(!isFinite(nr))break;
+    if(Math.abs(nr-rate)<1e-8)return nr;
+    rate=nr; if(rate<=-0.9999)rate=-0.9999;
+  }
+  var lo=-0.9999,hi=10,flo=xnpv(lo,cfs,dates),fhi=xnpv(hi,cfs,dates);
+  if(flo*fhi>0)return null;
+  for(i=0;i<200;i++){var mid=(lo+hi)/2,fm=xnpv(mid,cfs,dates);if(Math.abs(fm)<1e-7)return mid;if(flo*fm<0){hi=mid;}else{lo=mid;flo=fm;}}
+  return (lo+hi)/2;
+}
+
+function setXMode(m){
+  XMODE=m;
+  document.getElementById('xm-sip').classList.toggle('on',m==='sip');
+  document.getElementById('xm-cf').classList.toggle('on',m==='cf');
+  document.getElementById('xsip').style.display=(m==='sip')?'':'none';
+  document.getElementById('xcf').style.display=(m==='cf')?'':'none';
+  if(m==='cf' && XCF.length===0) seedXcf();
+  xCalc();
+}
+function setXFreq(f){
+  XFREQ=f;
+  document.getElementById('xf-m').classList.toggle('on',f==='m');
+  document.getElementById('xf-q').classList.toggle('on',f==='q');
+  document.getElementById('xf-w').classList.toggle('on',f==='w');
+  document.getElementById('xv-freq').textContent={m:'Monthly',q:'Quarterly',w:'Weekly'}[f];
+  xCalc();
+}
+function xErr(msg){var e=document.getElementById('xirr-err');if(msg){e.textContent='⚠️ '+msg;e.style.display='';}else{e.style.display='none';e.textContent='';}}
+function xClear(){['xr-inv','xr-val','xr-gain'].forEach(function(id){document.getElementById(id).textContent='₹0';});document.getElementById('xr-xirr').textContent='—';document.getElementById('xr-abs').textContent='—';document.getElementById('xirr-body').innerHTML='';X_ROWS=[];}
+
+/* build cash flows for current mode -> {cfs,dates,rows,invested,value} */
+function xBuildFlows(){
+  var cfs=[],dates=[],rows=[];
+  if(XMODE==='sip'){
+    var A=xnum('xi-amt'), n=Math.floor(xnum('xi-n')), cv=xnum('xi-cv');
+    var start=xParse(document.getElementById('xi-start').value);
+    var vd=xParse(document.getElementById('xi-val').value) || xToday();
+    // live labels
+    document.getElementById('xv-amt').textContent=xINR(A);
+    document.getElementById('xv-n').textContent=n||0;
+    document.getElementById('xv-cv').textContent=xINR(cv);
+    if(A<=0){return {err:'Enter a valid SIP amount.'};}
+    if(!start){return {err:'Select a valid SIP start date.'};}
+    if(n<=0){return {err:'Enter the number of instalments.'};}
+    if(cv<=0){return {err:'Enter the current / maturity value.'};}
+    var cum=0;
+    for(var i=0;i<n;i++){
+      var dt=(XFREQ==='w')?xAddDays(start,7*i):xAddMonths(start,(XFREQ==='q'?3:1)*i);
+      if(dt.getTime()>vd.getTime())continue; // skip instalments after valuation date
+      cfs.push(-A);dates.push(dt);cum+=A;
+      rows.push({date:dt,type:'SIP Invested',amt:-A,cum:cum});
+    }
+    cfs.push(cv);dates.push(vd);
+    rows.push({date:vd,type:'Current Value',amt:cv,cum:cum,val:true});
+    return {cfs:cfs,dates:dates,rows:rows,invested:cum,value:cv};
+  } else {
+    // custom
+    var flows=XCF.map(function(r){return {d:xParse(r.date),a:parseFloat(r.amt)};}).filter(function(r){return r.d && !isNaN(r.a) && r.a!==0;});
+    if(flows.length<2){return {err:'Add at least one investment (−) and one value/redemption (+).'};}
+    flows.sort(function(a,b){return a.d-b.d;});
+    var inv=0,val=0,cum=0;
+    flows.forEach(function(r){
+      cfs.push(r.a);dates.push(r.d);
+      if(r.a<0){inv+=-r.a;cum+=-r.a;rows.push({date:r.d,type:'Invested',amt:r.a,cum:cum});}
+      else{val+=r.a;rows.push({date:r.d,type:'Redeemed / Value',amt:r.a,cum:cum,val:true});}
+    });
+    var hasNeg=cfs.some(function(c){return c<0}), hasPos=cfs.some(function(c){return c>0});
+    if(!hasNeg||!hasPos){return {err:'Need at least one negative (invested) and one positive (value) cash flow.'};}
+    return {cfs:cfs,dates:dates,rows:rows,invested:inv,value:val};
+  }
+}
+
+function xCalc(){
+  xErr('');
+  var fl=xBuildFlows();
+  if(fl.err){xErr(fl.err);xClear();document.getElementById('xirr-note').textContent='';return;}
+  var r=xirrSolve(fl.cfs,fl.dates);
+  X_ROWS=fl.rows;
+  var invested=fl.invested, value=fl.value, gain=value-invested;
+  var absR=invested>0?(gain/invested*100):0;
+  X_META={xirr:r,invested:invested,value:value,gain:gain,absR:absR};
+
+  document.getElementById('xr-inv').textContent=xINR(invested);
+  document.getElementById('xr-val').textContent=xINR(value);
+  document.getElementById('xr-gain').textContent=xINR(gain);
+  document.getElementById('xr-gain').style.color=gain>=0?'var(--gold)':'var(--red)';
+  document.getElementById('xr-abs').textContent=absR.toFixed(2)+'%';
+  document.getElementById('xr-abs').style.color=absR>=0?'var(--t1)':'var(--red)';
+
+  var xEl=document.getElementById('xr-xirr');
+  if(r===null){
+    xEl.textContent='n/a';
+    document.getElementById('xirr-note').textContent='Could not compute XIRR — check that you have at least one investment and a later value, and that the value is realistic.';
+  } else {
+    xEl.textContent=(r*100).toFixed(2)+'%';
+    xEl.style.color=r>=0?'var(--g1)':'var(--red)';
+    var note;
+    if(r>=0){
+      note='Your money grew '+absR.toFixed(1)+'% in total (absolute return), which works out to an annualised XIRR of '+(r*100).toFixed(2)+'%. XIRR is higher/lower than the absolute figure because each instalment stayed invested for a different length of time — this is the number to compare against FDs, benchmarks and other funds.';
+    } else {
+      note='This SIP is currently at a loss: '+absR.toFixed(1)+'% absolute, an annualised XIRR of '+(r*100).toFixed(2)+'%. XIRR annualises the loss across the actual holding period.';
+    }
+    document.getElementById('xirr-note').textContent=note;
+  }
+  renderXirrTable();
+}
+
+function renderXirrTable(){
+  if(!X_ROWS.length){document.getElementById('xirr-body').innerHTML='';return;}
+  var rows=X_ROWS.map(function(r){
+    var cls=r.amt<0?'xin':'xout';
+    var tr=r.val?' class="xval"':'';
+    return '<tr'+tr+'><td class="m">'+xFmt(r.date)+'</td><td>'+r.type+'</td><td class="'+cls+'">'+xINR(r.amt)+'</td><td>'+xINR(r.cum)+'</td></tr>';
+  }).join('');
+  document.getElementById('xirr-body').innerHTML=rows;
+}
+
+/* ── custom cash-flow rows ── */
+function seedXcf(){
+  var t=xToday();
+  XCF=[
+    {date:'2021-01-01',amt:-100000},
+    {date:'2022-06-01',amt:-100000},
+    {date:xFmtISO(t),amt:300000}
+  ];
+  renderXcf();
+}
+function renderXcf(){
+  var html=XCF.map(function(r,i){
+    return '<div class="xrow">'+
+      '<input type="date" value="'+r.date+'" onchange="updXcf('+i+',\'date\',this.value)">'+
+      '<input type="number" step="1000" value="'+r.amt+'" placeholder="−10000 / +50000" oninput="updXcf('+i+',\'amt\',this.value)">'+
+      '<button class="xrow-del" onclick="delXcf('+i+')" title="Remove">×</button>'+
+    '</div>';
+  }).join('');
+  document.getElementById('xcf-rows').innerHTML=html;
+}
+function updXcf(i,k,v){XCF[i][k]=(k==='amt')?v:v;if(k==='amt')xCalc();else xCalc();}
+function addXcf(){XCF.push({date:xFmtISO(xToday()),amt:0});renderXcf();}
+function delXcf(i){XCF.splice(i,1);renderXcf();xCalc();}
+
+/* ── print ── */
+function printXirr(){
+  if(!X_ROWS.length){return;}
+  var M=X_META;
+  var rows=X_ROWS.map(function(r){return '<tr'+(r.val?' style="background:#f0effe;font-weight:800;"':'')+'><td>'+xFmt(r.date)+'</td><td>'+r.type+'</td><td>'+xINR(r.amt)+'</td><td>'+xINR(r.cum)+'</td></tr>';}).join('');
+  var xtxt=(M.xirr===null)?'n/a':(M.xirr*100).toFixed(2)+'%';
+  var w=window.open('','_blank');
+  w.document.write('<html><head><title>SIP XIRR Report — Ace Financial Services</title><style>'+
+    'body{font-family:Arial,Helvetica,sans-serif;color:#1a1240;margin:24px;}'+
+    'h1{font-size:20px;margin:0 0 2px;}h2{font-size:12px;color:#6b7280;font-weight:normal;margin:0 0 16px;}'+
+    '.sum{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:18px;}'+
+    '.sc{border:1.5px solid #000;border-radius:8px;padding:10px 16px;min-width:120px;}'+
+    '.sc b{display:block;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.4px;}'+
+    '.sc span{font-size:18px;font-weight:800;}'+
+    'table{width:100%;border-collapse:collapse;font-size:11px;}'+
+    'th,td{border:1px solid #999;padding:5px 8px;text-align:right;}th{background:#eee;}'+
+    'td:nth-child(2),th:nth-child(2){text-align:left;}td:first-child,th:first-child{text-align:left;}'+
+    '.disc{margin-top:14px;font-size:9px;color:#555;line-height:1.6;}@media print{@page{margin:12mm;}}</style></head><body>'+
+    '<h1>📊 SIP XIRR Report</h1><h2>Ace Financial Services · ARN-110832 · Generated '+new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'})+'</h2>'+
+    '<div class="sum">'+
+      '<div class="sc"><b>XIRR (Annualised)</b><span>'+xtxt+'</span></div>'+
+      '<div class="sc"><b>Total Invested</b><span>'+xINR(M.invested)+'</span></div>'+
+      '<div class="sc"><b>Current Value</b><span>'+xINR(M.value)+'</span></div>'+
+      '<div class="sc"><b>Absolute Gain</b><span>'+xINR(M.gain)+'</span></div>'+
+      '<div class="sc"><b>Absolute Return</b><span>'+M.absR.toFixed(2)+'%</span></div>'+
+    '</div>'+
+    '<table><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Cumulative Invested</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+    '<div class="disc"><b>Disclaimer:</b> This XIRR report is provided by Ace Financial Services (AMFI-registered Mutual Fund Distributor, ARN-110832) for educational purposes only. XIRR is computed on the dated cash flows shown, using a 365-day convention (same method as spreadsheet XIRR). It reflects past performance of the entered figures and is not a guarantee of future returns. Mutual fund investments are subject to market risks; read all scheme related documents carefully.</div>'+
+    '</body></html>');
+  w.document.close();
+  setTimeout(function(){w.focus();w.print();},350);
+}
+
+/* init: default valuation date = today, deep-link, first compute */
+(function(){
+  function initX(){
+    var vd=document.getElementById('xi-val'); if(vd && !vd.value) vd.value=xFmtISO(xToday());
+    if(location.hash==='#xirr'){var t=document.querySelector('.ctab[onclick*="\'xirr\'"]');if(t)showC('xirr',t);}
+    xCalc();
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',initX);}else{initX();}
 })();
 </script>
 </body>
