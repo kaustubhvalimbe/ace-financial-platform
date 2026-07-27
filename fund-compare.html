@@ -670,6 +670,122 @@ async function loadFundData(code, name) {
 
 function renderTable(funds) {
   function fR(v){ return v===null?'—':(v>=0?'+':'')+v.toFixed(2)+'%'; }
+
+/* ═══ ACE COMPARE ANALYSIS FOOTER — plain-language verdict for 2–4 funds ═══ */
+function _cmpShort(f){ return (f.name||'').replace(/ - Direct Plan - Growth/gi,'').replace(/ - Direct Plan/gi,'').replace(/ - Regular Plan - Growth/gi,'').replace(/ - Regular Plan/gi,'').replace(/ - Growth/gi,'').replace(/ Fund$/i,'').trim(); }
+function _inferCatName(f){
+  var n=(f.name||'').toUpperCase();
+  if(/LIQUID|OVERNIGHT|MONEY MARKET|ULTRA SHORT|LOW DURATION|SHORT DURATION|MEDIUM DURATION|GILT|BOND|CORPORATE|CREDIT RISK|DYNAMIC BOND|BANKING & PSU|FLOATER|DEBT|INCOME/.test(n)) return {cat:'Debt',tier:'debt'};
+  if(/HYBRID|BALANCED|ADVANTAGE|MULTI ASSET|EQUITY SAVINGS|ARBITRAGE|ASSET ALLOCAT/.test(n)) return {cat:'Hybrid',tier:'hybrid'};
+  if(/INDEX|NIFTY|SENSEX|\bETF\b/.test(n)) return {cat:'Index/ETF',tier:'index'};
+  if(/INTERNATIONAL|GLOBAL|\bUS \b|NASDAQ|GREATER CHINA|EMERGING|OVERSEAS|WORLD/.test(n)) return {cat:'International',tier:'intl'};
+  if(/SMALL CAP|SMALLCAP/.test(n)) return {cat:'Small Cap',tier:'smallcap'};
+  if(/MID CAP|MIDCAP/.test(n)) return {cat:'Mid Cap',tier:'midcap'};
+  if(/LARGE & MID|LARGE AND MID/.test(n)) return {cat:'Large & Mid Cap',tier:'lmcap'};
+  if(/LARGE CAP|BLUECHIP|BLUE CHIP|TOP 100|TOP 200/.test(n)) return {cat:'Large Cap',tier:'largecap'};
+  if(/FLEXI CAP|FLEXICAP|MULTI CAP|MULTICAP/.test(n)) return {cat:'Flexi/Multi Cap',tier:'flexi'};
+  if(/ELSS|TAX SAVER|TAX SAVING|LONG TERM EQUITY/.test(n)) return {cat:'ELSS',tier:'elss'};
+  if(/VALUE|CONTRA/.test(n)) return {cat:'Value/Contra',tier:'value'};
+  if(/FOCUSED/.test(n)) return {cat:'Focused',tier:'focused'};
+  if(/SECTOR|THEMATIC|PHARMA|HEALTHCARE|BANKING|FINANCIAL SERVICE|TECHNOLOGY|DIGITAL|INFRA|ENERGY|CONSUMPTION|\bMNC\b|DEFENCE|MANUFACTUR|\bPSU\b|TRANSPORT|REALTY|\bAUTO\b/.test(n)) return {cat:'Sectoral/Thematic',tier:'sector'};
+  return null;
+}
+function _inferCatMetric(f){
+  if(!f.risk) return {cat:'Unclassified',tier:'equity'};
+  var b=f.risk.beta, sd=f.risk.stdDev;
+  if(b!=null){
+    if(b<0.30) return {cat:'Debt-like (est.)',tier:'debt'};
+    if(b<0.70) return {cat:'Hybrid-like (est.)',tier:'hybrid'};
+    if(b>1.15 || (sd!=null&&sd>22)) return {cat:'High-volatility equity (est.)',tier:'aggressive'};
+    return {cat:'Diversified equity (est.)',tier:'equity'};
+  }
+  if(sd!=null){ if(sd<6) return {cat:'Debt-like (est.)',tier:'debt'}; if(sd>22) return {cat:'High-volatility equity (est.)',tier:'aggressive'}; return {cat:'Equity (est.)',tier:'equity'}; }
+  return {cat:'Unclassified',tier:'equity'};
+}
+function _fundCat(f){ var c=_inferCatName(f); if(c){c.src='name';return c;} c=_inferCatMetric(f); c.src='metric'; return c; }
+function _capRank(t){ var m={largecap:1,index:1,lmcap:2,flexi:3,elss:3,value:3,focused:3,equity:3,intl:3,midcap:4,sector:5,smallcap:5,aggressive:5}; return m[t]||3; }
+function _broadClass(t){ if(t==='debt')return 'Debt'; if(t==='hybrid')return 'Hybrid'; if(t==='index')return 'Index'; if(t==='intl')return 'International'; if(t==='sector')return 'Sectoral'; return 'Equity'; }
+function _suitsWhom(f){
+  var t=f._c.tier;
+  if(t==='debt') return 'capital-stability seekers and shorter horizons';
+  if(t==='hybrid') return 'moderate-risk investors who want an in-built cushion';
+  if(t==='index') return 'a low-cost, low-tracking-error core allocation';
+  if(t==='intl') return 'investors seeking geographic diversification (currency risk applies)';
+  if(t==='largecap') return 'a steadier, lower-volatility equity core';
+  if(t==='midcap') return 'growth-oriented investors with a 7+ year horizon and tolerance for swings';
+  if(t==='smallcap'||t==='aggressive') return 'aggressive investors with a long horizon and high volatility tolerance';
+  if(t==='sector') return 'investors with a specific view who accept concentrated, cyclical risk';
+  if(t==='elss') return 'tax-saving (80C) investors with a 3-year+ lock-in horizon';
+  return 'diversified long-term core equity allocation';
+}
+function renderCompareAnalysis(funds){
+  if(!funds || funds.length<2) return '';
+  funds.forEach(function(f){ f._c=_fundCat(f); });
+  var classes={}; funds.forEach(function(f){ classes[_broadClass(f._c.tier)]=1; });
+  var nClasses=Object.keys(classes).length;
+  var eq=funds.filter(function(f){ return _broadClass(f._c.tier)==='Equity'; });
+  var capSpread=0;
+  if(eq.length>1){ var rk=eq.map(function(f){return _capRank(f._c.tier);}); capSpread=Math.max.apply(null,rk)-Math.min.apply(null,rk); }
+
+  function best(metric,higher){ var w=null; funds.forEach(function(f){ var v=f.risk?f.risk[metric]:null; if(v==null||isNaN(v))return; if(w===null||(higher?v>w.v:v<w.v))w={f:f,v:v}; }); return w; }
+  function bestRoll(){ var w=null; funds.forEach(function(f){ var r=f.roll5y||f.roll3y; if(!r)return; if(w===null||r.pctPositive>w.v)w={f:f,v:r.pctPositive,r:r}; }); return w; }
+  var wSharpe=best('sharpe',true), wAlpha=best('alpha',true), wDD=best('maxDD',true), wDown=best('downCap',false), wBeta=best('beta',true), wConsist=bestRoll();
+
+  var C={p:'#3c3197',g:'#5a8a10',gold:'#d97706',red:'#dc2626',bd:'#d4eda0',bg:'#f5fce8',t:'#374151',t5:'#9ca3af'};
+  var H='<div style="background:#fff;border:2px solid '+C.bd+';border-radius:14px;padding:20px;margin-top:20px;">';
+  H+='<div style="font-family:Playfair Display,serif;font-size:16px;font-weight:900;color:'+C.p+';margin-bottom:4px;">🧭 Analysis &amp; Direction</div>';
+  H+='<div style="font-size:11px;color:'+C.t5+';margin-bottom:14px;">Auto-generated from the metrics above to help you decide \u2014 not investment advice.</div>';
+
+  // comparability banner
+  var banner,bcol,bbg;
+  if(nClasses>1){ bcol=C.gold; bbg='#fff7ed';
+    banner='\u26a0\ufe0f You\u2019re comparing different fund types ('+Object.keys(classes).join(' vs ')+'). Returns and risk here are <b>not apples-to-apples</b> \u2014 for a fair read, compare funds within the same category. The notes below still describe each fund, but treat cross-type rankings with care.';
+  } else if(capSpread>=2){ bcol=C.gold; bbg='#fff7ed';
+    banner='\u2139\ufe0f These equity funds sit in <b>different market-cap tiers</b> (e.g. Large vs Mid/Small Cap). The more aggressive fund will naturally show higher returns <i>and</i> deeper drawdowns \u2014 that\u2019s a risk-appetite choice, not simply a \u201cbetter fund\u201d.';
+  } else { bcol=C.g; bbg=C.bg;
+    banner='\u2705 These funds are broadly comparable (same or similar category), so the differences below are a fair read.';
+  }
+  H+='<div style="background:'+bbg+';border:1.5px solid '+bcol+';border-radius:10px;padding:11px 14px;font-size:12px;color:'+C.t+';line-height:1.65;margin-bottom:14px;">'+banner+'</div>';
+
+  // inferred categories row
+  H+='<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">';
+  funds.forEach(function(f){
+    H+='<div style="background:'+C.bg+';border:1.5px solid '+C.bd+';border-radius:8px;padding:7px 11px;font-size:11px;color:'+C.t+';"><b style="color:'+C.p+';">'+_cmpShort(f)+'</b> \u00b7 '+f._c.cat+(f._c.src==='metric'?' <span style="color:'+C.t5+';">(inferred)</span>':'')+'</div>';
+  });
+  H+='</div>';
+
+  // verdict chips
+  function chip(lbl,w,fmt){ if(!w)return ''; return '<div style="flex:1;min-width:180px;background:'+C.bg+';border:1.5px solid '+C.bd+';border-radius:10px;padding:12px;"><div style="font-size:10px;font-weight:800;color:'+C.t5+';text-transform:uppercase;letter-spacing:.3px;">'+lbl+'</div><div style="font-size:13px;font-weight:800;color:'+C.p+';margin-top:3px;line-height:1.3;">'+_cmpShort(w.f)+'</div><div style="font-size:11px;color:'+C.t+';margin-top:2px;font-family:monospace;">'+fmt(w.v)+'</div></div>'; }
+  H+='<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;">';
+  H+=chip('Strongest risk-adjusted (Sharpe)', wSharpe, function(v){return 'Sharpe '+v.toFixed(2);});
+  H+=chip('Highest alpha vs Nifty', wAlpha, function(v){return (v>=0?'+':'')+v.toFixed(2)+'% p.a.';});
+  H+=chip('Best downside protection', wDD, function(v){return 'Max drawdown '+v.toFixed(1)+'%';});
+  H+=chip('Most aggressive (beta)', wBeta, function(v){return 'Beta '+v.toFixed(2);});
+  if(wConsist) H+=chip('Most consistent (rolling)', wConsist, function(v){return v.toFixed(0)+'% of windows positive';});
+  H+='</div>';
+
+  // key trade-off
+  if(wSharpe && wDD && wSharpe.f!==wDD.f){
+    H+='<div style="background:#faf9ff;border-left:3px solid '+C.p+';border-radius:8px;padding:11px 14px;font-size:12px;color:'+C.t+';line-height:1.7;margin-bottom:14px;">'
+      +'<b style="color:'+C.p+';">The key trade-off:</b> <b>'+_cmpShort(wSharpe.f)+'</b> delivered the best risk-adjusted return (Sharpe '+wSharpe.v.toFixed(2)+'), but <b>'+_cmpShort(wDD.f)+'</b> protected capital better in falls (max drawdown '+wDD.v.toFixed(1)+'% vs '+(wSharpe.f.risk&&wSharpe.f.risk.maxDD!=null?wSharpe.f.risk.maxDD.toFixed(1)+'%':'\u2014')+'). Stronger long-run efficiency versus a smoother ride \u2014 the right pick depends on how much interim decline you can hold through.'
+      +'</div>';
+  } else if(wSharpe){
+    H+='<div style="background:#faf9ff;border-left:3px solid '+C.p+';border-radius:8px;padding:11px 14px;font-size:12px;color:'+C.t+';line-height:1.7;margin-bottom:14px;"><b style="color:'+C.p+';">Read:</b> <b>'+_cmpShort(wSharpe.f)+'</b> leads on both efficiency and downside here \u2014 a rare combination worth noting.</div>';
+  }
+
+  // suits whom
+  H+='<div style="font-size:12px;font-weight:800;color:'+C.t+';margin-bottom:6px;">Which investor each suits</div>';
+  H+='<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">';
+  funds.forEach(function(f){
+    H+='<div style="font-size:12px;color:'+C.t+';line-height:1.5;"><b style="color:'+C.p+';">'+_cmpShort(f)+'</b> \u2014 '+_suitsWhom(f)+'.</div>';
+  });
+  H+='</div>';
+
+  H+='<div style="font-size:10px;color:'+C.t5+';line-height:1.6;border-top:1px solid '+C.bd+';padding-top:10px;">Category is inferred from the fund name, or from beta &amp; volatility where the name is unclear \u2014 verify against the scheme\u2019s SID. Metrics are computed from historical NAV data. Past performance is not indicative of future results. This is an educational comparison by Ace Financial Services (ARN-110832), not individualised investment advice; consider your goals, horizon and risk profile, and read all scheme documents before investing.</div>';
+  H+='</div>';
+  return H;
+}
+
   function buildRow(lbl, vals, nums, bHigh, bLow) {
     var best=null, valid=[];
     if(nums) nums.forEach(function(v){ if(v!==null&&!isNaN(v)) valid.push(v); });
@@ -734,6 +850,7 @@ function renderTable(funds) {
   html+=buildRow('Min SIP (SEBI)', funds.map(function(f){return f.plan==='Direct'?'₹100':'₹500';}));
   html+=buildRow('Tax Benefit 80C', funds.map(function(f){return f.name.toUpperCase().includes('ELSS')||f.name.toUpperCase().includes('TAX')? '✅ Yes':'❌ No';}));
   html+='</tbody></table>';
+  html += renderCompareAnalysis(funds);
   document.getElementById('cmp-result').innerHTML = html;
   // Show print button after comparison is built
   document.getElementById('print-bar').style.display = 'flex';
