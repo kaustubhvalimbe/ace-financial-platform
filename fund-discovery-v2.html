@@ -1258,6 +1258,67 @@ async function openDetail(code){
   }
 }
 
+
+/* ═══ ACE ROLLING RETURNS + CATEGORY PERCENTILE (Fund Research A-tier) ═══ */
+function aceRolling(data, years){
+  if(!data || data.length < Math.round(years*252)+25) return null;
+  var W=Math.round(years*252), step=21, rets=[];
+  for(var s=0; s+W<data.length; s+=step){
+    var nv=parseFloat(data[s].nav), ov=parseFloat(data[s+W].nav);
+    if(nv>0 && ov>0) rets.push((Math.pow(nv/ov,1/years)-1)*100);
+  }
+  if(rets.length<3) return null;
+  rets.sort(function(a,b){return a-b;});
+  var m=Math.floor(rets.length/2);
+  var median=rets.length%2?rets[m]:(rets[m-1]+rets[m])/2;
+  var pos=rets.filter(function(r){return r>0;}).length;
+  return {median:median,best:rets[rets.length-1],worst:rets[0],pctPositive:pos/rets.length*100,count:rets.length};
+}
+function acePercentile(value, arr){
+  var vals=arr.filter(function(v){return v!=null&&!isNaN(v);});
+  if(value==null||isNaN(value)||vals.length<2) return null;
+  var greater=vals.filter(function(v){return v>value;}).length;
+  var topPct=(greater/vals.length)*100;
+  var q=topPct<25?1:topPct<50?2:topPct<75?3:4;
+  return {topPct:topPct,rank:greater+1,total:vals.length,quartile:q};
+}
+function aceRankInfo(rank,total){
+  if(!total) return null;
+  var topPct=rank/total*100;
+  var q=topPct<=25?1:topPct<=50?2:topPct<=75?3:4;
+  return {topPct:topPct,rank:rank,total:total,quartile:q};
+}
+function aceQBadge(p){
+  if(!p) return '';
+  var col={1:'#5a8a10',2:'#3c3197',3:'#d97706',4:'#dc2626'}[p.quartile];
+  var tp=p.topPct<1?1:Math.round(p.topPct);
+  var lbl=p.rank===1?'#1 in category':'Top '+tp+'%';
+  return '<span style="display:inline-block;background:'+col+';color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;font-family:monospace;">Q'+p.quartile+' · '+lbl+' · '+p.rank+'/'+p.total+'</span>';
+}
+function aceRollHTML(d, pctInfo, metricLbl){
+  var r3=aceRolling(d,3), r5=aceRolling(d,5);
+  if(!r3 && !r5 && !pctInfo) return '';
+  var fmt=function(v){return (v>=0?'+':'')+v.toFixed(1)+'%';};
+  var col=function(v){return v>=0?'#5a8a10':'#dc2626';};
+  function block(lbl, r){
+    if(!r) return '<div style="flex:1;min-width:150px;background:#f5fce8;border:1.5px solid #d4eda0;border-radius:10px;padding:12px;"><div style="font-size:11px;font-weight:800;color:#6b7280;">'+lbl+'</div><div style="font-size:12px;color:#9ca3af;margin-top:6px;">Not enough history</div></div>';
+    return '<div style="flex:1;min-width:150px;background:#f5fce8;border:1.5px solid #d4eda0;border-radius:10px;padding:12px;">'
+      +'<div style="font-size:11px;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.3px;">'+lbl+' <span style="color:#9ca3af;font-weight:600;">('+r.count+' windows)</span></div>'
+      +'<div style="font-size:20px;font-weight:900;color:'+col(r.median)+';font-family:monospace;margin-top:4px;">'+fmt(r.median)+'<span style="font-size:11px;color:#6b7280;font-weight:700;"> median</span></div>'
+      +'<div style="font-size:11px;color:#6b7280;margin-top:4px;font-family:monospace;">Range '+fmt(r.worst)+' → '+fmt(r.best)+'</div>'
+      +'<div style="font-size:11px;color:#5a8a10;font-weight:700;margin-top:2px;">'+r.pctPositive.toFixed(0)+'% of windows positive</div>'
+      +'</div>';
+  }
+  var h='<div style="margin-top:16px;">'
+    +'<div style="font-size:13px;font-weight:800;color:#3c3197;margin-bottom:4px;">📊 Rolling Returns — every historical window</div>'
+    +'<div style="font-size:11px;color:#6b7280;margin-bottom:10px;line-height:1.5;">The return an investor would have earned entering at any point in history — shows <b>consistency</b>, not one lucky start date.</div>'
+    +'<div style="display:flex;gap:10px;flex-wrap:wrap;">'+block('3-Year Rolling',r3)+block('5-Year Rolling',r5)+'</div>';
+  if(pctInfo){
+    h+='<div style="margin-top:12px;font-size:12px;color:#374151;font-weight:600;">Category standing'+(metricLbl?' · '+metricLbl:'')+': &nbsp;'+aceQBadge(pctInfo)+'</div>';
+  }
+  return h+'</div>';
+}
+
 function renderDetailPanel(fund){
   const d=CACHE[fund.code];
   const nav=fund.nav;
@@ -1335,6 +1396,17 @@ function renderDetailPanel(fund){
     <div class="rk-desc">${desc}</div>
   </div>`).join('');
 
+  // ── ROLLING RETURNS + CATEGORY PERCENTILE ──
+  (function(){
+    var host=document.getElementById('dp-risk'); if(!host) return;
+    var box=document.getElementById('dp-rolling');
+    if(!box){box=document.createElement('div');box.id='dp-rolling';host.parentNode.insertBefore(box,host.nextSibling);}
+    var peers=S.all.filter(function(pp){return pp.cat===fund.cat && (pp.subcat||'')===(fund.subcat||'') && pp.r3y!=null;});
+    var vals=peers.map(function(pp){return pp.r3y;});
+    var pit=(fund.r3y!=null)?acePercentile(fund.r3y, vals):null;
+    var lbl=pit?('3Y CAGR vs '+vals.length+' peers loaded'):'';
+    box.innerHTML=aceRollHTML(d, pit, lbl);
+  })();
   const riskAssess=getRiskAssess(fund,ratios);
   document.getElementById('dp-risk-assess').innerHTML=`<div style="background:${riskAssess.bg};border-radius:10px;padding:14px;">
     <div style="font-size:14px;font-weight:800;color:${riskAssess.color};margin-bottom:6px">${riskAssess.label}</div>
