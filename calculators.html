@@ -108,6 +108,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 /* YEAR TABLE */
 .ytw{margin-top:18px;max-height:280px;overflow-y:auto;border-radius:10px;border:2px solid var(--g4);}
 .ytbl{width:100%;border-collapse:collapse;font-size:12px;}
+#c-overview .ytbl th,#c-overview .ytbl td{border:1px solid var(--g4);}
+#c-overview .ytbl th{background:var(--p4);color:var(--p2);border-bottom:2px solid var(--p3);}
+#c-overview .ytbl td{padding:9px 12px;}
+#c-overview .ytbl th:not(:first-child),#c-overview .ytbl td:not(:first-child){text-align:right;}
 .ytbl th{font-size:10px;color:var(--t5);font-weight:800;text-transform:uppercase;padding:8px 10px;text-align:left;border-bottom:2px solid var(--g4);position:sticky;top:0;background:var(--bg3);}
 .ytbl td{padding:7px 10px;border-bottom:1px solid var(--g5);color:var(--t4);}
 .ytbl tr:hover td{background:var(--g5);}
@@ -395,7 +399,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div class="cres-card">
         <div style="font-family:var(--fh);font-size:15px;font-weight:900;color:var(--p2);margin-bottom:4px;">📈 What your SIP could become</div>
         <div style="font-size:11px;color:var(--t4);margin-bottom:12px;">Estimated value of your monthly SIP at each milestone (monthly compounding).</div>
-        <div class="ytw" style="max-height:none;"><table class="ytbl"><thead><tr><th>Horizon</th><th>Invested</th><th>Est. Value</th><th>Wealth Gain</th><th>Growth</th></tr></thead><tbody id="ov-body"></tbody></table></div>
+        <div class="ytw" style="max-height:none;"><table class="ytbl"><thead><tr><th>Horizon</th><th>Invested</th><th>Est. Value</th><th>Wealth Gain</th></tr></thead><tbody id="ov-body"></tbody></table></div>
         <div style="background:var(--g5);border:1.5px solid var(--g4);border-radius:9px;padding:10px 13px;margin-top:12px;font-size:11px;color:var(--t4);line-height:1.6;">💡 Estimates use a constant annual return compounded monthly. Actual mutual fund returns vary year to year and are not guaranteed — investments are subject to market risk. Want a year-by-year breakup, step-up SIP or a custom tenure? Open the <b>SIP</b> tab.</div>
       </div>
     </div>
@@ -863,13 +867,12 @@ function cOverview(){
   }
   var rows='';
   data.forEach(function(x){
-    var val=ovFV(m,r,x.n), inv=m*x.n, gain=val-inv, mult=inv>0?val/inv:0;
+    var val=ovFV(m,r,x.n), inv=m*x.n, gain=val-inv;
     rows+='<tr'+(x.custom?' style="background:var(--p4)"':'')+'>'+
       '<td style="font-weight:800;'+(x.custom?'color:var(--p2)':'')+'">'+x.label+'</td>'+
       '<td class="m">'+fmt(inv)+'</td>'+
       '<td class="m" style="font-weight:800;color:var(--g1)">'+fmt(val)+'</td>'+
-      '<td class="g">+'+fmt(gain)+'</td>'+
-      '<td style="font-family:var(--fm);font-weight:700;color:var(--p3)">'+mult.toFixed(1)+'×</td></tr>';
+      '<td class="g">+'+fmt(gain)+'</td></tr>';
   });
   document.getElementById('ov-body').innerHTML=rows;
 }
