@@ -306,7 +306,7 @@ function anlShowVerification(){
   var typeLabels = {
     'cams':'CAMS','kfin':'KFintech','camscas':'CAMS CAS','kfincas':'KFin CAS',
     'cdsl_combined':'CDSL Combined','halfyearly':'Half-Yearly','mfcentral':'MF Central',
-    'mfcentral_summary':'MF Central Summary','nsdl':'NSDL'
+    'mfcentral_summary':'MF Central Summary','nsdl':'NSDL','ifaplanet':'IFA Planet SOA'
   };
   document.getElementById('anl-cas-type-badge').textContent = typeLabels[ANL.casType]||ANL.casType||'Unknown';
   anlRenderFundRows();
@@ -488,10 +488,13 @@ async function anlAssess(){
     else if(ANL.casType === 'mfcentral') parsed = anlParseMFCentral(fullText);
     else if(ANL.casType === 'cams') parsed = anlParseCAMS(fullText);
     else if(ANL.casType === 'kfin') parsed = anlParseKFin(fullText);
+    else if(ANL.casType === 'ifaplanet') parsed = anlParseIFAPlanet(fullText);
     else parsed = anlParseNSDL(fullText);
 
     ANL.investor = parsed.investor;
     ANL.funds    = parsed.funds;
+    ANL.txns     = parsed._txns || [];
+    ANL.soaMeta  = parsed._meta || null;
 
     // Check quality
     var flags = ANL.funds.filter(function(f){
@@ -539,8 +542,54 @@ function anlLoadScript(src){
 }
 
 // ── CAS TYPE DETECTION ─────────────────────────────────────
+
+// ── PARSER: IFA Planet / Wealth-Elite detailed SOA (transaction ledger) ──
+function anlSoaDate(s){
+  var mo={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+  var m=String(s).match(/(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})/);
+  if(!m) return null; var mm=mo[m[2].toLowerCase()]; if(mm==null) return null;
+  return new Date(parseInt(m[3],10), mm, parseInt(m[1],10));
+}
+function anlParseIFAPlanet(text){
+  var inv = {name:'', pan:'', date:''};
+  var nm = text.match(/([A-Z][A-Za-z]+(?:\s+[A-Z][A-Za-z]+){1,4})\s*\[([A-Z]{5}\d{4}[A-Z])\]/);
+  if(nm){ inv.name = nm[1].trim(); inv.pan = nm[2]; }
+  var dm = text.match(/As On\s+(\d{1,2}\s+[A-Za-z]{3}\s+\d{4})/i);
+  var stmtDate = dm ? anlSoaDate(dm[1]) : null;
+  if(dm) inv.date = dm[1];
+  if(!stmtDate) stmtDate = new Date();
+
+  // Fund headers (name + folio) with positions
+  var headers = [], hre = /([A-Za-z][A-Za-z0-9 &\.\-]+?)\s*\(Folio Number:\s*([\d\/]+)\)/g, hm;
+  while((hm = hre.exec(text)) !== null){
+    headers.push({ name: hm[1].replace(/\s+/g,' ').replace(/ - -/g,' -').trim(), folio: hm[2], pos: hm.index });
+  }
+  // Fund values from Total rows; associate to nearest preceding header
+  var funds = [], tre = /Total\s+([\d,]+\.\d{2})\s+[\d,\.]+\s+[\d,\.]+\s+([\d,]+\.\d{2})/g, tm;
+  while((tm = tre.exec(text)) !== null){
+    var invAmt = parseFloat(tm[1].replace(/,/g,'')), val = parseFloat(tm[2].replace(/,/g,''));
+    if(!(val > 0)) continue;
+    var nmName='', nmFolio='';
+    for(var i=0;i<headers.length;i++){ if(headers[i].pos < tm.index){ nmName=headers[i].name; nmFolio=headers[i].folio; } else break; }
+    funds.push({ name:nmName, folio:nmFolio, units:0, nav:0, value:val, invested:invAmt, gain:val-invAmt, flagged:!nmName });
+  }
+  // Dated transactions — dedup by date+amount+units (handles page-repeated rows)
+  var txns = [], seen = {}, rre = /(\d{1,2}\s+[A-Za-z]{3}\s+\d{4})\s+([A-Za-z][A-Za-z\s\-]*?)\s+([\d,]+\.\d{2})\s+([\d,]+\.\d{4})\b/g, rm;
+  while((rm = rre.exec(text)) !== null){
+    var key = rm[1]+'|'+rm[3]+'|'+rm[4];
+    if(seen[key]) continue; seen[key]=1;
+    var amt = parseFloat(rm[3].replace(/,/g,''));
+    var isOut = !/redemption|switch[\s-]?out|sell/i.test(rm[2]);
+    var d = anlSoaDate(rm[1]);
+    if(d && amt>0) txns.push({ date:d, amt: isOut ? -amt : amt });
+  }
+  return { investor: inv, funds: funds, _txns: txns, _meta: { stmtDate: stmtDate } };
+}
+
 function anlDetectType(text){
   var t = text.toUpperCase();
+  // IFA Planet / Wealth-Elite detailed SOA (has a dated transaction ledger)
+  if(t.includes('TRXN DATE') && t.includes('TRXN TYPE') && t.includes('BAL UNITS')) return 'ifaplanet';
   // CAMS Consolidated Account Summary (email-based)
   if(t.includes('CAMSCASWS'))
     return 'camscas';
@@ -1098,7 +1147,7 @@ function anlShowVerification(){
 
   // Set badge
   var badge = document.getElementById('anl-cas-type-badge');
-  var typeLabels = {mfcentral_summary:'MFCentral Summary',camscas:'CAMS CAS',kfincas:'KFin CAS',cdsl_combined:'CDSL Combined CAS',halfyearly:'Half-Yearly CAS',mfcentral:'MFCentral',cams:'CAMS',kfin:'KFintech',nsdl:'NSDL/CDSL'};
+  var typeLabels = {mfcentral_summary:'MFCentral Summary',camscas:'CAMS CAS',kfincas:'KFin CAS',cdsl_combined:'CDSL Combined CAS',halfyearly:'Half-Yearly CAS',mfcentral:'MFCentral',cams:'CAMS',kfin:'KFintech',nsdl:'NSDL/CDSL',ifaplanet:'IFA Planet SOA'};
   badge.textContent = typeLabels[ANL.casType] || ANL.casType.toUpperCase();
 
   // Set investor details
@@ -1568,6 +1617,37 @@ function xrayReset(){
 }
 
 // ── XRAY GENERATE ─────────────────────────────────────────────
+
+// ── Portfolio XIRR card (from SOA transaction ledger; honest note otherwise) ──
+function anlBuildXIRRCard(funds, totalValue, totalInvested, gainPct){
+  function fmtI(n){ return Math.round(n||0).toLocaleString('en-IN'); }
+  var txns = (ANL.txns || []);
+  if(txns.length < 2){
+    return '<div class="card" style="background:#f5fce8;border:1.5px solid #d4eda0;"><div style="font-size:12px;color:#4b5563;line-height:1.6;">\u2139\ufe0f <b>XIRR not available for this statement.</b> XIRR \u2014 the true annualised, money-weighted return \u2014 needs a statement with <b>dated transactions</b> (e.g. a detailed SOA). A holdings-only CAS shows the absolute return ('+gainPct.toFixed(1)+'%) only.</div></div>';
+  }
+  var buy = 0; txns.forEach(function(t){ if(t.amt < 0) buy += -t.amt; });
+  if(!(totalInvested > 0 && Math.abs(buy - totalInvested) <= 0.05*totalInvested)){
+    return '<div class="card" style="background:#fff7ed;border:1.5px solid #fbbf24;"><div style="font-size:12px;color:#92400e;line-height:1.6;">\u26a0\ufe0f <b>XIRR withheld.</b> The reconstructed transactions (\u20b9'+fmtI(buy)+') did not reconcile with the invested amount (\u20b9'+fmtI(totalInvested)+'), so the annualised XIRR is not shown \u2014 to avoid a misleading figure. Absolute return: '+gainPct.toFixed(1)+'%.</div></div>';
+  }
+  var sorted = txns.slice().sort(function(a,b){ return a.date - b.date; });
+  var cfs = [], dates = [];
+  sorted.forEach(function(t){ cfs.push(t.amt); dates.push(t.date); });
+  cfs.push(totalValue); dates.push((ANL.soaMeta && ANL.soaMeta.stmtDate) ? ANL.soaMeta.stmtDate : new Date());
+  var r = anlXirr(cfs, dates);
+  if(r === null || r <= -0.95 || r >= 3){
+    return '<div class="card" style="background:#f5fce8;border:1.5px solid #d4eda0;"><div style="font-size:12px;color:#4b5563;">\u2139\ufe0f XIRR could not be computed for this statement. Absolute return: '+gainPct.toFixed(1)+'%.</div></div>';
+  }
+  var xp = r*100, col = xp>=0 ? '#5a8a10' : '#dc2626';
+  return '<div class="card" style="background:linear-gradient(135deg,#f0effe,#f5fce8);border:1.5px solid #d4eda0;">'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">'
+    + '<div style="flex:1;min-width:220px;"><div style="font-size:12px;font-weight:800;color:#3c3197;text-transform:uppercase;letter-spacing:.4px;">Portfolio XIRR \u00b7 Annualised Return</div>'
+    + '<div style="font-size:12px;color:#6b7280;margin-top:4px;line-height:1.5;">The true money-weighted return \u2014 it accounts for <b>when</b> each SIP instalment was made, unlike the '+gainPct.toFixed(1)+'% absolute figure. This is the number to compare against FDs and benchmarks.</div></div>'
+    + '<div style="font-size:38px;font-weight:900;color:'+col+';font-family:var(--fm,monospace);">'+(xp>=0?'+':'')+xp.toFixed(2)+'%</div>'
+    + '</div>'
+    + '<div style="font-size:10px;color:#9ca3af;margin-top:10px;line-height:1.6;">Computed from '+txns.length+' dated transactions, valued as on the statement date, and reconciled against total invested (\u20b9'+fmtI(totalInvested)+').</div>'
+    + '</div>';
+}
+
 function xrayGenerate(){
   if (!HD) {                      // stock data still downloading
     HD_READY.then(function(){
@@ -1688,6 +1768,8 @@ function xrayGenerate(){
     + '<div class="metric"><div class="val">'+stocks.length+'</div><div class="lbl">Unique Stocks</div></div>'
     + '<div class="metric"><div class="val">'+sectors.length+'</div><div class="lbl">Sectors</div></div>'
     + '</div></div>';
+
+  html += anlBuildXIRRCard(funds, totalValue, totalInvested, gainPct);
 
   // Fund-by-fund detail — each holding with invested, current value, gain/loss, return
   html += '<div class="card"><div class="report-hdr">Your Funds — '+funds.length+' Holding'+(funds.length!==1?'s':'')+'</div>'
