@@ -591,7 +591,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
           <div class="rc big"><div class="rc-lbl">Growth of Your New SIP (Max guideline)</div><div class="rc-val gr big" id="rr-sipfv">₹0</div></div>
           <div class="rc hl" id="rr-esip-row"><div class="rc-lbl">Growth of Your Existing SIPs</div><div class="rc-val pu" id="rr-esipfv">₹0</div></div>
           <div class="rc"><div class="rc-lbl">Total Corpus at Retirement</div><div class="rc-val go" id="rr-total">₹0</div></div>
-          <div class="rc"><div class="rc-lbl">Corpus in Today's Rupees (Real Value)</div><div class="rc-val" id="rr-real">₹0</div></div>
+          
           <div class="rc"><div class="rc-lbl">Monthly Withdrawal at Retirement (Total)</div><div class="rc-val" id="rr-wd">₹0</div></div>
           <div class="rc big"><div class="rc-lbl">Your Corpus Will Last</div><div class="rc-val big" id="rr-last">—</div></div>
         </div>
@@ -965,11 +965,10 @@ function cRet(){
   let existFV=sfv(esip,ret,runY);
   if(y>runY) existFV*=Math.pow(1+ret,y-runY);
   const total=newSipFV+existFV;
-  const real=total/Math.pow(1+infl,y);
   // withdrawal at retirement = (post-ret monthly expense + insurance/12), inflated to retirement
   const wdToday=pexp+pins/12;
   let wd=wdToday*Math.pow(1+infl,y);
-  sv('rr-sipfv',fmt(newSipFV));sv('rr-esipfv',fmt(existFV));sv('rr-total',fmt(total));sv('rr-real',fmt(real));sv('rr-wd',fmt(wd)+'/mo');
+  sv('rr-sipfv',fmt(newSipFV));sv('rr-esipfv',fmt(existFV));sv('rr-total',fmt(total));sv('rr-wd',fmt(wd)+'/mo');
   const er=document.getElementById('rr-esip-row'); if(er) er.style.display = esip>0 ? '' : 'none';
   // simulate depletion: corpus grows at pret monthly, withdrawal escalates yearly with inflation
   let corpus=total, mret=pret/12, months=0, cap=60*12, wdm=wd;
