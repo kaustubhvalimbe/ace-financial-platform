@@ -466,6 +466,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         <h2 class="calc-ttl">Lumpsum <span>Calculator</span></h2>
         <div class="calc-dsc">Calculate returns on a one-time lumpsum investment. Compare growth across conservative, moderate, and aggressive return scenarios.</div>
         <div class="ig"><div class="ig-lbl"><span>Investment Amount (₹)</span><span class="ig-val" id="lv-a">₹1,00,000</span></div><input type="number" id="li-a" min="100" max="100000000" step="100" value="100000" placeholder="e.g. 100000" oninput="cLS()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cLS()"><div class="ig-range"><span>₹1K</span><span>₹1Cr</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Retirement Expense (% of today's)</span><span class="ig-val" id="rv-repl">70%</span></div><input type="number" id="ri-repl" min="30" max="100" step="5" value="70" placeholder="e.g. 70" oninput="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cRet()"><div class="ig-range"><span>30% (frugal)</span><span>100% (same as today)</span></div></div>
         <div class="ig"><div class="ig-lbl"><span>Expected Annual Return (%)</span><span class="ig-val" id="lv-r">14%</span></div><input type="number" id="li-r" min="1" max="40" step="0.5" value="14" placeholder="e.g. 14" oninput="cLS()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cLS()"><div class="ig-range"><span>1%</span><span>30%</span></div></div>
         <div class="ig"><div class="ig-lbl"><span>Investment Period (Years)</span><span class="ig-val" id="lv-y">10 Yrs</span></div><input type="number" id="li-y" min="1" max="50" step="1" value="10" placeholder="e.g. 10" oninput="cLS()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cLS()"><div class="ig-range"><span>1 Yr</span><span>40 Yrs</span></div></div>
       </div>
@@ -499,7 +500,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       </div>
       <div class="cres-card">
         <div class="rcards">
-          <div class="rc big"><div class="rc-lbl">Required Monthly SIP</div><div class="rc-val gr big" id="gr-sip">₹0</div></div>
+          <div class="rc big"><div class="rc-lbl">Recommended Monthly SIP</div><div class="rc-val gr big" id="gr-sip">₹0</div></div>
           <div class="rc hl"><div class="rc-lbl">Required Lumpsum Today</div><div class="rc-val pu" id="gr-lump">₹0</div></div>
           <div class="rc"><div class="rc-lbl">Target Amount</div><div class="rc-val go" id="gr-tgt">₹0</div></div>
           <div class="rc"><div class="rc-lbl">Savings Gap</div><div class="rc-val" id="gr-gap">₹0</div></div>
@@ -580,7 +581,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         <div class="rcards">
           <div class="rc big"><div class="rc-lbl">Required Monthly SIP</div><div class="rc-val gr big" id="rr-sip">₹0</div></div>
           <div class="rc hl"><div class="rc-lbl">Monthly Surplus Available Today</div><div class="rc-val pu" id="rr-sur">₹0</div></div>
-          <div class="rc"><div class="rc-lbl">Your ₹Expense Today Will Cost (Future)</div><div class="rc-val" id="rr-fexp">₹0</div></div>
+          <div class="rc"><div class="rc-lbl">Your Retirement Expense (Future)</div><div class="rc-val" id="rr-fexp">₹0</div></div>
           <div class="rc"><div class="rc-lbl">Retirement Corpus Needed</div><div class="rc-val go" id="rr-corp">₹0</div></div>
           <div class="rc"><div class="rc-lbl" id="rr-gap-lbl">Extra Surplus After SIP</div><div class="rc-val gr" id="rr-gap">₹0</div></div>
           <div class="rc"><div class="rc-lbl">If Entire Surplus Invested (Future Value)</div><div class="rc-val gr" id="rr-fullfv">₹0</div></div>
@@ -946,43 +947,41 @@ function cInf(){
 
 function cRet(){
   if(typeof gtag==='function'){gtag('event','calculator_use',{'event_category':'engagement','event_label':'retirement_readiness_calculator'});}
-  const inc=+document.getElementById('ri-inc').value,exp=+document.getElementById('ri-exp').value,y=+document.getElementById('ri-y').value,infl=+document.getElementById('ri-infl').value/100,ret=+document.getElementById('ri-ret').value/100,swr=+document.getElementById('ri-swr').value/100;
-  sv('rv-inc',fmt(inc));sv('rv-exp',fmt(exp));sv('rv-y',y+' Yrs');sv('rv-infl',(infl*100).toFixed(1)+'%');sv('rv-ret',(ret*100).toFixed(1)+'%');sv('rv-swr',(swr*100).toFixed(1)+'%');
+  const inc=+document.getElementById('ri-inc').value,exp=+document.getElementById('ri-exp').value,repl=+document.getElementById('ri-repl').value/100,y=+document.getElementById('ri-y').value,infl=+document.getElementById('ri-infl').value/100,ret=+document.getElementById('ri-ret').value/100,swr=+document.getElementById('ri-swr').value/100;
+  sv('rv-inc',fmt(inc));sv('rv-exp',fmt(exp));sv('rv-repl',(repl*100).toFixed(0)+'%');sv('rv-y',y+' Yrs');sv('rv-infl',(infl*100).toFixed(1)+'%');sv('rv-ret',(ret*100).toFixed(1)+'%');sv('rv-swr',(swr*100).toFixed(1)+'%');
   const surplus=Math.max(0,inc-exp);
-  const futureExp=exp*Math.pow(1+infl,y);
-  const corpus=(futureExp*12)/swr;
-  const reqSip=sfv(1,ret,y)>0?corpus/sfv(1,ret,y):0;
-  const gap=surplus-reqSip;
+  const retExpToday=exp*repl;                        // retirement expense in today's money (won't stay at 100%)
+  const futureExp=retExpToday*Math.pow(1+infl,y);    // inflated to retirement
+  const corpus=(futureExp*12)/swr;                   // corpus needed
+  const factor=sfv(1,ret,y);
+  const reqSip=factor>0?corpus/factor:0;             // SIP needed to FULLY reach the corpus
+  const cap=0.5*surplus;                             // practical guideline: up to half the surplus
+  const recSip=Math.max(0,Math.min(reqSip,cap));     // RECOMMENDED SIP
+  const recCorpus=sfv(recSip,ret,y);                 // corpus the recommended SIP actually builds
+  const coverPct=corpus>0?Math.min(100,recCorpus/corpus*100):0;
+  const reserved=Math.max(0,surplus-recSip);         // kept for emergency & other goals
   const fullFV=sfv(surplus,ret,y);
   const fullReal=fullFV/Math.pow(1+infl,y);
-  sv('rr-sip',fmt(reqSip));sv('rr-sur',fmt(surplus));sv('rr-fexp',fmt(futureExp)+'/mo');sv('rr-corp',fmt(corpus));sv('rr-fullfv',fmt(fullFV));sv('rr-fullreal',fmt(fullReal));
+  sv('rr-sip',fmt(recSip));sv('rr-sur',fmt(surplus));sv('rr-fexp',fmt(futureExp)+'/mo');sv('rr-corp',fmt(corpus));sv('rr-fullfv',fmt(fullFV));sv('rr-fullreal',fmt(fullReal));
+
   const gapEl=document.getElementById('rr-gap'),gapLbl=document.getElementById('rr-gap-lbl');
   const caveatEl=document.getElementById('rr-caveat');
-  const sipShare=surplus>0?(reqSip/surplus):(reqSip>0?1:0); // fraction of surplus the required SIP consumes
-  const defaultCaveat="This is a mathematical target based on your inputs, not a recommendation to commit this much of your surplus. A sound plan typically also keeps an emergency fund and balances multiple goals — insurance, children's education, medical costs — not just retirement.";
-  if(gap<0){
-    gapLbl.textContent='Shortfall — Increase Income or Cut Expenses';
-    gapEl.className='rc-val re';
-    sv('rr-gap',fmt(Math.abs(gap)));
-    caveatEl.innerHTML='<strong>Your surplus falls short of the required SIP.</strong> '+defaultCaveat;
-  } else if(sipShare>=0.9){
-    gapLbl.textContent='Very Tight — Almost No Margin for Other Goals';
-    gapEl.className='rc-val re';
-    sv('rr-gap',fmt(gap));
-    caveatEl.innerHTML='<strong>Caution: this plan uses '+(sipShare*100).toFixed(0)+'% of your monthly surplus.</strong> '+defaultCaveat;
-  } else if(sipShare>=0.75){
-    gapLbl.textContent='Tight Margin — Limited Room for Other Goals';
-    gapEl.className='rc-val go';
-    sv('rr-gap',fmt(gap));
-    caveatEl.innerHTML='<strong>Note: this plan uses '+(sipShare*100).toFixed(0)+'% of your monthly surplus.</strong> '+defaultCaveat;
+  const rule="As a practical guideline we cap the recommended SIP at about 50% of your surplus \u2014 the rest is prudently kept for an emergency fund and other goals (insurance, children's education, medical). It is a sensible norm, not a fixed rule.";
+  if(surplus<=0){
+    gapLbl.textContent='No Surplus Available';
+    gapEl.className='rc-val re'; sv('rr-gap',fmt(0));
+    caveatEl.innerHTML='<strong>Your expenses meet or exceed your income, so there is no monthly surplus to invest.</strong> The first step is to create a surplus before planning a retirement SIP.';
+  } else if(reqSip<=cap){
+    gapLbl.textContent='Required SIP for Full Target';
+    gapEl.className='rc-val gr'; sv('rr-gap',fmt(reqSip));
+    caveatEl.innerHTML='<strong>You are comfortably on track.</strong> About '+fmt(recSip)+'/month reaches your retirement target, using only '+(recSip/surplus*100).toFixed(0)+'% of your '+fmt(surplus)+' surplus and leaving ample room for other goals. '+rule;
   } else {
-    gapLbl.textContent='Extra Surplus After Required SIP';
-    gapEl.className='rc-val gr';
-    sv('rr-gap',fmt(gap));
-    caveatEl.innerHTML=defaultCaveat;
+    gapLbl.textContent='Required SIP for Full Target';
+    gapEl.className='rc-val re'; sv('rr-gap',fmt(reqSip));
+    caveatEl.innerHTML='<strong>Recommended SIP is '+fmt(recSip)+' \u2014 capped at 50% of your '+fmt(surplus)+' surplus.</strong> At this level you would build about '+fmt(recCorpus)+' ('+coverPct.toFixed(0)+'% of the '+fmt(corpus)+' target). The full target would need '+fmt(reqSip)+'/month, which is more than half your surplus and not practical to commit. To close the gap, consider a longer timeline, a higher income, or trimming future expenses. '+rule;
   }
-  const sipPct=surplus>0?Math.min(100,(reqSip/surplus*100)):0,freePct=100-sipPct;
-  document.getElementById('r-alloc').innerHTML=`<div class="br"><div class="bl">Required SIP</div><div class="pbar"><div class="bf" style="background:var(--p2);width:${sipPct.toFixed(0)}%"></div></div><div class="bv">${fmt(reqSip)}</div></div><div class="br"><div class="bl">Free Surplus</div><div class="pbar"><div class="bf" style="background:var(--g2);width:${freePct.toFixed(0)}%"></div></div><div class="bv">${fmt(Math.max(0,surplus-reqSip))}</div></div>`;
+  const sipPct=surplus>0?Math.min(100,(recSip/surplus*100)):0,resPct=100-sipPct;
+  document.getElementById('r-alloc').innerHTML=`<div class="br"><div class="bl">Recommended SIP</div><div class="pbar"><div class="bf" style="background:var(--p2);width:${sipPct.toFixed(0)}%"></div></div><div class="bv">${fmt(recSip)}</div></div><div class="br"><div class="bl">Reserved (emergency &amp; other goals)</div><div class="pbar"><div class="bf" style="background:var(--g2);width:${resPct.toFixed(0)}%"></div></div><div class="bv">${fmt(reserved)}</div></div>`;
 }
 
 function cSIPSWP(){
