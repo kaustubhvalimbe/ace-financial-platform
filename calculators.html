@@ -568,23 +568,32 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   <div class="cpnl" id="c-ret">
     <div class="clay">
       <div class="cinp-card">
-        <h2 class="calc-ttl">Retirement <span>Readiness</span></h2>
-        <div class="calc-dsc">See what your chosen monthly SIP (plus any corpus you already hold) can grow into by retirement \u2014 in both future value and today's rupees. This is a projection of the investment you enter here; only you can judge overall sufficiency, since your other investments and goals aren't captured.</div>
-        <div class="ig"><div class="ig-lbl"><span>Your Monthly SIP (₹)</span><span class="ig-val" id="rv-sip">25000</span></div><input type="number" id="ri-sip" min="1000" max="10000000" step="1000" value="25000" oninput="cRet()" onchange="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>₹1K</span><span>₹10L</span></div></div>
-        <div class="ig"><div class="ig-lbl"><span>Existing Corpus / Investments (₹)</span><span class="ig-val" id="rv-corp">0</span></div><input type="number" id="ri-corp" min="0" max="1000000000" step="50000" value="0" oninput="cRet()" onchange="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>₹0</span><span>₹10Cr</span></div></div>
-        <div class="ig"><div class="ig-lbl"><span>Years to Retirement</span><span class="ig-val" id="rv-y">25</span></div><input type="number" id="ri-y" min="1" max="50" step="1" value="25" oninput="cRet()" onchange="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>1 Yr</span><span>50 Yrs</span></div></div>
+        <h2 class="calc-ttl">Wealth <span>Assessment</span></h2>
+        <div class="calc-dsc">A fuller picture: your income, commitments and existing investments — projected to retirement, then tested against your expected post-retirement withdrawals. It shows how long your money could last. This models only what you enter here; your complete readiness may include other assets and goals.</div>
+        <div class="ig"><div class="ig-lbl"><span>Current Monthly Earning (₹)</span><span class="ig-val" id="rv-inc">1000000</span></div><input type="number" id="ri-inc" min="10000" max="10000000" step="1000" value="1000000" oninput="cRet()" onchange="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>₹10K</span><span>₹1Cr</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Current EMIs (₹/month)</span><span class="ig-val" id="rv-emi">0</span></div><input type="number" id="ri-emi" min="0" max="5000000" step="1000" value="0" oninput="cRet()" onchange="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>₹0</span><span>₹50L</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Existing SIPs (₹/month)</span><span class="ig-val" id="rv-esip">0</span></div><input type="number" id="ri-esip" min="0" max="5000000" step="1000" value="0" oninput="cRet()" onchange="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>₹0</span><span>₹50L</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Existing SIP tenure remaining (yrs)</span><span class="ig-val" id="rv-esipy">0</span></div><input type="number" id="ri-esipy" min="0" max="40" step="1" value="0" oninput="cRet()" onchange="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>0 Yr</span><span>40 Yrs</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Health Insurance premium (₹/year)</span><span class="ig-val" id="rv-ins">0</span></div><input type="number" id="ri-ins" min="0" max="2000000" step="1000" value="0" oninput="cRet()" onchange="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>₹0</span><span>₹20L</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Household Expenses (₹/month)</span><span class="ig-val" id="rv-hh">600000</span></div><input type="number" id="ri-hh" min="1000" max="10000000" step="1000" value="600000" oninput="cRet()" onchange="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>₹1K</span><span>₹1Cr</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Total Monthly Expenses (auto)</span><span class="ig-val" id="rv-texpb">₹0</span></div><div id="rv-texp" style="width:100%;padding:9px 12px;border:1.5px dashed #c9c4e8;border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:800;color:#3c3197;background:#f2f1fb;">₹0</div></div>
+        <div class="ig"><div class="ig-lbl"><span>Monthly Saved (auto = Earning − Expenses)</span><span class="ig-val" id="rv-savedb">₹0</span></div><div id="rv-saved" style="width:100%;padding:9px 12px;border:1.5px dashed #c9c4e8;border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:800;color:#3c3197;background:#f2f1fb;">₹0</div></div>
+        <div class="ig"><div class="ig-lbl"><span>Years to Retirement</span><span class="ig-val" id="rv-y">10</span></div><input type="number" id="ri-y" min="1" max="50" step="1" value="10" oninput="cRet()" onchange="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>1 Yr</span><span>50 Yrs</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Max SIP guideline (auto = 50% of Saved)</span><span class="ig-val" id="rv-maxsipb">₹0</span></div><div id="rv-maxsip" style="width:100%;padding:9px 12px;border:1.5px dashed #c9c4e8;border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:800;color:#3c3197;background:#f2f1fb;">₹0</div></div>
         <div class="ig"><div class="ig-lbl"><span>Expected Return / CAGR (%)</span><span class="ig-val" id="rv-ret">12</span></div><input type="number" id="ri-ret" min="1" max="30" step="0.5" value="12" oninput="cRet()" onchange="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>1%</span><span>30%</span></div></div>
-        <div class="ig"><div class="ig-lbl"><span>Inflation Rate (%)</span><span class="ig-val" id="rv-infl">6</span></div><input type="number" id="ri-infl" min="1" max="15" step="0.5" value="6" oninput="cRet()" onchange="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>1%</span><span>15%</span></div></div>
-        <div class="ig"><div class="ig-lbl"><span>Current Monthly Expenses (₹)</span><span class="ig-val" id="rv-exp">40000</span></div><input type="number" id="ri-exp" min="1000" max="10000000" step="1000" value="40000" oninput="cRet()" onchange="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>₹1K</span><span>₹1Cr</span></div></div>
-        <div class="ig"><div class="ig-lbl"><span>Expenses After Retirement (% of current)</span><span class="ig-val" id="rv-repl">70</span></div><input type="number" id="ri-repl" min="30" max="100" step="5" value="70" oninput="cRet()" onchange="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>30% (frugal)</span><span>100% (same)</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Inflation Rate (%)</span><span class="ig-val" id="rv-infl">8</span></div><input type="number" id="ri-infl" min="1" max="15" step="0.5" value="8" oninput="cRet()" onchange="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>1%</span><span>15%</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Post-Retirement Return (%)</span><span class="ig-val" id="rv-pret">8</span></div><input type="number" id="ri-pret" min="1" max="20" step="0.5" value="8" oninput="cRet()" onchange="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>1%</span><span>20%</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Post-Retirement Monthly Expenses (today's ₹)</span><span class="ig-val" id="rv-pexp">300000</span></div><input type="number" id="ri-pexp" min="1000" max="10000000" step="1000" value="300000" oninput="cRet()" onchange="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>₹1K</span><span>₹1Cr</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Post-Retirement Insurance (₹/year)</span><span class="ig-val" id="rv-pins">0</span></div><input type="number" id="ri-pins" min="0" max="2000000" step="1000" value="0" oninput="cRet()" onchange="cRet()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>₹0</span><span>₹20L</span></div></div>
       </div>
       <div class="cres-card">
         <div class="rcards">
-          <div class="rc big"><div class="rc-lbl">Value of Your SIP at Retirement</div><div class="rc-val gr big" id="rr-sipfv">₹0</div></div>
-          <div class="rc hl" id="rr-corp-row"><div class="rc-lbl">Growth of Your Existing Corpus</div><div class="rc-val pu" id="rr-corpfv">₹0</div></div>
-          <div class="rc"><div class="rc-lbl">Total Corpus You'll Build</div><div class="rc-val go" id="rr-total">₹0</div></div>
-          <div class="rc"><div class="rc-lbl">Total in Today's Rupees (Real Value)</div><div class="rc-val" id="rr-real">₹0</div></div>
-          <div class="rc"><div class="rc-lbl">Est. Retirement Expense (Future, monthly)</div><div class="rc-val" id="rr-fexp">₹0</div></div>
+          <div class="rc big"><div class="rc-lbl">Growth of Your New SIP (Max guideline)</div><div class="rc-val gr big" id="rr-sipfv">₹0</div></div>
+          <div class="rc hl" id="rr-esip-row"><div class="rc-lbl">Growth of Your Existing SIPs</div><div class="rc-val pu" id="rr-esipfv">₹0</div></div>
+          <div class="rc"><div class="rc-lbl">Total Corpus at Retirement</div><div class="rc-val go" id="rr-total">₹0</div></div>
+          <div class="rc"><div class="rc-lbl">Corpus in Today's Rupees (Real Value)</div><div class="rc-val" id="rr-real">₹0</div></div>
+          <div class="rc"><div class="rc-lbl">Monthly Withdrawal at Retirement (Total)</div><div class="rc-val" id="rr-wd">₹0</div></div>
+          <div class="rc big"><div class="rc-lbl">Your Corpus Will Last</div><div class="rc-val big" id="rr-last">—</div></div>
         </div>
         <div class="elss-note" id="rr-caveat" style="margin-top:4px;"></div>
       </div>
@@ -941,18 +950,44 @@ function cInf(){
 }
 
 function cRet(){
-  if(typeof gtag==='function'){gtag('event','calculator_use',{'event_category':'engagement','event_label':'retirement_readiness_calculator'});}
-  const sip=+document.getElementById('ri-sip').value,corp0=+document.getElementById('ri-corp').value,y=+document.getElementById('ri-y').value,ret=+document.getElementById('ri-ret').value/100,infl=+document.getElementById('ri-infl').value/100,exp=+document.getElementById('ri-exp').value,repl=+document.getElementById('ri-repl').value/100;
-  sv('rv-sip',fmt(sip));sv('rv-corp',fmt(corp0));sv('rv-y',y+' Yrs');sv('rv-ret',(ret*100).toFixed(1)+'%');sv('rv-infl',(infl*100).toFixed(1)+'%');sv('rv-exp',fmt(exp));sv('rv-repl',(repl*100).toFixed(0)+'%');
-  const sipFV=sfv(sip,ret,y);
-  const corpFV=corp0*Math.pow(1+ret,y);
-  const total=sipFV+corpFV;
+  if(typeof gtag==='function'){gtag('event','calculator_use',{'event_category':'engagement','event_label':'wealth_assessment_calculator'});}
+  const inc=+document.getElementById('ri-inc').value,emi=+document.getElementById('ri-emi').value,esip=+document.getElementById('ri-esip').value,esipy=+document.getElementById('ri-esipy').value,ins=+document.getElementById('ri-ins').value,hh=+document.getElementById('ri-hh').value,y=+document.getElementById('ri-y').value,ret=+document.getElementById('ri-ret').value/100,infl=+document.getElementById('ri-infl').value/100,pret=+document.getElementById('ri-pret').value/100,pexp=+document.getElementById('ri-pexp').value,pins=+document.getElementById('ri-pins').value;
+  sv('rv-inc',fmt(inc));sv('rv-emi',fmt(emi));sv('rv-esip',fmt(esip));sv('rv-esipy',esipy+' Yrs');sv('rv-ins',fmt(ins));sv('rv-hh',fmt(hh));sv('rv-y',y+' Yrs');sv('rv-ret',(ret*100).toFixed(1)+'%');sv('rv-infl',(infl*100).toFixed(1)+'%');sv('rv-pret',(pret*100).toFixed(1)+'%');sv('rv-pexp',fmt(pexp));sv('rv-pins',fmt(pins));
+  // expenses = EMI + insurance/12 + household (SIPs are savings, not expenses)
+  const totalExp=emi+ins/12+hh;
+  const saved=Math.max(0,inc-totalExp);
+  const maxSip=0.5*saved;
+  sv('rv-texp',fmt(totalExp));sv('rv-texpb',fmt(totalExp));sv('rv-saved',fmt(saved));sv('rv-savedb',fmt(saved));sv('rv-maxsip',fmt(maxSip));sv('rv-maxsipb',fmt(maxSip));
+  // new SIP (max guideline) grows for full period
+  const newSipFV=sfv(maxSip,ret,y);
+  // existing SIPs: run for min(esipy,y), then that pot grows as lumpsum till retirement
+  const runY=Math.min(esipy,y);
+  let existFV=sfv(esip,ret,runY);
+  if(y>runY) existFV*=Math.pow(1+ret,y-runY);
+  const total=newSipFV+existFV;
   const real=total/Math.pow(1+infl,y);
-  const retExpFut=exp*repl*Math.pow(1+infl,y);
-  sv('rr-sipfv',fmt(sipFV));sv('rr-corpfv',fmt(corpFV));sv('rr-total',fmt(total));sv('rr-real',fmt(real));sv('rr-fexp',fmt(retExpFut)+'/mo');
-  // hide the existing-corpus row when there is none
-  const cr=document.getElementById('rr-corp-row'); if(cr) cr.style.display = corp0>0 ? '' : 'none';
-  document.getElementById('rr-caveat').innerHTML='<strong>What this shows:</strong> investing '+fmt(sip)+'/month'+(corp0>0?(' plus your existing '+fmt(corp0)):'')+' for '+y+' years at '+(ret*100).toFixed(1)+'% could grow to about '+fmt(total)+' ('+fmt(real)+' in today\'s money). For context, your monthly expenses of '+fmt(exp)+' today \u2014 at '+(repl*100).toFixed(0)+'% in retirement and '+(infl*100).toFixed(1)+'% inflation \u2014 would be about '+fmt(retExpFut)+'/month by then. <em>This is only the investment you entered here; your total readiness also depends on your other SIPs, assets and goals, which this tool does not capture. It is educational, not a recommendation.</em>';
+  // withdrawal at retirement = (post-ret monthly expense + insurance/12), inflated to retirement
+  const wdToday=pexp+pins/12;
+  let wd=wdToday*Math.pow(1+infl,y);
+  sv('rr-sipfv',fmt(newSipFV));sv('rr-esipfv',fmt(existFV));sv('rr-total',fmt(total));sv('rr-real',fmt(real));sv('rr-wd',fmt(wd)+'/mo');
+  const er=document.getElementById('rr-esip-row'); if(er) er.style.display = esip>0 ? '' : 'none';
+  // simulate depletion: corpus grows at pret monthly, withdrawal escalates yearly with inflation
+  let corpus=total, mret=pret/12, months=0, cap=60*12, wdm=wd;
+  while(corpus>0 && months<cap){ corpus=corpus*(1+mret)-wdm; months++; if(months%12===0) wdm*=(1+infl); }
+  const lastEl=document.getElementById('rr-last'), cav=document.getElementById('rr-caveat');
+  let lastTxt, verdict, cls;
+  if(months>=cap){ lastTxt='60+ years'; cls='rc-val gr big';
+    verdict='<strong>Comfortably sustainable.</strong> At '+fmt(wd)+'/month (growing with inflation) and '+(pret*100).toFixed(1)+'% post-retirement returns, your '+fmt(total)+' corpus is not expected to run out within a normal retirement — it may even keep growing.';
+  } else {
+    const yy=Math.floor(months/12), mm=months%12;
+    lastTxt=yy+' yr'+(yy!==1?'s':'')+(mm?(' '+mm+' mo'):'');
+    if(yy>=30){ cls='rc-val gr big'; verdict='<strong>Sustainable for a long retirement.</strong> '; }
+    else if(yy>=20){ cls='rc-val go big'; verdict='<strong>Reasonable, but watch the later years.</strong> '; }
+    else { cls='rc-val re big'; verdict='<strong>May fall short of a full retirement.</strong> '; }
+    verdict+='At '+fmt(wd)+'/month (rising with inflation) drawn from a '+fmt(total)+' corpus earning '+(pret*100).toFixed(1)+'%, the money could last about '+lastTxt+'. To extend it: invest more now, retire a little later, or trim post-retirement expenses.';
+  }
+  lastEl.textContent=lastTxt; lastEl.className=cls;
+  cav.innerHTML=verdict+' <em>This models only the figures you entered here; other assets, income or goals are not captured. Educational, not a recommendation.</em>';
 }
 
 function cSIPSWP(){
