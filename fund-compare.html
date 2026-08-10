@@ -233,9 +233,6 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
     <a href="kaustubhvalimbe.html">👤 Founder</a>
   </div>
 </nav>
-<!-- SIP-100 banner -->
-<div style="background:linear-gradient(90deg,#2d2478,#3c3197,#3a5a2a);color:#fff;padding:11px 20px;display:flex;align-items:center;justify-content:center;gap:14px 18px;flex-wrap:wrap;font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;text-align:center;"><span style="font-size:15px;font-weight:700;letter-spacing:.2px;">💡 SIP starting at just <span style="color:#b8e05a;font-weight:800;">₹100</span> — begin your investment journey today.</span><a href="https://wa.me/919373334215?text=Hi%20Kaustubh%2C%20I%20want%20to%20start%20a%20SIP.%20Please%20guide%20me%20to%20begin." style="background:#25D366;color:#fff;text-decoration:none;font-weight:800;font-size:13px;padding:8px 16px;border-radius:8px;white-space:nowrap;">Start on WhatsApp →</a></div>
-
 <div class="hero">
   <div class="hero-in">
     <h1>⚖️ Fund <span>Comparison</span></h1>
@@ -267,10 +264,9 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
 <div class="adv-bar">
   <div class="adv-info">
     <div class="adv-av">KV</div>
-    <div><div class="adv-name">Talk to our Expert — Kaustubh Valimbe</div><div class="adv-role">📞 <a href="tel:+919373334215" style="color:inherit;text-decoration:none">+91 937 333 4215</a> &nbsp;·&nbsp; ✉️ <a href="mailto:kaustubh.valimbe@acefinservices.com" style="color:inherit;text-decoration:none">kaustubh.valimbe@acefinservices.com</a></div></div>
+    <div><div class="adv-name">Kaustubh Valimbe</div><div class="adv-role">CEO · Ace Financial Services · SEBI ARN · 33+ Years Experience</div></div>
   </div>
   <div class="adv-links">
-    <a href="security.html" class="adv-link" style="background:#fdecec;color:#c0392b;">🔒 Security</a>
     <a href="index.html" class="adv-link al-h">🏠 Home</a>
     <a href="kaustubhvalimbe.html" class="adv-link al-a">👤 About Founder</a>
   </div>
@@ -436,11 +432,20 @@ async function loadFundData(code, name) {
       var pts = d.data.length;
       if(pts>=21)   { var o=parseFloat(d.data[20].nav);  if(o>0) f.r1m=((cur/o)-1)*100; }
       if(pts>=63)   { var o=parseFloat(d.data[62].nav);  if(o>0) f.r3m=((cur/o)-1)*100; }
-      if(pts>=126)  { var o=parseFloat(d.data[125].nav); if(o>0) f.r6m=((cur/o)-1)*100; }
-      if(pts>=252)  { var o=parseFloat(d.data[251].nav); if(o>0) f.r1y=((cur/o)-1)*100; }
-      if(pts>=756)  { var o=parseFloat(d.data[755].nav); if(o>0) f.r3y=(Math.pow(cur/o,1/3)-1)*100; }
-      if(pts>=1260) { var o=parseFloat(d.data[1259].nav);if(o>0) f.r5y=(Math.pow(cur/o,1/5)-1)*100; }
-      if(pts>=2520) { var o=parseFloat(d.data[2519].nav);if(o>0) f.r10y=(Math.pow(cur/o,1/10)-1)*100; }
+      // --- CAGR by CALENDAR DATE (matches the AMFI app & AMC factsheets) ---
+      (function(){
+        function _pd(s){var p=String(s).split('-');return new Date(+p[2],+p[1]-1,+p[0]);}
+        var curDate=_pd(d.data[0].date), oldest=_pd(d.data[d.data.length-1].date), o;
+        function onOrBefore(t){for(var k=0;k<d.data.length;k++){if(_pd(d.data[k].date)<=t){var v=parseFloat(d.data[k].nav);return v>0?v:null;}}return null;}
+        function bM(m){var t=new Date(curDate);t.setMonth(t.getMonth()-m);return t;}
+        function bY(y){var t=new Date(curDate);t.setFullYear(t.getFullYear()-y);return t;}
+        var t6=bM(6),t1=bY(1),t3=bY(3),t5=bY(5),t10=bY(10);
+        if(oldest<=t6){o=onOrBefore(t6); if(o) f.r6m=((cur/o)-1)*100;}
+        if(oldest<=t1){o=onOrBefore(t1); if(o) f.r1y=((cur/o)-1)*100;}
+        if(oldest<=t3){o=onOrBefore(t3); if(o) f.r3y=(Math.pow(cur/o,1/3)-1)*100;}
+        if(oldest<=t5){o=onOrBefore(t5); if(o) f.r5y=(Math.pow(cur/o,1/5)-1)*100;}
+        if(oldest<=t10){o=onOrBefore(t10);if(o) f.r10y=(Math.pow(cur/o,1/10)-1)*100;}
+      })();
     }
   } catch(e) { console.log('NAV load failed for '+code); }
   return f;
