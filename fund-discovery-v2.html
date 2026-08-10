@@ -730,7 +730,6 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 24px;height:64px
     </div>
   </div>
   <div class="adv-links">
-    <a href="security.html" class="adv-link" style="background:#fdecec;color:#c0392b;">🔒 Security</a>
     <a href="index.html" class="adv-link al-h">🏠 Home</a>
     <a href="kaustubhvalimbe.html" class="adv-link al-a">👤 About Founder</a>
   </div>
@@ -867,6 +866,11 @@ function detPlan(name){
 
 function detNat(name){
   const u=name.toUpperCase();
+  // Non-standard plan variants: not the main Growth plan. Tag 'other' so they are
+  // hidden from the Growth view (they only appear under 'All'). Matches the app.
+  if(u.includes('BONUS')) return 'other';
+  if(u.includes(' ECO ')||u.includes('ECO PLAN')||u.includes('-ECO')||u.includes('ECO-')) return 'other';
+  if(u.includes('INSTITUTIONAL')) return 'other';
   if(u.includes('IDCW')) return 'idcw';
   if(u.includes('DIVIDEND')) return 'idcw';
   if(u.includes(' PAYOUT')||u.includes('REINVESTMENT')) return 'idcw';
