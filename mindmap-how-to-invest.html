@@ -1,109 +1,141 @@
 <!-- ============================================================
-     HOW TO INVEST IN MUTUAL FUNDS - Journey Mind Map
+     HOW TO INVEST IN MUTUAL FUNDS - Flowchart / Journey Map
      Ace Financial Services - Investor Awareness section
-     Drop this <div class="section"> block into investor-awareness.html
-     (it reuses the page's existing .section / .section-title styles;
-      the mind-map-specific styles are scoped under .mmap so they
-      won't clash with the rest of the page).
+     Drop this <div class="section"> block into investor-awareness.html.
+     Reuses the page's .section / .section-title classes; all flowchart
+     styles are scoped under .fmap so nothing else on the page is affected.
+     Vertical flow with arrows; decision points branch into two paths.
      ============================================================ -->
 <style>
-.mmap{--p:#3c3197;--pd:#2d2478;--g:#5a8a10;--gl:#f0fdf4;--line:#c9c3f0}
-.mmap{max-width:900px;margin:0 auto}
-.mmap .mm-intro{color:#555;font-size:15px;line-height:1.6;margin-bottom:26px;text-align:center}
-.mmap .mstep{position:relative;display:flex;gap:16px;padding:0 0 26px 0}
-.mmap .mstep:last-child{padding-bottom:0}
-.mmap .mrail{position:relative;flex-shrink:0;width:46px;display:flex;flex-direction:column;align-items:center}
-.mmap .mnum{width:46px;height:46px;border-radius:50%;background:var(--p);color:#fff;font-weight:800;font-size:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(60,49,151,.28);z-index:2}
-.mmap .mstep:nth-child(even) .mnum{background:var(--g);box-shadow:0 3px 10px rgba(90,138,16,.28)}
-.mmap .mline{position:absolute;top:46px;bottom:-4px;width:3px;background:linear-gradient(var(--line),var(--line));z-index:1}
-.mmap .mstep:last-child .mline{display:none}
-.mmap .mbody{flex:1;background:#fff;border:1.5px solid #ece9fb;border-left:4px solid var(--p);border-radius:14px;padding:16px 20px;box-shadow:0 2px 10px rgba(60,49,151,.05)}
-.mmap .mstep:nth-child(even) .mbody{border-left-color:var(--g)}
-.mmap .mtitle{font-weight:800;color:var(--pd);font-size:16px;margin-bottom:5px}
-.mmap .mstep:nth-child(even) .mtitle{color:#3d5c0c}
-.mmap .mtext{color:#555;font-size:14px;line-height:1.55}
-.mmap .mtag{display:inline-block;margin-top:9px;background:var(--gl);color:var(--g);font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid #d4eda0}
-.mmap .mbranch{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.mmap .mchip{background:#f4f3fb;border:1px solid #e0dcf5;color:var(--pd);font-size:12.5px;font-weight:600;padding:5px 12px;border-radius:8px}
-.mmap .mchip.alt{background:var(--gl);border-color:#d4eda0;color:#3d5c0c}
-.mmap .mfin{margin-top:6px;text-align:center;background:linear-gradient(135deg,#f0fdf4,#f4f3fb);border:1.5px dashed var(--g);border-radius:14px;padding:18px 20px;color:var(--pd);font-weight:700;font-size:15px}
-.mmap .mdis{margin-top:20px;font-size:11.5px;color:#8a8a99;line-height:1.5;text-align:center;border-top:1px solid #eee;padding-top:14px}
-@media(max-width:560px){.mmap .mrail{width:38px}.mmap .mnum{width:38px;height:38px;font-size:15px}.mmap .mline{top:38px}}
+.fmap{--p:#3c3197;--pd:#2d2478;--g:#5a8a10;--amber:#b45309;--line:#b9b2e8}
+.fmap{max-width:760px;margin:0 auto;padding:4px 0}
+.fmap .fintro{color:#555;font-size:14.5px;line-height:1.6;text-align:center;margin-bottom:22px}
+.fmap .node{background:#fff;border:1.5px solid #e7e3f7;border-top:4px solid var(--p);border-radius:14px;padding:13px 18px;box-shadow:0 3px 12px rgba(60,49,151,.07);position:relative;max-width:520px;margin:0 auto;text-align:center}
+.fmap .node .nnum{position:absolute;top:-13px;left:-13px;width:30px;height:30px;border-radius:50%;background:var(--p);color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 7px rgba(60,49,151,.3)}
+.fmap .node .nt{font-weight:800;color:var(--pd);font-size:15.5px;margin-bottom:3px}
+.fmap .node .nd{color:#575757;font-size:13px;line-height:1.5}
+.fmap .node.start{border-top-color:var(--g);background:linear-gradient(135deg,#f0fdf4,#fff)}
+.fmap .node.start .nt{color:#3d5c0c}
+.fmap .node.decision{border-top-color:var(--amber);background:linear-gradient(135deg,#fffbeb,#fff)}
+.fmap .node.decision .nt{color:var(--amber)}
+.fmap .node.decision .nnum{background:var(--amber);box-shadow:0 2px 7px rgba(180,83,9,.3)}
+.fmap .node.finish{border:2px dashed var(--g);border-top:2px dashed var(--g);background:linear-gradient(135deg,#f0fdf4,#f4f3fb)}
+.fmap .node.finish .nt{color:#3d5c0c;font-size:16px}
+/* connectors */
+.fmap .arrow{width:2.5px;height:26px;background:var(--line);margin:0 auto;position:relative}
+.fmap .arrow::after{content:"";position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid var(--line)}
+.fmap .arrow.short{height:16px}
+/* branch: two side-by-side paths */
+.fmap .branch{display:flex;gap:14px;justify-content:center;align-items:stretch;max-width:640px;margin:0 auto}
+.fmap .branch .path{flex:1;max-width:300px;display:flex;flex-direction:column;align-items:center}
+.fmap .plabel{font-size:12px;font-weight:800;padding:4px 12px;border-radius:20px;margin-bottom:8px;white-space:nowrap}
+.fmap .plabel.yes{background:#f0fdf4;color:var(--g);border:1px solid #bbe38a}
+.fmap .plabel.no{background:#fef3f2;color:#b42318;border:1px solid #f4b9b2}
+.fmap .pbox{background:#fbfaff;border:1.5px solid #e7e3f7;border-radius:12px;padding:11px 14px;text-align:center;font-size:12.5px;color:#4b4670;line-height:1.45;width:100%;box-sizing:border-box}
+.fmap .pbox b{color:var(--pd)}
+.fmap .vsplit{height:14px;width:2.5px;background:var(--line);margin:0 auto}
+.fmap .merge{font-size:12px;color:#8a8a99;text-align:center;margin:4px auto 0}
+/* choice chips inside a node */
+.fmap .chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
+.fmap .chip{background:#f4f3fb;border:1px solid #e0dcf5;color:var(--pd);font-size:12px;font-weight:600;padding:4px 11px;border-radius:8px}
+.fmap .chip.g{background:#f0fdf4;border-color:#bbe38a;color:var(--g)}
+.fmap .ntag{display:inline-block;margin-top:8px;background:#f0fdf4;color:var(--g);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid #bbe38a}
+.fmap .fdis{margin-top:22px;font-size:11.5px;color:#8a8a99;line-height:1.5;text-align:center;border-top:1px solid #eee;padding-top:14px;max-width:640px;margin-left:auto;margin-right:auto}
+@media(max-width:600px){.fmap .branch{flex-direction:column;gap:10px}.fmap .branch .path{max-width:100%}.fmap .plabel{white-space:normal}}
 </style>
 
 <div class="section" id="how-to-invest">
-  <div class="section-title">🗺️ How to Invest in Mutual Funds — Step by Step</div>
-  <div class="section-sub">The complete journey, from getting started to holding your first statement — and where an AMFI-registered Mutual Fund Distributor assists along the way.</div>
+  <div class="section-title">🗺️ How to Invest in Mutual Funds — The Journey</div>
+  <div class="section-sub">A simple map of the full path — from getting started to holding your first statement.</div>
 
-  <div class="mmap">
-    <div class="mm-intro">Investing in mutual funds is a simple, well-defined process. Here is the full path, laid out step by step.</div>
+  <div class="fmap">
+    <div class="fintro">Follow the flow below. At the two orange decision points, the path branches — just follow the branch that applies to you.</div>
 
-    <div class="mstep"><div class="mrail"><div class="mnum">1</div><div class="mline"></div></div>
-      <div class="mbody"><div class="mtitle">Who is investing?</div>
-        <div class="mtext">First, identify the type of investor — the process and documents differ slightly for each.</div>
-        <div class="mbranch"><span class="mchip">Individual</span><span class="mchip">Corporate / Non-Individual</span><span class="mchip">NRI</span></div>
-      </div></div>
+    <!-- 1 -->
+    <div class="node start"><div class="nnum">1</div><div class="nt">Who is investing?</div>
+      <div class="nd">Identify the investor type — documents differ slightly for each.</div>
+      <div class="chips"><span class="chip">Individual</span><span class="chip">Corporate</span><span class="chip">NRI</span></div>
+    </div>
+    <div class="arrow"></div>
 
-    <div class="mstep"><div class="mrail"><div class="mnum">2</div><div class="mline"></div></div>
-      <div class="mbody"><div class="mtitle">Complete your KYC</div>
-        <div class="mtext">KYC (Know Your Customer) is mandatory and one-time. If your KYC is already complete, you can proceed. If not, it must be completed first (PAN, address proof, and a photograph).</div>
-        <div class="mbranch"><span class="mchip alt">KYC Complete → proceed</span><span class="mchip">KYC Incomplete → complete it first</span></div>
-      </div></div>
+    <!-- 2 DECISION: KYC -->
+    <div class="node decision"><div class="nnum">2</div><div class="nt">Is your KYC complete?</div>
+      <div class="nd">KYC (Know Your Customer) is a mandatory, one-time step.</div>
+    </div>
+    <div class="arrow short"></div>
+    <div class="branch">
+      <div class="path"><div class="plabel yes">✓ YES — complete</div><div class="pbox">Proceed straight to the next step.</div></div>
+      <div class="path"><div class="plabel no">✗ NO — pending</div><div class="pbox">Complete KYC first<br><b>(PAN · address proof · photo)</b>, then proceed.</div></div>
+    </div>
+    <div class="vsplit"></div>
+    <div class="merge">▼ both paths continue ▼</div>
+    <div class="arrow short"></div>
 
-    <div class="mstep"><div class="mrail"><div class="mnum">3</div><div class="mline"></div></div>
-      <div class="mbody"><div class="mtitle">Understand the essentials</div>
-        <div class="mtext">Learn the building blocks so your choices are informed — the fund categories, the fund houses (AMCs), and how mutual funds are taxed.</div>
-        <div class="mbranch"><span class="mchip">Fund Categories</span><span class="mchip">AMCs</span><span class="mchip">Taxation</span></div>
-      </div></div>
+    <!-- 3 -->
+    <div class="node"><div class="nnum">3</div><div class="nt">Understand the essentials</div>
+      <div class="nd">Learn the building blocks so your choices are informed.</div>
+      <div class="chips"><span class="chip">Fund Categories</span><span class="chip">AMCs</span><span class="chip">Taxation</span></div>
+    </div>
+    <div class="arrow"></div>
 
-    <div class="mstep"><div class="mrail"><div class="mnum">4</div><div class="mline"></div></div>
-      <div class="mbody"><div class="mtitle">Choose your investment mode</div>
-        <div class="mtext">Decide how you want to invest — a one-time Lumpsum, a regular monthly SIP, or a combination of both.</div>
-        <div class="mbranch"><span class="mchip">Lumpsum</span><span class="mchip">SIP</span><span class="mchip alt">Both</span></div>
-      </div></div>
+    <!-- 4 -->
+    <div class="node"><div class="nnum">4</div><div class="nt">Choose your mode</div>
+      <div class="nd">Decide how you want to invest.</div>
+      <div class="chips"><span class="chip">Lumpsum</span><span class="chip">SIP</span><span class="chip g">Both</span></div>
+    </div>
+    <div class="arrow"></div>
 
-    <div class="mstep"><div class="mrail"><div class="mnum">5</div><div class="mline"></div></div>
-      <div class="mbody"><div class="mtitle">Decide the amount</div>
-        <div class="mtext">Set the amount you wish to invest — as a lumpsum figure and/or a monthly SIP amount that fits your goals and cash flow.</div>
-      </div></div>
+    <!-- 5 -->
+    <div class="node"><div class="nnum">5</div><div class="nt">Decide the amount</div>
+      <div class="nd">Set your lumpsum figure and/or monthly SIP amount to suit your goals.</div>
+    </div>
+    <div class="arrow"></div>
 
-    <div class="mstep"><div class="mrail"><div class="mnum">6</div><div class="mline"></div></div>
-      <div class="mbody"><div class="mtitle">Connect with your Mutual Fund Distributor</div>
-        <div class="mtext">An AMFI-registered Mutual Fund Distributor helps you complete the process correctly and answers your questions.</div>
-        <div class="mtag">Ace Financial Services · ARN-110832</div>
-      </div></div>
+    <!-- 6 -->
+    <div class="node"><div class="nnum">6</div><div class="nt">Connect with your Mutual Fund Distributor</div>
+      <div class="nd">An AMFI-registered MFD helps you complete the process correctly.</div>
+      <div class="ntag">Ace Financial Services · ARN-110832</div>
+    </div>
+    <div class="arrow"></div>
 
-    <div class="mstep"><div class="mrail"><div class="mnum">7</div><div class="mline"></div></div>
-      <div class="mbody"><div class="mtitle">Generate the transaction</div>
-        <div class="mtext">The purchase transaction is created for your chosen fund(s), amount, and mode (SIP / Lumpsum).</div>
-      </div></div>
+    <!-- 7 -->
+    <div class="node"><div class="nnum">7</div><div class="nt">Generate the transaction</div>
+      <div class="nd">The purchase is created for your chosen fund(s), amount and mode.</div>
+    </div>
+    <div class="arrow"></div>
 
-    <div class="mstep"><div class="mrail"><div class="mnum">8</div><div class="mline"></div></div>
-      <div class="mbody"><div class="mtitle">Make the payment</div>
-        <div class="mtext">Complete payment using your preferred method.</div>
-        <div class="mbranch"><span class="mchip">Internet Banking</span><span class="mchip">UPI</span><span class="mchip">Cheque</span></div>
-      </div></div>
+    <!-- 8 DECISION: payment -->
+    <div class="node decision"><div class="nnum">8</div><div class="nt">How will you pay?</div>
+      <div class="nd">Choose your payment method to complete the transaction.</div>
+      <div class="chips"><span class="chip">Internet Banking</span><span class="chip">UPI</span><span class="chip">Cheque</span></div>
+    </div>
+    <div class="arrow short"></div>
+    <div class="branch">
+      <div class="path"><div class="plabel yes">💻 ONLINE</div><div class="pbox">Net Banking / UPI —<br>payment completes the<br>transaction <b>instantly</b>.</div></div>
+      <div class="path"><div class="plabel no">🧾 OFFLINE</div><div class="pbox">Hand the <b>cheque</b> to your MFD → sent to the AMC → cleared &amp; processed in <b>~2 days</b>.</div></div>
+    </div>
+    <div class="vsplit"></div>
+    <div class="merge">▼ both paths continue ▼</div>
+    <div class="arrow short"></div>
 
-    <div class="mstep"><div class="mrail"><div class="mnum">9</div><div class="mline"></div></div>
-      <div class="mbody"><div class="mtitle">Online or offline completion</div>
-        <div class="mtext">If paying online, the payment completes the transaction instantly. If paying offline, hand over the cheque to your Mutual Fund Distributor.</div>
-        <div class="mbranch"><span class="mchip alt">Online → completed</span><span class="mchip">Offline → submit cheque</span></div>
-      </div></div>
+    <!-- 9 -->
+    <div class="node"><div class="nnum">9</div><div class="nt">NAV allotment & Folio generated</div>
+      <div class="nd">Once payment is cleared, NAV is allotted per the applicable cut-off rules, and your Folio is generated.</div>
+      <div class="ntag">Subject to AMFI / AMC cut-off timing</div>
+    </div>
+    <div class="arrow"></div>
 
-    <div class="mstep"><div class="mrail"><div class="mnum">10</div><div class="mline"></div></div>
-      <div class="mbody"><div class="mtitle">Processing & NAV allotment</div>
-        <div class="mtext">For offline, the cheque is sent to the respective AMC and typically processed within about two days. Once the payment is cleared, NAV is allotted per the applicable cut-off rules, and your Folio is generated.</div>
-        <div class="mtag">Subject to AMFI / AMC cut-off timing rules</div>
-      </div></div>
+    <!-- 10 -->
+    <div class="node"><div class="nnum">10</div><div class="nt">Access your account & first statement</div>
+      <div class="nd">You receive your login credentials — log in to the portal to view holdings and download your first Account Statement.</div>
+    </div>
+    <div class="arrow"></div>
 
-    <div class="mstep"><div class="mrail"><div class="mnum">11</div></div>
-      <div class="mbody"><div class="mtitle">Access your account & first statement</div>
-        <div class="mtext">Once the Folio is generated (usually within a day or two), you receive your login credentials. Log in to the client portal to view your holdings and download your first Account Statement.</div>
-        <div class="mtag">Your portfolio, always accessible</div>
-      </div></div>
+    <!-- finish -->
+    <div class="node finish"><div class="nt">🎉 You're now a mutual fund investor!</div>
+      <div class="nd" style="margin-top:4px">Folio active · first statement in hand.</div>
+    </div>
 
-    <div class="mfin">🎉 You are now a mutual fund investor — with your Folio active and your first statement in hand.</div>
-
-    <div class="mdis">This is an educational illustration of the general mutual fund investment process. Exact steps, timelines, and NAV allotment depend on the AMC, payment mode, and prevailing AMFI/SEBI cut-off rules. Mutual fund investments are subject to market risks; read all scheme related documents carefully. Ace Financial Services — AMFI Registered Mutual Fund Distributor (ARN-110832). Mutual fund distribution services only; not investment advice.</div>
+    <div class="fdis">Educational illustration of the general mutual fund investment process. Exact steps, timelines and NAV allotment depend on the AMC, payment mode and prevailing AMFI/SEBI cut-off rules. Mutual fund investments are subject to market risks; read all scheme related documents carefully. Ace Financial Services — AMFI Registered Mutual Fund Distributor (ARN-110832). Distribution services only; not investment advice.</div>
   </div>
 </div>
