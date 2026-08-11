@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>How to Invest in Mutual Funds — Step-by-Step Journey | Ace Financial Services</title>
+<meta name="description" content="A simple visual flowchart of the complete mutual fund investment journey — from KYC to your first Account Statement. Educational guide by Ace Financial Services, AMFI Registered MFD, Pune.">
+<meta name="keywords" content="how to invest in mutual funds india, mutual fund investment process, KYC to folio journey, SIP lumpsum process, mutual fund flowchart">
+<meta property="og:title" content="How to Invest in Mutual Funds — Step-by-Step Journey | Ace Financial Services">
+<meta property="og:description" content="A visual map of the complete mutual fund investment journey, from KYC to your first statement. By Ace Financial Services, Pune.">
+<meta property="og:type" content="website">
+<meta name="robots" content="index, follow">
+<meta name="author" content="Kaustubh Valimbe — Ace Financial Services">
+<link rel="canonical" href="https://acefinservices.com/how-to-invest.html">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --p1:#2d2478;--p2:#3c3197;--p3:#6b63c9;--p4:#f0effe;
+  --bg:#f7faf0;--t1:#1a1240;--t4:#6b7280;--t5:#9ca3af;
+  --g:#5a8a10;--amber:#b45309;--line:#b9b2e8;
+  --fh:"Playfair Display",serif;--fb:"Plus Jakarta Sans",sans-serif;--fm:"JetBrains Mono",monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--t1);font-family:var(--fb);min-height:100vh;}
+a{text-decoration:none}
+nav{background:#fff;border-bottom:1px solid #ece9fb;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:100}
+.brand{display:flex;align-items:center;gap:10px;color:var(--p1)}
+.bn{font-family:var(--fh);font-size:14px;font-weight:900;color:var(--p2)}
+.bn em{font-style:italic;color:var(--g)}
+.bs{font-size:9px;color:var(--t4);font-weight:600}
+.bt{font-size:8px;color:var(--g);font-weight:700;letter-spacing:.3px}
+.nav-links{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
+.nav-links a{font-size:13px;font-weight:600;color:var(--t1);padding:6px 9px;border-radius:7px}
+.nav-links a:hover{background:#f5fce8;color:var(--g)}
+.nav-links a.on{background:var(--p4);color:var(--p2)}
+.nav-more{position:relative}
+.nav-more-menu{display:none;position:absolute;top:100%;right:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);min-width:170px;z-index:500;padding:6px}
+.nav-more:hover .nav-more-menu{display:block}
+.nav-more-menu a{display:block;padding:9px 14px;color:#1a1240;font-size:13px;font-weight:600;border-radius:6px}
+.nav-more-menu a:hover{background:#f5fce8;color:var(--g)}
+.wrap{max-width:900px;margin:0 auto;padding:30px 18px 10px}
+.phead{text-align:center;margin-bottom:8px}
+.phead h1{font-family:var(--fh);font-size:32px;font-weight:900;color:var(--p2);line-height:1.15}
+.phead .sub{color:var(--t4);font-size:15px;margin-top:8px}
+.pbadge{display:inline-block;margin-top:14px;background:#f0fdf4;color:var(--g);border:1px solid #cceaa0;font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px}
+/* ---- flowchart ---- */
+.fmap{max-width:760px;margin:26px auto 0;padding:4px 0}
+.fmap .fintro{color:#555;font-size:14.5px;line-height:1.6;text-align:center;margin-bottom:22px}
+.fmap .node{background:#fff;border:1.5px solid #e7e3f7;border-top:4px solid var(--p2);border-radius:14px;padding:13px 18px;box-shadow:0 3px 12px rgba(60,49,151,.07);position:relative;max-width:520px;margin:0 auto;text-align:center}
+.fmap .node .nnum{position:absolute;top:-13px;left:-13px;width:30px;height:30px;border-radius:50%;background:var(--p2);color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 7px rgba(60,49,151,.3)}
+.fmap .node .nt{font-family:var(--fh);font-weight:800;color:var(--p1);font-size:16px;margin-bottom:3px}
+.fmap .node .nd{color:#575757;font-size:13px;line-height:1.5}
+.fmap .node.start{border-top-color:var(--g);background:linear-gradient(135deg,#f0fdf4,#fff)}
+.fmap .node.start .nt{color:#3d5c0c}
+.fmap .node.decision{border-top-color:var(--amber);background:linear-gradient(135deg,#fffbeb,#fff)}
+.fmap .node.decision .nt{color:var(--amber)}
+.fmap .node.decision .nnum{background:var(--amber);box-shadow:0 2px 7px rgba(180,83,9,.3)}
+.fmap .node.finish{border:2px dashed var(--g);background:linear-gradient(135deg,#f0fdf4,#f4f3fb)}
+.fmap .node.finish .nt{color:#3d5c0c;font-size:17px}
+.fmap .arrow{width:2.5px;height:26px;background:var(--line);margin:0 auto;position:relative}
+.fmap .arrow::after{content:"";position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid var(--line)}
+.fmap .arrow.short{height:16px}
+.fmap .branch{display:flex;gap:14px;justify-content:center;align-items:stretch;max-width:640px;margin:0 auto}
+.fmap .branch .path{flex:1;max-width:300px;display:flex;flex-direction:column;align-items:center}
+.fmap .plabel{font-size:12px;font-weight:800;padding:4px 12px;border-radius:20px;margin-bottom:8px}
+.fmap .plabel.yes{background:#f0fdf4;color:var(--g);border:1px solid #bbe38a}
+.fmap .plabel.no{background:#fef3f2;color:#b42318;border:1px solid #f4b9b2}
+.fmap .pbox{background:#fbfaff;border:1.5px solid #e7e3f7;border-radius:12px;padding:11px 14px;text-align:center;font-size:12.5px;color:#4b4670;line-height:1.45;width:100%}
+.fmap .pbox b{color:var(--p1)}
+.fmap .vsplit{height:14px;width:2.5px;background:var(--line);margin:0 auto}
+.fmap .merge{font-size:12px;color:#8a8a99;text-align:center;margin:4px auto 0}
+.fmap .chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
+.fmap .chip{background:#f4f3fb;border:1px solid #e0dcf5;color:var(--p1);font-size:12px;font-weight:600;padding:4px 11px;border-radius:8px}
+.fmap .chip.g{background:#f0fdf4;border-color:#bbe38a;color:var(--g)}
+.fmap .ntag{display:inline-block;margin-top:8px;background:#f0fdf4;color:var(--g);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid #bbe38a}
+.fmap .fdis{margin-top:22px;font-size:11.5px;color:#8a8a99;line-height:1.5;text-align:center;border-top:1px solid #eee;padding-top:14px;max-width:640px;margin:22px auto 0}
+@media(max-width:600px){.fmap .branch{flex-direction:column;gap:10px}.fmap .branch .path{max-width:100%}.phead h1{font-size:25px}}
+/* footer */
+.sebi-disclaimer{background:#faf7ff;border-top:1px solid #ece9fb;margin-top:30px;padding:18px}
+.sebi-disc-inner{max-width:900px;margin:0 auto}
+.sebi-disc-text{font-size:11.5px;color:#6b7280;line-height:1.6;text-align:center}
+.foot-cta{max-width:760px;margin:26px auto 0;text-align:center}
+.foot-cta a{display:inline-block;margin:5px;background:var(--p2);color:#fff;font-weight:700;font-size:13px;padding:9px 18px;border-radius:9px}
+.foot-cta a.alt{background:#f0fdf4;color:var(--g);border:1px solid #cceaa0}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="brand">
+    <div><div class="bn">Ace Financial <em>Services</em></div><div class="bs">AMFI Registered MFD</div><div class="bt">Fund For Life Fund For Future</div></div>
+  </a>
+  <div class="nav-links">
+    <a href="index.html" title="Home" style="font-size:16px;">🏠</a>
+    <a href="fund-discovery-v2.html">🔍 Fund Discovery</a>
+    <a href="fund-toppers.html">🏆 Fund Toppers</a>
+    <a href="fund-compare.html">⚖️ Fund Compare</a>
+    <a href="investment-case.html">⭐ Investment Engine</a>
+    <a href="calculators.html">🧮 Calculators</a>
+    <a href="investor-awareness.html">📚 Investor Awareness</a>
+    <a href="how-to-invest.html" class="on">🗺️ How to Invest</a>
+    <div class="nav-more"><a href="javascript:void(0)">More ▾</a><div class="nav-more-menu"><a href="index.html#about">About</a><a href="index.html#services">Services</a><a href="index.html#contact">Contact</a><a href="market-pulse.html">📈 Market Pulse</a><a href="stock-intelligence.html">📊 Stock Intelligence</a><a href="portfolio-tracker.html">Track Your Portfolio</a><a href="kaustubhvalimbe.html">👤 Founder</a></div></div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="phead">
+    <h1>🗺️ How to Invest in Mutual Funds</h1>
+    <div class="sub">The complete journey, mapped step by step — from getting started to holding your first Account Statement.</div>
+    <div class="pbadge">Investor Education · Ace Financial Services · ARN-110832</div>
+  </div>
+
+  <div class="fmap">
+    <div class="fintro">Follow the flow below. At the two orange <b>decision points</b>, the path branches — simply follow the branch that applies to you.</div>
+
+    <div class="node start"><div class="nnum">1</div><div class="nt">Who is investing?</div>
+      <div class="nd">Identify the investor type — documents differ slightly for each.</div>
+      <div class="chips"><span class="chip">Individual</span><span class="chip">Corporate</span><span class="chip">NRI</span></div></div>
+    <div class="arrow"></div>
+
+    <div class="node decision"><div class="nnum">2</div><div class="nt">Is your KYC complete?</div>
+      <div class="nd">KYC (Know Your Customer) is a mandatory, one-time step.</div></div>
+    <div class="arrow short"></div>
+    <div class="branch">
+      <div class="path"><div class="plabel yes">✓ YES — complete</div><div class="pbox">Proceed straight to the next step.</div></div>
+      <div class="path"><div class="plabel no">✗ NO — pending</div><div class="pbox">Complete KYC first<br><b>(PAN · Aadhaar · address proof · photo)</b>, then proceed.</div></div>
+    </div>
+    <div class="vsplit"></div><div class="merge">▼ both paths continue ▼</div><div class="arrow short"></div>
+
+    <div class="node"><div class="nnum">3</div><div class="nt">Understand the essentials</div>
+      <div class="nd">Learn the building blocks so your choices are informed.</div>
+      <div class="chips"><span class="chip">Fund Categories</span><span class="chip">AMCs</span><span class="chip">Taxation</span></div></div>
+    <div class="arrow"></div>
+
+    <div class="node"><div class="nnum">4</div><div class="nt">Choose your mode</div>
+      <div class="nd">Decide how you want to invest.</div>
+      <div class="chips"><span class="chip">Lumpsum</span><span class="chip">SIP</span><span class="chip g">Both</span></div></div>
+    <div class="arrow"></div>
+
+    <div class="node"><div class="nnum">5</div><div class="nt">Decide the amount</div>
+      <div class="nd">Set your lumpsum figure and/or monthly SIP amount to suit your goals.</div></div>
+    <div class="arrow"></div>
+
+    <div class="node"><div class="nnum">6</div><div class="nt">Connect with your Mutual Fund Distributor</div>
+      <div class="nd">An AMFI-registered MFD helps you complete the process correctly.</div>
+      <div class="ntag">Ace Financial Services · ARN-110832</div></div>
+    <div class="arrow"></div>
+
+    <div class="node"><div class="nnum">7</div><div class="nt">Generate the transaction</div>
+      <div class="nd">The purchase is created for your chosen fund(s), amount and mode.</div></div>
+    <div class="arrow"></div>
+
+    <div class="node decision"><div class="nnum">8</div><div class="nt">How will you pay?</div>
+      <div class="nd">Choose your payment method to complete the transaction.</div>
+      <div class="chips"><span class="chip">Internet Banking</span><span class="chip">UPI</span><span class="chip">Cheque</span></div></div>
+    <div class="arrow short"></div>
+    <div class="branch">
+      <div class="path"><div class="plabel yes">💻 ONLINE</div><div class="pbox">Net Banking / UPI — payment completes the transaction <b>instantly</b>.</div></div>
+      <div class="path"><div class="plabel no">🧾 OFFLINE</div><div class="pbox">Hand the <b>cheque</b> to your MFD → sent to the AMC → cleared &amp; processed in <b>~2 days</b>.</div></div>
+    </div>
+    <div class="vsplit"></div><div class="merge">▼ both paths continue ▼</div><div class="arrow short"></div>
+
+    <div class="node"><div class="nnum">9</div><div class="nt">NAV allotment &amp; Folio generated</div>
+      <div class="nd">Once payment is cleared, NAV is allotted per the applicable cut-off rules, and your Folio is generated.</div>
+      <div class="ntag">Subject to AMFI / AMC cut-off timing</div></div>
+    <div class="arrow"></div>
+
+    <div class="node"><div class="nnum">10</div><div class="nt">Access your account &amp; first statement</div>
+      <div class="nd">You receive your login credentials — log in to the portal to view holdings and download your first Account Statement.</div></div>
+    <div class="arrow"></div>
+
+    <div class="node finish"><div class="nt">🎉 You're now a mutual fund investor!</div>
+      <div class="nd" style="margin-top:4px">Folio active · first statement in hand.</div></div>
+
+    <div class="fdis">Educational illustration of the general mutual fund investment process. Exact steps, timelines and NAV allotment depend on the AMC, payment mode and prevailing AMFI/SEBI cut-off rules. Past performance is not indicative of future returns.</div>
+  </div>
+
+  <div class="foot-cta">
+    <a href="fund-discovery-v2.html">🔍 Explore Funds</a>
+    <a href="investor-awareness.html" class="alt">📚 Investor Awareness</a>
+    <a href="index.html#contact" class="alt">✉️ Get in touch</a>
+  </div>
+</div>
+
+<div class="sebi-disclaimer"><div class="sebi-disc-inner">
+  <div class="sebi-disc-text"><strong>AMFI Mandatory Disclaimer:</strong> Mutual Fund investments are subject to market risks. Please read all scheme related documents carefully before investing. Past performance is not indicative of future returns. This page is for investor education only and does not constitute investment advice. Ace Financial Services — AMFI Registered Mutual Fund Distributor (ARN-110832), Pune. Registration does not guarantee performance of the scheme or assurance of returns to investors.</div>
+</div></div>
+
+</body>
+</html>
