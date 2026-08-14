@@ -514,8 +514,54 @@ function renderTable(funds) {
 }
 
 // ── PRINT ─────────────────────────────────────────────
+// Splits an already-rendered comparison table into multiple smaller tables
+// (Parameter column + up to chunkSize fund columns each) for print pagination.
+// Works on the DOM directly - preserves whatever "best value" highlighting was
+// already computed across ALL funds, so a fund highlighted as best on page 2
+// is still correctly the true best-of-all-funds, not just best-of-that-page.
+function splitTableForPrint(sourceTable, chunkSize) {
+  var headCells = Array.prototype.slice.call(sourceTable.querySelector('thead tr').children);
+  var bodyRows = Array.prototype.slice.call(sourceTable.querySelectorAll('tbody tr'));
+  var totalFundCols = headCells.length - 1;
+  var numPages = Math.ceil(totalFundCols / chunkSize);
+  var pages = [];
+  for (var p = 0; p < numPages; p++) {
+    var startIdx = 1 + p * chunkSize;
+    var endIdx = Math.min(startIdx + chunkSize, headCells.length);
+    var thisChunkCount = endIdx - startIdx;
+    var newTable = document.createElement('table');
+    newTable.className = 'cmp-tbl';
+    var newThead = document.createElement('thead');
+    var newHeadRow = document.createElement('tr');
+    newHeadRow.appendChild(headCells[0].cloneNode(true));
+    for (var i = startIdx; i < endIdx; i++) newHeadRow.appendChild(headCells[i].cloneNode(true));
+    newThead.appendChild(newHeadRow);
+    newTable.appendChild(newThead);
+    var newTbody = document.createElement('tbody');
+    bodyRows.forEach(function(tr) {
+      var cells = Array.prototype.slice.call(tr.children);
+      var newTr = document.createElement('tr');
+      if (tr.className) newTr.className = tr.className;
+      if (cells.length === 1 && cells[0].hasAttribute('colspan')) {
+        var newCell = cells[0].cloneNode(true);
+        newCell.setAttribute('colspan', thisChunkCount + 1);
+        newTr.appendChild(newCell);
+      } else {
+        newTr.appendChild(cells[0].cloneNode(true));
+        for (var i2 = startIdx; i2 < endIdx; i2++) {
+          if (cells[i2]) newTr.appendChild(cells[i2].cloneNode(true));
+        }
+      }
+      newTbody.appendChild(newTr);
+    });
+    newTable.appendChild(newTbody);
+    pages.push(newTable.outerHTML);
+  }
+  return pages;
+}
+
 function acePrint(containerId) {
-  var content = document.getElementById(containerId).innerHTML;
+  var container = document.getElementById(containerId);
   var styles = '';
   var styleSheets = document.styleSheets;
   try {
@@ -538,6 +584,26 @@ function acePrint(containerId) {
     '<div style="font-size:10px;color:rgba(255,255,255,0.7);margin-top:2px;">SEBI ARN-110832 | AMFI Registered MFD | EUIN E155215</div>' +
     '</div></div>';
 
+  var printFooter = '<div class="sebi-disclaimer"><div class="sebi-disc-inner"><span class="sebi-disc-icon">⚠️</span>' +
+    '<div class="sebi-disc-text"><strong>Disclaimer:</strong> For information and education only — not a recommendation to buy or sell any scheme. ' +
+    'Mutual Fund investments are subject to market risks; read all scheme related documents carefully. Past performance is not indicative of future returns. ' +
+    'Ace Financial Services — AMFI Registered Mutual Fund Distributor (ARN-110832).</div></div></div>';
+
+  var CHUNK_SIZE = 3;
+  var pageContents = [];
+  var sourceTable = container.querySelector('table.cmp-tbl');
+  if (sourceTable && sourceTable.querySelectorAll('thead th').length - 1 > CHUNK_SIZE) {
+    var chunks = splitTableForPrint(sourceTable, CHUNK_SIZE);
+    chunks.forEach(function(tbl){ pageContents.push('<div class="compare-table">' + tbl + '</div>'); });
+  } else {
+    pageContents.push(container.innerHTML);
+  }
+  var pagesHtml = pageContents.map(function(pc, idx){
+    var isLast = idx === pageContents.length - 1;
+    return '<div class="print-wrapper' + (isLast ? '' : ' print-page-break') + '">' +
+      printHeader + '<div class="print-body">' + pc + '</div>' + printFooter + '</div>';
+  }).join('');
+
   var win = window.open('', '_blank', 'width=980,height=800');
   win.document.write(
     '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
@@ -545,7 +611,8 @@ function acePrint(containerId) {
     '<style>' + styles + '</style>' +
     '<style>' +
     'body{background:#fff!important;padding:16px;font-family:Arial,sans-serif;}' +
-    '.print-wrapper{border:2px solid #3c3197;border-radius:10px;overflow:hidden;page-break-inside:avoid;}' +
+    '.print-wrapper{border:2px solid #3c3197;border-radius:10px;overflow:hidden;page-break-inside:avoid;margin-bottom:16px;}' +
+    '.print-page-break{page-break-after:always;}' +
     '.print-body{padding:16px;}' +
     '.compare-table{overflow:visible!important;}' +
     '.compare-table table{width:100%;border-collapse:collapse;page-break-inside:avoid;}' +
@@ -555,10 +622,7 @@ function acePrint(containerId) {
     '  .print-wrapper{border:2px solid #3c3197;page-break-inside:avoid;}' +
     '}' +
     '</style></head><body>' +
-    '<div class="print-wrapper">' +
-    printHeader +
-    '<div class="print-body">' + content + '</div>' +
-    '</div>' +
+    pagesHtml +
     '<script>window.onload=function(){window.print();}<\/script>' +
     '</body></html>'
   );
