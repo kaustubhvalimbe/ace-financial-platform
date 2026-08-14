@@ -533,8 +533,15 @@ function splitTableForPrint(sourceTable, chunkSize) {
     newTable.className = 'cmp-tbl';
     var newThead = document.createElement('thead');
     var newHeadRow = document.createElement('tr');
-    newHeadRow.appendChild(headCells[0].cloneNode(true));
-    for (var i = startIdx; i < endIdx; i++) newHeadRow.appendChild(headCells[i].cloneNode(true));
+    var labelCell = headCells[0].cloneNode(true);
+    labelCell.style.width = '18%';
+    newHeadRow.appendChild(labelCell);
+    var fundColWidth = (82 / thisChunkCount).toFixed(2) + '%';
+    for (var i = startIdx; i < endIdx; i++) {
+      var fundCell = headCells[i].cloneNode(true);
+      fundCell.style.width = fundColWidth;
+      newHeadRow.appendChild(fundCell);
+    }
     newThead.appendChild(newHeadRow);
     newTable.appendChild(newThead);
     var newTbody = document.createElement('tbody');
@@ -592,7 +599,7 @@ function acePrint(containerId) {
   var CHUNK_SIZE = 3;
   var pageContents = [];
   var sourceTable = container.querySelector('table.cmp-tbl');
-  if (sourceTable && sourceTable.querySelectorAll('thead th').length - 1 > CHUNK_SIZE) {
+  if (sourceTable) {
     var chunks = splitTableForPrint(sourceTable, CHUNK_SIZE);
     chunks.forEach(function(tbl){ pageContents.push('<div class="compare-table">' + tbl + '</div>'); });
   } else {
@@ -615,8 +622,11 @@ function acePrint(containerId) {
     '.print-page-break{page-break-after:always;}' +
     '.print-body{padding:16px;}' +
     '.compare-table{overflow:visible!important;}' +
-    '.compare-table table{width:100%;border-collapse:collapse;page-break-inside:avoid;}' +
-    '.compare-table th,.compare-table td{padding:6px 10px!important;font-size:12px!important;}' +
+    '.compare-table table{width:100%;table-layout:fixed;border-collapse:collapse;page-break-inside:avoid;}' +
+    '.compare-table th,.compare-table td{padding:5px 6px!important;font-size:10.5px!important;word-wrap:break-word;overflow-wrap:break-word;}' +
+    '.compare-table th:first-child,.compare-table td:first-child{min-width:0!important;position:static!important;}' +
+    '.compare-table .fth{font-size:10px!important;}' +
+    '.compare-table .fam{font-size:8px!important;}' +
     '@media print{' +
     '  body{padding:8px;}' +
     '  .print-wrapper{border:2px solid #3c3197;page-break-inside:avoid;}' +
