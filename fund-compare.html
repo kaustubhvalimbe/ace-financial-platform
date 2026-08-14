@@ -29,7 +29,8 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
 .search-section{background:#fff;border:2px solid var(--g4);border-radius:14px;padding:20px;margin-bottom:20px;}
 .search-title{font-family:var(--fh);font-size:16px;font-weight:900;color:var(--p2);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
 .search-title::before{content:"";display:block;width:4px;height:18px;background:linear-gradient(var(--p2),var(--g2));border-radius:2px;}
-.search-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.search-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+@media(max-width:768px){.search-row{grid-template-columns:repeat(2,1fr);}}
 .search-box{position:relative;}
 .search-box label{display:block;font-size:11px;font-weight:700;color:var(--t4);margin-bottom:5px;font-family:var(--fm);}
 .search-inp{width:100%;background:var(--g5);border:2px solid var(--g4);color:var(--t1);font-family:var(--fb);font-size:12px;padding:9px 12px;border-radius:9px;}
@@ -48,6 +49,7 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
 /* TABLE */
 .result-wrap{background:#fff;border:2px solid var(--g4);border-radius:14px;overflow:visible;display:none;}
 .result-wrap.show{display:block;}
+.compare-table{overflow-x:auto;-webkit-overflow-scrolling:touch;}
 .cmp-scroll-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;position:relative;}
 .cmp-scroll-wrap::before{
   content:'← Slide to see all funds →';
@@ -236,14 +238,14 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
 <div class="hero">
   <div class="hero-in">
     <h1>⚖️ Fund <span>Comparison</span></h1>
-    <p>Search and compare up to 4 mutual funds side by side · Returns · Risk · Suitability · Best value highlighted</p>
+    <p>Search and compare up to 6 mutual funds side by side · Returns · Risk · Suitability · Best value highlighted</p>
   </div>
 </div>
 <div class="main">
   <div class="search-section">
     <div class="search-title">Search & Select Funds to Compare</div>
     <div class="search-row" id="slots-row">
-      <!-- 4 slots built by JS -->
+      <!-- 6 slots built by JS -->
     </div>
     <button class="compare-btn" id="cmp-btn" onclick="buildTable()" disabled>
       ⚖️ Compare Now — Select at least 2 funds above
@@ -273,7 +275,7 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 20px;height:60px
 </div>
 <script>
 var ALL_FUNDS = [];
-var SELECTED  = [null, null, null, null]; // up to 4 slots
+var SELECTED  = [null, null, null, null, null, null]; // up to 6 slots
 var loaded    = false;
 
 // ── LOAD FUND LIST ──────────────────────────────────────
@@ -296,7 +298,7 @@ async function loadFunds() {
 function buildSlots() {
   var row = document.getElementById('slots-row');
   row.innerHTML = '';
-  for(var i = 0; i < 4; i++) {
+  for(var i = 0; i < 6; i++) {
     var box = document.createElement('div');
     box.className = 'search-box';
     var lbl = document.createElement('div');
@@ -491,7 +493,7 @@ function renderTable(funds) {
   html+=buildRow('Min SIP (SEBI)', funds.map(function(f){return f.plan==='Direct'?'₹100':'₹500';}));
   html+=buildRow('Tax Benefit 80C', funds.map(function(f){return f.name.toUpperCase().includes('ELSS')||f.name.toUpperCase().includes('TAX')? '✅ Yes':'❌ No';}));
   html+='</tbody></table>';
-  document.getElementById('cmp-result').innerHTML = html;
+  document.getElementById('cmp-result').innerHTML = '<div class="compare-table">'+html+'</div>';
   // Show print button after comparison is built
   document.getElementById('print-bar').style.display = 'flex';
 }
