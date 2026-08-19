@@ -1008,12 +1008,38 @@ async function fetchMFAPI() {
   return null;
 }
 
+// ── AUM DATA (self-maintained, shared file/logic with Fund Compare & Fund Toppers) ──
+// Reduces a full scheme name to its base fund identity (strips Direct/Regular
+// Plan and Growth/IDCW/etc suffixes) so AUM - which AMCs disclose per FUND,
+// not per plan variant - can be looked up regardless of which plan/option a
+// specific scheme_code represents.
+function baseFundName(fullName) {
+  var n = String(fullName || '');
+  n = n.replace(/\s*-\s*(Direct|Regular)\s*Plan.*$/i, '');
+  n = n.replace(/\s*-\s*(Growth|IDCW|Dividend|Bonus|Payout|Reinvestment)\s*$/i, '');
+  return n.trim().toLowerCase();
+}
+var AUM_DATA = null; // {as_of_date, sources:{amc:filedate}, funds:{normalized_name:{display_name,aum_cr,amc}}} once loaded, else null
+async function loadAUMData() {
+  try {
+    var r = await fetch('aum-data.json');
+    var d = await r.json();
+    if (d && d.funds) AUM_DATA = d;
+  } catch(e) { console.log('AUM data not available (aum-data.json missing or invalid) - AUM will show "-"'); }
+}
+function getAUM(fundName) {
+  if (!AUM_DATA || !AUM_DATA.funds) return null;
+  var entry = AUM_DATA.funds[baseFundName(fundName)];
+  return entry ? entry.aum_cr : null;
+}
+
 async function init(){
   function setTxt(id, val){ var el=document.getElementById(id); if(el) el.textContent=val; }
   function setCls(id, val){ var el=document.getElementById(id); if(el) el.className=val; }
 
   setTxt('status-txt', 'Loading funds...');
   try {
+    await loadAUMData();
     // Try direct mfapi first, then allorigins proxy as fallback
     var data;
     data = await fetchMFAPI();
@@ -1032,6 +1058,7 @@ async function init(){
         code: String(f.schemeCode), name: name,
         nav: null, date: null,
         cat: cat, plan: plan, nat: nat, subcat: sub, amc: amc,
+        aum: getAUM(name),
         r1m:null, r3m:null, r6m:null,
         r1y:null, r3y:null, r5y:null, r10y:null,
         retLoaded: false
@@ -1212,6 +1239,7 @@ function renderFundGrid(reset){
           <div class="fc-ret">5Y: ${f.r5y!=null?f.r5y.toFixed(1)+'%':'—'}</div>
         </div>
         ${f.nav?`<div class="fc-nav">NAV: ₹${f.nav>100?f.nav.toFixed(2):f.nav.toFixed(4)} · ${f.date||''}</div>`:''}
+        ${f.aum?`<div class="fc-nav">AUM: ₹${f.aum.toLocaleString('en-IN')} Cr</div>`:''}
         <button class="fc-view-btn" onclick="event.stopPropagation();openDetail('${f.code}')">📊 View Details</button>
       </div>
     </div>`;
@@ -1343,6 +1371,7 @@ function renderDetailPanel(fund){
     ['ISIN (Growth)',fund.isin1||'—'],
     ['ISIN (IDCW)',fund.isin2||'—'],
     ['AMC',fund.amc||'—'],
+    ['AUM (₹ Cr)',fund.aum?fund.aum.toLocaleString('en-IN')+(AUM_DATA?' <span style="font-weight:400;color:#9ca3af;font-size:10px">(all plans, as of '+AUM_DATA.as_of_date+')</span>':''):'—'],
     ['Category',fund.cat?.toUpperCase()||'—'],
     ['Sub-Category',fund.subcat||'—'],
     ['Plan Type',fund.plan?.toUpperCase()||'—'],

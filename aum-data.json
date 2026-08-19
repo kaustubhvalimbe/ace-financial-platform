@@ -1,9 +1,554 @@
 {
-  "_readme": "Ace Financial Services - AUM data, self-maintained (not a live feed). Update quarterly by checking https://www.amfiindia.com/aum-data/average-aum for each fund you want covered. 'aum_cr' is Average AUM in Rs Crore for the quarter shown in as_of_quarter. Key each fund by its AMFI scheme code (same code mfapi.in returns - visible in this site's own fund search results). Funds not listed here will simply show '-' on the site rather than breaking anything.",
-  "as_of_quarter": "PLACEHOLDER - e.g. Q1 FY2026-27 (Apr-Jun 2026)",
-  "as_of_date": "PLACEHOLDER - date you last updated this file, e.g. 2026-08-18",
+  "_readme": "Ace Financial Services - AUM data, self-maintained from AMC monthly AAUM disclosure filings (not a live feed). AUM is fund-level (combines Direct+Regular plans, per SEBI's disclosure format - schemes are not tracked separately by plan). Key = fund name with plan/option suffix stripped, lowercased. To add more AMCs, get their monthly 'AAUM Disclosure Report' (Annexure A1 format) and merge in the same way.",
+  "as_of_date": "2026-07-31",
+  "sources": {
+    "HDFC Mutual Fund": "AMC monthly AAUM disclosure, July 2026"
+  },
   "funds": {
-    "122639": {"name": "Parag Parikh Flexi Cap Fund - Direct Plan - Growth", "aum_cr": 0},
-    "122640": {"name": "Parag Parikh Flexi Cap Fund - Regular Plan - Growth", "aum_cr": 0}
+    "hdfc money market fund": {
+      "display_name": "HDFC Money Market Fund",
+      "aum_cr": 30479.0,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc liquid fund": {
+      "display_name": "HDFC Liquid Fund",
+      "aum_cr": 72890.95,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc overnight fund": {
+      "display_name": "HDFC Overnight Fund",
+      "aum_cr": 11833.3,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc gilt fund": {
+      "display_name": "HDFC Gilt Fund",
+      "aum_cr": 2047.04,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc charity fund for cancer cure": {
+      "display_name": "HDFC Charity Fund for Cancer Cure",
+      "aum_cr": 190.16,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc fmp 1269d march 2023-series 47": {
+      "display_name": "HDFC FMP 1269D March 2023-Series 47",
+      "aum_cr": 84.39,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc fmp 1876d march 2022  - series 46": {
+      "display_name": "HDFC FMP 1876D March 2022  - Series 46",
+      "aum_cr": 35.35,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc fmp 1861d march 2022  - series 46": {
+      "display_name": "HDFC FMP 1861D March 2022  - Series 46",
+      "aum_cr": 505.65,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc fmp 2638d february 2023-series 47": {
+      "display_name": "HDFC FMP 2638D February 2023-Series 47",
+      "aum_cr": 169.53,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc low duration fund": {
+      "display_name": "HDFC Low Duration Fund",
+      "aum_cr": 18552.57,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc income fund": {
+      "display_name": "HDFC Income Fund",
+      "aum_cr": 831.77,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc hybrid debt fund": {
+      "display_name": "HDFC Hybrid Debt Fund",
+      "aum_cr": 3255.06,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc corporate bond fund": {
+      "display_name": "HDFC Corporate Bond Fund",
+      "aum_cr": 30725.46,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty sdl plus g-sec jun 2027 40:60 index fund": {
+      "display_name": "HDFC NIFTY SDL Plus G-Sec Jun 2027 40:60 Index Fund",
+      "aum_cr": 48.46,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc long duration debt fund": {
+      "display_name": "HDFC Long Duration Debt Fund",
+      "aum_cr": 2962.26,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc ultra short term fund": {
+      "display_name": "HDFC Ultra Short Term Fund",
+      "aum_cr": 17128.79,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty sdl oct 2026 index fund": {
+      "display_name": "HDFC Nifty SDL Oct 2026 Index Fund",
+      "aum_cr": 181.47,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc floating rate debt fund": {
+      "display_name": "HDFC Floating Rate Debt Fund",
+      "aum_cr": 16442.43,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty g-sec apr2029 index fund": {
+      "display_name": "HDFC Nifty G-Sec Apr2029 Index Fund",
+      "aum_cr": 156.65,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty g-sec sep 2032 index fund": {
+      "display_name": "HDFC Nifty G-Sec Sep 2032 Index Fund",
+      "aum_cr": 628.61,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc banking and psu debt fund": {
+      "display_name": "HDFC Banking and PSU Debt Fund",
+      "aum_cr": 5289.67,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc retirement savings fund - hybrid debt plan": {
+      "display_name": "HDFC Retirement Savings Fund - Hybrid Debt Plan",
+      "aum_cr": 148.74,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty g-sec jun2027 index fund": {
+      "display_name": "HDFC Nifty G-Sec Jun2027 Index Fund",
+      "aum_cr": 579.89,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty g sec july 2031 index fund": {
+      "display_name": "HDFC Nifty G Sec July 2031 Index Fund",
+      "aum_cr": 635.82,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty g sec dec 2026 index fund": {
+      "display_name": "HDFC Nifty G Sec Dec 2026 Index Fund",
+      "aum_cr": 940.28,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc crisil-ibx fin services 3-6 months debt index fund": {
+      "display_name": "HDFC CRISIL-IBX Fin Services 3-6 Months Debt Index Fund",
+      "aum_cr": 2305.05,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc crisil-ibx financial services 9-12 months debt index fund": {
+      "display_name": "HDFC CRISIL-IBX Financial Services 9-12 Months Debt Index Fund",
+      "aum_cr": 872.37,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc dynamic debt fund": {
+      "display_name": "HDFC Dynamic Debt Fund",
+      "aum_cr": 526.35,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc credit risk debt fund": {
+      "display_name": "HDFC Credit Risk Debt Fund",
+      "aum_cr": 7668.58,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc short term debt fund": {
+      "display_name": "HDFC Short Term Debt Fund",
+      "aum_cr": 15102.9,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc medium term debt fund": {
+      "display_name": "HDFC Medium Term Debt Fund",
+      "aum_cr": 3636.08,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty g- sec jun 2036 index fund": {
+      "display_name": "HDFC Nifty G- Sec Jun 2036 Index Fund",
+      "aum_cr": 833.54,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc elss tax saver": {
+      "display_name": "HDFC ELSS Tax saver",
+      "aum_cr": 15903.31,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc retirement savings fund - equity plan": {
+      "display_name": "HDFC Retirement Savings Fund - Equity Plan",
+      "aum_cr": 6919.08,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc manufacturing fund": {
+      "display_name": "HDFC Manufacturing Fund",
+      "aum_cr": 10398.29,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc technology fund": {
+      "display_name": "HDFC Technology Fund",
+      "aum_cr": 1394.7,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc focused fund": {
+      "display_name": "HDFC Focused Fund",
+      "aum_cr": 27724.71,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc banking & financial services fund": {
+      "display_name": "HDFC Banking & Financial Services Fund",
+      "aum_cr": 4652.74,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty india consumption index fund": {
+      "display_name": "HDFC Nifty India Consumption Index Fund",
+      "aum_cr": 129.02,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty200 momentum 30 index fund": {
+      "display_name": "HDFC NIFTY200 Momentum 30 INDEX FUND",
+      "aum_cr": 607.98,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc bse 500 index fund": {
+      "display_name": "HDFC BSE 500 Index Fund",
+      "aum_cr": 317.66,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty next 50 index fund": {
+      "display_name": "HDFC NIFTY Next 50 Index Fund",
+      "aum_cr": 2583.57,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty100 low volatility 30 index": {
+      "display_name": "HDFC NIFTY100 Low Volatility 30 Index",
+      "aum_cr": 224.46,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty 100 index fund": {
+      "display_name": "HDFC Nifty 100 Index Fund",
+      "aum_cr": 465.21,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc infrastructure fund": {
+      "display_name": "HDFC Infrastructure Fund",
+      "aum_cr": 2401.8,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc mid cap fund": {
+      "display_name": "HDFC Mid Cap Fund",
+      "aum_cr": 102971.24,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc large cap fund": {
+      "display_name": "HDFC Large Cap Fund",
+      "aum_cr": 39693.89,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty500 multicap 50:25:25 index fund": {
+      "display_name": "HDFC Nifty500 Multicap 50:25:25 Index Fund",
+      "aum_cr": 496.26,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc transportation and logistics fund": {
+      "display_name": "HDFC Transportation and Logistics Fund",
+      "aum_cr": 1864.06,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty smallcap 250 index fund": {
+      "display_name": "HDFC NIFTY Smallcap 250 Index Fund",
+      "aum_cr": 723.49,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty india digital index fund": {
+      "display_name": "HDFC Nifty India Digital Index Fund",
+      "aum_cr": 147.71,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty top 20 equal weight index fund": {
+      "display_name": "HDFC Nifty Top 20 Equal Weight Index Fund",
+      "aum_cr": 91.87,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc equity savings fund": {
+      "display_name": "HDFC Equity Savings Fund",
+      "aum_cr": 5678.35,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty100 equal weight index fund": {
+      "display_name": "HDFC Nifty100 Equal Weight Index Fund",
+      "aum_cr": 508.06,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc large and mid cap fund": {
+      "display_name": "HDFC Large and Mid Cap Fund",
+      "aum_cr": 29696.36,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty50 equal weight index fund": {
+      "display_name": "HDFC Nifty50 Equal Weight Index Fund",
+      "aum_cr": 1782.69,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty realty index fund": {
+      "display_name": "HDFC Nifty Realty Index Fund",
+      "aum_cr": 142.47,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc small cap fund": {
+      "display_name": "HDFC Small Cap Fund",
+      "aum_cr": 41209.02,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc pharma and healthcare fund": {
+      "display_name": "HDFC Pharma and Healthcare Fund",
+      "aum_cr": 2778.24,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc mnc fund": {
+      "display_name": "HDFC MNC Fund",
+      "aum_cr": 542.6,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc housing opportunities fund": {
+      "display_name": "HDFC Housing Opportunities Fund",
+      "aum_cr": 1187.11,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc flexi cap fund": {
+      "display_name": "HDFC Flexi Cap Fund",
+      "aum_cr": 108706.91,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc defence fund": {
+      "display_name": "HDFC Defence Fund",
+      "aum_cr": 10603.4,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty100 quality 30 index fund": {
+      "display_name": "HDFC Nifty100 Quality 30 Index Fund",
+      "aum_cr": 142.57,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc multi-asset allocation fund": {
+      "display_name": "HDFC Multi-Asset Allocation Fund",
+      "aum_cr": 5944.63,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc dividend yield fund": {
+      "display_name": "HDFC Dividend Yield Fund",
+      "aum_cr": 5668.83,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc business cycle fund": {
+      "display_name": "HDFC Business Cycle Fund",
+      "aum_cr": 2735.75,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc innovation fund": {
+      "display_name": "HDFC Innovation Fund",
+      "aum_cr": 2861.54,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty auto index fund": {
+      "display_name": "HDFC Nifty Auto Index Fund",
+      "aum_cr": 134.2,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc multi cap fund": {
+      "display_name": "HDFC Multi Cap Fund",
+      "aum_cr": 20426.22,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc bse india sector leaders index fund": {
+      "display_name": "HDFC BSE India Sector Leaders Index Fund",
+      "aum_cr": 183.98,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty midcap 150 index fund": {
+      "display_name": "HDFC NIFTY Midcap 150 Index Fund",
+      "aum_cr": 672.18,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc value fund": {
+      "display_name": "HDFC Value Fund",
+      "aum_cr": 7778.47,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty 50 index fund": {
+      "display_name": "HDFC Nifty 50 Index Fund",
+      "aum_cr": 23976.79,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc bse sensex index fund": {
+      "display_name": "HDFC BSE Sensex Index Fund",
+      "aum_cr": 8582.08,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty largemidcap 250 index fund": {
+      "display_name": "HDFC Nifty LargeMidcap 250 Index Fund",
+      "aum_cr": 453.51,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc arbitrage fund": {
+      "display_name": "HDFC Arbitrage Fund",
+      "aum_cr": 24690.59,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc consumption fund": {
+      "display_name": "HDFC Consumption Fund",
+      "aum_cr": 1014.35,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc children's fund": {
+      "display_name": "HDFC Children's Fund",
+      "aum_cr": 10539.44,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc hybrid equity fund": {
+      "display_name": "HDFC Hybrid Equity Fund",
+      "aum_cr": 22457.54,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc balanced advantage fund": {
+      "display_name": "HDFC Balanced Advantage Fund",
+      "aum_cr": 107215.55,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc retirement savings fund - hybrid equity plan": {
+      "display_name": "HDFC Retirement Savings Fund - Hybrid Equity Plan",
+      "aum_cr": 1622.68,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc gold etf": {
+      "display_name": "HDFC Gold ETF",
+      "aum_cr": 22350.92,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty 50 value 20 etf": {
+      "display_name": "HDFC NIFTY 50 Value 20 ETF",
+      "aum_cr": 35.98,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty 1d rate liquid etf": {
+      "display_name": "HDFC NIFTY 1D RATE LIQUID ETF",
+      "aum_cr": 125.34,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty private bank etf": {
+      "display_name": "HDFC NIFTY Private Bank ETF",
+      "aum_cr": 492.05,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty 50 etf": {
+      "display_name": "HDFC NIFTY 50 ETF",
+      "aum_cr": 5382.65,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty 100 quality 30 etf": {
+      "display_name": "HDFC NIFTY 100 Quality 30 ETF",
+      "aum_cr": 21.59,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty bank etf": {
+      "display_name": "HDFC NIFTY Bank ETF",
+      "aum_cr": 2297.39,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty growth sectors 15 etf": {
+      "display_name": "HDFC NIFTY Growth Sectors 15 ETF",
+      "aum_cr": 23.2,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty psu bank etf": {
+      "display_name": "HDFC NIFTY PSU BANK ETF",
+      "aum_cr": 72.47,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc silver etf": {
+      "display_name": "HDFC Silver ETF",
+      "aum_cr": 7608.08,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty200 momentum 30 etf": {
+      "display_name": "HDFC NIFTY200 Momentum 30 ETF",
+      "aum_cr": 100.3,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty small cap 250 etf": {
+      "display_name": "HDFC Nifty Small Cap 250 ETF",
+      "aum_cr": 2556.64,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty next 50 etf": {
+      "display_name": "HDFC Nifty Next 50 ETF",
+      "aum_cr": 248.12,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty midcap 150 etf": {
+      "display_name": "HDFC Nifty Midcap 150 ETF",
+      "aum_cr": 156.74,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty metal etf": {
+      "display_name": "HDFC Nifty Metal ETF",
+      "aum_cr": 2.13,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty100 low volatility 30 etf": {
+      "display_name": "HDFC NIFTY100 Low Volatility 30 ETF",
+      "aum_cr": 12.84,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty 100 etf": {
+      "display_name": "HDFC Nifty 100 ETF",
+      "aum_cr": 44.59,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc bse sensex etf": {
+      "display_name": "HDFC BSE SENSEX ETF",
+      "aum_cr": 542.13,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc bse 500 etf": {
+      "display_name": "HDFC BSE 500 ETF",
+      "aum_cr": 56.67,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc nifty it etf": {
+      "display_name": "HDFC NIFTY IT ETF",
+      "aum_cr": 75.79,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc developed world overseas equity passive fof": {
+      "display_name": "HDFC Developed World Overseas Equity Passive FOF",
+      "aum_cr": 1696.58,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc income plus arbitrage omni fof": {
+      "display_name": "HDFC Income Plus Arbitrage Omni FOF",
+      "aum_cr": 27.49,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc diversified equity all cap active fof": {
+      "display_name": "HDFC Diversified Equity All Cap Active FOF",
+      "aum_cr": 2614.24,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc gold etf fund of fund": {
+      "display_name": "HDFC Gold ETF Fund of Fund",
+      "aum_cr": 11225.43,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc silver fund of fund": {
+      "display_name": "HDFC Silver Fund of Fund",
+      "aum_cr": 4350.85,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc income plus arbitrage active fof": {
+      "display_name": "HDFC Income Plus Arbitrage Active FOF",
+      "aum_cr": 2503.62,
+      "amc": "HDFC Mutual Fund"
+    },
+    "hdfc multi-asset active fund of funds": {
+      "display_name": "HDFC Multi-Asset Active Fund of Funds",
+      "aum_cr": 6036.16,
+      "amc": "HDFC Mutual Fund"
+    }
   }
 }

@@ -843,9 +843,31 @@ async function fetchMFAPI() {
   return null;
 }
 
+// ── AUM DATA (self-maintained, shared file/logic with Fund Compare & Fund Discovery) ──
+function baseFundName(fullName) {
+  var n = String(fullName || '');
+  n = n.replace(/\s*-\s*(Direct|Regular)\s*Plan.*$/i, '');
+  n = n.replace(/\s*-\s*(Growth|IDCW|Dividend|Bonus|Payout|Reinvestment)\s*$/i, '');
+  return n.trim().toLowerCase();
+}
+var AUM_DATA = null;
+async function loadAUMData() {
+  try {
+    var r = await fetch('aum-data.json');
+    var d = await r.json();
+    if (d && d.funds) AUM_DATA = d;
+  } catch(e) { console.log('AUM data not available (aum-data.json missing or invalid) - AUM will show "-"'); }
+}
+function getAUM(fundName) {
+  if (!AUM_DATA || !AUM_DATA.funds) return null;
+  var entry = AUM_DATA.funds[baseFundName(fundName)];
+  return entry ? entry.aum_cr : null;
+}
+
 async function loadFunds() {
   if(loaded) return;
   try {
+    await loadAUMData();
     var data = await fetchMFAPI();
     if(!data) {
       var contentEl = document.getElementById('toppers-content');
@@ -874,7 +896,7 @@ async function loadFunds() {
       var _isTrueETF = _u.includes('ETF') && !_u.includes('FUND OF FUND') && !_u.includes(' FOF') && !_u.includes('FOF ');
       allFunds.push({code:String(data[_i].schemeCode),name:_n,
         plan:_isTrueETF ? 'direct' : (_u.includes('DIRECT')?'direct':'regular'),nat:'growth',
-        subcat:getSubCat(_n),amc:xAMC(_n),
+        subcat:getSubCat(_n),amc:xAMC(_n),aum:getAUM(_n),
         r6m:null,r1y:null,r3y:null,r5y:null,rSI:null,riskAdj:null,
         inceptionDate:null,nav:null,date:null,retLoaded:false});
     }
@@ -1234,8 +1256,9 @@ async function renderToppers() {
     var shortName = f.name.replace(/ - Direct Plan - Growth/gi,'').replace(/ - Direct Plan/gi,'').replace(/ - Regular Plan - Growth/gi,'').replace(/ - Regular Plan/gi,'');
     var subLabel = ST.mode === 'amc' ? (f.subcat||'') : f.amc;
     var navLine = (f.nav && f.date) ? ('NAV: ₹'+parseFloat(f.nav).toFixed(4)+' (as on '+f.date+')') : '';
+    var aumLine = f.aum ? ('AUM: ₹'+f.aum.toLocaleString('en-IN')+' Cr') : '';
     tr.innerHTML = '<td><div class="rank-badge '+rankCls+'">'+rank+'</div></td>'
-      + '<td><div class="fund-name">'+shortName+'</div><div class="fund-amc">'+subLabel+'</div>'+(navLine?'<div class="fund-nav-line">'+navLine+'</div>':'')+'<div style="margin-top:4px;">'+aceQBadge(_qp)+'</div></td>'
+      + '<td><div class="fund-name">'+shortName+'</div><div class="fund-amc">'+subLabel+'</div>'+(navLine?'<div class="fund-nav-line">'+navLine+'</div>':'')+(aumLine?'<div class="fund-nav-line">'+aumLine+'</div>':'')+'<div style="margin-top:4px;">'+aceQBadge(_qp)+'</div></td>'
       + '<td>'+fmtR(f.r6m)+'</td>'
       + '<td>'+fmtR(f.r1y)+'</td>'
       + '<td>'+fmtR(f.r3y)+'</td>'
@@ -1326,7 +1349,7 @@ function openFundDetail(code,name){
   console.log('Fund found:', f ? f.name : 'NOT FOUND');
   if(!f) return;
   var ff={code:f.code,name:f.name,amc:f.amc,plan:f.plan,nat:'growth',
-    cat:f.subcat||'equity',subcat:f.subcat||'',nav:f.nav,date:f.date,
+    cat:f.subcat||'equity',subcat:f.subcat||'',nav:f.nav,date:f.date,aum:f.aum,
     r1m:null,r3m:null,r6m:f.r6m,r1y:f.r1y,r3y:f.r3y,r5y:f.r5y,r10y:null,
     rSI:f.rSI,inceptionDate:f.inceptionDate,retLoaded:false};
   var found=false;
@@ -1439,6 +1462,7 @@ function renderDetailPanel(fund){
     ['ISIN (Growth)',fund.isin1||'—'],
     ['ISIN (IDCW)',fund.isin2||'—'],
     ['AMC',fund.amc||'—'],
+    ['AUM (₹ Cr)',fund.aum?fund.aum.toLocaleString('en-IN')+(AUM_DATA?' <span style="font-weight:400;color:#9ca3af;font-size:10px">(all plans, as of '+AUM_DATA.as_of_date+')</span>':''):'—'],
     ['Category',fund.cat?.toUpperCase()||'—'],
     ['Sub-Category',fund.subcat||'—'],
     ['Plan Type',fund.plan?.toUpperCase()||'—'],

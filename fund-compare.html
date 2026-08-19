@@ -432,7 +432,7 @@ async function loadFundData(code, name) {
     r1m:null, r3m:null, r6m:null, r1y:null, r3y:null, r5y:null, r10y:null,
     plan: name.toUpperCase().includes('DIRECT')?'Direct':'Regular',
     nat:  name.toUpperCase().includes('IDCW')?'IDCW':'Growth',
-    aum: (AUM_DATA && AUM_DATA.funds && AUM_DATA.funds[code]) ? AUM_DATA.funds[code].aum_cr : null,
+    aum: (AUM_DATA && AUM_DATA.funds && AUM_DATA.funds[baseFundName(name)]) ? AUM_DATA.funds[baseFundName(name)].aum_cr : null,
   };
   // Extract AMC from name
   var amcs=['Aditya Birla Sun Life','Axis','Bajaj Finserv','Bandhan','Baroda BNP Paribas',
@@ -497,7 +497,7 @@ function renderTable(funds) {
   html+=buildRow('Nature',      funds.map(function(f){return f.nat;}));
   html+=buildRow('Current NAV', funds.map(function(f){return f.nav?'₹'+f.nav.toFixed(f.nav>100?2:4):'—';}));
   html+=buildRow('NAV Date',    funds.map(function(f){return f.date||'—';}));
-  html+=buildRow('AUM (₹ Cr)'+(AUM_DATA?' <span style="font-weight:400;color:#9ca3af;font-size:10px">('+AUM_DATA.as_of_quarter+')</span>':''),
+  html+=buildRow('AUM (₹ Cr) <span style="font-weight:400;color:#9ca3af;font-size:9.5px">all plans'+(AUM_DATA?', as of '+AUM_DATA.as_of_date:'')+'</span>',
     funds.map(function(f){return (f.aum!==null&&f.aum!==undefined&&f.aum>0)?f.aum.toLocaleString('en-IN'):'—';}));
   // Returns
   html+='<tr class="srow"><td colspan="'+(funds.length+1)+'">📈 Returns — Real from AMFI NAV History</td></tr>';
@@ -644,7 +644,18 @@ function acePrint(containerId) {
 }
 
 // ── INIT ──────────────────────────────────────────────
-var AUM_DATA = null; // {as_of_quarter, as_of_date, funds:{code:{name,aum_cr}}} once loaded, else null
+// Reduces a full scheme name to its base fund identity (strips Direct/Regular
+// Plan and Growth/IDCW/etc suffixes) so AUM - which AMCs disclose per FUND,
+// not per plan variant - can be looked up regardless of which plan/option
+// a specific scheme_code represents. Shared across Fund Discovery, Fund
+// Compare, and Fund Toppers so all three match the same aum-data.json keys.
+function baseFundName(fullName) {
+  var n = String(fullName || '');
+  n = n.replace(/\s*-\s*(Direct|Regular)\s*Plan.*$/i, '');
+  n = n.replace(/\s*-\s*(Growth|IDCW|Dividend|Bonus|Payout|Reinvestment)\s*$/i, '');
+  return n.trim().toLowerCase();
+}
+var AUM_DATA = null; // {as_of_date, sources:{amc:filedate}, funds:{normalized_name:{display_name,aum_cr,amc}}} once loaded, else null
 var AUM_LOAD_ATTEMPTED = false;
 async function loadAUMData() {
   AUM_LOAD_ATTEMPTED = true;
