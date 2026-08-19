@@ -652,7 +652,7 @@ function acePrint(containerId) {
 function baseFundName(fullName) {
   var n = String(fullName || '');
   n = n.replace(/\s*-\s*(Direct|Regular)\s*Plan.*$/i, '');
-  n = n.replace(/\s*-\s*(Growth|IDCW|Dividend|Bonus|Payout|Reinvestment)\s*$/i, '');
+  n = n.replace(/\s*-\s*(Growth|IDCW|Dividend|Bonus|Payout|Reinvestment)(\s*Plan)?\s*$/i, '');
   return n.trim().toLowerCase();
 }
 var AUM_DATA = null; // {as_of_date, sources:{amc:filedate}, funds:{normalized_name:{display_name,aum_cr,amc}}} once loaded, else null

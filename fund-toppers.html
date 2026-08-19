@@ -847,7 +847,7 @@ async function fetchMFAPI() {
 function baseFundName(fullName) {
   var n = String(fullName || '');
   n = n.replace(/\s*-\s*(Direct|Regular)\s*Plan.*$/i, '');
-  n = n.replace(/\s*-\s*(Growth|IDCW|Dividend|Bonus|Payout|Reinvestment)\s*$/i, '');
+  n = n.replace(/\s*-\s*(Growth|IDCW|Dividend|Bonus|Payout|Reinvestment)(\s*Plan)?\s*$/i, '');
   return n.trim().toLowerCase();
 }
 var AUM_DATA = null;
