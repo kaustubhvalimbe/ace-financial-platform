@@ -416,6 +416,7 @@ async function buildTable() {
   var wrap = document.getElementById('result-wrap');
   wrap.classList.add('show');
   document.getElementById('cmp-result').innerHTML = '<div class="loading">⏳ Loading NAV data for all funds...</div>';
+  if (!AUM_LOAD_ATTEMPTED) await loadAUMData(); // guarantee it's resolved before rendering, not racing the init call
 
   // Load returns for each fund from mfapi
   var fundData = [];
@@ -431,6 +432,7 @@ async function loadFundData(code, name) {
     r1m:null, r3m:null, r6m:null, r1y:null, r3y:null, r5y:null, r10y:null,
     plan: name.toUpperCase().includes('DIRECT')?'Direct':'Regular',
     nat:  name.toUpperCase().includes('IDCW')?'IDCW':'Growth',
+    aum: (AUM_DATA && AUM_DATA.funds && AUM_DATA.funds[code]) ? AUM_DATA.funds[code].aum_cr : null,
   };
   // Extract AMC from name
   var amcs=['Aditya Birla Sun Life','Axis','Bajaj Finserv','Bandhan','Baroda BNP Paribas',
@@ -495,6 +497,8 @@ function renderTable(funds) {
   html+=buildRow('Nature',      funds.map(function(f){return f.nat;}));
   html+=buildRow('Current NAV', funds.map(function(f){return f.nav?'₹'+f.nav.toFixed(f.nav>100?2:4):'—';}));
   html+=buildRow('NAV Date',    funds.map(function(f){return f.date||'—';}));
+  html+=buildRow('AUM (₹ Cr)'+(AUM_DATA?' <span style="font-weight:400;color:#9ca3af;font-size:10px">('+AUM_DATA.as_of_quarter+')</span>':''),
+    funds.map(function(f){return (f.aum!==null&&f.aum!==undefined&&f.aum>0)?f.aum.toLocaleString('en-IN'):'—';}));
   // Returns
   html+='<tr class="srow"><td colspan="'+(funds.length+1)+'">📈 Returns — Real from AMFI NAV History</td></tr>';
   var rets=[{l:'1M Return',k:'r1m'},{l:'3M Return',k:'r3m'},{l:'6M Return',k:'r6m'},
@@ -640,6 +644,17 @@ function acePrint(containerId) {
 }
 
 // ── INIT ──────────────────────────────────────────────
+var AUM_DATA = null; // {as_of_quarter, as_of_date, funds:{code:{name,aum_cr}}} once loaded, else null
+var AUM_LOAD_ATTEMPTED = false;
+async function loadAUMData() {
+  AUM_LOAD_ATTEMPTED = true;
+  try {
+    var r = await fetch('aum-data.json');
+    var d = await r.json();
+    if (d && d.funds) AUM_DATA = d;
+  } catch(e) { console.log('AUM data not available (aum-data.json missing or invalid) - AUM column will show "-"'); }
+}
+loadAUMData();
 loadFunds();
 buildSlots();
 updateBtn();

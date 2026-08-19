@@ -1,0 +1,9 @@
+{
+  "_readme": "Ace Financial Services - AUM data, self-maintained (not a live feed). Update quarterly by checking https://www.amfiindia.com/aum-data/average-aum for each fund you want covered. 'aum_cr' is Average AUM in Rs Crore for the quarter shown in as_of_quarter. Key each fund by its AMFI scheme code (same code mfapi.in returns - visible in this site's own fund search results). Funds not listed here will simply show '-' on the site rather than breaking anything.",
+  "as_of_quarter": "PLACEHOLDER - e.g. Q1 FY2026-27 (Apr-Jun 2026)",
+  "as_of_date": "PLACEHOLDER - date you last updated this file, e.g. 2026-08-18",
+  "funds": {
+    "122639": {"name": "Parag Parikh Flexi Cap Fund - Direct Plan - Growth", "aum_cr": 0},
+    "122640": {"name": "Parag Parikh Flexi Cap Fund - Regular Plan - Growth", "aum_cr": 0}
+  }
+}
