@@ -443,6 +443,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         <div class="calc-dsc">Systematic Withdrawal Plan — calculate monthly withdrawal from your corpus while it continues to grow. Ideal for retirement income planning.</div>
         <div class="ig"><div class="ig-lbl"><span>Initial Investment (₹)</span><span class="ig-val" id="wv-c">₹10,00,000</span></div><input type="number" id="wi-c" min="100" max="100000000" step="100" value="1000000" placeholder="e.g. 1000000" oninput="cSWP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSWP()"><div class="ig-range"><span>₹1L</span><span>₹5Cr</span></div></div>
         <div class="ig"><div class="ig-lbl"><span>Monthly Withdrawal (₹)</span><span class="ig-val" id="wv-w">₹8,000</span></div><input type="number" id="wi-w" min="100" max="500000" step="100" value="8000" placeholder="e.g. 8000" oninput="cSWP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSWP()"><div class="ig-range"><span>₹1K</span><span>₹5L</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Withdrawal Escalation (%/yr)</span><span class="ig-val" id="wv-e">0%</span></div><input type="number" id="wi-e" min="0" max="15" step="0.5" value="0" placeholder="e.g. 5" oninput="cSWP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSWP()"><div class="ig-range"><span>0% (flat)</span><span>15%</span></div></div>
         <div class="ig"><div class="ig-lbl"><span>Expected Annual Return (%)</span><span class="ig-val" id="wv-r">10%</span></div><input type="number" id="wi-r" min="1" max="40" step="0.5" value="10" placeholder="e.g. 10" oninput="cSWP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSWP()"><div class="ig-range"><span>1%</span><span>20%</span></div></div>
         <div class="ig"><div class="ig-lbl"><span>Withdrawal Period (Years)</span><span class="ig-val" id="wv-y">15 Yrs</span></div><input type="number" id="wi-y" min="1" max="50" step="1" value="15" placeholder="e.g. 15" oninput="cSWP()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;" onchange="cSWP()"><div class="ig-range"><span>1 Yr</span><span>35 Yrs</span></div></div>
       </div>
@@ -454,7 +455,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
           <div class="rc"><div class="rc-lbl">Max Safe Monthly Withdrawal</div><div class="rc-val gr" id="wr-max">₹0</div></div>
           <div class="rc"><div class="rc-lbl">Corpus Exhausts In</div><div class="rc-val" id="wr-ext">—</div></div>
         </div>
-        <div class="ytw"><table class="ytbl"><thead><tr><th>Year</th><th>Opening Balance</th><th>Withdrawn</th><th>Closing Balance</th></tr></thead><tbody id="wt-body"></tbody></table></div>
+        <div class="ytw"><table class="ytbl"><thead><tr><th>Year</th><th>Opening Balance</th><th>Monthly Wdl.</th><th>Withdrawn</th><th>Closing Balance</th></tr></thead><tbody id="wt-body"></tbody></table></div>
       </div>
     </div>
   </div>
@@ -900,10 +901,10 @@ function cSIP(){
 
 function cSWP(){
   if(typeof gtag==='function'){gtag('event','calculator_use',{'event_category':'engagement','event_label':'swp_calculator'});}
-  const corpus=+document.getElementById('wi-c').value,wdl=+document.getElementById('wi-w').value,r=+document.getElementById('wi-r').value/100,y=+document.getElementById('wi-y').value;
-  sv('wv-c',fmt(corpus));sv('wv-w',fmt(wdl));sv('wv-r',(r*100).toFixed(1)+'%');sv('wv-y',y+' Yrs');
-  let bal=corpus,tw=0,ext=y,rows='';
-  for(let yr=1;yr<=y;yr++){const op=bal;for(let m=1;m<=12;m++){bal=bal*(1+r/12)-wdl;tw+=wdl;if(bal<=0){bal=0;break;}}rows+=`<tr><td style="font-weight:700">Yr ${yr}</td><td class="m">${fmt(op)}</td><td style="font-family:var(--fm);color:var(--red)">-${fmt(Math.min(wdl*12,op))}</td><td class="m">${fmt(Math.max(0,bal))}</td></tr>`;if(bal<=0&&ext===y){ext=yr;break;}}
+  const corpus=+document.getElementById('wi-c').value,wdl=+document.getElementById('wi-w').value,esc=+document.getElementById('wi-e').value/100,r=+document.getElementById('wi-r').value/100,y=+document.getElementById('wi-y').value;
+  sv('wv-c',fmt(corpus));sv('wv-w',fmt(wdl));sv('wv-e',(esc*100).toFixed(1)+'%');sv('wv-r',(r*100).toFixed(1)+'%');sv('wv-y',y+' Yrs');
+  let bal=corpus,tw=0,ext=y,rows='',wdlYr=wdl;
+  for(let yr=1;yr<=y;yr++){const op=bal;const thisYrWdl=wdlYr;for(let m=1;m<=12;m++){bal=bal*(1+r/12)-thisYrWdl;tw+=thisYrWdl;if(bal<=0){bal=0;break;}}rows+=`<tr><td style="font-weight:700">Yr ${yr}</td><td class="m">${fmt(op)}</td><td class="m">${fmt(thisYrWdl)}</td><td style="font-family:var(--fm);color:var(--red)">-${fmt(Math.min(thisYrWdl*12,op))}</td><td class="m">${fmt(Math.max(0,bal))}</td></tr>`;if(bal<=0&&ext===y){ext=yr;break;}wdlYr*=(1+esc);}
   sv('wr-rem',fmt(Math.max(0,bal)));sv('wr-wdl',fmt(tw));sv('wr-sus',bal>0?'✅ Sustainable':'⚠️ Depletes');sv('wr-max',fmt(corpus*(r/12)));sv('wr-ext',bal>0?y+'+ Yrs':'Year '+ext);
   document.getElementById('wt-body').innerHTML=rows;
 }
