@@ -831,7 +831,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         <div class="ig"><div class="ig-lbl"><span>Initial Investment (US $)</span><span class="ig-val" id="nv-usd">$100,000</span></div><input type="number" id="ni-usd" min="1000" max="5000000" step="1000" value="100000" oninput="cNRI()" onchange="cNRI()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>$10K</span><span>$1M</span></div></div>
         <div class="ig"><div class="ig-lbl"><span>Expected Annual Return / CAGR (%)</span><span class="ig-val" id="nv-cagr">12%</span></div><input type="number" id="ni-cagr" min="1" max="30" step="0.5" value="12" oninput="cNRI()" onchange="cNRI()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>1%</span><span>30%</span></div></div>
         <div class="ig"><div class="ig-lbl"><span>Investment Period (Years)</span><span class="ig-val" id="nv-yrs">10 Yrs</span></div><input type="number" id="ni-yrs" min="1" max="30" step="1" value="10" oninput="cNRI()" onchange="cNRI()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>1 Yr</span><span>30 Yrs</span></div></div>
-        <div class="ig"><div class="ig-lbl"><span>USD/INR Exchange Rate (today)</span><span class="ig-val" id="nv-fx">₹95.5</span></div><input type="number" id="ni-fx" min="50" max="150" step="0.1" value="95.5" oninput="cNRI()" onchange="cNRI()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>Update to today's actual rate</span><span>Same rate assumed at exit too</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>USD/INR Exchange Rate (at entry, today)</span><span class="ig-val" id="nv-fx">₹95.5</span></div><input type="number" id="ni-fx" min="50" max="150" step="0.1" value="95.5" oninput="cNRI()" onchange="cNRI()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>Update to today's actual rate</span><span>Rate when you invest</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>USD/INR Exchange Rate (at exit, in N years)</span><span class="ig-val" id="nv-fxexit">₹95.5</span></div><input type="number" id="ni-fxexit" min="50" max="150" step="0.1" value="95.5" oninput="cNRI()" onchange="cNRI()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>Defaults to same as entry</span><span>INR has historically weakened over long periods — try a higher number to see the impact</span></div></div>
         <div class="ig"><div class="ig-lbl"><span>India LTCG Tax Rate (%)</span><span class="ig-val" id="nv-ltcg">12.5%</span></div><input type="number" id="ni-ltcg" min="0" max="30" step="0.5" value="12.5" oninput="cNRI()" onchange="cNRI()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>Current rate as of 2026</span><span>Editable — this changes with Budgets</span></div></div>
         <div class="ig"><div class="ig-lbl"><span>India LTCG Annual Exemption (₹)</span><span class="ig-val" id="nv-exempt">₹1,25,000</span></div><input type="number" id="ni-exempt" min="0" max="500000" step="5000" value="125000" oninput="cNRI()" onchange="cNRI()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>₹0</span><span>₹5L</span></div></div>
         <div class="ig"><div class="ig-lbl"><span>US Long-Term Capital Gains Tax Rate (%)</span><span class="ig-val" id="nv-ustax">15%</span></div><input type="number" id="ni-ustax" min="0" max="37" step="1" value="15" oninput="cNRI()" onchange="cNRI()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>0/15/20% federal brackets</span><span>Simplified — ignores NIIT/state tax</span></div></div>
@@ -844,6 +845,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
           <div class="rc hl"><div class="rc-lbl">Additional US Tax (after DTAA credit)</div><div class="rc-val" id="nr-ustax">$0</div></div>
           <div class="rc"><div class="rc-lbl">Total Tax (India + US, % of gain)</div><div class="rc-val" id="nr-taxpct">0%</div></div>
           <div class="rc"><div class="rc-lbl">Effective Post-Tax CAGR</div><div class="rc-val go" id="nr-netcagr">0%</div></div>
+          <div class="rc"><div class="rc-lbl">Currency Impact vs. No Rate Change</div><div class="rc-val" id="nr-fximpact">$0</div></div>
         </div>
         <div class="elss-note" id="nri-dtaa-note" style="line-height:1.6;">—</div>
         <div class="ytw"><table class="ytbl"><thead><tr><th>Step</th><th>Amount</th></tr></thead><tbody id="nri-body"></tbody></table></div>
@@ -1109,14 +1111,15 @@ function cNRI(){
   const cagr=+document.getElementById('ni-cagr').value/100;
   const yrs=+document.getElementById('ni-yrs').value;
   const fx=+document.getElementById('ni-fx').value;
+  const fxExit=+document.getElementById('ni-fxexit').value;
   const ltcgRate=+document.getElementById('ni-ltcg').value/100;
   const exemptInr=+document.getElementById('ni-exempt').value;
   const usTaxRate=+document.getElementById('ni-ustax').value/100;
 
   sv('nv-usd','$'+usd0.toLocaleString('en-US'));sv('nv-cagr',(cagr*100).toFixed(1)+'%');sv('nv-yrs',yrs+' Yrs');
-  sv('nv-fx','₹'+fx.toFixed(2));sv('nv-ltcg',(ltcgRate*100).toFixed(1)+'%');sv('nv-exempt',fmt(exemptInr));sv('nv-ustax',(usTaxRate*100).toFixed(1)+'%');
+  sv('nv-fx','₹'+fx.toFixed(2));sv('nv-fxexit','₹'+fxExit.toFixed(2));sv('nv-ltcg',(ltcgRate*100).toFixed(1)+'%');sv('nv-exempt',fmt(exemptInr));sv('nv-ustax',(usTaxRate*100).toFixed(1)+'%');
 
-  // Step 1-2: USD -> INR, then grow
+  // Step 1-2: USD -> INR at ENTRY rate, then grow (growth is purely INR-denominated, unaffected by FX)
   const inr0=usd0*fx;
   const corpusInr=inr0*Math.pow(1+cagr,yrs);
   const gainInr=corpusInr-inr0;
@@ -1125,11 +1128,13 @@ function cNRI(){
   const indiaTaxInr=Math.max(0,gainInr-exemptInr)*ltcgRate;
   const netInrAfterIndia=corpusInr-indiaTaxInr;
 
-  // Step 4: Convert back to USD - SAME rate as entry (simplifying assumption;
-  // the real future rate is unknown, flagged clearly in the disclaimer above)
-  const usdBeforeUsTax=netInrAfterIndia/fx;
-  const gainUsd=(corpusInr/fx)-usd0;
-  const indiaTaxUsdEquiv=indiaTaxInr/fx;
+  // Step 4: Convert back to USD at the EXIT rate - this is where currency
+  // movement actually bites. A WEAKER rupee at exit (higher Rs/$ number)
+  // means fewer dollars for the same INR corpus - it works AGAINST the
+  // investor, not for them, despite the common assumption otherwise.
+  const usdBeforeUsTax=netInrAfterIndia/fxExit;
+  const gainUsd=(corpusInr/fxExit)-usd0;
+  const indiaTaxUsdEquiv=indiaTaxInr/fxExit;
 
   // Step 5: US tax on the same gain, with DTAA foreign tax credit
   // (credit capped at the US tax otherwise due on this same income - standard FTC limitation)
@@ -1149,6 +1154,15 @@ function cNRI(){
   sv('nr-taxpct',totalTaxPct.toFixed(1)+'%');
   sv('nr-netcagr',netCagr.toFixed(1)+'%');
 
+  // Currency impact: what final amount WOULD have been at the entry rate
+  // (no FX movement), isolated from tax effects, so the FX effect specifically
+  // is visible on its own rather than blended into the final number.
+  const usdAtEntryRate=netInrAfterIndia/fx;
+  const fxImpact=usdBeforeUsTax-usdAtEntryRate;
+  const fxImpactEl=document.getElementById('nr-fximpact');
+  fxImpactEl.textContent=(fxImpact>=0?'+$':'−$')+Math.abs(Math.round(fxImpact)).toLocaleString('en-US');
+  fxImpactEl.style.color=fxImpact>=0?'var(--g1)':'var(--red)';
+
   const noteEl=document.getElementById('nri-dtaa-note');
   if(additionalUsTax<=0.01){
     noteEl.innerHTML='<b>DTAA credit fully covers US tax on this gain</b> — India tax paid ('+fmt(indiaTaxInr)+' ≈ $'+Math.round(indiaTaxUsdEquiv).toLocaleString('en-US')+') already meets or exceeds the US tax otherwise due ($'+Math.round(usTaxOnGain).toLocaleString('en-US')+') on the same gain, so no additional US tax is estimated to be owed on this specific investment. The investor still must report this on their US return.';
@@ -1156,13 +1170,14 @@ function cNRI(){
     noteEl.innerHTML='<b>DTAA credit partially covers US tax on this gain</b> — US tax on the gain is estimated at $'+Math.round(usTaxOnGain).toLocaleString('en-US')+'; the India tax already paid ('+fmt(indiaTaxInr)+' ≈ $'+Math.round(indiaTaxUsdEquiv).toLocaleString('en-US')+') is credited against this, leaving an estimated $'+Math.round(additionalUsTax).toLocaleString('en-US')+' still owed to the US.';
   }
 
+  const fxNote=fxExit!==fx?(fxExit>fx?' (weaker rupee than entry — this costs the investor)':' (stronger rupee than entry — this benefits the investor)'):' (same as entry)';
   const rows=[
     ['Initial Investment (USD)', '$'+usd0.toLocaleString('en-US')],
     ['→ Converted to INR (at ₹'+fx.toFixed(2)+')', fmt(inr0)],
     ['→ Corpus After '+yrs+' Yrs Growth @ '+(cagr*100).toFixed(1)+'% CAGR', fmt(corpusInr)],
     ['→ Less: India LTCG Tax', '−'+fmt(indiaTaxInr)],
     ['→ Net Corpus in India (INR)', fmt(netInrAfterIndia)],
-    ['→ Converted back to USD', '$'+Math.round(usdBeforeUsTax).toLocaleString('en-US')],
+    ['→ Converted back to USD (at ₹'+fxExit.toFixed(2)+')'+fxNote, '$'+Math.round(usdBeforeUsTax).toLocaleString('en-US')],
     ['→ Less: Additional US Tax (after DTAA credit)', '−$'+Math.round(additionalUsTax).toLocaleString('en-US')],
   ];
   let rowsHtml=rows.map(function(r){return '<tr><td>'+r[0]+'</td><td class="m">'+r[1]+'</td></tr>';}).join('');
