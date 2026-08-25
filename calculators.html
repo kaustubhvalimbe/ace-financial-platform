@@ -12,11 +12,11 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>11 Free Mutual Fund Calculators — SIP, SWP, Retirement Planning | Ace Financial Services</title>
-<meta name="description" content="11 free professional mutual fund calculators — SIP with step-up, SWP, Lumpsum, Goal-based planner, ELSS tax saver, Inflation adjusted returns, Retirement Readiness, and Financial Planning with SIP & SWP (full lifecycle simulator). Powered by Ace Financial Services, AMFI Registered MFD, Pune.">
+<title>12 Free Mutual Fund Calculators — SIP, SWP, Retirement Planning | Ace Financial Services</title>
+<meta name="description" content="12 free professional mutual fund calculators — SIP with step-up, SWP, Lumpsum, Goal-based planner, ELSS tax saver, Inflation adjusted returns, Retirement Readiness, Financial Planning with SIP & SWP (full lifecycle simulator), and an NRI Repatriation Estimator. Powered by Ace Financial Services, AMFI Registered MFD, Pune.">
 <meta name="keywords" content="SIP calculator india 2026, SWP calculator, lumpsum calculator, ELSS tax calculator 80C, goal based investment planner, mutual fund returns calculator, inflation adjusted returns, retirement readiness calculator, SIP for retirement calculator, SIP SWP lifecycle planner, wealth calculator india">
-<meta property="og:title" content="11 Free Mutual Fund Calculators — SIP, SWP, Retirement Planning | Ace Financial Services">
-<meta property="og:description" content="11 free professional mutual fund calculators including a full SIP-to-SWP lifecycle planner — see whether your retirement plan actually survives. Powered by Ace Financial Services, AMFI Registered MFD, Pune.">
+<meta property="og:title" content="12 Free Mutual Fund Calculators — SIP, SWP, Retirement Planning | Ace Financial Services">
+<meta property="og:description" content="12 free professional mutual fund calculators including a full SIP-to-SWP lifecycle planner and an NRI Repatriation Estimator — see whether your retirement plan actually survives. Powered by Ace Financial Services, AMFI Registered MFD, Pune.">
 <meta property="og:type" content="website">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Kaustubh Valimbe — Ace Financial Services">
@@ -287,7 +287,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   "@type": "FinancialService",
   "name": "Ace Financial Services",
   "alternateName": "AFS",
-  "description": "AMFI-registered Mutual Fund Distributor offering 11 free mutual fund & loan calculators including a quick SIP Overview, SIP, SWP, Lumpsum, Goal Planner, ELSS, Inflation Adjusted Returns, Retirement Readiness, a full SIP-to-SWP lifecycle planner, a Loan EMI calculator with amortization schedule, and a SIP XIRR calculator, in Pune, India.",
+  "description": "AMFI-registered Mutual Fund Distributor offering 12 free mutual fund & loan calculators including a quick SIP Overview, SIP, SWP, Lumpsum, Goal Planner, ELSS, Inflation Adjusted Returns, Retirement Readiness, a full SIP-to-SWP lifecycle planner, a Loan EMI calculator with amortization schedule, a SIP XIRR calculator, and an NRI Repatriation Estimator, in Pune, India.",
   "url": "https://acefinservices.com/calculators.html",
   "areaServed": { "@type": "City", "name": "Pune" },
   "address": { "@type": "PostalAddress", "addressLocality": "Pune", "addressRegion": "Maharashtra", "addressCountry": "IN" },
@@ -363,7 +363,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 <div class="hero">
   <div class="hero-in">
     <h1>Mutual Fund <span>Calculators</span> - Play with Numbers</h1>
-    <p>11 professional calculators — SIP Overview · SIP with Step-up · SWP · Lumpsum · Goal Planner · ELSS Tax Saver · Inflation Adjusted Returns · Retirement Readiness · Financial Planning with SIP & SWP · Loan EMI · SIP XIRR</p>
+    <p>12 professional calculators — SIP Overview · SIP with Step-up · SWP · Lumpsum · Goal Planner · ELSS Tax Saver · Inflation Adjusted Returns · Retirement Readiness · Financial Planning with SIP & SWP · Loan EMI · SIP XIRR · NRI Repatriation</p>
   </div>
 </div>
 
@@ -379,6 +379,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   <div class="ctab" onclick="showC('sipswp',this)">🔄 SIP + SWP</div>
   <div class="ctab" onclick="showC('loan',this)">🏦 Loan EMI</div>
   <div class="ctab" onclick="showC('xirr',this)">📊 XIRR</div>
+  <div class="ctab" onclick="showC('nri',this)">🌎 NRI Repatriation</div>
 </div>
 
 <div class="cbody">
@@ -819,6 +820,38 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     </div>
   </div>
 
+  <!-- NRI REPATRIATION -->
+  <div class="cpnl" id="c-nri">
+    <div class="clay">
+      <div class="cinp-card">
+        <h2 class="calc-ttl">NRI Repatriation <span>Estimator</span></h2>
+        <div class="calc-dsc">Estimate what a US-based NRI investor could receive back in USD after investing via an NRO account in India — growing the corpus, paying India capital gains tax, and repatriating funds home, accounting for the India-US DTAA foreign tax credit.</div>
+        <div class="elss-note" style="margin-bottom:16px;"><b>⚠️ Educational estimate only — not tax advice.</b> Real outcomes depend on the tax rules in effect on the actual redemption date (India's capital gains rates have changed before and will again), your personal US tax situation (this ignores NIIT and state tax), and the USD/INR rate on that future date, which cannot be predicted. Please consult a qualified CA for actual filing — Ace Financial Services is an AMFI-registered Mutual Fund Distributor, not a tax advisor.</div>
+
+        <div class="ig"><div class="ig-lbl"><span>Initial Investment (US $)</span><span class="ig-val" id="nv-usd">$100,000</span></div><input type="number" id="ni-usd" min="1000" max="5000000" step="1000" value="100000" oninput="cNRI()" onchange="cNRI()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>$10K</span><span>$1M</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Expected Annual Return / CAGR (%)</span><span class="ig-val" id="nv-cagr">12%</span></div><input type="number" id="ni-cagr" min="1" max="30" step="0.5" value="12" oninput="cNRI()" onchange="cNRI()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>1%</span><span>30%</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>Investment Period (Years)</span><span class="ig-val" id="nv-yrs">10 Yrs</span></div><input type="number" id="ni-yrs" min="1" max="30" step="1" value="10" oninput="cNRI()" onchange="cNRI()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>1 Yr</span><span>30 Yrs</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>USD/INR Exchange Rate (today)</span><span class="ig-val" id="nv-fx">₹95.5</span></div><input type="number" id="ni-fx" min="50" max="150" step="0.1" value="95.5" oninput="cNRI()" onchange="cNRI()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>Update to today's actual rate</span><span>Same rate assumed at exit too</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>India LTCG Tax Rate (%)</span><span class="ig-val" id="nv-ltcg">12.5%</span></div><input type="number" id="ni-ltcg" min="0" max="30" step="0.5" value="12.5" oninput="cNRI()" onchange="cNRI()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>Current rate as of 2026</span><span>Editable — this changes with Budgets</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>India LTCG Annual Exemption (₹)</span><span class="ig-val" id="nv-exempt">₹1,25,000</span></div><input type="number" id="ni-exempt" min="0" max="500000" step="5000" value="125000" oninput="cNRI()" onchange="cNRI()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>₹0</span><span>₹5L</span></div></div>
+        <div class="ig"><div class="ig-lbl"><span>US Long-Term Capital Gains Tax Rate (%)</span><span class="ig-val" id="nv-ustax">15%</span></div><input type="number" id="ni-ustax" min="0" max="37" step="1" value="15" oninput="cNRI()" onchange="cNRI()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g4);border-radius:8px;font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t1);background:var(--w1);outline:none;"><div class="ig-range"><span>0/15/20% federal brackets</span><span>Simplified — ignores NIIT/state tax</span></div></div>
+      </div>
+      <div class="cres-card">
+        <div class="rcards">
+          <div class="rc big"><div class="rc-lbl">Final Amount You Receive (USD)</div><div class="rc-val gr big" id="nr-final">$0</div></div>
+          <div class="rc"><div class="rc-lbl">Corpus After Growth (before tax)</div><div class="rc-val" id="nr-corpus">₹0</div></div>
+          <div class="rc"><div class="rc-lbl">India LTCG Tax Paid</div><div class="rc-val" style="color:var(--red)" id="nr-indiatax">₹0</div></div>
+          <div class="rc hl"><div class="rc-lbl">Additional US Tax (after DTAA credit)</div><div class="rc-val" id="nr-ustax">$0</div></div>
+          <div class="rc"><div class="rc-lbl">Total Tax (India + US, % of gain)</div><div class="rc-val" id="nr-taxpct">0%</div></div>
+          <div class="rc"><div class="rc-lbl">Effective Post-Tax CAGR</div><div class="rc-val go" id="nr-netcagr">0%</div></div>
+        </div>
+        <div class="elss-note" id="nri-dtaa-note" style="line-height:1.6;">—</div>
+        <div class="ytw"><table class="ytbl"><thead><tr><th>Step</th><th>Amount</th></tr></thead><tbody id="nri-body"></tbody></table></div>
+        <div class="elss-note" style="margin-top:12px;">Repatriation from an NRO account is capped at <b>USD 1 million per financial year</b> and requires a CA-certified Form 15CA/15CB (renamed Form 145/146 from April 2026). For amounts within this limit — as in the default scenario above — this isn't a binding constraint, but is worth knowing for larger corpora.</div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div class="faq-section">
@@ -838,7 +871,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   </details>
   <details class="faq-item">
     <summary>Are these calculators free, and do I need to log in?</summary>
-    <div class="faq-a">All 11 calculators are completely free and require no login or sign-up. You can use the SIP Overview, SIP, SWP, Lumpsum, Goal Planner, ELSS Tax Saver, Inflation Adjusted, Retirement Readiness, combined SIP &amp; SWP, Loan EMI, and SIP XIRR tools as many times as you like, directly in your browser.</div>
+    <div class="faq-a">All 12 calculators are completely free and require no login or sign-up. You can use the SIP Overview, SIP, SWP, Lumpsum, Goal Planner, ELSS Tax Saver, Inflation Adjusted, Retirement Readiness, combined SIP &amp; SWP, Loan EMI, SIP XIRR, and NRI Repatriation Estimator tools as many times as you like, directly in your browser.</div>
   </details>
   <details class="faq-item">
     <summary>How accurate are the calculator results?</summary>
@@ -1070,13 +1103,80 @@ function cSIPSWP(){
   document.getElementById('ss-table').innerHTML=tblHtml;
 }
 
+function cNRI(){
+  if(typeof gtag==='function'){gtag('event','calculator_use',{'event_category':'engagement','event_label':'nri_repatriation'});}
+  const usd0=+document.getElementById('ni-usd').value;
+  const cagr=+document.getElementById('ni-cagr').value/100;
+  const yrs=+document.getElementById('ni-yrs').value;
+  const fx=+document.getElementById('ni-fx').value;
+  const ltcgRate=+document.getElementById('ni-ltcg').value/100;
+  const exemptInr=+document.getElementById('ni-exempt').value;
+  const usTaxRate=+document.getElementById('ni-ustax').value/100;
+
+  sv('nv-usd','$'+usd0.toLocaleString('en-US'));sv('nv-cagr',(cagr*100).toFixed(1)+'%');sv('nv-yrs',yrs+' Yrs');
+  sv('nv-fx','₹'+fx.toFixed(2));sv('nv-ltcg',(ltcgRate*100).toFixed(1)+'%');sv('nv-exempt',fmt(exemptInr));sv('nv-ustax',(usTaxRate*100).toFixed(1)+'%');
+
+  // Step 1-2: USD -> INR, then grow
+  const inr0=usd0*fx;
+  const corpusInr=inr0*Math.pow(1+cagr,yrs);
+  const gainInr=corpusInr-inr0;
+
+  // Step 3: India LTCG tax (simplified - one-time exemption, current rate)
+  const indiaTaxInr=Math.max(0,gainInr-exemptInr)*ltcgRate;
+  const netInrAfterIndia=corpusInr-indiaTaxInr;
+
+  // Step 4: Convert back to USD - SAME rate as entry (simplifying assumption;
+  // the real future rate is unknown, flagged clearly in the disclaimer above)
+  const usdBeforeUsTax=netInrAfterIndia/fx;
+  const gainUsd=(corpusInr/fx)-usd0;
+  const indiaTaxUsdEquiv=indiaTaxInr/fx;
+
+  // Step 5: US tax on the same gain, with DTAA foreign tax credit
+  // (credit capped at the US tax otherwise due on this same income - standard FTC limitation)
+  const usTaxOnGain=Math.max(0,gainUsd)*usTaxRate;
+  const dtaaCredit=Math.min(indiaTaxUsdEquiv,usTaxOnGain);
+  const additionalUsTax=Math.max(0,usTaxOnGain-dtaaCredit);
+
+  const finalUsd=usdBeforeUsTax-additionalUsTax;
+  const totalTaxUsdEquiv=indiaTaxUsdEquiv+additionalUsTax;
+  const totalTaxPct=gainUsd>0?(totalTaxUsdEquiv/gainUsd*100):0;
+  const netCagr=usd0>0&&yrs>0?((Math.pow(finalUsd/usd0,1/yrs)-1)*100):0;
+
+  sv('nr-final','$'+Math.round(finalUsd).toLocaleString('en-US'));
+  sv('nr-corpus',fmt(corpusInr));
+  sv('nr-indiatax',fmt(indiaTaxInr));
+  sv('nr-ustax','$'+Math.round(additionalUsTax).toLocaleString('en-US'));
+  sv('nr-taxpct',totalTaxPct.toFixed(1)+'%');
+  sv('nr-netcagr',netCagr.toFixed(1)+'%');
+
+  const noteEl=document.getElementById('nri-dtaa-note');
+  if(additionalUsTax<=0.01){
+    noteEl.innerHTML='<b>DTAA credit fully covers US tax on this gain</b> — India tax paid ('+fmt(indiaTaxInr)+' ≈ $'+Math.round(indiaTaxUsdEquiv).toLocaleString('en-US')+') already meets or exceeds the US tax otherwise due ($'+Math.round(usTaxOnGain).toLocaleString('en-US')+') on the same gain, so no additional US tax is estimated to be owed on this specific investment. The investor still must report this on their US return.';
+  } else {
+    noteEl.innerHTML='<b>DTAA credit partially covers US tax on this gain</b> — US tax on the gain is estimated at $'+Math.round(usTaxOnGain).toLocaleString('en-US')+'; the India tax already paid ('+fmt(indiaTaxInr)+' ≈ $'+Math.round(indiaTaxUsdEquiv).toLocaleString('en-US')+') is credited against this, leaving an estimated $'+Math.round(additionalUsTax).toLocaleString('en-US')+' still owed to the US.';
+  }
+
+  const rows=[
+    ['Initial Investment (USD)', '$'+usd0.toLocaleString('en-US')],
+    ['→ Converted to INR (at ₹'+fx.toFixed(2)+')', fmt(inr0)],
+    ['→ Corpus After '+yrs+' Yrs Growth @ '+(cagr*100).toFixed(1)+'% CAGR', fmt(corpusInr)],
+    ['→ Less: India LTCG Tax', '−'+fmt(indiaTaxInr)],
+    ['→ Net Corpus in India (INR)', fmt(netInrAfterIndia)],
+    ['→ Converted back to USD', '$'+Math.round(usdBeforeUsTax).toLocaleString('en-US')],
+    ['→ Less: Additional US Tax (after DTAA credit)', '−$'+Math.round(additionalUsTax).toLocaleString('en-US')],
+  ];
+  let rowsHtml=rows.map(function(r){return '<tr><td>'+r[0]+'</td><td class="m">'+r[1]+'</td></tr>';}).join('');
+  rowsHtml+='<tr style="background:var(--p4);font-weight:800;"><td>Final Amount You Receive (USD)</td><td class="m" style="color:var(--g1);">$'+Math.round(finalUsd).toLocaleString('en-US')+'</td></tr>';
+  document.getElementById('nri-body').innerHTML=rowsHtml;
+}
+
 function showC(id,el){
   document.querySelectorAll('.cpnl').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('on'));
   document.getElementById('c-'+id).classList.add('on');el.classList.add('on');
 }
 
-cOverview();cSIP();cSWP();cLS();cGoal();cELSS();cInf();cRet();cSIPSWP();
+cOverview();cSIP();cSWP();cLS();cGoal();cELSS();cInf();cRet();cSIPSWP();cNRI();
 
 // ── INPUT VALIDATION ─────────────────────────────────────
 function validateInput(id, min, max, fieldName) {
@@ -1520,6 +1620,7 @@ function printXirr(){
   function initX(){
     var vd=document.getElementById('xi-val'); if(vd && !vd.value) vd.value=xFmtISO(xToday());
     if(location.hash==='#xirr'){var t=document.querySelector('.ctab[onclick*="\'xirr\'"]');if(t)showC('xirr',t);}
+    if(location.hash==='#nri'){var tn=document.querySelector('.ctab[onclick*="\'nri\'"]');if(tn)showC('nri',tn);}
     xCalc();
   }
   if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',initX);}else{initX();}
