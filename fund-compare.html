@@ -294,6 +294,22 @@ var SELECTED  = [null, null, null, null, null, null]; // up to 6 slots
 var loaded    = false;
 
 // ── LOAD FUND LIST ──────────────────────────────────────
+// ── FALLBACK: shared navmaster.db export (same file Fund Discovery uses),
+// tried ONLY if the live mfapi.in API fails - not a replacement for live data.
+async function loadFromNavmasterExport() {
+  try {
+    var r = await fetch('fund-discovery-export.json');
+    if (!r.ok) return null;
+    var payload = await r.json();
+    if (!payload.funds || !Array.isArray(payload.funds) || payload.funds.length < 100) return null;
+    return payload;
+  } catch (e) {
+    return null;
+  }
+}
+var FALLBACK_DATA = null;   // cached once loaded, so repeated per-fund fallback lookups don't re-fetch
+var USING_FALLBACK = false;
+
 async function loadFunds() {
   if(loaded) return;
   try {
@@ -304,9 +320,39 @@ async function loadFunds() {
     }).filter(function(f){ return f.name && f.name.length > 4; });
     loaded = true;
     console.log('Compare: '+ALL_FUNDS.length+' funds loaded');
+    showPrivateStatusBanner(false, null);
   } catch(e) {
-    console.log('Fund load failed:', e.message);
+    console.log('Fund load failed:', e.message, '- trying navmaster.db fallback');
+    var fb = await loadFromNavmasterExport();
+    if (fb) {
+      FALLBACK_DATA = fb;
+      USING_FALLBACK = true;
+      ALL_FUNDS = fb.funds.map(function(f){ return {code: String(f.code), name: f.name}; })
+        .filter(function(f){ return f.name && f.name.length > 4; });
+      loaded = true;
+      console.log('%c⚠️ FUND COMPARE: running on navmaster.db fallback (mfapi.in unreachable) - data as of ' + fb.exported_at,
+        'background:#f5a623;color:#000;font-weight:700;padding:4px 8px;border-radius:4px;');
+      showPrivateStatusBanner(true, fb.exported_at);
+    } else {
+      console.log('Fallback also unavailable - fund search will not work until mfapi.in recovers');
+    }
   }
+}
+
+// Private status hint - visible ONLY with ?kvcheck=1 in the URL. Regular
+// visitors never see this; same pattern as Fund Discovery's own hint.
+function showPrivateStatusBanner(usingFallback, asOf) {
+  if (location.search.indexOf('kvcheck=1') === -1) return;
+  var banner = document.createElement('div');
+  banner.style.cssText = 'position:fixed;top:8px;right:8px;z-index:99999;padding:8px 14px;border-radius:8px;font-family:monospace;font-size:12px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.3);';
+  if (usingFallback) {
+    banner.style.background = '#f5a623'; banner.style.color = '#000';
+    banner.textContent = '🟡 FALLBACK MODE - navmaster.db, as of ' + (asOf ? asOf.split('T')[0] : '?');
+  } else {
+    banner.style.background = '#2ecc71'; banner.style.color = '#000';
+    banner.textContent = '🟢 LIVE - mfapi.in';
+  }
+  document.body.appendChild(banner);
 }
 
 // ── BUILD SLOTS ────────────────────────────────────────
@@ -441,6 +487,7 @@ async function loadFundData(code, name) {
     'Motilal Oswal','Navi','Nippon India','NJ','PGIM India','Parag Parikh','Quant',
     'Quantum','Samco','SBI','Sundaram','Tata','UTI','Union','WhiteOak','Zerodha'];
   for(var a=0;a<amcs.length;a++) if(name.includes(amcs[a])){ f.amc=amcs[a]+' MF'; break; }
+  var gotLiveData = false;
   try {
     var r = await fetch('https://api.mfapi.in/mf/'+code);
     var d = await r.json();
@@ -448,25 +495,46 @@ async function loadFundData(code, name) {
       var cur = parseFloat(d.data[0].nav);
       f.nav  = cur;
       f.date = d.data[0].date;
-      var pts = d.data.length;
-      if(pts>=21)   { var o=parseFloat(d.data[20].nav);  if(o>0) f.r1m=((cur/o)-1)*100; }
-      if(pts>=63)   { var o=parseFloat(d.data[62].nav);  if(o>0) f.r3m=((cur/o)-1)*100; }
-      // --- CAGR by CALENDAR DATE (matches the AMFI app & AMC factsheets) ---
+      // --- CAGR by CALENDAR DATE for ALL periods (matches Fund Discovery's
+      //     methodology exactly, and AMC factsheets - previously r1m/r3m used
+      //     a fixed trading-day count instead, which could show a slightly
+      //     different number than the same fund on Fund Discovery. Standardized
+      //     here for consistency across pages. ---
       (function(){
         function _pd(s){var p=String(s).split('-');return new Date(+p[2],+p[1]-1,+p[0]);}
         var curDate=_pd(d.data[0].date), oldest=_pd(d.data[d.data.length-1].date), o;
         function onOrBefore(t){for(var k=0;k<d.data.length;k++){if(_pd(d.data[k].date)<=t){var v=parseFloat(d.data[k].nav);return v>0?v:null;}}return null;}
         function bM(m){var t=new Date(curDate);t.setMonth(t.getMonth()-m);return t;}
         function bY(y){var t=new Date(curDate);t.setFullYear(t.getFullYear()-y);return t;}
-        var t6=bM(6),t1=bY(1),t3=bY(3),t5=bY(5),t10=bY(10);
+        var t1m=bM(1),t3m=bM(3),t6=bM(6),t1=bY(1),t3=bY(3),t5=bY(5),t10=bY(10);
+        if(oldest<=t1m){o=onOrBefore(t1m); if(o) f.r1m=((cur/o)-1)*100;}
+        if(oldest<=t3m){o=onOrBefore(t3m); if(o) f.r3m=((cur/o)-1)*100;}
         if(oldest<=t6){o=onOrBefore(t6); if(o) f.r6m=((cur/o)-1)*100;}
         if(oldest<=t1){o=onOrBefore(t1); if(o) f.r1y=((cur/o)-1)*100;}
         if(oldest<=t3){o=onOrBefore(t3); if(o) f.r3y=(Math.pow(cur/o,1/3)-1)*100;}
         if(oldest<=t5){o=onOrBefore(t5); if(o) f.r5y=(Math.pow(cur/o,1/5)-1)*100;}
         if(oldest<=t10){o=onOrBefore(t10);if(o) f.r10y=(Math.pow(cur/o,1/10)-1)*100;}
       })();
+      gotLiveData = true;
     }
-  } catch(e) { console.log('NAV load failed for '+code); }
+  } catch(e) { console.log('NAV load failed for '+code+' - trying navmaster.db fallback'); }
+
+  if (!gotLiveData) {
+    // Live per-fund fetch failed (even if the bulk list load succeeded live -
+    // e.g. this specific scheme's endpoint is the one having trouble). Reuse
+    // the cached fallback export if loadFunds() already loaded it; otherwise
+    // load it fresh here, since this function can be called independently.
+    if (!FALLBACK_DATA) FALLBACK_DATA = await loadFromNavmasterExport();
+    if (FALLBACK_DATA) {
+      var match = FALLBACK_DATA.funds.find(function(x){ return String(x.code) === String(code); });
+      if (match) {
+        f.nav=match.nav; f.date=match.date;
+        f.r1m=match.r1m; f.r3m=match.r3m; f.r6m=match.r6m;
+        f.r1y=match.r1y; f.r3y=match.r3y; f.r5y=match.r5y; f.r10y=match.r10y;
+        console.log('  (using navmaster.db fallback data for '+code+')');
+      }
+    }
+  }
   return f;
 }
 
