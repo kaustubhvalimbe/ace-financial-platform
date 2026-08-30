@@ -63,6 +63,7 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 24px;height:64px
 .dot{width:8px;height:8px;border-radius:50%;}
 .dot-live{background:var(--g2);animation:blink 2s infinite;}
 .dot-load{background:var(--gold);animation:blink .8s infinite;}
+.dot-warn{background:var(--gold);}
 .dot-err{background:var(--red);}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
 .pb-wrap{flex:1;max-width:260px;height:6px;background:var(--g4);border-radius:3px;overflow:hidden;display:none;}
@@ -1033,6 +1034,22 @@ function getAUM(fundName) {
   return entry ? entry.aum_cr : null;
 }
 
+// ── FALLBACK: navmaster.db export, used ONLY if the live mfapi.in API
+// (including its proxy fallbacks in fetchMFAPI) is unreachable. Not a
+// replacement for live data - just resilience for outages like the one
+// on 28-Aug-2026, where api.mfapi.in's own /mf endpoint returned 502.
+async function loadFromNavmasterExport() {
+  try {
+    var r = await fetch('fund-discovery-export.json');
+    if (!r.ok) return null;
+    var payload = await r.json();
+    if (!payload.funds || !Array.isArray(payload.funds) || payload.funds.length < 100) return null;
+    return payload;
+  } catch (e) {
+    return null;
+  }
+}
+
 async function init(){
   function setTxt(id, val){ var el=document.getElementById(id); if(el) el.textContent=val; }
   function setCls(id, val){ var el=document.getElementById(id); if(el) el.className=val; }
@@ -1043,29 +1060,91 @@ async function init(){
     // Try direct mfapi first, then allorigins proxy as fallback
     var data;
     data = await fetchMFAPI();
-    if(!data) throw new Error('All data sources failed. Please refresh.');
-    S.all = [];
-    for(var i=0; i<data.length; i++){
-      var f    = data[i];
-      var name = f.schemeName;
-      if(!name || name.length < 5) continue;
-      var cat  = detCat(name);
-      var plan = detPlan(name);
-      var nat  = detNat(name);
-      var sub  = getSubCat(name, cat);
-      var amc  = xAMC(name);
-      S.all.push({
-        code: String(f.schemeCode), name: name,
-        nav: null, date: null,
-        cat: cat, plan: plan, nat: nat, subcat: sub, amc: amc,
-        aum: getAUM(name),
-        r1m:null, r3m:null, r6m:null,
-        r1y:null, r3y:null, r5y:null, r10y:null,
-        retLoaded: false
-      });
+    var usingFallback = false;
+    var fallbackAsOf = null;
+
+    if (data) {
+      S.all = [];
+      for(var i=0; i<data.length; i++){
+        var f    = data[i];
+        var name = f.schemeName;
+        if(!name || name.length < 5) continue;
+        var cat  = detCat(name);
+        var plan = detPlan(name);
+        var nat  = detNat(name);
+        var sub  = getSubCat(name, cat);
+        var amc  = xAMC(name);
+        S.all.push({
+          code: String(f.schemeCode), name: name,
+          nav: null, date: null,
+          cat: cat, plan: plan, nat: nat, subcat: sub, amc: amc,
+          aum: getAUM(name),
+          r1m:null, r3m:null, r6m:null,
+          r1y:null, r3y:null, r5y:null, r10y:null,
+          retLoaded: false
+        });
+      }
+    } else {
+      // Live API (and its proxy fallbacks) all failed - try the
+      // navmaster.db export instead of showing an error page.
+      setTxt('status-txt', 'Live data unavailable, trying backup...');
+      var fallback = await loadFromNavmasterExport();
+      if (!fallback) throw new Error('All data sources failed. Please refresh.');
+      usingFallback = true;
+      fallbackAsOf = fallback.exported_at;
+      // Private hint #1: only visible to someone who opens DevTools Console -
+      // regular visitors never see this, but it's there if you check.
+      console.log('%c⚠️ FUND DISCOVERY: running on navmaster.db fallback (mfapi.in unreachable) - data as of ' + fallbackAsOf,
+        'background:#f5a623;color:#000;font-weight:700;padding:4px 8px;border-radius:4px;');
+      S.all = [];
+      for (var j=0; j<fallback.funds.length; j++) {
+        var ff = fallback.funds[j];
+        var fname = ff.name;
+        if (!fname || fname.length < 5) continue;
+        var fcat  = detCat(fname);
+        var fplan = detPlan(fname);
+        var fnat  = detNat(fname);
+        var fsub  = getSubCat(fname, fcat);
+        var famc  = xAMC(fname);
+        S.all.push({
+          code: String(ff.code), name: fname,
+          nav: ff.nav, date: ff.date,
+          cat: fcat, plan: fplan, nat: fnat, subcat: fsub, amc: famc,
+          aum: getAUM(fname),
+          r1m: ff.r1m, r3m: ff.r3m, r6m: ff.r6m,
+          r1y: ff.r1y, r3y: ff.r3y, r5y: ff.r5y, r10y: ff.r10y,
+          rSI: ff.rSI, inceptionDate: ff.inceptionDate,
+          retLoaded: true   // pre-computed in the export - no live per-fund fetch needed
+        });
+      }
     }
-    setTxt('status-txt', '✅ ' + S.all.length.toLocaleString('en-IN') + ' funds loaded');
-    setCls('status-dot', 'dot dot-live');
+
+    if (usingFallback) {
+      var asOfDate = fallbackAsOf ? fallbackAsOf.split('T')[0] : 'unknown date';
+      setTxt('status-txt', '⚠️ Live data unavailable - showing saved data as of ' + asOfDate);
+      setCls('status-dot', 'dot dot-warn');
+    } else {
+      setTxt('status-txt', '✅ ' + S.all.length.toLocaleString('en-IN') + ' funds loaded');
+      setCls('status-dot', 'dot dot-live');
+    }
+
+    // Private hint #2: a small status banner, visible ONLY when the URL has
+    // ?kvcheck=1 - bookmark https://acefinservices.com/fund-discovery-v2.html?kvcheck=1
+    // for a quick manual check. Regular visitors never see this, since they
+    // never add this specific parameter.
+    if (location.search.indexOf('kvcheck=1') !== -1) {
+      var banner = document.createElement('div');
+      banner.style.cssText = 'position:fixed;top:8px;right:8px;z-index:99999;padding:8px 14px;border-radius:8px;font-family:monospace;font-size:12px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.3);';
+      if (usingFallback) {
+        banner.style.background = '#f5a623'; banner.style.color = '#000';
+        banner.textContent = '🟡 FALLBACK MODE - navmaster.db, as of ' + (fallbackAsOf ? fallbackAsOf.split('T')[0] : '?');
+      } else {
+        banner.style.background = '#2ecc71'; banner.style.color = '#000';
+        banner.textContent = '🟢 LIVE - mfapi.in';
+      }
+      document.body.appendChild(banner);
+    }
+
     S.loaded = true;
     onLoaded();
   } catch(e) {
