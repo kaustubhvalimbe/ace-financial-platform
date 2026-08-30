@@ -1246,6 +1246,30 @@ async function loadFundRet(fund){
       fund.rSI = (Math.pow(cur / inceptionNav, 1 / years) - 1) * 100;
       fund.inceptionDate = inceptionDate;
     }
+
+    // ── SANITY GUARD: reject implausible CAGR values caused by NAV data
+    // anomalies (e.g. old NAV-base plan mergers/re-basing events, or stale
+    // defunct funds with years-old NAV being compared against even older
+    // data). Same protection already used in Fund Toppers - was missing
+    // here, which is how a fund like a defunct Gilt/debt scheme could show
+    // a 400%+ "3Y CAGR" that's clearly a data error, not real performance.
+    const LOW_VOL_CATS = ['Liquid','Overnight','Ultra Short Duration','Low Duration','Money Market',
+      'Gilt','Short Duration','Medium Duration','Banking & PSU','Corporate Bond','Credit Risk','Dynamic Bond'];
+    const isLowVol = LOW_VOL_CATS.indexOf(fund.subcat) >= 0;
+    ['r1m','r3m','r6m','r1y','r3y','r5y','r10y','rSI'].forEach(function(k){
+      if(fund[k] === null || fund[k] === undefined) return;
+      const ceiling = isLowVol ? 20 : 100;
+      if(fund[k] > ceiling || fund[k] < -95) fund[k] = null;
+    });
+
+    // Mark inactive if NAV is stale (>90 days old) - filters out defunct/
+    // merged funds like Religare Invesco, PineBridge, etc. from showing
+    // misleading "returns" computed from years-old, frozen NAV data.
+    function _pdActive(s){var p=String(s).split('-');return new Date(+p[2],+p[1]-1,+p[0]);}
+    var navDateCheck = _pdActive(d.data[0].date);
+    var daysSinceUpdate = (new Date() - navDateCheck) / (1000*60*60*24);
+    fund.active = daysSinceUpdate <= 90;
+
     fund.retLoaded=true;
   }catch(e){}
 }
@@ -1307,7 +1331,7 @@ function applyFilters(){
 }
 function renderFundGrid(reset){
   if(reset) S.page=0;
-  const funds=S.fil.slice(0,(S.page+1)*S.perPage);
+  const funds=S.fil.slice(0,(S.page+1)*S.perPage).filter(f=>f.retLoaded ? f.active!==false : true);
   const grid=document.getElementById('fund-grid');
   if(!funds.length){grid.innerHTML=`<div class="no-funds"><h3>No Funds Found</h3><p>Try adjusting your filters</p></div>`;document.getElementById('load-more').style.display='none';return;}
   grid.innerHTML=funds.map(f=>{

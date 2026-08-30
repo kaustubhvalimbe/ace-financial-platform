@@ -539,6 +539,22 @@ async function loadFundData(code, name) {
         if(oldest<=t5){o=onOrBefore(t5); if(o) f.r5y=(Math.pow(cur/o,1/5)-1)*100;}
         if(oldest<=t10){o=onOrBefore(t10);if(o) f.r10y=(Math.pow(cur/o,1/10)-1)*100;}
       })();
+
+      // ── SANITY GUARD: reject implausible CAGR from NAV data anomalies
+      // (e.g. old NAV-base plan mergers/re-basing events on stale/defunct
+      // funds - was missing here, matching the same gap fixed on Fund
+      // Discovery. No formal subcategory field here, so detect likely
+      // low-volatility debt/liquid funds directly from the name instead. ──
+      var nameUpper = name.toUpperCase();
+      var looksLowVol = ['LIQUID','OVERNIGHT','GILT','MONEY MARKET','ULTRA SHORT','LOW DURATION',
+        'SHORT DURATION','MEDIUM DURATION','BANKING & PSU','CORPORATE BOND','CREDIT RISK',
+        'DYNAMIC BOND','BOND FUND'].some(function(kw){ return nameUpper.indexOf(kw) >= 0; });
+      ['r1m','r3m','r6m','r1y','r3y','r5y','r10y'].forEach(function(k){
+        if(f[k] === null || f[k] === undefined) return;
+        var ceiling = looksLowVol ? 20 : 100;
+        if(f[k] > ceiling || f[k] < -95) f[k] = null;
+      });
+
       gotLiveData = true;
     }
   } catch(e) { console.log('NAV load failed for '+code+' - trying navmaster.db fallback'); }
