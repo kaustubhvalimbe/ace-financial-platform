@@ -1573,7 +1573,7 @@ function isActiveAMC(n){var u=n.toUpperCase();for(var i=0;i<ACTIVE_AMCS.length;i
 async function fetchMFAPI() {
   // Level 1: Direct
   try {
-    var r = await fetch('https://api.mfapi.in/mf', {mode:'cors',headers:{'Accept':'application/json'}});
+    var r = await fetchWithTimeout('https://api.mfapi.in/mf', 8000, {mode:'cors',headers:{'Accept':'application/json'}});
     if(r.ok) { var d = await r.json(); if(Array.isArray(d) && d.length>100) return d; }
   } catch(e) {}
   // Level 2: allorigins
@@ -1596,6 +1596,22 @@ async function fetchMFAPI() {
 
 // FALLBACK: shared navmaster.db export (same file used by Fund Discovery,
 // Fund Compare, Fund Toppers), tried ONLY if the live mfapi.in API fails.
+// Wraps fetch with a timeout using AbortController - without this, a slow
+// or hung server (confirmed on Fund Discovery: the direct mfapi.in endpoint
+// was observed taking a full minute to return its 502 error) blocks
+// everything behind it. extraOpts lets callers pass mode/headers/etc
+// alongside the timeout's abort signal.
+async function fetchWithTimeout(url, ms, extraOpts) {
+  var controller = new AbortController();
+  var timer = setTimeout(function(){ controller.abort(); }, ms || 8000);
+  var opts = Object.assign({}, extraOpts, {signal: controller.signal});
+  try {
+    return await fetch(url, opts);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function loadFromNavmasterExport() {
   try {
     var r = await fetch('fund-discovery-export.json');
@@ -1747,7 +1763,7 @@ async function loadFundReturns(fund) {
   if(fund.retLoaded) return;
   var gotLiveData = false;
   try {
-    var r = await fetch('https://api.mfapi.in/mf/'+fund.code);
+    var r = await fetchWithTimeout('https://api.mfapi.in/mf/'+fund.code);
     var d = await r.json();
     if(!d.data||d.data.length<2) throw new Error('no data');
     var cur = parseFloat(d.data[0].nav);
@@ -2452,8 +2468,9 @@ const ROW_COLORS  = ['#3c3197','#8bc32a','#d97706','#0891b2','#ea580c','#db2777'
 // ── LOAD AMFI FUNDS FOR SEARCH ─────────────────────────────────────────
 async function loadAMFIForCMB() {
   if(CMB.loaded) return;
+  var cmbSt = document.getElementById('cmb-load-status');
   try {
-    const r = await fetch('https://api.mfapi.in/mf');
+    const r = await fetchWithTimeout('https://api.mfapi.in/mf');
     if(!r.ok) throw new Error('err');
     const data = await r.json();
     CMB.allFunds = data.map(f => ({
@@ -2464,11 +2481,13 @@ async function loadAMFIForCMB() {
     }));
     CMB.loaded = true;
     console.log(`CMB: ${CMB.allFunds.length} funds loaded`);
+    if (cmbSt) cmbSt.textContent = '✅ ' + CMB.allFunds.length.toLocaleString('en-IN') + ' funds loaded';
     showPrivateStatusBanner(false, null);
   } catch(e) {
     // Live failed - try the shared navmaster.db export before falling all
     // the way back to the small, static FDB sample below (which has no
     // real scheme codes and a fixed, aging navDate).
+    if (cmbSt) cmbSt.textContent = '⏳ Live data unavailable, trying backup...';
     if (!FALLBACK_DATA) FALLBACK_DATA = await loadFromNavmasterExport();
     if (FALLBACK_DATA) {
       CMB.allFunds = FALLBACK_DATA.funds.map(f => ({
@@ -2476,6 +2495,7 @@ async function loadAMFIForCMB() {
         nav: f.nav, navDate: f.date,
       }));
       CMB.loaded = true;
+      if (cmbSt) cmbSt.textContent = '⚠️ Live data unavailable - showing saved data as of ' + FALLBACK_DATA.exported_at.split('T')[0];
       console.log(`%c⚠️ CMB: running on navmaster.db fallback (mfapi.in unreachable) - data as of ${FALLBACK_DATA.exported_at}`,
         'background:#f5a623;color:#000;font-weight:700;padding:4px 8px;border-radius:4px;');
       showPrivateStatusBanner(true, FALLBACK_DATA.exported_at);
@@ -2495,6 +2515,7 @@ async function loadAMFIForCMB() {
       });
     });
     CMB.loaded = true;
+    if (cmbSt) cmbSt.textContent = '⚠️ Using sample fund list — live and backup data both unavailable';
   }
 }
 
@@ -2702,7 +2723,7 @@ async function selectFund(rowId, code, name, amc, nav, navDate, cagr3y) {
   let finalNav = nav, finalDate = navDate;
   if(!nav && code) {
     try {
-      const r = await fetch(`https://api.mfapi.in/mf/${code}/latest`);
+      const r = await fetchWithTimeout(`https://api.mfapi.in/mf/${code}/latest`);
       if(r.ok) {
         const d = await r.json();
         if(d.data && d.data.length > 0) {
@@ -2710,7 +2731,7 @@ async function selectFund(rowId, code, name, amc, nav, navDate, cagr3y) {
           finalDate = d.data[0].date;
           // Also get 3Y return from historical
           if(!cagr3y) {
-            const r2 = await fetch(`https://api.mfapi.in/mf/${code}`);
+            const r2 = await fetchWithTimeout(`https://api.mfapi.in/mf/${code}`);
             if(r2.ok) {
               const d2 = await r2.json();
               if(d2.data && d2.data.length > 2) {
@@ -4006,7 +4027,7 @@ async function cmbLoadFunds(){
   if(CMB_LOADED)return;
   var st=document.getElementById('cmb-load-status');if(st)st.textContent='Loading funds...';
   try{
-    var r=await fetch('https://api.mfapi.in/mf');
+    var r=await fetchWithTimeout('https://api.mfapi.in/mf');
     var data=await r.json();
     // Filter to Growth plans only (exclude IDCW / Dividend)
     CMB_FUNDS_ALL=data.filter(function(f){
@@ -5363,7 +5384,7 @@ async function slLoadFunds(){
   var st=document.getElementById('sl-fund-status');
   if(st) st.textContent='Loading funds...';
   try{
-    var r=await fetch('https://api.mfapi.in/mf');
+    var r=await fetchWithTimeout('https://api.mfapi.in/mf');
     var data=await r.json();
     var seen={};
     SL_ALL_FUNDS=data.filter(function(f){

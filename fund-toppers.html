@@ -823,25 +823,39 @@ var allFunds = [], loaded = false;
 
 var ACTIVE_AMCS=["360 ONE","IIFL","ADITYA BIRLA SUN LIFE","ALPHAGREP","ANGEL ONE","ASK ","BANDHAN","IDFC","CHOICE","DSP","FRANKLIN TEMPLETON","FRANKLIN INDIA","HDFC","HELIOS","HSBC","ICICI PRUDENTIAL","IL&FS","JIO BLACKROCK","KOTAK","MAHINDRA MANULIFE","NAVI","ESSEL","PARAG PARIKH","PPFAS","SBI","SHRIRAM","TATA","UNIFI","UNION","WHITEOAK","WHITE OAK","ZERODHA","ABAKKUS","AXIS","BAJAJ FINSERV","BANK OF INDIA","BARODA BNP PARIBAS","BARODA","CANARA ROBECO","CAPITALMIND","EDELWEISS","GROWW","INDIABULLS","INVESCO","ITI ","JM FINANCIAL","JM ","LAKSHYA","LIC","IDBI MF","MIRAE ASSET","MONARCH","MOTILAL OSWAL","NIPPON INDIA","NIPPON ","NJ ","OLD BRIDGE","PGIM INDIA","QUANT","QUANTUM","SAMCO","SUNDARAM","TAURUS","THE WEALTH COMPANY","TRUST MUTUAL","UTI"];
 function isActiveAMC(n){var u=n.toUpperCase();for(var i=0;i<ACTIVE_AMCS.length;i++){if(u.indexOf(ACTIVE_AMCS[i])>=0)return true;}return false;}
+// Wraps fetch with a timeout using AbortController - without this, a slow
+// or hung server (confirmed on Fund Discovery: the direct mfapi.in endpoint
+// was observed taking a full minute to return its 502 error) blocks the
+// entire fallback chain behind it.
+async function fetchWithTimeout(url, ms) {
+  var controller = new AbortController();
+  var timer = setTimeout(function(){ controller.abort(); }, ms || 8000);
+  try {
+    return await fetch(url, {signal: controller.signal});
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function fetchMFAPI() {
   // Level 1: Direct — plain fetch, no options object (this is the pattern proven working in Investment Engine)
   try {
-    var r = await fetch('https://api.mfapi.in/mf');
+    var r = await fetchWithTimeout('https://api.mfapi.in/mf');
     if(r.ok) { var d = await r.json(); if(Array.isArray(d) && d.length>100) return d; }
   } catch(e) {}
   // Level 2: allorigins
   try {
-    var r2 = await fetch('https://api.allorigins.win/raw?url=https%3A%2F%2Fapi.mfapi.in%2Fmf');
+    var r2 = await fetchWithTimeout('https://api.allorigins.win/raw?url=https%3A%2F%2Fapi.mfapi.in%2Fmf');
     if(r2.ok) { var d2 = await r2.json(); if(Array.isArray(d2) && d2.length>100) return d2; }
   } catch(e) {}
   // Level 3: corsproxy
   try {
-    var r3 = await fetch('https://corsproxy.io/?https://api.mfapi.in/mf');
+    var r3 = await fetchWithTimeout('https://corsproxy.io/?https://api.mfapi.in/mf');
     if(r3.ok) { var d3 = await r3.json(); if(Array.isArray(d3) && d3.length>100) return d3; }
   } catch(e) {}
   // Level 4: thingproxy
   try {
-    var r4 = await fetch('https://thingproxy.freeboard.io/fetch/https://api.mfapi.in/mf');
+    var r4 = await fetchWithTimeout('https://thingproxy.freeboard.io/fetch/https://api.mfapi.in/mf');
     if(r4.ok) { var d4 = await r4.json(); if(Array.isArray(d4) && d4.length>100) return d4; }
   } catch(e) {}
   return null;

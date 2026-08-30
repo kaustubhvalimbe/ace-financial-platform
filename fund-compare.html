@@ -259,6 +259,9 @@ nav{background:#fff;border-bottom:3px solid var(--g4);padding:0 24px;height:64px
 <div class="main">
   <div class="search-section">
     <div class="search-title">Search & Select Funds to Compare</div>
+    <div id="fc-fallback-msg" style="display:none;background:#fff3cd;color:#856404;border:1px solid #ffe69c;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;font-weight:600;">
+      ⏳ Live fund data is temporarily unavailable — loading backup data, please wait a moment...
+    </div>
     <div class="search-row" id="slots-row">
       <!-- 6 slots built by JS -->
     </div>
@@ -296,6 +299,20 @@ var loaded    = false;
 // ── LOAD FUND LIST ──────────────────────────────────────
 // ── FALLBACK: shared navmaster.db export (same file Fund Discovery uses),
 // tried ONLY if the live mfapi.in API fails - not a replacement for live data.
+// Wraps fetch with a timeout using AbortController - without this, a slow
+// or hung server (confirmed on Fund Discovery: the direct mfapi.in endpoint
+// was observed taking a full minute to return its 502 error) blocks
+// everything behind it, including reaching the fallback below.
+async function fetchWithTimeout(url, ms) {
+  var controller = new AbortController();
+  var timer = setTimeout(function(){ controller.abort(); }, ms || 8000);
+  try {
+    return await fetch(url, {signal: controller.signal});
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function loadFromNavmasterExport() {
   try {
     var r = await fetch('fund-discovery-export.json');
@@ -310,10 +327,15 @@ async function loadFromNavmasterExport() {
 var FALLBACK_DATA = null;   // cached once loaded, so repeated per-fund fallback lookups don't re-fetch
 var USING_FALLBACK = false;
 
+function setFallbackMsg(show) {
+  var el = document.getElementById('fc-fallback-msg');
+  if (el) el.style.display = show ? 'block' : 'none';
+}
+
 async function loadFunds() {
   if(loaded) return;
   try {
-    var r = await fetch('https://api.mfapi.in/mf');
+    var r = await fetchWithTimeout('https://api.mfapi.in/mf');
     var data = await r.json();
     ALL_FUNDS = data.map(function(f){
       return {code: String(f.schemeCode), name: f.schemeName};
@@ -323,7 +345,9 @@ async function loadFunds() {
     showPrivateStatusBanner(false, null);
   } catch(e) {
     console.log('Fund load failed:', e.message, '- trying navmaster.db fallback');
+    setFallbackMsg(true);
     var fb = await loadFromNavmasterExport();
+    setFallbackMsg(false);
     if (fb) {
       FALLBACK_DATA = fb;
       USING_FALLBACK = true;
@@ -489,7 +513,7 @@ async function loadFundData(code, name) {
   for(var a=0;a<amcs.length;a++) if(name.includes(amcs[a])){ f.amc=amcs[a]+' MF'; break; }
   var gotLiveData = false;
   try {
-    var r = await fetch('https://api.mfapi.in/mf/'+code);
+    var r = await fetchWithTimeout('https://api.mfapi.in/mf/'+code);
     var d = await r.json();
     if(d.data && d.data.length > 0) {
       var cur = parseFloat(d.data[0].nav);
@@ -524,7 +548,11 @@ async function loadFundData(code, name) {
     // e.g. this specific scheme's endpoint is the one having trouble). Reuse
     // the cached fallback export if loadFunds() already loaded it; otherwise
     // load it fresh here, since this function can be called independently.
-    if (!FALLBACK_DATA) FALLBACK_DATA = await loadFromNavmasterExport();
+    if (!FALLBACK_DATA) {
+      setFallbackMsg(true);
+      FALLBACK_DATA = await loadFromNavmasterExport();
+      setFallbackMsg(false);
+    }
     if (FALLBACK_DATA) {
       var match = FALLBACK_DATA.funds.find(function(x){ return String(x.code) === String(code); });
       if (match) {
