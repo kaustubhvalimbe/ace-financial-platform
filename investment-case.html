@@ -1594,43 +1594,91 @@ async function fetchMFAPI() {
   return null;
 }
 
+// FALLBACK: shared navmaster.db export (same file used by Fund Discovery,
+// Fund Compare, Fund Toppers), tried ONLY if the live mfapi.in API fails.
+async function loadFromNavmasterExport() {
+  try {
+    var r = await fetch('fund-discovery-export.json');
+    if (!r.ok) return null;
+    var payload = await r.json();
+    if (!payload.funds || !Array.isArray(payload.funds) || payload.funds.length < 100) return null;
+    return payload;
+  } catch (e) {
+    return null;
+  }
+}
+var FALLBACK_DATA = null;
+
+function showPrivateStatusBanner(usingFallback, asOf) {
+  if (location.search.indexOf('kvcheck=1') === -1) return;
+  var banner = document.createElement('div');
+  banner.style.cssText = 'position:fixed;top:8px;right:8px;z-index:99999;padding:8px 14px;border-radius:8px;font-family:monospace;font-size:12px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.3);';
+  if (usingFallback) {
+    banner.style.background = '#f5a623'; banner.style.color = '#000';
+    banner.textContent = '🟡 FALLBACK MODE - navmaster.db, as of ' + (asOf ? asOf.split('T')[0] : '?');
+  } else {
+    banner.style.background = '#2ecc71'; banner.style.color = '#000';
+    banner.textContent = '🟢 LIVE - mfapi.in';
+  }
+  document.body.appendChild(banner);
+}
+
+// Shared filtering/building logic for the Investment Case Wizard - same
+// exclusion rules as s4LoadFunds' live path, reusable for fallback data too.
+function buildS4Funds(items) {
+  var out = [];
+  for (var _i = 0; _i < items.length; _i++) {
+    var _n = items[_i].name; if (!_n || _n.length < 5) continue;
+    var _u = _n.toUpperCase();
+    if (_u.includes('IDCW') || _u.includes('DIVIDEND')) continue;
+    if (_u.includes('INSTITUTIONAL')) continue;
+    if (_u.includes('FMP') || _u.includes('FIXED MATURITY')) continue;
+    if (_u.includes('CAPITAL PROTECTION') || _u.includes('CAPITAL GUARANTEE')) continue;
+    if (_u.includes('CLOSE ENDED') || _u.includes('CLOSED END')) continue;
+    if (_u.includes('SERIES ') || _u.includes('SERIES-')) continue;
+    if (_u.includes('- OPTION I ') || _u.includes('- OPTION II') || _u.includes('- OPTION III')) continue;
+    if (_u.includes('- PLAN A') || _u.includes('- PLAN B') || _u.includes('- PLAN C')) continue;
+    if (!isActiveAMC(_n)) continue;
+    var _sub = getSubCat(_n); if (!_sub) continue;
+    out.push({code: String(items[_i].code), name: _n,
+      plan: _u.includes('DIRECT') ? 'direct' : 'regular', nat: 'growth',
+      sub: _sub, amc: xAMC(_n)});
+  }
+  var _seen = {};
+  return out.filter(function(f){
+    var k = f.name + '|' + f.plan;
+    if (_seen[k]) return false;
+    _seen[k] = true; return true;
+  });
+}
+
 async function s4LoadFunds() {
   if(s4Loaded) return;
   try {
     var data = await fetchMFAPI();
-    if(!data) { 
-      document.getElementById('s4-status').innerHTML = 'Data loading failed. <button onclick="location.reload()" style="background:#8bc32a;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;font-weight:700;">Retry</button>';
-      return; 
+    if(!data) {
+      var stEl = document.getElementById('s4-status');
+      if (stEl) stEl.innerHTML = '⏳ Live data unavailable, trying backup...';
+      var fb = await loadFromNavmasterExport();
+      if (fb) {
+        FALLBACK_DATA = fb;
+        S4_allFunds = buildS4Funds(fb.funds.map(function(f){ return {code: f.code, name: f.name}; }));
+        s4Loaded = true;
+        if (stEl) stEl.textContent = '⚠️ Live data unavailable - showing saved data as of ' + fb.exported_at.split('T')[0];
+        console.log('%c⚠️ INVESTMENT ENGINE: running on navmaster.db fallback (mfapi.in unreachable) - data as of ' + fb.exported_at,
+          'background:#f5a623;color:#000;font-weight:700;padding:4px 8px;border-radius:4px;');
+        showPrivateStatusBanner(true, fb.exported_at);
+        return;
+      }
+      if (stEl) stEl.innerHTML = 'Data loading failed. <button onclick="location.reload()" style="background:#8bc32a;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;font-weight:700;">Retry</button>';
+      return;
     }
-    S4_allFunds=[];
-    for(var _i=0;_i<data.length;_i++){
-      var _n=data[_i].schemeName; if(!_n||_n.length<5) continue;
-      var _u=_n.toUpperCase();
-      if(_u.includes('IDCW')||_u.includes('DIVIDEND')) continue;
-      if(_u.includes('INSTITUTIONAL')) continue;
-      if(_u.includes('FMP')||_u.includes('FIXED MATURITY')) continue;
-      if(_u.includes('CAPITAL PROTECTION')||_u.includes('CAPITAL GUARANTEE')) continue;
-      if(_u.includes('CLOSE ENDED')||_u.includes('CLOSED END')) continue;
-      if(_u.includes('SERIES ')||_u.includes('SERIES-')) continue;
-      if(_u.includes('- OPTION I ')||_u.includes('- OPTION II')||_u.includes('- OPTION III')) continue;
-      if(_u.includes('- PLAN A')||_u.includes('- PLAN B')||_u.includes('- PLAN C')) continue;
-      if(!isActiveAMC(_n)) continue;
-      var _sub=getSubCat(_n); if(!_sub) continue;
-      S4_allFunds.push({code:String(data[_i].schemeCode),name:_n,
-        plan:_u.includes('DIRECT')?'direct':'regular',nat:'growth',
-        sub:_sub,amc:xAMC(_n)});
-    }
-    // Dedup by name+plan to prevent double entries
-    var _seen={};
-    S4_allFunds=S4_allFunds.filter(function(f){
-      var k=f.name+'|'+f.plan;
-      if(_seen[k]) return false;
-      _seen[k]=true; return true;
-    });
+    S4_allFunds = buildS4Funds(data.map(function(f){ return {code: f.schemeCode, name: f.schemeName}; }));
     s4Loaded = true;
     var st=document.getElementById('s4-status');
     if(st) st.textContent='✅ '+S4_allFunds.length.toLocaleString('en-IN')+' funds loaded';
     console.log('InvEngine: '+S4_allFunds.length+' funds loaded');
+    showPrivateStatusBanner(false, null);
   } catch(e) {
     console.log('Load failed:', e.message);
   }
@@ -1697,10 +1745,11 @@ function xAMC(name) {
 // ── LOAD INDIVIDUAL FUND RETURNS ──────────────────────
 async function loadFundReturns(fund) {
   if(fund.retLoaded) return;
+  var gotLiveData = false;
   try {
     var r = await fetch('https://api.mfapi.in/mf/'+fund.code);
     var d = await r.json();
-    if(!d.data||d.data.length<2) return;
+    if(!d.data||d.data.length<2) throw new Error('no data');
     var cur = parseFloat(d.data[0].nav);
     var pts = d.data.length;
     fund.nav  = cur;
@@ -1721,20 +1770,49 @@ async function loadFundReturns(fund) {
     var lastIdx = pts-1;
     var inav = parseFloat(d.data[lastIdx].nav);
     if(inav>0){ fund.rSI=(Math.pow(cur/inav,1/(pts/252))-1)*100; fund.inceptionDate=d.data[lastIdx].date; }
-    // Mark active only if NAV is recent (within 90 days)
-    // This filters out defunct/merged funds like ING, Religare, Fidelity etc
-    var navDateStr = d.data[0].date; // format: DD-Mon-YYYY
-    var navParts = navDateStr.split('-');
-    var monthMap = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
-    var navDate = new Date(parseInt(navParts[2]), monthMap[navParts[1]], parseInt(navParts[0]));
+
+    // Sanity guard - same as Fund Toppers, reject implausible CAGR from
+    // NAV data anomalies (added for consistency; wasn't here before).
+    var LOW_VOL_CATS = ['Liquid','Overnight','Ultra Short Duration','Low Duration','Money Market',
+      'Gilt','Short Duration','Medium Duration','Banking & PSU','Corporate Bond','Credit Risk','Dynamic Bond'];
+    var isLowVol = LOW_VOL_CATS.indexOf(fund.sub) >= 0;
+    ['r6m','r1y','r3y','r5y','rSI'].forEach(function(k){
+      if(fund[k] === null || fund[k] === undefined) return;
+      var ceiling = isLowVol ? 20 : 100;
+      if(fund[k] > ceiling || fund[k] < -95) fund[k] = null;
+    });
+
+    // Mark active only if NAV is recent (within 90 days) - filters out
+    // defunct/merged funds. FIX: this previously parsed the date as
+    // "DD-Mon-YYYY" (text month) but mfapi.in returns "DD-MM-YYYY" (numeric),
+    // so this check silently never fired - same bug found and fixed in
+    // Fund Toppers, reusing the same corrected approach here.
+    function _pdCheck(s){var p=String(s).split('-');return new Date(+p[2],+p[1]-1,+p[0]);}
+    var navDate = _pdCheck(d.data[0].date);
     var daysDiff = (new Date() - navDate) / (1000*60*60*24);
     if(daysDiff > 90) {
-      fund.active = false; // Defunct/merged fund — exclude from toppers
+      fund.active = false;
+      gotLiveData = true;
       return;
     }
     fund.active = true;
     fund.retLoaded = true;
+    gotLiveData = true;
   } catch(e) {}
+
+  if (!gotLiveData) {
+    if (!FALLBACK_DATA) FALLBACK_DATA = await loadFromNavmasterExport();
+    if (FALLBACK_DATA) {
+      var match = FALLBACK_DATA.funds.find(function(x){ return String(x.code) === String(fund.code); });
+      if (match) {
+        fund.nav=match.nav; fund.date=match.date;
+        fund.r6m=match.r6m; fund.r1y=match.r1y; fund.r3y=match.r3y; fund.r5y=match.r5y;
+        fund.rSI=match.rSI; fund.inceptionDate=match.inceptionDate;
+        fund.active = true; fund.retLoaded = true;
+        console.log('  (using navmaster.db fallback data for '+fund.code+')');
+      }
+    }
+  }
 }
 
 // ── RENDER TOPPERS ─────────────────────────────────────
@@ -2386,8 +2464,24 @@ async function loadAMFIForCMB() {
     }));
     CMB.loaded = true;
     console.log(`CMB: ${CMB.allFunds.length} funds loaded`);
+    showPrivateStatusBanner(false, null);
   } catch(e) {
-    // Fallback to local fund database
+    // Live failed - try the shared navmaster.db export before falling all
+    // the way back to the small, static FDB sample below (which has no
+    // real scheme codes and a fixed, aging navDate).
+    if (!FALLBACK_DATA) FALLBACK_DATA = await loadFromNavmasterExport();
+    if (FALLBACK_DATA) {
+      CMB.allFunds = FALLBACK_DATA.funds.map(f => ({
+        code: f.code, name: f.name, amc: extractAMCName(f.name),
+        nav: f.nav, navDate: f.date,
+      }));
+      CMB.loaded = true;
+      console.log(`%c⚠️ CMB: running on navmaster.db fallback (mfapi.in unreachable) - data as of ${FALLBACK_DATA.exported_at}`,
+        'background:#f5a623;color:#000;font-weight:700;padding:4px 8px;border-radius:4px;');
+      showPrivateStatusBanner(true, FALLBACK_DATA.exported_at);
+      return;
+    }
+    // Last resort: the old static sample fund database
     CMB.allFunds = [];
     // Flatten all funds from FDB
     Object.values(FDB).forEach(cat => {
@@ -2633,6 +2727,18 @@ async function selectFund(rowId, code, name, amc, nav, navDate, cagr3y) {
         }
       }
     } catch(e) {}
+    // If live still didn't produce a real nav, check the shared fallback
+    // export before defaulting cagr3y to a generic 12% assumption below.
+    if (!finalNav) {
+      if (!FALLBACK_DATA) FALLBACK_DATA = await loadFromNavmasterExport();
+      if (FALLBACK_DATA) {
+        const fbMatch = FALLBACK_DATA.funds.find(x => String(x.code) === String(code));
+        if (fbMatch) {
+          finalNav = fbMatch.nav; finalDate = fbMatch.date;
+          if (!cagr3y && fbMatch.r3y) cagr3y = fbMatch.r3y;
+        }
+      }
+    }
   }
 
   row.fund = {code, name, amc, nav: finalNav, navDate: finalDate, cagr3y: cagr3y||12};
@@ -5269,7 +5375,28 @@ async function slLoadFunds(){
     }).map(function(f){return{code:String(f.schemeCode),name:f.schemeName||''};});
     SL_FUNDS_LOADED=true;
     if(st) st.textContent='✅ '+SL_ALL_FUNDS.length.toLocaleString('en-IN')+' funds loaded';
+    showPrivateStatusBanner(false, null);
   }catch(e){
+    // Live failed - try the shared navmaster.db export for search/autocomplete
+    // before falling back to "type manually".
+    if (st) st.textContent='⏳ Live data unavailable, trying backup...';
+    if (!FALLBACK_DATA) FALLBACK_DATA = await loadFromNavmasterExport();
+    if (FALLBACK_DATA) {
+      var seen2={};
+      SL_ALL_FUNDS = FALLBACK_DATA.funds.filter(function(f){
+        var n=(f.name||'').toUpperCase();
+        if(n.includes('IDCW')||n.includes('DIVIDEND')) return false;
+        var key=f.name+'|'+f.code;
+        if(seen2[key]) return false;
+        seen2[key]=true; return true;
+      }).map(function(f){return{code:String(f.code),name:f.name||''};});
+      SL_FUNDS_LOADED=true;
+      if(st) st.textContent='⚠️ Live data unavailable - showing saved data as of ' + FALLBACK_DATA.exported_at.split('T')[0];
+      console.log('%c⚠️ SL: running on navmaster.db fallback (mfapi.in unreachable) - data as of ' + FALLBACK_DATA.exported_at,
+        'background:#f5a623;color:#000;font-weight:700;padding:4px 8px;border-radius:4px;');
+      showPrivateStatusBanner(true, FALLBACK_DATA.exported_at);
+      return;
+    }
     SL_FUNDS_LOADED=true;
     if(st) st.textContent='⚠️ Fund list unavailable — type fund name manually';
   }
