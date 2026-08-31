@@ -305,7 +305,7 @@ var loaded    = false;
 // everything behind it, including reaching the fallback below.
 async function fetchWithTimeout(url, ms) {
   var controller = new AbortController();
-  var timer = setTimeout(function(){ controller.abort(); }, ms || 8000);
+  var timer = setTimeout(function(){ controller.abort(); }, ms || 6000);
   try {
     return await fetch(url, {signal: controller.signal});
   } finally {

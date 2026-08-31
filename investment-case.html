@@ -1570,28 +1570,31 @@ function s4GetRow(c){if(!S4_ROW[c])S4_ROW[c]={type:'',yr:0,mo:0,months:0,cagr:''
 function s4SetType(code,type){s4GetRow(code).type=type;var _sr=document.getElementById('s4-search');s4RenderFundList(_sr?_sr.value:'');s4UpdateValBar();}
 var ACTIVE_AMCS=["360 ONE","IIFL","ADITYA BIRLA SUN LIFE","ALPHAGREP","ANGEL ONE","ASK ","BANDHAN","IDFC","CHOICE","DSP","FRANKLIN TEMPLETON","FRANKLIN INDIA","HDFC","HELIOS","HSBC","ICICI PRUDENTIAL","IL&FS","JIO BLACKROCK","KOTAK","MAHINDRA MANULIFE","NAVI","ESSEL","PARAG PARIKH","PPFAS","SBI","SHRIRAM","TATA","UNIFI","UNION","WHITEOAK","WHITE OAK","ZERODHA","ABAKKUS","AXIS","BAJAJ FINSERV","BANK OF INDIA","BARODA BNP PARIBAS","BARODA","CANARA ROBECO","CAPITALMIND","EDELWEISS","GROWW","INDIABULLS","INVESCO","ITI ","JM FINANCIAL","JM ","LAKSHYA","LIC","IDBI MF","MIRAE ASSET","MONARCH","MOTILAL OSWAL","NIPPON INDIA","NIPPON ","NJ ","OLD BRIDGE","PGIM INDIA","QUANT","QUANTUM","SAMCO","SUNDARAM","TAURUS","THE WEALTH COMPANY","TRUST MUTUAL","UTI"];
 function isActiveAMC(n){var u=n.toUpperCase();for(var i=0;i<ACTIVE_AMCS.length;i++){if(u.indexOf(ACTIVE_AMCS[i])>=0)return true;}return false;}
+async function tryMfapiEndpoint(url, extraOpts) {
+  var r = await fetchWithTimeout(url, 6000, extraOpts);
+  if (!r.ok) throw new Error('not ok: ' + url);
+  var d = await r.json();
+  if (!Array.isArray(d) || d.length <= 100) throw new Error('invalid data: ' + url);
+  return d;
+}
+
 async function fetchMFAPI() {
-  // Level 1: Direct
+  // All 4 attempts fired IN PARALLEL, not sequentially - if mfapi.in's
+  // outage is broad enough that multiple attempts hang to their full
+  // timeout, sequential attempts would take up to 4x the timeout in total.
+  // Also fixes a real gap: levels 2-4 here were previously plain fetch()
+  // calls with NO timeout at all - only level 1 had one.
+  var attempts = [
+    tryMfapiEndpoint('https://api.mfapi.in/mf', {mode:'cors',headers:{'Accept':'application/json'}}),
+    tryMfapiEndpoint('https://api.allorigins.win/raw?url=https%3A%2F%2Fapi.mfapi.in%2Fmf'),
+    tryMfapiEndpoint('https://corsproxy.io/?https://api.mfapi.in/mf'),
+    tryMfapiEndpoint('https://thingproxy.freeboard.io/fetch/https://api.mfapi.in/mf'),
+  ];
   try {
-    var r = await fetchWithTimeout('https://api.mfapi.in/mf', 8000, {mode:'cors',headers:{'Accept':'application/json'}});
-    if(r.ok) { var d = await r.json(); if(Array.isArray(d) && d.length>100) return d; }
-  } catch(e) {}
-  // Level 2: allorigins
-  try {
-    var r2 = await fetch('https://api.allorigins.win/raw?url=https%3A%2F%2Fapi.mfapi.in%2Fmf');
-    if(r2.ok) { var d2 = await r2.json(); if(Array.isArray(d2) && d2.length>100) return d2; }
-  } catch(e) {}
-  // Level 3: corsproxy
-  try {
-    var r3 = await fetch('https://corsproxy.io/?https://api.mfapi.in/mf');
-    if(r3.ok) { var d3 = await r3.json(); if(Array.isArray(d3) && d3.length>100) return d3; }
-  } catch(e) {}
-  // Level 4: thingproxy
-  try {
-    var r4 = await fetch('https://thingproxy.freeboard.io/fetch/https://api.mfapi.in/mf');
-    if(r4.ok) { var d4 = await r4.json(); if(Array.isArray(d4) && d4.length>100) return d4; }
-  } catch(e) {}
-  return null;
+    return await Promise.any(attempts);
+  } catch (e) {
+    return null;
+  }
 }
 
 // FALLBACK: shared navmaster.db export (same file used by Fund Discovery,
@@ -1603,7 +1606,7 @@ async function fetchMFAPI() {
 // alongside the timeout's abort signal.
 async function fetchWithTimeout(url, ms, extraOpts) {
   var controller = new AbortController();
-  var timer = setTimeout(function(){ controller.abort(); }, ms || 8000);
+  var timer = setTimeout(function(){ controller.abort(); }, ms || 6000);
   var opts = Object.assign({}, extraOpts, {signal: controller.signal});
   try {
     return await fetch(url, opts);

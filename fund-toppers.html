@@ -829,7 +829,7 @@ function isActiveAMC(n){var u=n.toUpperCase();for(var i=0;i<ACTIVE_AMCS.length;i
 // entire fallback chain behind it.
 async function fetchWithTimeout(url, ms) {
   var controller = new AbortController();
-  var timer = setTimeout(function(){ controller.abort(); }, ms || 8000);
+  var timer = setTimeout(function(){ controller.abort(); }, ms || 6000);
   try {
     return await fetch(url, {signal: controller.signal});
   } finally {
@@ -837,28 +837,29 @@ async function fetchWithTimeout(url, ms) {
   }
 }
 
+async function tryMfapiEndpoint(url) {
+  var r = await fetchWithTimeout(url);
+  if (!r.ok) throw new Error('not ok: ' + url);
+  var d = await r.json();
+  if (!Array.isArray(d) || d.length <= 100) throw new Error('invalid data: ' + url);
+  return d;
+}
+
 async function fetchMFAPI() {
-  // Level 1: Direct — plain fetch, no options object (this is the pattern proven working in Investment Engine)
+  // All 4 attempts fired IN PARALLEL, not sequentially - if mfapi.in's
+  // outage is broad enough that multiple attempts hang to their full
+  // timeout, sequential attempts would take up to 4x the timeout in total.
+  var urls = [
+    'https://api.mfapi.in/mf',
+    'https://api.allorigins.win/raw?url=https%3A%2F%2Fapi.mfapi.in%2Fmf',
+    'https://corsproxy.io/?https://api.mfapi.in/mf',
+    'https://thingproxy.freeboard.io/fetch/https://api.mfapi.in/mf',
+  ];
   try {
-    var r = await fetchWithTimeout('https://api.mfapi.in/mf');
-    if(r.ok) { var d = await r.json(); if(Array.isArray(d) && d.length>100) return d; }
-  } catch(e) {}
-  // Level 2: allorigins
-  try {
-    var r2 = await fetchWithTimeout('https://api.allorigins.win/raw?url=https%3A%2F%2Fapi.mfapi.in%2Fmf');
-    if(r2.ok) { var d2 = await r2.json(); if(Array.isArray(d2) && d2.length>100) return d2; }
-  } catch(e) {}
-  // Level 3: corsproxy
-  try {
-    var r3 = await fetchWithTimeout('https://corsproxy.io/?https://api.mfapi.in/mf');
-    if(r3.ok) { var d3 = await r3.json(); if(Array.isArray(d3) && d3.length>100) return d3; }
-  } catch(e) {}
-  // Level 4: thingproxy
-  try {
-    var r4 = await fetchWithTimeout('https://thingproxy.freeboard.io/fetch/https://api.mfapi.in/mf');
-    if(r4.ok) { var d4 = await r4.json(); if(Array.isArray(d4) && d4.length>100) return d4; }
-  } catch(e) {}
-  return null;
+    return await Promise.any(urls.map(tryMfapiEndpoint));
+  } catch (e) {
+    return null;
+  }
 }
 
 // ── AUM DATA (self-maintained, shared file/logic with Fund Compare & Fund Discovery) ──
