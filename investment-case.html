@@ -1579,13 +1579,16 @@ async function tryMfapiEndpoint(url, extraOpts) {
 }
 
 async function fetchMFAPI() {
-  // All 4 attempts fired IN PARALLEL, not sequentially - if mfapi.in's
+  // All 5 attempts fired IN PARALLEL, not sequentially - if mfapi.in's
   // outage is broad enough that multiple attempts hang to their full
-  // timeout, sequential attempts would take up to 4x the timeout in total.
+  // timeout, sequential attempts would take up to 5x the timeout in total.
   // Also fixes a real gap: levels 2-4 here were previously plain fetch()
   // calls with NO timeout at all - only level 1 had one.
+  // /mf/latest confirmed directly working even while the plain /mf endpoint
+  // returned 502s - a genuinely separate endpoint on mfapi.in's own domain.
   var attempts = [
     tryMfapiEndpoint('https://api.mfapi.in/mf', {mode:'cors',headers:{'Accept':'application/json'}}),
+    tryMfapiEndpoint('https://api.mfapi.in/mf/latest', {mode:'cors',headers:{'Accept':'application/json'}}),
     tryMfapiEndpoint('https://api.allorigins.win/raw?url=https%3A%2F%2Fapi.mfapi.in%2Fmf'),
     tryMfapiEndpoint('https://corsproxy.io/?https://api.mfapi.in/mf'),
     tryMfapiEndpoint('https://thingproxy.freeboard.io/fetch/https://api.mfapi.in/mf'),

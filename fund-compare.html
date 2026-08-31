@@ -313,6 +313,14 @@ async function fetchWithTimeout(url, ms) {
   }
 }
 
+async function tryMfapiEndpoint(url) {
+  var r = await fetchWithTimeout(url);
+  if (!r.ok) throw new Error('not ok: ' + url);
+  var d = await r.json();
+  if (!Array.isArray(d) || d.length <= 100) throw new Error('invalid data: ' + url);
+  return d;
+}
+
 async function loadFromNavmasterExport() {
   try {
     var r = await fetch('fund-discovery-export.json');
@@ -335,8 +343,13 @@ function setFallbackMsg(show) {
 async function loadFunds() {
   if(loaded) return;
   try {
-    var r = await fetchWithTimeout('https://api.mfapi.in/mf');
-    var data = await r.json();
+    // Race both endpoints in parallel - /mf/latest confirmed directly
+    // working even while the plain /mf endpoint was returning 502s, so
+    // don't wait on one before trying the other.
+    var data = await Promise.any([
+      tryMfapiEndpoint('https://api.mfapi.in/mf'),
+      tryMfapiEndpoint('https://api.mfapi.in/mf/latest'),
+    ]);
     ALL_FUNDS = data.map(function(f){
       return {code: String(f.schemeCode), name: f.schemeName};
     }).filter(function(f){ return f.name && f.name.length > 4; });
@@ -344,7 +357,7 @@ async function loadFunds() {
     console.log('Compare: '+ALL_FUNDS.length+' funds loaded');
     showPrivateStatusBanner(false, null);
   } catch(e) {
-    console.log('Fund load failed:', e.message, '- trying navmaster.db fallback');
+    console.log('Fund load failed - trying navmaster.db fallback');
     setFallbackMsg(true);
     var fb = await loadFromNavmasterExport();
     setFallbackMsg(false);
